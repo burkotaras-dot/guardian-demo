@@ -4995,9 +4995,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <!-- Auth Toggle -->
             <div class="form-group">
               <div class="form-label">Authentication Method</div>
-              <div class="toggle-group">
-                <div class="toggle-btn active" id="tog-iam">IAM Role (recommended)</div>
-                <div class="toggle-btn" id="tog-keys">Access Keys</div>
+              <div class="toggle-group" style="width:fit-content;">
+                <div class="toggle-btn active" id="tog-iam" onclick="switchAwsAuth('iam')" style="padding:9px 20px;">IAM Role (recommended)</div>
+                <div class="toggle-btn" id="tog-keys" onclick="switchAwsAuth('keys')" style="padding:9px 20px;">Access Keys</div>
               </div>
             </div>
 
@@ -5018,9 +5018,21 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
 
             <!-- IAM Role ARN -->
-            <div class="form-group">
+            <div class="form-group" id="iam-field">
               <label class="form-label">IAM Role ARN</label>
               <input class="form-input" type="text" placeholder="arn:aws:iam::123456789012:role/GuardianRole" value="arn:aws:iam::123456789012:role/GuardianRole">
+            </div>
+
+            <!-- Access Keys fields -->
+            <div id="keys-fields" style="display:none;">
+              <div class="form-group">
+                <label class="form-label">Access Key ID</label>
+                <input class="form-input" type="text" placeholder="AKIAIOSFODNN7EXAMPLE">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Secret Access Key</label>
+                <input class="form-input" type="password" placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY">
+              </div>
             </div>
 
             <!-- Collapsible permissions -->
@@ -7772,6 +7784,13 @@ function updateDoneScreen() {
 }
 
 // ── J3 helpers ──────────────────────────────────────────────────────
+function switchAwsAuth(method) {
+  document.getElementById('tog-iam').classList.toggle('active', method === 'iam');
+  document.getElementById('tog-keys').classList.toggle('active', method === 'keys');
+  document.getElementById('iam-field').style.display = method === 'iam' ? '' : 'none';
+  document.getElementById('keys-fields').style.display = method === 'keys' ? '' : 'none';
+}
+
 function togglePerms() {
   const body = document.getElementById('permBody');
   const chevron = document.getElementById('permChevron');
