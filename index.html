@@ -1536,7 +1536,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
             <div id="remed-action-area" style="display:flex;align-items:center;gap:10px;">
               <button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">I've fixed this → Scan again</button>
-              <button class="btn-outline" style="padding:8px 16px;">Accept risk</button>
+              <button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>
             </div>
           </div>
         </div>
@@ -7611,7 +7611,7 @@ function selectCheck(el) {
   // Reset action area
   document.getElementById('remed-action-area').innerHTML =
     '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">I\'ve fixed this → Scan again</button>' +
-    '<button class="btn-outline" style="padding:8px 16px;">Accept risk</button>';
+    '<button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>';
   // Hide result block
   var rb = document.getElementById('remed-result-block');
   if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
@@ -7658,7 +7658,7 @@ function startRescan() {
         '</div>';
       document.getElementById('remed-action-area').innerHTML =
         '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Rescan again</button>' +
-        '<button class="btn-outline" style="padding:8px 16px;">Accept risk</button>';
+        '<button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>';
     } else {
       // State 3: Resolved
       var box = document.getElementById('remed-current-box');
@@ -7687,6 +7687,61 @@ function startRescan() {
         '<button class="btn-outline" style="padding:8px 16px;" onclick="showView(\'results\')">Back to Results</button>';
     }
   }, 3000);
+}
+
+// ── Remediation — Accept Risk ──
+function acceptRisk() {
+  var activeItem = document.querySelector('.remed-item.active');
+  if (activeItem) {
+    var badge = activeItem.querySelector('.badge');
+    if (badge) {
+      badge.className = 'badge';
+      badge.style.cssText = 'background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;';
+      badge.textContent = 'Risk accepted';
+    }
+    var h4 = activeItem.querySelector('h4');
+    if (h4) h4.style.opacity = '0.6';
+    var p = activeItem.querySelector('p');
+    if (p) p.textContent = 'Accepted · Review in 90 days';
+  }
+  var rb = document.getElementById('remed-result-block');
+  if (rb) {
+    rb.style.display = 'block';
+    rb.innerHTML =
+      '<div style="display:flex;align-items:flex-start;gap:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">' +
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+        '<div>' +
+          '<div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:2px;">Risk accepted</div>' +
+          '<div style="font-size:11px;color:#64748b;">This issue will be excluded from your compliance score until reviewed. Scheduled for re-evaluation in 90 days.</div>' +
+        '</div>' +
+      '</div>';
+  }
+  document.getElementById('remed-action-area').innerHTML =
+    '<button class="btn-outline" style="padding:8px 16px;opacity:0.5;" disabled>Risk accepted</button>' +
+    '<button class="btn-outline" style="padding:8px 16px;" onclick="undoAcceptRisk()">Undo</button>';
+}
+
+function undoAcceptRisk() {
+  var activeItem = document.querySelector('.remed-item.active');
+  var idx = activeItem ? Array.from(document.querySelectorAll('.remed-item')).indexOf(activeItem) : 0;
+  var c = remedChecks[idx] || remedChecks[0];
+  if (activeItem) {
+    var badge = activeItem.querySelector('.badge');
+    if (badge) {
+      badge.className = 'badge ' + c.badgeClass;
+      badge.style.cssText = '';
+      badge.textContent = c.severity;
+    }
+    var h4 = activeItem.querySelector('h4');
+    if (h4) h4.style.opacity = '';
+    var p = activeItem.querySelector('p');
+    if (p) p.textContent = activeItem._origSub || '';
+  }
+  var rb = document.getElementById('remed-result-block');
+  if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
+  document.getElementById('remed-action-area').innerHTML =
+    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">I\'ve fixed this → Scan again</button>' +
+    '<button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>';
 }
 
 // ── All Nodes — checkbox + Scan Selected ──
