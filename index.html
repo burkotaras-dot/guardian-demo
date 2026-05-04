@@ -7526,9 +7526,94 @@ function showView(name) {
   }
 }
 
+var remedChecks = [
+  {
+    severity: 'Critical', badgeClass: 'badge-critical',
+    title: 'Windows Defender real-time protection is disabled',
+    sub: 'Compliance Policy · Control 8.1 · Malware Defenses',
+    currentVal: 'Disabled', currentSub: 'Real-time scanning off', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#dc2626',
+    expectedVal: 'Enabled', expectedSub: 'Real-time scanning active',
+    impact: 'Without real-time protection, malware can execute on your device without detection. This is a critical security gap.',
+    steps: ['Open <strong>Windows Security</strong> from the Start menu','Click <strong>Virus & threat protection</strong>','Under settings → click <strong>Manage settings</strong>','Toggle <strong>Real-time protection</strong> to <strong>On</strong>']
+  },
+  {
+    severity: 'Critical', badgeClass: 'badge-critical',
+    title: 'BitLocker encryption not enabled on system drive',
+    sub: 'Compliance Policy · Control 3.6 · Data Protection',
+    currentVal: 'Not encrypted', currentSub: 'System drive has no encryption', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#dc2626',
+    expectedVal: 'AES-256 encrypted', expectedSub: 'Full disk encryption active',
+    impact: 'Without disk encryption, physical access to the device can expose all data. Encryption is required for compliance.',
+    steps: ['Open <strong>Control Panel → BitLocker Drive Encryption</strong>','Click <strong>Turn on BitLocker</strong> for the C: drive','Choose how to unlock (TPM recommended)','Save the recovery key and complete encryption']
+  },
+  {
+    severity: 'Critical', badgeClass: 'badge-critical',
+    title: 'Remote Desktop enabled without Network Level Auth',
+    sub: 'Compliance Policy · Control 9.2 · Access Control',
+    currentVal: 'No NLA', currentSub: 'RDP accessible without auth check', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#dc2626',
+    expectedVal: 'NLA required', expectedSub: 'Auth before session established',
+    impact: 'Without NLA, attackers can reach the login screen without credentials, enabling brute-force and credential attacks.',
+    steps: ['Open <strong>System Properties → Remote</strong> tab','Check <strong>"Allow connections only from computers running Remote Desktop with NLA"</strong>','Click Apply and OK','Verify RDP port 3389 is firewall-restricted']
+  },
+  {
+    severity: 'Medium', badgeClass: 'badge-medium',
+    title: 'Windows Firewall disabled on domain profile',
+    sub: 'Compliance Policy · Control 12.4 · Network Defense',
+    currentVal: 'Disabled', currentSub: 'Domain profile firewall off', currentBg: '#fffbeb', currentBorder: '#fde68a', currentLabelColor: '#d97706',
+    expectedVal: 'Enabled', expectedSub: 'All profiles active',
+    impact: 'A disabled firewall exposes all open ports to the network. Even inside a corporate network this is a compliance violation.',
+    steps: ['Open <strong>Windows Defender Firewall</strong>','Click <strong>Turn Windows Defender Firewall on or off</strong>','Enable for <strong>Domain</strong>, Private and Public networks','Click OK to apply']
+  },
+  {
+    severity: 'Medium', badgeClass: 'badge-medium',
+    title: 'Screen lock timeout exceeds policy maximum',
+    sub: 'Compliance Policy · Control 16.11 · Session Management',
+    currentVal: '30 minutes', currentSub: 'Current idle timeout setting', currentBg: '#fffbeb', currentBorder: '#fde68a', currentLabelColor: '#d97706',
+    expectedVal: '15 minutes max', expectedSub: 'Policy maximum allowed',
+    impact: 'Long screen lock timeouts leave unattended devices exposed. Policy requires automatic lock within 15 minutes of inactivity.',
+    steps: ['Open <strong>Settings → Accounts → Sign-in options</strong>','Under <strong>Require sign-in</strong> set to "When PC wakes from sleep"','Open <strong>Power & sleep settings</strong>','Set screen timeout to <strong>10 or 15 minutes</strong>']
+  }
+];
+
 function selectCheck(el) {
   document.querySelectorAll('.remed-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
+  var idx = Array.from(document.querySelectorAll('.remed-item')).indexOf(el);
+  var c = remedChecks[idx];
+  if (!c) return;
+  // Reset rescan state
+  remedAttempt = 0;
+  // Update detail panel
+  document.getElementById('remed-current-box').style.background = c.currentBg;
+  document.getElementById('remed-current-box').style.borderColor = c.currentBorder;
+  document.getElementById('remed-current-label').style.color = c.currentLabelColor;
+  document.getElementById('remed-current-val').textContent = c.currentVal;
+  document.getElementById('remed-current-sub').textContent = c.currentSub;
+  var detailCard = document.querySelector('.remed-detail .card:first-child');
+  detailCard.querySelector('[style*="font-size:16px"]').textContent = c.title;
+  detailCard.querySelector('[style*="font-size:11px"][style*="color:var(--text-sec)"]').textContent = c.sub;
+  // Expected val stays static per item
+  var expectedBox = detailCard.querySelectorAll('[style*="padding:12px"]')[1];
+  if (expectedBox) {
+    expectedBox.querySelectorAll('div')[2].textContent = c.expectedVal;
+    expectedBox.querySelectorAll('div')[3].textContent = c.expectedSub;
+  }
+  // Impact text
+  var impactSpan = detailCard.querySelector('span[style*="font-size:11px"]');
+  if (impactSpan) impactSpan.textContent = c.impact;
+  // Steps
+  var stepsContainer = document.querySelector('.remed-detail .card:last-child [style*="flex-direction:column"]');
+  if (stepsContainer) {
+    stepsContainer.innerHTML = c.steps.map(function(s,i) {
+      return '<div style="display:flex;gap:12px;align-items:flex-start;"><div class="step-circle" style="width:26px;height:26px;font-size:11px;flex-shrink:0;">'+(i+1)+'</div><div style="font-size:13px;color:#334155;padding-top:2px;">'+s+'</div></div>';
+    }).join('');
+  }
+  // Reset action area
+  document.getElementById('remed-action-area').innerHTML =
+    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">I\'ve fixed this → Scan again</button>' +
+    '<button class="btn-outline" style="padding:8px 16px;">Accept risk</button>';
+  // Hide result block
+  var rb = document.getElementById('remed-result-block');
+  if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
 }
 
 // ── Journey 2 state ──
