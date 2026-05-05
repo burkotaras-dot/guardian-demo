@@ -4864,7 +4864,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <!-- Filter pills / quick chips -->
         <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <div class="pill" id="filter-all" style="cursor:pointer;background:white;border-color:#0F172A;color:#0F172A;font-weight:600;" onclick="filterChanges('all')">All (3)</div>
+          <div class="pill" id="filter-all" style="cursor:pointer;background:rgba(63,200,120,0.1);border-color:#3FC878;color:#15803d;font-weight:600;" onclick="filterChanges('all')">All (3)</div>
           <div class="pill" id="filter-modified" style="cursor:pointer;" onclick="filterChanges('modified')">Modified (2)</div>
           <div class="pill" id="filter-added" style="cursor:pointer;" onclick="filterChanges('added')">Added (1)</div>
           <div class="pill" id="filter-removed" style="cursor:pointer;" onclick="filterChanges('removed')">Removed (0)</div>
@@ -8091,21 +8091,24 @@ document.addEventListener('click', function(e) {
 });
 
 function filterChanges(type) {
+  const isDark = document.body.classList.contains('dark');
+  const activeBg     = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
+  const activeBorder = isDark ? '#34D399' : '#3FC878';
+  const activeColor  = isDark ? '#34D399' : '#15803d';
   // Update active pill
   ['all','modified','added','removed'].forEach(t => {
     const pill = document.getElementById('filter-' + t);
     if (!pill) return;
-    pill.classList.remove('active-crit');
     pill.style.background = '';
     pill.style.borderColor = '';
     pill.style.color = '';
   });
   const active = document.getElementById('filter-' + type);
   if (active) {
-    active.classList.add('active-crit');
-    active.style.background = 'rgba(217,119,6,0.08)';
-    active.style.borderColor = 'rgba(217,119,6,0.2)';
-    active.style.color = '#d97706';
+    active.style.background = activeBg;
+    active.style.borderColor = activeBorder;
+    active.style.color = activeColor;
+    active.style.fontWeight = '600';
   }
   // Show/hide cards
   for (let i = 0; i < 3; i++) {
