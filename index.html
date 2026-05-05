@@ -687,6 +687,8 @@ body.dark .pol-tab:hover:not(.pol-tab-active) { color:#F8FAFC !important; }
 }
 .pill:hover { border-color:#94a3b8; }
 .pill.active-crit { background:rgba(220,38,38,0.07); border-color:rgba(220,38,38,0.2); color:#dc2626; }
+.pill.active-med  { background:rgba(217,119,6,0.07); border-color:rgba(217,119,6,0.25); color:#b45309; }
+.pill.active-low  { background:rgba(37,99,235,0.07); border-color:rgba(37,99,235,0.25); color:#1d4ed8; }
 .pill.active-pass { background:rgba(37,167,96,0.07); border-color:rgba(37,167,96,0.2); color:#15803d; }
 
 /* IMPACT BOX */
@@ -983,6 +985,10 @@ body.dark .collapsible-header { background: rgba(255,255,255,0.05); color: #F8FA
 body.dark .collapsible-body   { background: var(--bg-card); border-color: var(--border); }
 body.dark .perm-item          { color: #CBD5E1; }
 body.dark .pill               { background: var(--bg-card); border-color: #143A2F; color: #94A3B8; }
+body.dark .pill.active-crit   { background: rgba(220,38,38,0.18); border-color: rgba(220,38,38,0.5); color: #FCA5A5; }
+body.dark .pill.active-med    { background: rgba(217,119,6,0.18); border-color: rgba(217,119,6,0.5); color: #FCD34D; }
+body.dark .pill.active-low    { background: rgba(37,99,235,0.20); border-color: rgba(37,99,235,0.5); color: #93C5FD; }
+body.dark .pill.active-pass   { background: rgba(37,167,96,0.18); border-color: rgba(37,167,96,0.5); color: #6EE7B7; }
 body.dark .radio-item         { background: var(--bg-card); }
 body.dark .remed-item:hover   { background: #012F32; }
 body.dark .remed-item h4      { color: #F8FAFC; }
@@ -1639,29 +1645,29 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <button class="btn-outline">Export</button>
             </div>
           </div>
-          <div class="filter-pills">
-            <div class="pill active-crit">● Critical (9)</div>
-            <div class="pill">Medium (12)</div>
-            <div class="pill">Low (6)</div>
-            <div class="pill active-pass">✓ Passed (78)</div>
+          <div class="filter-pills" id="results-pills">
+            <div class="pill active-crit" data-sev="critical" onclick="setSevFilter('critical',this)">● Critical (9)</div>
+            <div class="pill" data-sev="medium" onclick="setSevFilter('medium',this)">Medium (12)</div>
+            <div class="pill" data-sev="low" onclick="setSevFilter('low',this)">Low (6)</div>
+            <div class="pill" data-sev="passed" onclick="setSevFilter('passed',this)">✓ Passed (78)</div>
           </div>
-          <div class="check-card" onclick="showView('remediation')">
+          <div class="check-card" data-sev="critical" onclick="showView('remediation')">
             <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Windows Defender real-time protection is disabled</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
             <div class="check-desc">Control 8.1 · Current: Disabled · Expected: Enabled</div>
           </div>
-          <div class="check-card" onclick="showView('remediation')">
+          <div class="check-card" data-sev="critical" onclick="showView('remediation')">
             <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">BitLocker encryption not enabled on system drive</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
             <div class="check-desc">Control 3.6 · Current: Not encrypted · Expected: AES-256</div>
           </div>
-          <div class="check-card" onclick="showView('remediation')">
+          <div class="check-card" data-sev="critical" onclick="showView('remediation')">
             <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Remote Desktop enabled without Network Level Auth</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
             <div class="check-desc">Control 9.2 · Current: No NLA · Expected: NLA required</div>
           </div>
-          <div class="check-card">
+          <div class="check-card" data-sev="medium">
             <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Windows Firewall disabled for Domain profile</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
             <div class="check-desc">Control 9.1 · Current: Disabled · Expected: Enabled</div>
           </div>
-          <div class="check-card">
+          <div class="check-card" data-sev="medium">
             <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Screen lock timeout exceeds 15 minutes</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
             <div class="check-desc">Control 1.2 · Current: 30 min · Expected: ≤15 min</div>
           </div>
@@ -4069,6 +4075,32 @@ body.dark .theme-toggle .icon-moon { display: none; }
       pdFilter('all');
       document.querySelectorAll('#nd-attrs-pop,#nd-policies-pop').forEach(function(el){ el.style.display='none'; });
       showView('policy-detail');
+    }
+
+    function setSevFilter(sev, pillEl) {
+      var pills = document.querySelectorAll('#results-pills .pill');
+      var classMap = { critical:'active-crit', medium:'active-med', low:'active-low', passed:'active-pass' };
+      pills.forEach(function(p) {
+        Object.values(classMap).forEach(function(c){ p.classList.remove(c); });
+      });
+      pillEl.classList.add(classMap[sev]);
+      var cards = document.querySelectorAll('#v-results .check-card');
+      var anyVisible = false;
+      cards.forEach(function(c) {
+        var match = c.getAttribute('data-sev') === sev;
+        c.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      });
+      var empty = document.getElementById('results-empty');
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'results-empty';
+        empty.style.cssText = 'padding:32px;text-align:center;color:var(--text-sec);font-size:13px;';
+        var firstCard = document.querySelector('#v-results .check-card');
+        if (firstCard) firstCard.parentElement.insertBefore(empty, firstCard);
+      }
+      empty.textContent = anyVisible ? '' : 'No ' + sev + ' issues to display in this preview.';
+      empty.style.display = anyVisible ? 'none' : 'block';
     }
 
     function polSetTab(key, btn) {
