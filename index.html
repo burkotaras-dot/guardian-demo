@@ -1682,10 +1682,15 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="panel-title">Install Guardian Agent</div>
               <div class="panel-sub" style="margin-bottom:0;">Windows 11 · Version 3.2.1 · 8.4 MB</div>
             </div>
-            <button class="btn-primary" id="dl-installer-btn" style="margin-bottom:18px;" onclick="markDownloaded(this)">
+            <button class="btn-primary" id="dl-installer-btn" style="margin-bottom:10px;" onclick="markDownloaded(this)">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
               Download Installer
             </button>
+            <div id="dl-feedback" style="display:none;font-size:11px;color:var(--green1);font-weight:600;margin-bottom:18px;align-items:center;gap:6px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Installer downloaded — run it on the target device to begin</span>
+            </div>
+            <div id="dl-spacer" style="height:8px;"></div>
             <div style="height:1px;background:var(--border);margin-bottom:18px;"></div>
             <div style="font-size:10px;color:var(--text-sec);margin-bottom:8px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;">Your credentials — copy into the installer</div>
             <div class="code-row">
@@ -4324,6 +4329,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
       btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Installer downloaded';
       btn.style.background = 'rgba(37,167,96,0.85)';
       btn.disabled = true;
+      var fb = document.getElementById('dl-feedback');
+      var sp = document.getElementById('dl-spacer');
+      if (fb) fb.style.display = 'flex';
+      if (sp) sp.style.display = 'none';
     }
 
     var _polActiveTag = '';
