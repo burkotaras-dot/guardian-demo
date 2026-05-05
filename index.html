@@ -664,10 +664,20 @@ body.dark .diff-sub   { color:#94A3B8; }
   background:#0f1e2d; color:var(--green1);
   font-family:'DM Mono',monospace; font-size:11.5px;
   padding:10px 14px; border-radius:var(--radius-sm);
-  margin-top:8px; display:flex; align-items:center; justify-content:space-between;
+  margin-top:8px; display:flex; align-items:center; gap:10px;
   border:1px solid rgba(63,200,120,0.12);
+  min-width:0;
 }
-.code-copy { color:var(--muted); font-size:10px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+.code-row > .code-label { flex-shrink:0; }
+.code-row > .code-value {
+  flex:1; min-width:0; color:white;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.code-copy {
+  flex-shrink:0; color:var(--muted); font-size:10px;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  letter-spacing:0.4px; padding:2px 4px;
+}
 .code-copy:hover { color:var(--green1); }
 
 .conn-status {
@@ -1663,8 +1673,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </button>
             <div style="height:1px;background:var(--border);margin-bottom:18px;"></div>
             <div style="font-size:10px;color:var(--text-sec);margin-bottom:8px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;">Your credentials — copy into the installer</div>
-            <div class="code-row"><span>Target URL: <span style="color:white">app.getguardian.io</span></span><span class="code-copy">COPY</span></div>
-            <div class="code-row" style="margin-top:6px;"><span>API Key: <span style="color:white">grd_••••••••••••</span></span><span class="code-copy">REVEAL</span></div>
+            <div class="code-row"><span class="code-label">Target URL:</span><span class="code-value" title="https://accelerator.cloudhouse.com">https://accelerator.cloudhouse.com</span><span class="code-copy">COPY</span></div>
+            <div class="code-row" style="margin-top:6px;"><span class="code-label">API Key:</span><span class="code-value" id="api-key-value" data-revealed="0" data-full="13952987477ec9d5e8101b7e6fbfd59a5ad45692d608f8b78a33e469193b8c2a4f17e3d091bb56cc77" title="Hidden — click REVEAL">grd_••••••••••••••••••••••••</span><span class="code-copy" onclick="(function(b){var v=document.getElementById('api-key-value');var on=v.getAttribute('data-revealed')==='1';v.setAttribute('data-revealed', on?'0':'1');v.textContent = on ? 'grd_••••••••••••••••••••••••' : v.getAttribute('data-full');v.title = on ? 'Hidden — click REVEAL' : v.getAttribute('data-full');b.textContent = on ? 'REVEAL' : 'HIDE';})(this)">REVEAL</span></div>
             <div class="helper-text" style="margin-top:10px;">You'll need to paste these into the installer when prompted</div>
           </div>
         </div>
