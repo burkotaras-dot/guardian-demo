@@ -680,6 +680,22 @@ body.dark .diff-sub   { color:#94A3B8; }
 }
 .code-copy:hover { color:var(--green1); }
 
+/* Icon pill buttons inside .code-row */
+.code-btn {
+  flex-shrink:0; display:inline-flex; align-items:center; gap:5px;
+  padding:5px 11px; border-radius:999px;
+  background:rgba(63,200,120,0.18);
+  color:var(--green1);
+  font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600;
+  border:none; cursor:pointer; transition:background 0.12s;
+}
+.code-btn:hover { background:rgba(63,200,120,0.30); }
+.code-btn svg { width:13px; height:13px; flex-shrink:0; }
+.code-btn.is-icon-only { padding:6px; }
+.code-btn.is-icon-only svg { width:14px; height:14px; }
+body.dark .code-btn { background:rgba(16,185,129,0.20); color:#6EE7B7; }
+body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
+
 .conn-status {
   display:flex; align-items:center; gap:10px;
   background:rgba(37,167,96,0.06);
@@ -1673,8 +1689,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </button>
             <div style="height:1px;background:var(--border);margin-bottom:18px;"></div>
             <div style="font-size:10px;color:var(--text-sec);margin-bottom:8px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;">Your credentials — copy into the installer</div>
-            <div class="code-row"><span class="code-label">Target URL:</span><span class="code-value" title="https://accelerator.cloudhouse.com">https://accelerator.cloudhouse.com</span><span class="code-copy">COPY</span></div>
-            <div class="code-row" style="margin-top:6px;"><span class="code-label">API Key:</span><span class="code-value" id="api-key-value" data-revealed="0" data-full="13952987477ec9d5e8101b7e6fbfd59a5ad45692d608f8b78a33e469193b8c2a4f17e3d091bb56cc77" title="Hidden — click REVEAL">grd_••••••••••••••••••••••••</span><span class="code-copy" onclick="(function(b){var v=document.getElementById('api-key-value');var on=v.getAttribute('data-revealed')==='1';v.setAttribute('data-revealed', on?'0':'1');v.textContent = on ? 'grd_••••••••••••••••••••••••' : v.getAttribute('data-full');v.title = on ? 'Hidden — click REVEAL' : v.getAttribute('data-full');b.textContent = on ? 'REVEAL' : 'HIDE';})(this)">REVEAL</span></div>
+            <div class="code-row">
+              <span class="code-label">Target URL:</span>
+              <span class="code-value" title="https://accelerator.cloudhouse.com">https://accelerator.cloudhouse.com</span>
+              <button type="button" class="code-btn" onclick="copyCred(this,'https://accelerator.cloudhouse.com')" aria-label="Copy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy
+              </button>
+            </div>
+            <div class="code-row" style="margin-top:6px;">
+              <span class="code-label">API Key:</span>
+              <span class="code-value" id="api-key-value" data-revealed="0" data-full="13952987477ec9d5e8101b7e6fbfd59a5ad45692d608f8b78a33e469193b8c2a4f17e3d091bb56cc77" title="Hidden — click eye to reveal">grd_••••••••••••••••••••••••</span>
+              <button type="button" class="code-btn is-icon-only" id="api-key-toggle" onclick="toggleApiKey(this)" aria-label="Reveal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button type="button" class="code-btn" onclick="copyCred(this, document.getElementById('api-key-value').getAttribute('data-full'))" aria-label="Copy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy
+              </button>
+            </div>
             <div class="helper-text" style="margin-top:10px;">You'll need to paste these into the installer when prompted</div>
           </div>
         </div>
@@ -4299,6 +4332,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
         var t = card.getAttribute('data-pol-type');
         card.style.display = (key === 'all' || t === key) ? 'flex' : 'none';
       });
+    }
+
+    function toggleApiKey(btn) {
+      var v = document.getElementById('api-key-value');
+      var on = v.getAttribute('data-revealed') === '1';
+      v.setAttribute('data-revealed', on ? '0' : '1');
+      v.textContent = on ? 'grd_••••••••••••••••••••••••' : v.getAttribute('data-full');
+      v.title = on ? 'Hidden — click eye to reveal' : v.getAttribute('data-full');
+      // swap eye / eye-off icon
+      btn.innerHTML = on
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+      btn.setAttribute('aria-label', on ? 'Reveal' : 'Hide');
+    }
+    function copyCred(btn, text) {
+      try { navigator.clipboard.writeText(text); } catch(e) {}
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied';
+      setTimeout(function(){ btn.innerHTML = orig; }, 1400);
     }
 
     var _polActiveTag = '';
