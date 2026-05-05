@@ -84,6 +84,52 @@ body {
 .spin-icon { border-style:solid; border-radius:50%; animation:spin 0.9s linear infinite; box-sizing:border-box; }
 .pol-tab:hover:not(.pol-tab-active) { color:#0F172A !important; }
 body.dark .pol-tab:hover:not(.pol-tab-active) { color:#F8FAFC !important; }
+
+/* Filter by tag — custom dropdown */
+.tag-filter { position:relative; }
+.tag-filter-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 12px; font-size:13px; font-family:inherit;
+  background:white; color:#0F172A;
+  border:1px solid var(--border); border-radius:var(--radius-md);
+  cursor:pointer; transition:border-color 0.15s, background 0.15s;
+}
+.tag-filter-btn:hover { border-color:#94a3b8; }
+.tag-filter.is-open .tag-filter-btn {
+  border-color:var(--green2);
+  box-shadow:0 0 0 3px var(--green-dim);
+}
+.tag-filter-btn svg { transition:transform 0.18s; opacity:0.65; }
+.tag-filter.is-open .tag-filter-btn svg { transform:rotate(180deg); }
+.tag-filter-menu {
+  position:absolute; top:calc(100% + 6px); left:0; min-width:200px;
+  background:white; border:1px solid var(--border);
+  border-radius:var(--radius-md); box-shadow:var(--shadow-md);
+  padding:6px; z-index:50;
+  display:none; flex-direction:column; gap:1px;
+}
+.tag-filter.is-open .tag-filter-menu { display:flex; }
+.tag-filter-item {
+  display:flex; align-items:center; gap:9px;
+  padding:7px 10px; font-size:13px; font-family:inherit; text-align:left;
+  background:none; border:none; border-radius:6px;
+  color:#0F172A; cursor:pointer; transition:background 0.1s;
+}
+.tag-filter-item:hover { background:#F1F5F9; }
+.tag-filter-item.is-active { background:rgba(16,185,129,0.10); color:#0F172A; font-weight:600; }
+.tag-filter-item.is-default { color:var(--text-sec); font-weight:500; }
+.tag-filter-sep { height:1px; background:var(--border); margin:4px 2px; }
+.tag-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+body.dark .tag-filter-btn { background:#062528; color:#E2E8F0; border-color:rgba(255,255,255,0.12); }
+body.dark .tag-filter-btn:hover { border-color:rgba(255,255,255,0.28); }
+body.dark .tag-filter.is-open .tag-filter-btn { border-color:#34D399; box-shadow:0 0 0 3px rgba(16,185,129,0.18); }
+body.dark .tag-filter-menu { background:#062528; border-color:rgba(255,255,255,0.12); box-shadow:0 8px 24px rgba(0,0,0,0.5); }
+body.dark .tag-filter-item { color:#E2E8F0; }
+body.dark .tag-filter-item:hover { background:#012F32; }
+body.dark .tag-filter-item.is-active { background:rgba(16,185,129,0.18); color:#34D399; }
+body.dark .tag-filter-item.is-default { color:#94A3B8; }
+body.dark .tag-filter-sep { background:rgba(255,255,255,0.08); }
 @keyframes scanBar  { from{width:4%} to{width:88%} }
 @keyframes shimmer  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 @keyframes dotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)} 50%{box-shadow:0 0 0 5px rgba(16,185,129,0)} }
@@ -430,15 +476,31 @@ body.dark .pol-tab:hover:not(.pol-tab-active) { color:#F8FAFC !important; }
 .progress-fill  { height:100%; border-radius:2px; background:var(--btn-grad); transition:width 0.4s ease; }
 
 .badge {
-  display:inline-flex; align-items:center; padding:3px 9px;
+  display:inline-flex; align-items:center; gap:5px; padding:3px 9px 3px 7px;
   border-radius:20px; font-size:10px; font-weight:700;
   letter-spacing:0.2px;
 }
-.badge-critical { background:#DC2626; color:#FFFFFF; border:1px solid #DC2626; }
-.badge-medium   { background:#D97706; color:#FFFFFF; border:1px solid #D97706; }
-.badge-high     { background:#EA580C; color:#FFFFFF; border:1px solid #EA580C; }
-.badge-low      { background:#2563EB; color:#FFFFFF; border:1px solid #2563EB; }
-.badge-pass     { background:#059669; color:#FFFFFF; border:1px solid #059669; }
+.badge::before {
+  content:''; width:11px; height:11px; flex-shrink:0;
+  background: currentColor;
+  -webkit-mask-position:center; mask-position:center;
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-size:contain; mask-size:contain;
+}
+/* alert-triangle for critical */
+.badge-critical::before { -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); }
+/* alert-circle for medium / high */
+.badge-medium::before, .badge-high::before { -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E"); }
+/* info for low */
+.badge-low::before { -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E"); }
+/* check for pass */
+.badge-pass::before { -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E"); }
+
+.badge-critical { background:rgba(220,38,38,0.08); color:#DC2626; border:1px solid rgba(220,38,38,0.45); }
+.badge-medium   { background:rgba(217,119,6,0.08); color:#B45309; border:1px solid rgba(217,119,6,0.45); }
+.badge-high     { background:rgba(234,88,12,0.08); color:#C2410C; border:1px solid rgba(234,88,12,0.45); }
+.badge-low      { background:rgba(37,99,235,0.08); color:#1D4ED8; border:1px solid rgba(37,99,235,0.45); }
+.badge-pass     { background:rgba(5,150,105,0.08); color:#047857; border:1px solid rgba(5,150,105,0.45); }
 
 /* ── SCAN ── */
 .scan-wrap { flex:1; display:flex; align-items:center; justify-content:center; background:var(--bg-page); padding:32px; }
@@ -879,11 +941,11 @@ body.dark .stat-card          { background: #062528; border-color: #143538; }
 body.dark .stat-value         { color: #F8FAFC; }
 body.dark .issues-card        { background: var(--bg-card); border-color: var(--border); }
 body.dark .issues-card-title  { color: #F8FAFC; }
-body.dark .badge-critical { background:#B91C1C; color:#FFFFFF; border-color:#B91C1C; }
-body.dark .badge-medium   { background:#B45309; color:#FFFFFF; border-color:#B45309; }
-body.dark .badge-high     { background:#C2410C; color:#FFFFFF; border-color:#C2410C; }
-body.dark .badge-low      { background:#1D4ED8; color:#FFFFFF; border-color:#1D4ED8; }
-body.dark .badge-pass     { background:#047857; color:#FFFFFF; border-color:#047857; }
+body.dark .badge-critical { background:rgba(220,38,38,0.14); color:#FCA5A5; border-color:rgba(220,38,38,0.55); }
+body.dark .badge-medium   { background:rgba(217,119,6,0.14); color:#FCD34D; border-color:rgba(217,119,6,0.55); }
+body.dark .badge-high     { background:rgba(234,88,12,0.14); color:#FDBA74; border-color:rgba(234,88,12,0.55); }
+body.dark .badge-low      { background:rgba(37,99,235,0.16); color:#93C5FD; border-color:rgba(37,99,235,0.55); }
+body.dark .badge-pass     { background:rgba(16,185,129,0.16); color:#6EE7B7; border-color:rgba(16,185,129,0.55); }
 body.dark .issue-row          { background: #2D2528; border-color: transparent; border-left-color: #EF4444; }
 body.dark .issue-row:hover    { background: #352B30; }
 body.dark .issue-name         { color: #FFFFFF; }
@@ -2367,7 +2429,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:11px;background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;border-radius:4px;padding:2px 8px;font-weight:500;">Enabled</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                   <span style="font-size:11px;background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:4px;padding:2px 8px;font-weight:500;">Disabled</span>
-                  <span style="font-size:10px;font-weight:700;color:white;background:#dc2626;border-radius:4px;padding:2px 7px;margin-left:4px;">Critical</span>
+                  <span class="badge badge-critical" style="margin-left:4px;">Critical</span>
                 </div>
               </div>
               <div class="nd-tooltip" style="display:none;position:absolute;right:16px;top:-38px;background:#0F172A;color:white;font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:10;">Real-time protection was disabled<div style="position:absolute;bottom:-4px;right:14px;width:8px;height:8px;background:#0F172A;transform:rotate(45deg);"></div></div>
@@ -2444,22 +2506,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="padding:14px 18px;border-bottom:1px solid var(--border);border-left:3px solid #dc2626;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                 <div style="font-size:12px;font-weight:600;color:#0F172A;">Compliance Policy · Windows 11 v1.0.0</div>
-                <span style="font-size:10px;font-weight:700;color:white;background:#dc2626;border-radius:4px;padding:2px 7px;">3 failing</span>
+                <span class="badge badge-critical">3 failing</span>
               </div>
               <div style="display:flex;flex-direction:column;gap:6px;">
                 <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#374151;">
-                  <span style="width:6px;height:6px;border-radius:50%;background:#dc2626;flex-shrink:0;"></span>
-                  <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;">Critical</span>
+                  <span class="badge badge-critical">Critical</span>
                   1.2.3 — Ensure antivirus is enabled
                 </div>
                 <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#374151;">
-                  <span style="width:6px;height:6px;border-radius:50%;background:#F97316;flex-shrink:0;"></span>
-                  <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#fffbeb;color:#92400e;border:1px solid #fcd34d;">High</span>
+                  <span class="badge badge-high">High</span>
                   2.1.1 — Screen lock timeout ≤ 15 min
                 </div>
                 <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#374151;">
-                  <span style="width:6px;height:6px;border-radius:50%;background:#F97316;flex-shrink:0;"></span>
-                  <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#fffbeb;color:#92400e;border:1px solid #fcd34d;">High</span>
+                  <span class="badge badge-high">High</span>
                   5.3.2 — Limit local admin accounts
                 </div>
               </div>
@@ -2468,12 +2527,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="padding:14px 18px;border-left:3px solid #F97316;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                 <div style="font-size:12px;font-weight:600;color:#0F172A;">Endpoint Protection Policy</div>
-                <span style="font-size:10px;font-weight:700;color:#92400e;background:rgba(245,158,11,0.15);border-radius:4px;padding:2px 7px;">1 failing</span>
+                <span class="badge badge-medium">1 failing</span>
               </div>
               <div style="display:flex;flex-direction:column;gap:6px;">
                 <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#374151;">
-                  <span style="width:6px;height:6px;border-radius:50%;background:#dc2626;flex-shrink:0;"></span>
-                  <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;">Critical</span>
+                  <span class="badge badge-critical">Critical</span>
                   EP-01 — Real-time protection must be active
                 </div>
               </div>
@@ -2819,17 +2877,33 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <svg style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input type="text" placeholder="Search policies..." style="width:100%;padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;font-family:inherit;color:#0F172A;background:white;outline:none;transition:border 0.15s;" onfocus="this.style.borderColor='var(--green1)';this.style.boxShadow='0 0 0 3px var(--green-dim)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"/>
           </div>
-          <div style="position:relative;">
-            <select style="padding:8px 32px 8px 12px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;font-family:inherit;color:var(--text-sec);background:white;cursor:pointer;outline:none;-webkit-appearance:none;appearance:none;">
-              <option>Filter by tag</option>
-              <option>Security</option>
-              <option>Compliance</option>
-              <option>Network</option>
-              <option>Data</option>
-              <option>Monitoring</option>
-              <option>Config</option>
-            </select>
-            <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          <div class="tag-filter" id="tag-filter-wrap">
+            <button type="button" class="tag-filter-btn" id="tag-filter-btn" onclick="toggleTagFilter(event)">
+              <span id="tag-filter-label">Filter by tag</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="tag-filter-menu" id="tag-filter-menu" role="menu">
+              <button type="button" class="tag-filter-item is-default" data-tag="" onclick="polFilterByTag('')">All tags</button>
+              <div class="tag-filter-sep"></div>
+              <button type="button" class="tag-filter-item" data-tag="Security" onclick="polFilterByTag('Security')">
+                <span class="tag-dot" style="background:#3B82F6"></span>Security
+              </button>
+              <button type="button" class="tag-filter-item" data-tag="Compliance" onclick="polFilterByTag('Compliance')">
+                <span class="tag-dot" style="background:#10B981"></span>Compliance
+              </button>
+              <button type="button" class="tag-filter-item" data-tag="Network" onclick="polFilterByTag('Network')">
+                <span class="tag-dot" style="background:#06B6D4"></span>Network
+              </button>
+              <button type="button" class="tag-filter-item" data-tag="Data" onclick="polFilterByTag('Data')">
+                <span class="tag-dot" style="background:#6366F1"></span>Data
+              </button>
+              <button type="button" class="tag-filter-item" data-tag="Monitoring" onclick="polFilterByTag('Monitoring')">
+                <span class="tag-dot" style="background:#14B8A6"></span>Monitoring
+              </button>
+              <button type="button" class="tag-filter-item" data-tag="Config" onclick="polFilterByTag('Config')">
+                <span class="tag-dot" style="background:#64748B"></span>Config
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2837,7 +2911,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="flex:1;overflow-y:auto;padding:0 24px 24px;">
 
           <!-- Policy card 1: CIS Windows 11 -->
-          <div data-pol-type="cis" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
+          <div data-pol-type="cis" data-tags="Security Compliance" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
             <div style="width:4px;background:#16a34a;flex-shrink:0;"></div>
             <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:0;">
               <div style="flex:1;min-width:0;">
@@ -2866,7 +2940,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Policy card 2: Endpoint Protection -->
-          <div data-pol-type="custom" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
+          <div data-pol-type="custom" data-tags="Security Monitoring" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
             <div style="width:4px;background:#16a34a;flex-shrink:0;"></div>
             <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:0;">
               <div style="flex:1;min-width:0;">
@@ -2895,7 +2969,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Policy card 3: CIS macOS Ventura -->
-          <div data-pol-type="cis" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
+          <div data-pol-type="cis" data-tags="Security Config" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
             <div style="width:4px;background:#16a34a;flex-shrink:0;"></div>
             <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:0;">
               <div style="flex:1;min-width:0;">
@@ -2924,7 +2998,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Policy card 4: Network Segmentation -->
-          <div data-pol-type="custom" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
+          <div data-pol-type="custom" data-tags="Network Compliance" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
             <div style="width:4px;background:#16a34a;flex-shrink:0;"></div>
             <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:0;">
               <div style="flex:1;min-width:0;">
@@ -2953,7 +3027,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Policy card 5: Data Retention -->
-          <div data-pol-type="custom" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
+          <div data-pol-type="custom" data-tags="Data Compliance" style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
             <div style="width:4px;background:#d97706;flex-shrink:0;"></div>
             <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:0;">
               <div style="flex:1;min-width:0;">
@@ -2982,7 +3056,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Policy card 6: CIS Ubuntu 22.04 (not assigned / archived look) -->
-          <div data-pol-type="archived" style="background:#fafafa;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);opacity:0.75;transition:box-shadow 0.15s,opacity 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)';this.style.opacity='1'" onmouseout="this.style.boxShadow='var(--shadow-sm)';this.style.opacity='0.75'">
+          <div data-pol-type="archived" data-tags="Security Config Monitoring" style="background:#fafafa;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);opacity:0.75;transition:box-shadow 0.15s,opacity 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)';this.style.opacity='1'" onmouseout="this.style.boxShadow='var(--shadow-sm)';this.style.opacity='0.75'">
             <div style="width:4px;background:#94a3b8;flex-shrink:0;"></div>
             <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:0;">
               <div style="flex:1;min-width:0;">
@@ -4161,6 +4235,50 @@ body.dark .theme-toggle .icon-moon { display: none; }
         card.style.display = (key === 'all' || t === key) ? 'flex' : 'none';
       });
     }
+
+    var _polActiveTag = '';
+    function toggleTagFilter(e) {
+      e.stopPropagation();
+      var wrap = document.getElementById('tag-filter-wrap');
+      if (!wrap) return;
+      wrap.classList.toggle('is-open');
+    }
+    function polFilterByTag(tag) {
+      _polActiveTag = tag;
+      var label = document.getElementById('tag-filter-label');
+      if (label) label.textContent = tag ? tag : 'Filter by tag';
+      document.querySelectorAll('#tag-filter-menu .tag-filter-item').forEach(function(item){
+        var t = item.getAttribute('data-tag') || '';
+        item.classList.toggle('is-active', t === tag);
+      });
+      document.querySelectorAll('#v-policies [data-pol-type]').forEach(function(card){
+        if (!tag) { card.removeAttribute('data-tag-hidden'); }
+        else {
+          var tags = (card.getAttribute('data-tags') || '').split(/\s+/);
+          var match = tags.indexOf(tag) !== -1;
+          if (match) card.removeAttribute('data-tag-hidden');
+          else card.setAttribute('data-tag-hidden','1');
+        }
+        // re-apply tab filter
+        var typeKey = (function(){
+          var activeTab = document.querySelector('#v-policies .pol-tab-active');
+          if (!activeTab) return 'all';
+          var m = (activeTab.getAttribute('onclick')||'').match(/polSetTab\('([^']+)'/);
+          return m ? m[1] : 'all';
+        })();
+        var t = card.getAttribute('data-pol-type');
+        var tabOk = (typeKey === 'all' || t === typeKey);
+        var tagOk = !card.hasAttribute('data-tag-hidden');
+        card.style.display = (tabOk && tagOk) ? 'flex' : 'none';
+      });
+      var wrap = document.getElementById('tag-filter-wrap');
+      if (wrap) wrap.classList.remove('is-open');
+    }
+    document.addEventListener('click', function(e){
+      var wrap = document.getElementById('tag-filter-wrap');
+      if (!wrap || !wrap.classList.contains('is-open')) return;
+      if (!wrap.contains(e.target)) wrap.classList.remove('is-open');
+    });
 
     function pdRunSimulation() {
       var btn = event.target;
