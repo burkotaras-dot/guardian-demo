@@ -7627,12 +7627,19 @@ function showOnly(id) {
 let _nodeFilter = 'all';
 function setNodeFilter(f) {
   _nodeFilter = f;
+  const isDark = document.body.classList.contains('dark');
+  const inactiveBg     = isDark ? '#062528' : 'white';
+  const inactiveColor  = isDark ? '#CBD5E1' : 'var(--text-sec)';
+  const inactiveBorder = isDark ? 'rgba(255,255,255,0.12)' : 'var(--border)';
+  const activeBg       = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
+  const activeColor    = isDark ? '#34D399' : '#15803d';
+  const activeBorder   = isDark ? '#34D399' : '#3FC878';
   ['all','local','aws'].forEach(id => {
     const btn = document.getElementById('nf-' + id);
     if (!btn) return;
-    btn.style.background  = id === f ? 'rgba(63,200,120,0.1)' : 'white';
-    btn.style.color       = id === f ? '#15803d' : 'var(--text-sec)';
-    btn.style.borderColor = id === f ? '#3FC878' : 'var(--border)';
+    btn.style.background  = id === f ? activeBg : inactiveBg;
+    btn.style.color       = id === f ? activeColor : inactiveColor;
+    btn.style.borderColor = id === f ? activeBorder : inactiveBorder;
   });
   filterNodes();
 }
