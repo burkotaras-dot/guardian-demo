@@ -683,6 +683,66 @@ body.dark .demo-control-btn:hover { background:rgba(16,185,129,0.18); color:#A7F
 }
 .install-step { display:flex; gap:16px; margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--border); }
 .install-step:last-of-type { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+
+/* Method tabs (Installer / One-liner) */
+.method-tabs {
+  display:flex; gap:4px; padding:4px;
+  background:#F1F5F9; border:1px solid #E2E8F0;
+  border-radius:10px; margin-bottom:18px;
+}
+.method-tab {
+  flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:8px 10px; border-radius:7px;
+  font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
+  color:var(--text-sec); background:transparent; border:none; cursor:pointer;
+  transition:background 0.12s, color 0.12s, box-shadow 0.12s;
+}
+.method-tab:hover { color:#0F172A; }
+.method-tab.is-active {
+  background:white; color:#0F172A;
+  box-shadow:0 1px 2px rgba(15,23,42,0.06), 0 0 0 1px rgba(15,23,42,0.04);
+}
+.method-tab .rec-badge {
+  font-size:9px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;
+  color:var(--green1); background:rgba(63,200,120,0.14);
+  padding:2px 6px; border-radius:999px;
+}
+body.dark .method-tabs { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.08); }
+body.dark .method-tab { color:rgba(255,255,255,0.55); }
+body.dark .method-tab:hover { color:#F8FAFC; }
+body.dark .method-tab.is-active { background:rgba(255,255,255,0.08); color:#F8FAFC; box-shadow:none; }
+body.dark .method-tab .rec-badge { color:#6EE7B7; background:rgba(16,185,129,0.20); }
+
+.method-pane { display:none; }
+.method-pane.is-active { display:block; animation:fadeUp 0.18s ease; }
+
+/* One-liner code block */
+.oneliner-box {
+  position:relative;
+  background:#0F172A; color:#E2E8F0;
+  border-radius:var(--radius-sm);
+  padding:14px 56px 14px 16px;
+  font-family:'DM Mono',monospace; font-size:11.5px; line-height:1.55;
+  word-break:break-all; white-space:pre-wrap;
+  border:1px solid #1E293B;
+}
+.oneliner-box .oneliner-prompt { color:#64748B; user-select:none; margin-right:6px; }
+.oneliner-copy {
+  position:absolute; top:8px; right:8px;
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 10px; border-radius:999px;
+  background:rgba(63,200,120,0.22); color:#A7F3D0;
+  font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600;
+  border:none; cursor:pointer; transition:background 0.12s;
+}
+.oneliner-copy:hover { background:rgba(63,200,120,0.34); }
+.oneliner-copy svg { width:12px; height:12px; }
+.oneliner-hint {
+  font-size:11px; color:var(--text-sec); margin-top:10px;
+  display:flex; align-items:center; gap:6px;
+}
+.oneliner-hint svg { flex-shrink:0; color:var(--text-sec); }
+body.dark .oneliner-box { background:#020617; border-color:rgba(255,255,255,0.08); }
 .step-circle {
   width:32px; height:32px; border-radius:50%;
   background:var(--btn-grad); color:white;
@@ -1717,36 +1777,66 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="panel-title">Install Guardian Agent</div>
               <div class="panel-sub" style="margin-bottom:0;">Windows 11 · Version 3.2.1 · 8.4 MB</div>
             </div>
-            <button class="btn-primary" id="dl-installer-btn" style="margin-bottom:10px;" onclick="markDownloaded(this)">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
-              Download Installer
-            </button>
-            <div id="dl-feedback" style="display:none;font-size:11px;color:var(--green1);font-weight:600;margin-bottom:18px;align-items:center;gap:6px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Installer downloaded — run it on the target device to begin</span>
-            </div>
-            <div id="dl-spacer" style="height:8px;"></div>
-            <div style="height:1px;background:var(--border);margin-bottom:18px;"></div>
-            <div style="font-size:10px;color:var(--text-sec);margin-bottom:8px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;">Your credentials — copy into the installer</div>
-            <div class="code-row">
-              <span class="code-label">Target URL:</span>
-              <span class="code-value" title="https://accelerator.cloudhouse.com">https://accelerator.cloudhouse.com</span>
-              <button type="button" class="code-btn" onclick="copyCred(this,'https://accelerator.cloudhouse.com')" aria-label="Copy">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copy
+            <div class="method-tabs" role="tablist">
+              <button type="button" class="method-tab is-active" id="method-tab-installer" role="tab" aria-selected="true" onclick="switchMethod('installer')">
+                Installer
+                <span class="rec-badge">Recommended</span>
+              </button>
+              <button type="button" class="method-tab" id="method-tab-oneliner" role="tab" aria-selected="false" onclick="switchMethod('oneliner')">
+                One-liner
               </button>
             </div>
-            <div class="code-row" style="margin-top:6px;">
-              <span class="code-label">API Key:</span>
-              <span class="code-value" id="api-key-value" data-revealed="0" data-full="13952987477ec9d5e8101b7e6fbfd59a5ad45692d608f8b78a33e469193b8c2a4f17e3d091bb56cc77" title="Hidden — click eye to reveal">grd_••••••••••••••••••••••••</span>
-              <button type="button" class="code-btn is-icon-only" id="api-key-toggle" onclick="toggleApiKey(this)" aria-label="Reveal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+
+            <!-- Installer pane -->
+            <div class="method-pane is-active" id="method-pane-installer" role="tabpanel">
+              <button class="btn-primary" id="dl-installer-btn" style="margin-bottom:10px;" onclick="markDownloaded(this)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
+                Download Installer
               </button>
-              <button type="button" class="code-btn" onclick="copyCred(this, document.getElementById('api-key-value').getAttribute('data-full'))" aria-label="Copy">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copy
-              </button>
+              <div id="dl-feedback" style="display:none;font-size:11px;color:var(--green1);font-weight:600;margin-bottom:18px;align-items:center;gap:6px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Installer downloaded — run it on the target device to begin</span>
+              </div>
+              <div id="dl-spacer" style="height:8px;"></div>
+              <div style="height:1px;background:var(--border);margin-bottom:18px;"></div>
+              <div style="font-size:10px;color:var(--text-sec);margin-bottom:8px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;">Your credentials — copy into the installer</div>
+              <div class="code-row">
+                <span class="code-label">Target URL:</span>
+                <span class="code-value" title="https://accelerator.cloudhouse.com">https://accelerator.cloudhouse.com</span>
+                <button type="button" class="code-btn" onclick="copyCred(this,'https://accelerator.cloudhouse.com')" aria-label="Copy">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="code-row" style="margin-top:6px;">
+                <span class="code-label">API Key:</span>
+                <span class="code-value" id="api-key-value" data-revealed="0" data-full="13952987477ec9d5e8101b7e6fbfd59a5ad45692d608f8b78a33e469193b8c2a4f17e3d091bb56cc77" title="Hidden — click eye to reveal">grd_••••••••••••••••••••••••</span>
+                <button type="button" class="code-btn is-icon-only" id="api-key-toggle" onclick="toggleApiKey(this)" aria-label="Reveal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button type="button" class="code-btn" onclick="copyCred(this, document.getElementById('api-key-value').getAttribute('data-full'))" aria-label="Copy">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
             </div>
+
+            <!-- One-liner pane -->
+            <div class="method-pane" id="method-pane-oneliner" role="tabpanel">
+              <div style="font-size:10px;color:var(--text-sec);margin-bottom:8px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;">Run in elevated PowerShell</div>
+              <div class="oneliner-box">
+                <button type="button" class="oneliner-copy" onclick="copyCred(this, document.getElementById('oneliner-cmd').innerText)" aria-label="Copy command">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy
+                </button>
+                <span id="oneliner-cmd"><span class="oneliner-prompt">PS&gt;</span>iwr -useb https://accelerator.cloudhouse.com/install.ps1 | iex; guardian-install -key grd_••••••••••••••••••••••••</span>
+              </div>
+              <div class="oneliner-hint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Credentials are pre-filled. Paste into PowerShell as Administrator.
+              </div>
+            </div>
+
             <div style="height:1px;background:var(--border);margin:18px 0;"></div>
             <div class="conn-status" style="margin-bottom:0;">
               <div class="conn-dot"></div>
@@ -4359,6 +4449,17 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var sp = document.getElementById('dl-spacer');
       if (fb) fb.style.display = 'flex';
       if (sp) sp.style.display = 'none';
+    }
+
+    function switchMethod(which) {
+      var tabs = ['installer','oneliner'];
+      tabs.forEach(function(t){
+        var tab = document.getElementById('method-tab-' + t);
+        var pane = document.getElementById('method-pane-' + t);
+        var on = (t === which);
+        if (tab)  { tab.classList.toggle('is-active', on); tab.setAttribute('aria-selected', on ? 'true' : 'false'); }
+        if (pane) { pane.classList.toggle('is-active', on); }
+      });
     }
 
     var _polActiveTag = '';
