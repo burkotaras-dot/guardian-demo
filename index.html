@@ -2008,9 +2008,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:17px;font-weight:700;color:#0F172A;letter-spacing:-0.3px;">Failed checks</div>
               <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score</div>
             </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn-outline">Filter</button>
-              <button class="btn-outline">Export</button>
+            <div style="display:flex;gap:8px;position:relative;">
+              <div style="position:relative;">
+                <button class="btn-secondary" onclick="toggleResultsFilter(this)">⊞ Filter</button>
+                <div id="results-filter-panel" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
+                  <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Sort by</div>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:8px;"><input type="radio" name="rf-sort" checked style="accent-color:var(--green1);"> Severity</label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:14px;"><input type="radio" name="rf-sort" style="accent-color:var(--green1);"> Control ID</label>
+                  <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Show</div>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:8px;"><input type="checkbox" checked style="accent-color:var(--green1);"> Failed checks</label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green1);"> Passed checks</label>
+                </div>
+              </div>
+              <button class="btn-secondary" onclick="exportResults()">↓ Export</button>
             </div>
           </div>
           <div class="filter-pills" id="results-pills">
@@ -4875,6 +4885,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
         lbl.style.borderColor = inp.checked ? 'var(--green2)' : '#e5e7eb';
         lbl.style.background = inp.checked ? '#f0fdf4' : 'white';
       });
+    }
+
+    function toggleResultsFilter(btn) {
+      var panel = document.getElementById('results-filter-panel');
+      if (!panel) return;
+      var open = panel.style.display !== 'none';
+      panel.style.display = open ? 'none' : 'block';
+      if (!open) {
+        setTimeout(function() {
+          document.addEventListener('click', function h(e) {
+            if (!panel.contains(e.target) && e.target !== btn) { panel.style.display = 'none'; }
+            document.removeEventListener('click', h);
+          });
+        }, 10);
+      }
+    }
+
+    function exportResults() {
+      showToast('issues_report.csv — download started');
     }
 
     function showToast(msg) {
