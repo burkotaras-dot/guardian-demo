@@ -4507,9 +4507,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
         hint: 'Credentials are pre-filled. Paste into PowerShell as Administrator.'
       },
       macos: {
-        sub: 'macOS 12+ · Version 3.2.1 · 9.1 MB',
-        filename: 'GuardianAgent-3.2.1.pkg',
-        feedback: 'Installer downloaded — open the .pkg to begin install',
+        sub: 'macOS 12+ · Version 3.2.1',
+        filename: '',
+        feedback: '',
         privacy: 'Requires admin password to install',
         sectionHeading: 'Run in Terminal',
         lang: 'Bash',
@@ -4528,6 +4528,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
       set('oneliner-lang', cfg.lang);
       set('oneliner-cmd', cfg.cmd);
       set('oneliner-hint-text', cfg.hint);
+      // macOS has only the one-liner method — hide the tabs strip; Windows shows both.
+      var tabs = document.querySelector('#v-s05 .method-tabs');
+      if (tabs) tabs.style.display = (os === 'macos') ? 'none' : '';
+      switchMethod(os === 'macos' ? 'oneliner' : 'installer');
       go('s05');
     }
 
