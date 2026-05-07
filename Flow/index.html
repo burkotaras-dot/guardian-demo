@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)file:///Users/macbook/Downloads/foundry-flow_13.html -->
+<html lang="en" data-mantine-color-scheme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Foundry Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./index_files/css2" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,system-ui,-apple-system,sans-serif;background:#0B151E;color:#fff;height:100vh;overflow:hidden;}
+
+/* ─── LAYOUT ─── */
+#app{display:flex;height:100vh;}
+#sidebar{width:240px;background:#0D1B2A;display:flex;flex-direction:column;flex-shrink:0;border-right:1px solid #0f1d29;}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#topbar{height:56px;background:#142738;border-bottom:1px solid #0f1d29;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;}
+#content{flex:1;overflow-y:auto;padding:32px 32px 100px;}
+
+/* ─── SIDEBAR ─── */
+.sb-logo{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid #0f1d29;}
+.sb-logo-sq{width:30px;height:30px;background:linear-gradient(135deg,#3BD481,#10A958);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;}
+.sb-logo-txt{font-size:15px;font-weight:700;color:#fff;}
+.sb-nav{flex:1;padding:12px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:8px;cursor:pointer;color:#8CA3B8;font-size:14px;margin-bottom:2px;transition:all .15s;user-select:none;}
+.sb-item:hover{background:rgba(255,255,255,0.05);color:#c5d5e4;}
+.sb-item.active{background:linear-gradient(135deg,#3BD481,#10A958);color:#fff;font-weight:500;}
+.sb-item svg{flex-shrink:0;opacity:.8;}
+.sb-item.active svg{opacity:1;}
+.sb-bottom{padding:12px;border-top:1px solid #0f1d29;}
+
+/* ─── TOPBAR ─── */
+.tb-right{display:flex;align-items:center;gap:12px;}
+.tb-bell{color:#8CA3B8;cursor:pointer;display:flex;}
+.tb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3BD481,#10A958);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;}
+.tb-name{font-size:14px;color:#fff;}
+
+/* ─── PAGE HEADER ─── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;}
+.ph-left h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
+.ph-left p{font-size:13px;color:#8CA3B8;}
+
+/* ─── STAT CARDS ─── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:#0D1B2A;border:1px solid #1A3247;border-radius:12px;padding:22px 24px;display:flex;align-items:center;gap:18px;cursor:pointer;transition:border-color .15s;}
+.stat-card:hover{border-color:#2a4a6b;}
+.stat-num{font-size:30px;font-weight:700;color:#fff;line-height:1;}
+.stat-lbl{font-size:12px;color:#8CA3B8;margin-top:4px;font-weight:400;}
+
+/* ─── DASHBOARD LAYOUT ─── */
+.dash-grid{display:grid;grid-template-columns:1fr 296px;gap:16px;align-items:start;}
+.dash-section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #1A3247;}
+.dash-section-title{font-size:14px;font-weight:600;color:#fff;}
+.dash-section-sub{font-size:12px;color:#8CA3B8;margin-top:2px;}
+.dash-activity-row{display:grid;grid-template-columns:1fr 120px 100px 72px;padding:12px 20px;border-bottom:1px solid #0f1d29;align-items:center;transition:background .1s;}
+.dash-activity-row:last-child{border-bottom:none;}
+.dash-activity-row:hover{background:rgba(255,255,255,.02);}
+.dash-col-head{display:grid;grid-template-columns:1fr 120px 100px 72px;padding:9px 20px;border-bottom:1px solid #1A3247;}
+.dash-col-head span{font-size:11px;font-weight:600;color:#4B5A70;text-transform:uppercase;letter-spacing:.07em;}
+.dash-fleet-card{border:1px solid #1A3247;border-radius:10px;padding:13px 16px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
+.dash-fleet-card:last-child{margin-bottom:0;}
+.dash-fleet-card:hover{border-color:#2a4a6b;background:rgba(255,255,255,.02);}
+.dash-status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.dash-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
+.dash-pill-green{background:rgba(16,169,88,.15);color:#4ad278;}
+.dash-pill-red{background:rgba(239,68,68,.12);color:#f87171;}
+.dash-pill-yellow{background:rgba(245,158,11,.12);color:#fbbf24;}
+.dash-qa-btn{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:400;cursor:pointer;border:1px solid #1A3247;background:transparent;color:#c5d5e4;font-family:inherit;width:100%;transition:all .15s;margin-bottom:6px;text-align:left;}
+.dash-qa-btn:last-child{margin-bottom:0;}
+.dash-qa-btn:hover{background:#142738;border-color:#2a4a6b;}
+.dash-qa-btn.green{background:linear-gradient(135deg,#3BD481,#10A958);color:#fff;border:none;font-weight:500;}
+.dash-qa-btn.green:hover{opacity:.88;}
+.dash-meta{display:flex;justify-content:space-between;font-size:12px;margin-top:6px;}
+.dash-meta-k{color:#8CA3B8;}
+.dash-meta-v{color:#fff;font-weight:500;}
+
+/* ─── DASHBOARD COMPONENTS ─── */
+.db-card{background:#0D1B2A;border:1px solid #1A3247;border-radius:12px;overflow:hidden;}
+.db-card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #1A3247;}
+.db-card-title{font-size:14px;font-weight:600;color:#fff;}
+.db-card-sub{font-size:12px;color:#8CA3B8;margin-top:2px;}
+.db-task-header{display:flex;align-items:center;padding:9px 20px;border-bottom:1px solid #1A3247;font-size:11px;font-weight:600;color:#4B5A70;text-transform:uppercase;letter-spacing:.07em;}
+.db-task-row{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid #0f1d29;cursor:pointer;transition:background .1s;}
+.db-task-row:last-child{border-bottom:none;}
+.db-task-row:hover{background:rgba(255,255,255,.02);}
+.db-progress-wrap{height:4px;background:#142738;border-radius:2px;overflow:hidden;}
+.db-progress-bar{height:100%;border-radius:2px;transition:width .3s;}
+.db-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;}
+.db-badge-green{background:rgba(16,169,88,.15);color:#4ad278;}
+.db-badge-red{background:rgba(239,68,68,.12);color:#f87171;}
+.db-badge-blue{background:rgba(96,165,250,.12);color:#60a5fa;}
+.db-badge-yellow{background:rgba(251,191,36,.1);color:#fbbf24;}
+.db-action-btn{width:26px;height:26px;border-radius:6px;border:1px solid #1A3247;background:transparent;color:#4B5A70;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.db-action-btn:hover{background:#142738;color:#8CA3B8;border-color:#2a4a6b;}
+.db-action-danger:hover{background:rgba(239,68,68,.1);color:#f87171;border-color:#f87171;}
+.db-action-green:hover{background:rgba(16,169,88,.1);color:#4ad278;border-color:#4ad278;}
+.db-fleet-item{padding:14px 20px;border-bottom:1px solid #0f1d29;cursor:pointer;transition:background .1s;}
+.db-fleet-item:hover{background:rgba(255,255,255,.02);}
+.db-fleet-item:last-of-type{border-bottom:none;}
+.db-fleet-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.db-fleet-warning{display:flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(251,191,36,.05);border-top:1px solid rgba(251,191,36,.15);}
+.db-activity-row{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid #0f1d29;transition:background .1s;}
+.db-activity-row:hover{background:rgba(255,255,255,.02);}
+.db-activity-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.db-qa-btn{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #1A3247;background:#142738;color:#c5d5e4;font-family:inherit;width:100%;transition:all .15s;text-align:left;}
+.db-qa-btn:hover{background:#1A3247;border-color:#2a4a6b;color:#fff;}
+
+/* ─── TASK DRAWER ─── */
+#task-drawer{position:fixed;top:0;right:-520px;width:500px;height:100vh;background:#0D1B2A;border-left:1px solid #1A3247;z-index:500;transition:right .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;}
+#task-drawer.open{right:0;}
+#drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:499;display:none;backdrop-filter:blur(2px);}
+#drawer-overlay.open{display:block;}
+.drawer-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid #1A3247;flex-shrink:0;}
+.drawer-title{font-size:16px;font-weight:600;color:#fff;}
+.drawer-close{background:transparent;border:none;color:#4B5A70;cursor:pointer;font-size:20px;display:flex;padding:4px;}
+.drawer-close:hover{color:#8CA3B8;}
+.drawer-body{flex:1;overflow-y:auto;padding:24px;}
+.drawer-section-title{font-size:11px;font-weight:600;color:#4B5A70;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.drawer-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+.drawer-meta-item{background:#142738;border:1px solid #1A3247;border-radius:8px;padding:12px 14px;}
+.drawer-meta-label{font-size:11px;color:#4B5A70;margin-bottom:4px;}
+.drawer-meta-value{font-size:13px;font-weight:500;color:#fff;}
+.drawer-log{background:#040E19;border:1px solid #1A3247;border-radius:8px;padding:14px;font-family:monospace;font-size:12px;line-height:1.8;color:#8CA3B8;margin-bottom:24px;max-height:180px;overflow-y:auto;}
+.drawer-log .log-time{color:#4B5A70;}
+.drawer-log .log-ok{color:#4ad278;}
+.drawer-log .log-err{color:#f87171;}
+.drawer-log .log-info{color:#60a5fa;}
+.drawer-timeline{display:flex;flex-direction:column;gap:0;}
+.drawer-tl-item{display:flex;gap:14px;padding-bottom:20px;position:relative;}
+.drawer-tl-item:last-child{padding-bottom:0;}
+.drawer-tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.drawer-tl-line{position:absolute;left:4px;top:14px;bottom:0;width:2px;background:#1A3247;}
+.drawer-tl-item:last-child .drawer-tl-line{display:none;}
+.drawer-tl-label{font-size:13px;color:#fff;margin-bottom:2px;}
+.drawer-tl-time{font-size:11px;color:#4B5A70;}
+
+.coming-soon{background:#0D1B2A;border:1px solid #1A3247;border-radius:12px;padding:60px 24px;text-align:center;}
+.coming-soon .cs-title{font-size:15px;color:#8CA3B8;margin-bottom:6px;}
+.coming-soon .cs-sub{font-size:13px;color:#4B5A70;}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:opacity .15s;white-space:nowrap;}
+.btn-green{background:linear-gradient(135deg,#3BD481,#10A958);color:#fff;}
+.btn-green:hover{opacity:.9;}
+.btn-outline{background:transparent;border:1px solid #1A3247;color:#8CA3B8;}
+.btn-outline:hover{background:#0D1B2A;color:#c5d5e4;}
+.btn-blue{background:#087a3d;color:#fff;}
+.btn-blue:hover{background:#0d8a48;}
+
+/* ─── SEARCH / INPUTS ─── */
+.search-wrap{position:relative;display:flex;align-items:center;}
+.search-wrap svg{position:absolute;left:12px;color:#4B5A70;}
+.search-input{background:#142738;border:1px solid #1A3247;border-radius:10px;padding:0 14px 0 38px;height:36px;color:#fff;font-size:14px;font-family:inherit;outline:none;width:100%;}
+.search-input::placeholder{color:#4B5A70;}
+.ff-select{background:#142738;border:1px solid #1A3247;border-radius:8px;padding:0 10px;height:36px;color:#8CA3B8;font-size:13px;font-family:inherit;outline:none;cursor:pointer;}
+
+/* ─── TABLE ─── */
+.tbl-wrap{background:#0D1B2A;border:1px solid #1A3247;border-radius:12px;overflow:hidden;}
+.tbl-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.tbl-title h3{font-size:16px;font-weight:600;color:#fff;}
+.tbl-title p{font-size:12px;color:#8CA3B8;margin-top:2px;}
+.tbl-actions{display:flex;gap:8px;align-items:center;}
+.tbl-head{display:grid;padding:12px 20px;border-bottom:1px solid #1A3247;}
+.tbl-head span{font-size:11px;font-weight:600;color:#4B5A70;text-transform:uppercase;letter-spacing:.08em;}
+.tbl-row{display:grid;padding:14px 20px;border-bottom:1px solid #0f1d29;cursor:pointer;transition:background .1s;align-items:center;}
+.tbl-row:last-child{border-bottom:none;}
+.tbl-row:hover{background:rgba(255,255,255,0.025);}
+.app-name{font-size:14px;font-weight:500;color:#fff;}
+.app-desc{font-size:12px;color:#4B5A70;margin-top:2px;}
+.text-dim{font-size:14px;color:#8CA3B8;}
+.ver-badge{display:inline-block;padding:3px 10px;border-radius:6px;background:rgba(16,169,88,.15);color:#72dc97;font-size:12px;font-weight:500;}
+.dots-btn{background:transparent;border:none;color:#4B5A70;cursor:pointer;font-size:18px;padding:3px 8px;border-radius:6px;font-family:inherit;}
+.dots-btn:hover{background:#142738;color:#8CA3B8;}
+.tbl-empty{text-align:center;padding:56px;color:#4B5A70;font-size:14px;}
+
+/* catalog cols */
+.cols-cat{grid-template-columns:2.5fr 1fr 1fr 110px 50px;}
+/* aw cols */
+.cols-aw{grid-template-columns:2fr 1fr 1.5fr 100px 120px 60px;}
+/* fleet cols */
+.cols-fl{grid-template-columns:1fr 130px 130px 80px;}
+
+/* ─── PKG ICON ─── */
+.pkg-icon{width:32px;height:32px;border-radius:8px;background:#142738;border:1px solid #1A3247;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ─── PAGINATION ─── */
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;padding:16px 0 4px;}
+.pg-btn{width:32px;height:32px;border-radius:8px;border:1px solid #1A3247;background:transparent;color:#8CA3B8;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all .15s;}
+.pg-btn.active{background:linear-gradient(135deg,#3BD481,#10A958);border-color:transparent;color:#fff;font-weight:600;}
+.pg-btn:hover:not(.active){background:#142738;}
+
+/* ─── TABS ─── */
+.tabs{display:flex;border-bottom:1px solid #1A3247;margin-bottom:24px;}
+.tab{padding:10px 16px;cursor:pointer;font-size:14px;color:#8CA3B8;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;}
+.tab.active{color:#fff;border-bottom-color:#10A958;}
+.tab:hover:not(.active){color:#c5d5e4;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* ─── AW STAT CARDS ─── */
+.aw-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
+.aw-card{background:#0D1B2A;border:1px solid #1A3247;border-radius:12px;padding:16px 20px;cursor:pointer;transition:border-color .15s;}
+.aw-card.sel{border-color:#10A958;background:rgba(16,169,88,.04);}
+.aw-card:hover:not(.sel){border-color:#1A3247;}
+.aw-label{font-size:10px;font-weight:700;color:#4B5A70;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.aw-num{font-size:26px;font-weight:700;color:#fff;}
+
+/* ─── SETTINGS KV ─── */
+.kv-card{background:#0D1B2A;border:1px solid #1A3247;border-radius:12px;padding:20px 24px;margin-bottom:14px;max-width:680px;}
+.kv-section-title{font-size:11px;font-weight:700;color:#4B5A70;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
+.kv-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #0f1d29;font-size:13px;}
+.kv-row:last-child{border-bottom:none;}
+.kv-key{color:#8CA3B8;width:140px;flex-shrink:0;}
+.kv-val{color:#fff;}
+.kv-val.green{color:#4ad278;}
+.kv-val.mono{font-family:monospace;font-size:12px;}
+
+/* ─── CODE BLOCK ─── */
+.code-block{background:#040E19;border:1px solid #1A3247;border-radius:10px;padding:16px 20px;font-family:'Courier New',monospace;font-size:12px;color:#7dc4e4;line-height:1.7;overflow-x:auto;white-space:pre;max-width:680px;}
+
+/* ─── OIDC SUBTABS ─── */
+.subtabs{display:flex;gap:4px;margin-bottom:14px;}
+.stab{padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;color:#8CA3B8;border:1px solid transparent;transition:all .15s;}
+.stab.active{background:linear-gradient(135deg,#3BD481,#10A958);color:#fff;font-weight:500;}
+.stab:hover:not(.active){background:#0D1B2A;color:#c5d5e4;}
+
+/* ─── PROFILE ─── */
+.profile-card{background:#0D1B2A;border:1px solid #1A3247;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:12px;max-width:440px;}
+.profile-av{width:54px;height:54px;border-radius:10px;background:linear-gradient(135deg,#3BD481,#10A958);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;flex-shrink:0;}
+.profile-name{font-size:16px;font-weight:600;color:#fff;}
+.profile-email{font-size:13px;color:#8CA3B8;margin:3px 0 8px;}
+.admin-badge{display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(16,169,88,.15);color:#72dc97;font-size:11px;font-weight:700;letter-spacing:.05em;}
+.active-pill{display:inline-block;padding:2px 10px;border-radius:4px;background:rgba(16,169,88,.15);color:#72dc97;font-size:12px;font-weight:700;}
+.btn-signout{width:100%;max-width:440px;background:#c0392b;border:none;border-radius:8px;padding:10px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;}
+.btn-signout:hover{background:#a93226;}
+
+/* ─── LOGS ─── */
+.log-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid;transition:opacity .15s;user-select:none;}
+.lc-info{border-color:#3B82F6;color:#60a5fa;background:rgba(59,130,246,.1);}
+.lc-success{border-color:#10A958;color:#4ad278;background:rgba(16,169,88,.1);}
+.lc-warning{border-color:#F59E0B;color:#fbbf24;background:rgba(245,158,11,.1);}
+.lc-error{border-color:#EF4444;color:#f87171;background:rgba(239,68,68,.1);}
+.log-chip.inactive{opacity:.4;}
+.ff-toggle{width:36px;height:20px;background:#10A958;border-radius:10px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.ff-toggle::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;right:2px;transition:right .2s;}
+.ff-toggle.off{background:#1A3247;}
+.ff-toggle.off::after{right:18px;}
+
+/* ─── GETTING STARTED BAR ─── */
+#gs-bar{background:#142738;border-top:1px solid #0f1d29;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.gs-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#3BD481,#10A958);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.gs-text{font-size:12px;color:#8CA3B8;margin-left:10px;}
+.gs-title{color:#10A958;font-weight:700;}
+.gs-right{display:flex;align-items:center;gap:8px;}
+.gs-close{background:transparent;border:none;color:#4B5A70;cursor:pointer;font-size:18px;line-height:1;display:flex;}
+
+/* ─── DROPDOWN ─── */
+#ff-dd{position:fixed;background:#0D1B2A;border:1px solid #1A3247;border-radius:10px;z-index:300;width:200px;overflow:hidden;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.dd-item{padding:8px 16px;cursor:pointer;font-size:14px;color:#BDBDBD;transition:background .1s;}
+.dd-item:hover{background:#142738;color:#fff;}
+.dd-item.danger{color:#fa5252;}
+.dd-item.danger:hover{background:rgba(250,82,82,.1);}
+.dd-sep{height:1px;background:#1A3247;}
+
+/* ─── OVERLAY / MODAL ─── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:200;}
+.overlay.open{display:flex;}
+.modal{background:#0D1B2A;border:1px solid #1A3247;border-radius:12px;width:640px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid #1A3247;}
+.modal-title{font-size:18px;font-weight:600;color:#fff;}
+.modal-x{background:transparent;border:none;color:#4B5A70;cursor:pointer;font-size:22px;line-height:1;display:flex;}
+.modal-x:hover{color:#8CA3B8;}
+.modal-body{padding:24px;}
+.modal-ft{padding:16px 24px;border-top:1px solid #1A3247;display:flex;justify-content:space-between;align-items:center;}
+
+/* ─── STEPPER ─── */
+.stepper{display:flex;align-items:center;gap:0;margin-bottom:28px;}
+.step{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;transition:all .2s;}
+.step-circle.done{background:linear-gradient(135deg,#3BD481,#10A958);color:#fff;}
+.step-circle.active{background:transparent;border:2px solid #10A958;color:#10A958;}
+.step-circle.inactive{background:#142738;border:2px solid #1A3247;color:#4B5A70;}
+.step-label{font-size:11px;text-align:center;}
+.step-label .sl-main{color:#fff;font-weight:500;}
+.step-label .sl-sub{color:#4B5A70;}
+.step-connector{flex:1;height:2px;background:#1A3247;margin:0 4px;margin-bottom:18px;}
+.step-connector.done{background:linear-gradient(90deg,#3BD481,#10A958);}
+
+/* ─── STEP CONTENT ─── */
+.step-title{font-size:18px;font-weight:600;color:#fff;margin-bottom:6px;}
+.step-sub{font-size:13px;color:#8CA3B8;margin-bottom:20px;}
+.info-banner{background:rgba(16,169,88,.1);border:1px solid rgba(16,169,88,.3);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px;font-size:14px;color:#72dc97;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:600;color:#8CA3B8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;background:#142738;border:1px solid #1A3247;border-radius:8px;padding:9px 12px;color:#fff;font-size:14px;font-family:inherit;outline:none;}
+.field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238CA3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:36px;}
+.field textarea{resize:vertical;min-height:80px;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#10A958;}
+.ff-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238CA3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.radio-card{border:1.5px solid #1A3247;border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.radio-card:hover{border-color:#1A3247;background:rgba(255,255,255,.02);}
+.radio-card.selected{border-color:#10A958;background:rgba(16,169,88,.06);}
+.radio-dot{width:18px;height:18px;border-radius:50%;border:2px solid #1A3247;flex-shrink:0;margin-top:2px;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.radio-card.selected .radio-dot{border-color:#10A958;background:#10A958;}
+.radio-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;display:none;}
+.radio-card.selected .radio-dot::after{display:block;}
+.radio-label{font-size:14px;font-weight:500;color:#fff;margin-bottom:3px;}
+.radio-desc{font-size:12px;color:#4B5A70;}
+.field-hint{font-size:12px;color:#4B5A70;margin-top:4px;}
+.auto-detect-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;background:rgba(16,169,88,.15);border:1px solid rgba(16,169,88,.3);color:#4ad278;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.auto-detect-btn:hover{background:rgba(16,169,88,.25);}
+.review-section{margin-bottom:16px;}
+.review-section h4{font-size:13px;font-weight:600;color:#8CA3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.review-kv{display:flex;font-size:13px;padding:5px 0;border-bottom:1px solid #0f1d29;}
+.review-kv:last-child{border-bottom:none;}
+.review-k{color:#4B5A70;width:140px;flex-shrink:0;}
+.review-v{color:#fff;}
+
+/* ─── FLEET MODAL ─── */
+.modal-sm{width:480px;}
+
+/* ─── PAGE VISIBILITY ─── */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:#0B151E;}
+::-webkit-scrollbar-thumb{background:#1A3247;border-radius:3px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <div id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-sq">F</div>
+      <span class="sb-logo-txt">Foundry Flow</span>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-item active" data-page="dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>
+        Dashboard
+      </div>
+      <div class="sb-item" data-page="warehouse">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        App Warehouse
+      </div>
+      <div class="sb-item" data-page="catalog">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="6" height="6" rx="1"></rect><rect x="10" y="3" width="6" height="6" rx="1"></rect><rect x="18" y="3" width="4" height="6" rx="1"></rect><rect x="2" y="12" width="6" height="6" rx="1"></rect><rect x="10" y="12" width="6" height="6" rx="1"></rect><rect x="18" y="12" width="4" height="6" rx="1"></rect></svg>
+        Catalog
+      </div>
+      <div class="sb-item" data-page="fleets">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+        Fleets
+      </div>
+      <div class="sb-item" data-page="logs">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        Logs
+      </div>
+    </div>
+    <div class="sb-bottom">
+      <div class="sb-item" data-page="settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>
+        Settings
+      </div>
+      <div class="sb-item" data-page="profile">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        Profile
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <div id="main">
+    <div id="topbar">
+      <div></div>
+      <div class="tb-right">
+        <div class="tb-bell">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
+        </div>
+        <div class="tb-avatar">CC</div>
+        <span class="tb-name">Connor Conway</span>
+      </div>
+    </div>
+
+    <div id="content">
+
+            <!-- ══ DASHBOARD ══ -->
+      <div class="page active" id="page-dashboard">
+        <div class="ph">
+          <div class="ph-left">
+            <h1>Dashboard</h1>
+            <p>Overview of your Foundry Flow environment</p>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="stats-grid">
+          <div class="stat-card" onclick="navigate(&#39;warehouse&#39;)">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4ad278" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <div><div class="stat-num">8</div><div class="stat-lbl">Completed Packages</div></div>
+          </div>
+          <div class="stat-card" onclick="navigate(&#39;fleets&#39;)">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            <div><div class="stat-num" style="color:#60a5fa">2</div><div class="stat-lbl">Active Fleets</div></div>
+          </div>
+          <div class="stat-card">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5"><path d="M12 19l9 2-9-18-9 18 9-2z"></path></svg>
+            <div><div class="stat-num" style="color:#a78bfa">14</div><div class="stat-lbl">Deployments</div></div>
+          </div>
+          <div class="stat-card">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <div><div class="stat-num" style="color:#f87171">1</div><div class="stat-lbl">Failed Jobs</div></div>
+          </div>
+        </div>
+
+        <!-- Main section: 8+4 columns -->
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;margin-bottom:16px">
+
+          <!-- Active Tasks (8 col) -->
+          <div class="db-card">
+            <div class="db-card-header">
+              <div>
+                <div class="db-card-title">Active Tasks</div>
+                <div class="db-card-sub">Packaging and deployment jobs in progress</div>
+              </div>
+              <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="navigate(&#39;warehouse&#39;)">View all</button>
+            </div>
+            <div class="db-task-header">
+              <span style="flex:1">Task</span>
+              <span style="width:140px">Progress</span>
+              <span style="width:90px">Status</span>
+              <span style="width:100px">Actions</span>
+            </div>
+
+            <!-- Task row: running -->
+            <div class="db-task-row" onclick="openDrawer(&#39;vscode&#39;)">
+              <div style="flex:1;display:flex;align-items:center;gap:10px">
+                <div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
+                <div><div class="app-name" style="font-size:13px">Visual Studio Code</div><div class="app-desc">Packaging · prod-fleet-eu</div></div>
+              </div>
+              <div style="width:140px">
+                <div class="db-progress-wrap"><div class="db-progress-bar" style="width:72%;background:linear-gradient(90deg,#3BD481,#10A958)"></div></div>
+                <div style="font-size:11px;color:#4B5A70;margin-top:3px">72%</div>
+              </div>
+              <div style="width:90px"><span class="db-badge db-badge-blue">Running</span></div>
+              <div style="width:100px;display:flex;gap:6px" onclick="event.stopPropagation()">
+                <button class="db-action-btn" title="View logs" onclick="openDrawer(&#39;vscode&#39;)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                </button>
+                <button class="db-action-btn db-action-danger" title="Cancel">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Task row: running -->
+            <div class="db-task-row" onclick="openDrawer(&#39;autocad&#39;)">
+              <div style="flex:1;display:flex;align-items:center;gap:10px">
+                <div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
+                <div><div class="app-name" style="font-size:13px">AutoCAD 2024</div><div class="app-desc">Uploading to S3 · dev-fleet-us</div></div>
+              </div>
+              <div style="width:140px">
+                <div class="db-progress-wrap"><div class="db-progress-bar" style="width:38%;background:linear-gradient(90deg,#60a5fa,#3b82f6)"></div></div>
+                <div style="font-size:11px;color:#4B5A70;margin-top:3px">38%</div>
+              </div>
+              <div style="width:90px"><span class="db-badge db-badge-blue">Running</span></div>
+              <div style="width:100px;display:flex;gap:6px" onclick="event.stopPropagation()">
+                <button class="db-action-btn" title="View logs" onclick="openDrawer(&#39;autocad&#39;)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                </button>
+                <button class="db-action-btn db-action-danger" title="Cancel">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Task row: failed -->
+            <div class="db-task-row" onclick="openDrawer(&#39;zoom&#39;)">
+              <div style="flex:1;display:flex;align-items:center;gap:10px">
+                <div class="pkg-icon" style="border-color:rgba(248,113,113,.3)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
+                <div><div class="app-name" style="font-size:13px">Zoom</div><div class="app-desc" style="color:#f87171;opacity:.7">Install failed — silent switch error</div></div>
+              </div>
+              <div style="width:140px">
+                <div class="db-progress-wrap"><div class="db-progress-bar" style="width:55%;background:#f87171"></div></div>
+                <div style="font-size:11px;color:#f87171;margin-top:3px">55% — stopped</div>
+              </div>
+              <div style="width:90px"><span class="db-badge db-badge-red">Failed</span></div>
+              <div style="width:100px;display:flex;gap:6px" onclick="event.stopPropagation()">
+                <button class="db-action-btn" title="View logs" onclick="openDrawer(&#39;zoom&#39;)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                </button>
+                <button class="db-action-btn db-action-green" title="Retry">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Task row: completed -->
+            <div class="db-task-row" onclick="openDrawer(&#39;firefox&#39;)">
+              <div style="flex:1;display:flex;align-items:center;gap:10px">
+                <div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
+                <div><div class="app-name" style="font-size:13px">Mozilla Firefox</div><div class="app-desc">Deployed to prod-fleet-eu</div></div>
+              </div>
+              <div style="width:140px">
+                <div class="db-progress-wrap"><div class="db-progress-bar" style="width:100%;background:linear-gradient(90deg,#3BD481,#10A958)"></div></div>
+                <div style="font-size:11px;color:#4ad278;margin-top:3px">Completed</div>
+              </div>
+              <div style="width:90px"><span class="db-badge db-badge-green">Deployed</span></div>
+              <div style="width:100px;display:flex;gap:6px" onclick="event.stopPropagation()">
+                <button class="db-action-btn" title="View logs" onclick="openDrawer(&#39;firefox&#39;)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fleet Health (4 col) -->
+          <div class="db-card">
+            <div class="db-card-header">
+              <div>
+                <div class="db-card-title">Fleet Health</div>
+                <div class="db-card-sub">Live status</div>
+              </div>
+              <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="navigate(&#39;fleets&#39;)">Manage</button>
+            </div>
+            <div style="padding:4px 0">
+
+              <div class="db-fleet-item" onclick="navigate(&#39;fleets&#39;)">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="db-fleet-dot" style="background:#4ad278"></span>
+                    <span style="font-size:13px;font-weight:500;color:#fff">prod-fleet-eu</span>
+                  </div>
+                  <span class="db-badge db-badge-green" style="font-size:10px;padding:1px 7px">RUNNING</span>
+                </div>
+                <div style="font-size:11px;color:#4B5A70;margin-bottom:8px">eu-west-1 · stream.standard.large</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:12px">
+                  <div style="color:#8CA3B8">Apps</div><div style="color:#fff;text-align:right;font-weight:500">6</div>
+                  <div style="color:#8CA3B8">Sessions</div><div style="color:#fff;text-align:right;font-weight:500">24</div>
+                </div>
+              </div>
+
+              <div class="db-fleet-item" onclick="navigate(&#39;fleets&#39;)">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="db-fleet-dot" style="background:#4ad278"></span>
+                    <span style="font-size:13px;font-weight:500;color:#fff">dev-fleet-us</span>
+                  </div>
+                  <span class="db-badge db-badge-green" style="font-size:10px;padding:1px 7px">RUNNING</span>
+                </div>
+                <div style="font-size:11px;color:#4B5A70;margin-bottom:8px">us-east-1 · stream.standard.medium</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:12px">
+                  <div style="color:#8CA3B8">Apps</div><div style="color:#fff;text-align:right;font-weight:500">3</div>
+                  <div style="color:#8CA3B8">Sessions</div><div style="color:#fff;text-align:right;font-weight:500">7</div>
+                </div>
+              </div>
+
+              <div class="db-fleet-warning">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <span style="font-size:12px;color:#fbbf24">dev-fleet-us credential rotation due in 2 days</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary section: Recent Activity + Quick Actions -->
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:16px">
+
+          <!-- Recent Activity -->
+          <div class="db-card">
+            <div class="db-card-header">
+              <div>
+                <div class="db-card-title">Recent Activity</div>
+                <div class="db-card-sub">Last 24 hours</div>
+              </div>
+            </div>
+            <div>
+              <div class="db-activity-row">
+                <div class="db-activity-dot" style="background:#4ad278"></div>
+                <div style="flex:1">
+                  <span style="font-size:13px;color:#fff">Visual Studio Code</span>
+                  <span style="font-size:12px;color:#4B5A70;margin-left:8px">deployed to prod-fleet-eu</span>
+                </div>
+                <span style="font-size:12px;color:#4B5A70;white-space:nowrap">09:42</span>
+              </div>
+              <div class="db-activity-row">
+                <div class="db-activity-dot" style="background:#4ad278"></div>
+                <div style="flex:1">
+                  <span style="font-size:13px;color:#fff">Mozilla Firefox</span>
+                  <span style="font-size:12px;color:#4B5A70;margin-left:8px">packaging completed</span>
+                </div>
+                <span style="font-size:12px;color:#4B5A70;white-space:nowrap">08:15</span>
+              </div>
+              <div class="db-activity-row">
+                <div class="db-activity-dot" style="background:#f87171"></div>
+                <div style="flex:1">
+                  <span style="font-size:13px;color:#fff">Zoom</span>
+                  <span style="font-size:12px;color:#f87171;margin-left:8px">packaging failed — silent switch error</span>
+                </div>
+                <span style="font-size:12px;color:#4B5A70;white-space:nowrap">07:51</span>
+              </div>
+              <div class="db-activity-row">
+                <div class="db-activity-dot" style="background:#4ad278"></div>
+                <div style="flex:1">
+                  <span style="font-size:13px;color:#fff">Git</span>
+                  <span style="font-size:12px;color:#4B5A70;margin-left:8px">deployed to dev-fleet-us</span>
+                </div>
+                <span style="font-size:12px;color:#4B5A70;white-space:nowrap">Yesterday</span>
+              </div>
+              <div class="db-activity-row" style="border-bottom:none">
+                <div class="db-activity-dot" style="background:#60a5fa"></div>
+                <div style="flex:1">
+                  <span style="font-size:13px;color:#fff">AutoCAD 2024</span>
+                  <span style="font-size:12px;color:#4B5A70;margin-left:8px">packaging started</span>
+                </div>
+                <span style="font-size:12px;color:#4B5A70;white-space:nowrap">Yesterday</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="db-card">
+            <div class="db-card-header">
+              <div>
+                <div class="db-card-title">Quick Actions</div>
+                <div class="db-card-sub">Common tasks</div>
+              </div>
+            </div>
+            <div style="padding:8px 16px 16px;display:flex;flex-direction:column;gap:8px">
+              <button class="db-qa-btn" onclick="navigate(&#39;catalog&#39;)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="6" height="6" rx="1"></rect><rect x="10" y="3" width="6" height="6" rx="1"></rect><rect x="2" y="12" width="6" height="6" rx="1"></rect><rect x="10" y="12" width="6" height="6" rx="1"></rect></svg>
+                Add Application
+              </button>
+              <button class="db-qa-btn" onclick="navigate(&#39;catalog&#39;)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path></svg>
+                New Package
+              </button>
+              <button class="db-qa-btn" onclick="document.getElementById(&#39;modal-fleet&#39;).classList.add(&#39;open&#39;)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                Add Fleet
+              </button>
+              <button class="db-qa-btn" onclick="navigate(&#39;settings&#39;)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"></path></svg>
+                Cloud Credentials
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ══ APP WAREHOUSE ══ -->
+      <div class="page" id="page-warehouse">
+        <div class="ph">
+          <div class="ph-left"><h1>App Warehouse</h1><p>Your packaged applications, ready to be deployed to one or more fleets. View progress, logs, and deployment history for each package.</p></div>
+        </div>
+        <div class="aw-stats">
+          <div class="aw-card sel" data-filter="all">
+            <div class="aw-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>
+              All Packages
+            </div>
+            <div class="aw-num">0</div>
+          </div>
+          <div class="aw-card" data-filter="active">
+            <div class="aw-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Active Packages
+            </div>
+            <div class="aw-num" style="color:#60a5fa">0</div>
+          </div>
+          <div class="aw-card" data-filter="completed">
+            <div class="aw-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ad278" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Completed Packages
+            </div>
+            <div class="aw-num" style="color:#4ad278">0</div>
+          </div>
+          <div class="aw-card" data-filter="failed">
+            <div class="aw-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              Failed Packages
+            </div>
+            <div class="aw-num" style="color:#f87171">0</div>
+          </div>
+        </div>
+        <div class="tbl-controls">
+          <div class="tbl-title"><h3>All Packages</h3><p>Manage and monitor your packages</p></div>
+          <div class="tbl-actions">
+            <div class="search-wrap" style="width:220px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input class="search-input" placeholder="Search packages...">
+            </div>
+            <select class="ff-select"><option>Format</option><option>MSI</option><option>EXE</option><option>MSIX</option></select>
+            <select class="ff-select"><option>Status</option><option>Active</option><option>Completed</option><option>Failed</option></select>
+            <button class="btn btn-green" id="btn-new-pkg">+ New package</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head cols-aw"><span>Name</span><span>Format</span><span>Progress</span><span>Status</span><span>Created</span><span>Actions</span></div>
+          <div class="tbl-empty">No packages found</div>
+        </div>
+      </div>
+
+      <!-- ══ CATALOG ══ -->
+      <div class="page" id="page-catalog">
+        <div class="ph">
+          <div class="ph-left"><h1>Application Catalog</h1><p>Browse well-known applications from WinGet or upload your own custom installer to package.</p></div>
+          <button class="btn btn-outline" id="btn-upload">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"></path></svg>
+            Upload Custom
+          </button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;">
+          <div class="search-wrap" style="flex:1;max-width:560px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input class="search-input" id="cat-search" placeholder="Search applications...">
+          </div>
+          <select class="ff-select" id="cat-pp" style="width:80px"><option>10</option><option>20</option><option>50</option><option>100</option></select>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head cols-cat"><span>Name</span><span>Publisher</span><span>Author</span><span>Version</span><span>Actions</span></div>
+          <div id="cat-rows">
+      <div class="tbl-row cols-cat" data-name="7-Zip" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">7-Zip</div><div class="app-desc">A free file archiver with a high compression ratio.</div></div></div>
+        <div class="text-dim">Igor Pavlov</div>
+        <div class="text-dim">Igor Pavlov</div>
+        <div><span class="ver-badge">23.01</span></div>
+        <div><button class="dots-btn" data-name="7-Zip" data-ver="23.01" data-pub="Igor Pavlov" data-author="Igor Pavlov">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="Notepad++" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">Notepad++</div><div class="app-desc">A free source code editor and Notepad replacement.</div></div></div>
+        <div class="text-dim">Don Ho</div>
+        <div class="text-dim">Don Ho</div>
+        <div><span class="ver-badge">8.6.2</span></div>
+        <div><button class="dots-btn" data-name="Notepad++" data-ver="8.6.2" data-pub="Don Ho" data-author="Don Ho">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="VLC Media Player" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">VLC Media Player</div><div class="app-desc">A free and open source cross-platform multimedia player.</div></div></div>
+        <div class="text-dim">VideoLAN</div>
+        <div class="text-dim">VideoLAN Organization</div>
+        <div><span class="ver-badge">3.0.20</span></div>
+        <div><button class="dots-btn" data-name="VLC Media Player" data-ver="3.0.20" data-pub="VideoLAN" data-author="VideoLAN Organization">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="Mozilla Firefox" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">Mozilla Firefox</div><div class="app-desc">A fast, private and secure web browser.</div></div></div>
+        <div class="text-dim">Mozilla Foundation</div>
+        <div class="text-dim">Mozilla Corporation</div>
+        <div><span class="ver-badge">123.0</span></div>
+        <div><button class="dots-btn" data-name="Mozilla Firefox" data-ver="123.0" data-pub="Mozilla Foundation" data-author="Mozilla Corporation">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="Git" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">Git</div><div class="app-desc">A distributed version control system.</div></div></div>
+        <div class="text-dim">Software Freedom Conservancy</div>
+        <div class="text-dim">Linus Torvalds</div>
+        <div><span class="ver-badge">2.44.0</span></div>
+        <div><button class="dots-btn" data-name="Git" data-ver="2.44.0" data-pub="Software Freedom Conservancy" data-author="Linus Torvalds">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="Python" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">Python</div><div class="app-desc">A high-level general-purpose programming language.</div></div></div>
+        <div class="text-dim">Python Software Foundation</div>
+        <div class="text-dim">Guido van Rossum</div>
+        <div><span class="ver-badge">3.12.2</span></div>
+        <div><button class="dots-btn" data-name="Python" data-ver="3.12.2" data-pub="Python Software Foundation" data-author="Guido van Rossum">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="Node.js" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">Node.js</div><div class="app-desc">A JavaScript runtime built on Chrome's V8 engine.</div></div></div>
+        <div class="text-dim">OpenJS Foundation</div>
+        <div class="text-dim">Ryan Dahl</div>
+        <div><span class="ver-badge">20.11.1</span></div>
+        <div><button class="dots-btn" data-name="Node.js" data-ver="20.11.1" data-pub="OpenJS Foundation" data-author="Ryan Dahl">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="Visual Studio Code" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">Visual Studio Code</div><div class="app-desc">A lightweight but powerful source code editor.</div></div></div>
+        <div class="text-dim">Microsoft</div>
+        <div class="text-dim">Microsoft Corporation</div>
+        <div><span class="ver-badge">1.87.0</span></div>
+        <div><button class="dots-btn" data-name="Visual Studio Code" data-ver="1.87.0" data-pub="Microsoft" data-author="Microsoft Corporation">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="PuTTY" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">PuTTY</div><div class="app-desc">A free SSH and telnet client for Windows.</div></div></div>
+        <div class="text-dim">Simon Tatham</div>
+        <div class="text-dim">Simon Tatham</div>
+        <div><span class="ver-badge">0.80</span></div>
+        <div><button class="dots-btn" data-name="PuTTY" data-ver="0.80" data-pub="Simon Tatham" data-author="Simon Tatham">···</button></div>
+      </div>
+      <div class="tbl-row cols-cat" data-name="WinSCP" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px"><div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div><div class="app-name">WinSCP</div><div class="app-desc">A free SFTP, SCP, S3, and FTP client for Windows.</div></div></div>
+        <div class="text-dim">Martin Přikryl</div>
+        <div class="text-dim">Martin Přikryl</div>
+        <div><span class="ver-badge">6.3.2</span></div>
+        <div><button class="dots-btn" data-name="WinSCP" data-ver="6.3.2" data-pub="Martin Přikryl" data-author="Martin Přikryl">···</button></div>
+      </div></div>
+        </div>
+        <div class="pagination" id="cat-pag"><button class="pg-btn" id="pg-prev">‹</button><button class="pg-btn active" data-pg="1">1</button><button class="pg-btn " data-pg="2">2</button><button class="pg-btn" id="pg-next">›</button></div>
+      </div>
+
+      <!-- ══ FLEETS ══ -->
+      <div class="page" id="page-fleets">
+        <div class="ph">
+          <div class="ph-left"><h1>Fleet Management</h1><p>Manage your AWS AppStream Elastic Fleets. Deploy packages, publish shortcuts, and launch apps to test.</p></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-green" id="btn-add-fleet">+ Add Fleet</button>
+            <button class="btn btn-outline">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"></path></svg>
+              Refresh Fleets
+            </button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head cols-fl"><span>Fleet Name</span><span>Status</span><span>Apps Deployed</span><span>Actions</span></div>
+          <div class="tbl-empty">No fleets found.</div>
+        </div>
+      </div>
+
+      <!-- ══ LOGS ══ -->
+      <div class="page" id="page-logs">
+        <div class="ph"><div class="ph-left"><h1>System Logs</h1><p>Global system events — sign-ins, fleet status changes, AWS connectivity, and warnings. For package-specific logs, use "View Logs" in the App Warehouse.</p></div></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+          <div class="search-wrap" style="width:260px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input class="search-input" placeholder="Search logs...">
+          </div>
+          <span class="log-chip lc-info" data-log="info">✓ Info</span>
+          <span class="log-chip lc-success" data-log="success">✓ Success</span>
+          <span class="log-chip lc-warning" data-log="warning">✓ Warning</span>
+          <span class="log-chip lc-error" data-log="error">✓ Error</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;color:#8CA3B8">
+            Auto-scroll <div class="ff-toggle" id="log-toggle"></div>
+          </div>
+        </div>
+        <div style="color:#4B5A70;font-size:14px;padding:20px 0">No log entries match the current filters.</div>
+      </div>
+
+      <!-- ══ SETTINGS ══ -->
+      <div class="page" id="page-settings">
+        <div class="ph"><div class="ph-left"><h1>Settings</h1><p>Manage your cloud credentials, S3 storage buckets, connected fleets, and OIDC federation setup.</p></div></div>
+        <div class="tabs">
+          <div class="tab active" data-stab="creds">Cloud Credentials</div>
+          <div class="tab" data-stab="s3">S3 Buckets</div>
+          <div class="tab" data-stab="fleets-s">Fleets</div>
+          <div class="tab" data-stab="oidc">OIDC Setup</div>
+        </div>
+        <div class="tab-pane active" id="stab-creds">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+              <div style="font-size:14px;color:#8CA3B8">Connect your cloud provider accounts to enable package uploads and fleet management.</div>
+            </div>
+            <button class="btn btn-green" id="btn-add-cred">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Add Credential
+            </button>
+          </div>
+
+          <!-- Credential cards - rendered by JS -->
+          <div id="creds-list"><div class="kv-card" id="cred-card-prod-aws" style="max-width:100%;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:10px;background:#142738;border:1px solid #1A3247;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="#FF9900" opacity=".9"></path><path d="M2 17l10 5 10-5" stroke="#FF9900" stroke-width="1.5" fill="none"></path><path d="M2 12l10 5 10-5" stroke="#FF9900" stroke-width="1.5" fill="none"></path></svg></div>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#fff">Production AWS Account</div>
+            <div style="font-size:12px;color:#4B5A70;margin-top:2px">Amazon Web Services · OIDC Federation</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(16,169,88,.15);color:#4ad278"><span style="width:6px;height:6px;border-radius:50%;background:#4ad278;display:inline-block"></span>Active</span>
+          <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="openEditCred(&#39;prod-aws&#39;)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Edit</button>
+          <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="openRotateCred(&#39;prod-aws&#39;)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"></path></svg> Rotate</button>
+          <button class="btn btn-outline" style="font-size:12px;padding:5px 12px;color:#f87171;border-color:#f87171" onclick="openDeleteCred(&#39;prod-aws&#39;)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg> Delete</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:14px;border-top:1px solid #0f1d29">
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Account ID</div><div style="font-size:13px;color:#fff;font-family:monospace">123456789012</div></div>
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Region</div><div style="font-size:13px;color:#fff">eu-west-1</div></div>
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Last Verified</div><div style="font-size:13px;color:#fff">Today, 09:30</div></div>
+      </div>
+    </div><div class="kv-card" id="cred-card-dev-aws" style="max-width:100%;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:10px;background:#142738;border:1px solid #1A3247;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="#FF9900" opacity=".9"></path><path d="M2 17l10 5 10-5" stroke="#FF9900" stroke-width="1.5" fill="none"></path><path d="M2 12l10 5 10-5" stroke="#FF9900" stroke-width="1.5" fill="none"></path></svg></div>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#fff">Development AWS Account</div>
+            <div style="font-size:12px;color:#4B5A70;margin-top:2px">Amazon Web Services · Access Key</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(245,158,11,.12);color:#fbbf24"><span style="width:6px;height:6px;border-radius:50%;background:#fbbf24;display:inline-block"></span>Rotation due</span>
+          <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="openEditCred(&#39;dev-aws&#39;)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Edit</button>
+          <button class="btn btn-green" style="font-size:12px;padding:5px 12px" onclick="openRotateCred(&#39;dev-aws&#39;)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"></path></svg> Rotate Now</button>
+          <button class="btn btn-outline" style="font-size:12px;padding:5px 12px;color:#f87171;border-color:#f87171" onclick="openDeleteCred(&#39;dev-aws&#39;)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg> Delete</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:14px;border-top:1px solid #0f1d29">
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Account ID</div><div style="font-size:13px;color:#fff;font-family:monospace">987654321098</div></div>
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Region</div><div style="font-size:13px;color:#fff">us-east-1</div></div>
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Last Verified</div><div style="font-size:13px;color:#fbbf24">30 days ago</div></div>
+      </div>
+    </div></div>
+        </div>
+        <div class="tab-pane" id="stab-s3">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:14px"><button class="btn btn-green">+ Add Bucket</button></div>
+          <div class="tbl-empty" style="padding:48px 0">No S3 buckets configured.</div>
+        </div>
+        <div class="tab-pane" id="stab-fleets-s">
+          <div class="tbl-empty" style="padding:48px 0">No fleets connected.</div>
+        </div>
+        <div class="tab-pane" id="stab-oidc">
+          <div class="kv-card">
+            <div class="kv-section-title">OIDC Provider Information</div>
+            <div class="kv-row"><span class="kv-key">Provider URL:</span><span class="kv-val green">https://oidc.packaging-foundry.example.com</span></div>
+            <div class="kv-row"><span class="kv-key">Audience:</span><span class="kv-val">packaging-foundry</span></div>
+            <div class="kv-row"><span class="kv-key">Role ARN:</span><span class="kv-val mono">arn:aws:iam::123456789012:role/PackagingFoundryOIDCRole</span></div>
+          </div>
+          <div class="subtabs">
+            <div class="stab active" data-oidc="cf">CloudFormation</div>
+            <div class="stab" data-oidc="cli">CLI</div>
+            <div class="stab" data-oidc="console">Console</div>
+            <div class="stab" data-oidc="llm">LLM</div>
+          </div>
+          <p style="font-size:13px;color:#8CA3B8;margin-bottom:12px" id="oidc-desc">Deploy this CloudFormation template to automatically create the OIDC provider and IAM role.</p>
+          <div class="code-block" id="oidc-code">AWSTemplateFormatVersion: '2010-09-09'
+Description: Packaging Foundry OIDC Provider and Role
+
+Resources:
+  PackagingFoundryOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://oidc.packaging-foundry.example.com
+      ClientIdList:
+        - packaging-foundry
+      ThumbprintList:
+        - 9e99a48a9960b14926bb7f3b02e22da2b0ab7280
+
+  PackagingFoundryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: PackagingFoundryOIDCRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref PackagingFoundryOIDCProvider
+            Action: sts:AssumeRoleWithWebIdentity</div>
+        </div>
+      </div>
+
+      <!-- ══ PROFILE ══ -->
+      <div class="page" id="page-profile">
+        <div class="ph"><div class="ph-left"><h1>Profile</h1><p>Your account details and license information.</p></div></div>
+        <div class="profile-card">
+          <div class="profile-av">CC</div>
+          <div>
+            <div class="profile-name">Connor Conway</div>
+            <div class="profile-email"><a href="file:///cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8cefe3e2e2e3feccefe0e3f9e8e4e3f9ffe9a2efe3e1">[email&nbsp;protected]</a></div>
+            <span class="admin-badge">ADMINISTRATOR</span>
+          </div>
+        </div>
+        <div class="kv-card" style="max-width:440px">
+          <div class="kv-section-title" style="font-size:14px;color:#fff;text-transform:none;letter-spacing:0;font-weight:600">License Information</div>
+          <div class="kv-row"><span class="kv-key">License Type</span><span class="kv-val">Enterprise</span></div>
+          <div class="kv-row"><span class="kv-key">Expiry Date</span><span class="kv-val">31 March 2027</span></div>
+          <div class="kv-row"><span class="kv-key">Status</span><span class="active-pill">ACTIVE</span></div>
+        </div>
+        <button class="btn-signout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Sign Out
+        </button>
+      </div>
+
+    </div><!-- /content -->
+
+    <!-- ══ GETTING STARTED BAR ══ -->
+    <div id="gs-bar">
+      <div style="display:flex;align-items:center">
+        <div class="gs-num" id="gs-num">1</div>
+        <div class="gs-text">
+          <span class="gs-title">⚡ GETTING STARTED</span>
+          <span id="gs-step-label"> — Step 1 of 9: Select &amp; Package</span><br>
+          <span id="gs-step-msg">Browse the catalog and select an existing application from the table to package</span>
+        </div>
+      </div>
+      <div class="gs-right">
+        <button class="btn btn-green" style="font-size:13px;padding:6px 14px" id="gs-go">Go →</button>
+        <button class="gs-close" id="gs-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══════════ DROPDOWN ══════════ -->
+<div id="ff-dd" style="display: none;">
+  <div class="dd-item" id="dd-view">View Details</div>
+  <div class="dd-item" id="dd-pkg">Package with Foundry</div>
+  <div class="dd-item" id="dd-dl">Download Install.zip</div>
+  <div class="dd-sep"></div>
+  <div class="dd-item danger" id="dd-del">Delete</div>
+</div>
+
+<!-- ══════════ PACKAGE MODAL ══════════ -->
+<div class="overlay" id="modal-pkg">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Package Application</div>
+      <button class="modal-x" data-close="modal-pkg">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Stepper -->
+      <div class="stepper" id="pkg-stepper"></div>
+      <!-- Step content -->
+      <div id="pkg-step-content"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" id="pkg-back">Back</button>
+      <button class="btn btn-blue" id="pkg-next">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FLEET MODAL ══════════ -->
+<div class="overlay" id="modal-fleet">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <div class="modal-title">Add Fleet</div>
+      <button class="modal-x" data-close="modal-fleet">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Fleet Name</label><input placeholder="my-appstream-fleet"></div>
+      <div class="field"><label>AWS Region</label>
+        <select><option>us-east-1 — US East (N. Virginia)</option><option>eu-west-1 — Europe (Ireland)</option><option>ap-southeast-2 — Asia Pacific (Sydney)</option></select>
+      </div>
+      <div class="field"><label>Instance Type</label>
+        <select><option>stream.standard.medium</option><option>stream.standard.large</option><option>stream.compute.large</option><option>stream.compute.xlarge</option></select>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" data-close="modal-fleet">Cancel</button>
+      <button class="btn btn-green" data-close="modal-fleet">Create Fleet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TASK DRAWER ══════════ -->
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+<div id="task-drawer">
+  <div class="drawer-header">
+    <div class="drawer-title" id="drawer-title">Task Details</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <!-- Meta -->
+    <div class="drawer-section-title">Overview</div>
+    <div class="drawer-meta-grid">
+      <div class="drawer-meta-item"><div class="drawer-meta-label">Application</div><div class="drawer-meta-value" id="dr-app">—</div></div>
+      <div class="drawer-meta-item"><div class="drawer-meta-label">Status</div><div class="drawer-meta-value" id="dr-status">—</div></div>
+      <div class="drawer-meta-item"><div class="drawer-meta-label">Fleet</div><div class="drawer-meta-value" id="dr-fleet">—</div></div>
+      <div class="drawer-meta-item"><div class="drawer-meta-label">Started</div><div class="drawer-meta-value" id="dr-started">—</div></div>
+    </div>
+
+    <!-- Logs -->
+    <div class="drawer-section-title">Logs</div>
+    <div class="drawer-log" id="dr-logs"></div>
+
+    <!-- Timeline -->
+    <div class="drawer-section-title">Timeline</div>
+    <div class="drawer-timeline" id="dr-timeline"></div>
+  </div>
+</div>
+
+<!-- ══════════ ADD CREDENTIAL MODAL ══════════ -->
+<div class="overlay" id="modal-add-cred">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <div class="modal-title">Add Cloud Credential</div>
+      <button class="modal-x" data-close="modal-add-cred">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Provider select -->
+      <div class="field" style="margin-bottom:20px">
+        <label>Cloud Provider</label>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px" id="provider-cards">
+          <div class="radio-card selected" data-provider="aws" style="flex-direction:column;align-items:center;padding:16px 10px;text-align:center">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="margin-bottom:8px"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="#FF9900" opacity=".9"></path><path d="M2 17l10 5 10-5" stroke="#FF9900" stroke-width="1.5" fill="none"></path><path d="M2 12l10 5 10-5" stroke="#FF9900" stroke-width="1.5" fill="none"></path></svg>
+            <div style="font-size:13px;font-weight:500;color:#fff">AWS</div>
+            <div style="font-size:11px;color:#4B5A70;margin-top:2px">Amazon Web Services</div>
+          </div>
+          <div class="radio-card" data-provider="azure" style="flex-direction:column;align-items:center;padding:16px 10px;text-align:center">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="margin-bottom:8px"><path d="M13.5 2.5L5 16h6.5L5 21.5h14L13.5 2.5z" fill="#0078D4" opacity=".85"></path></svg>
+            <div style="font-size:13px;font-weight:500;color:#fff">Azure</div>
+            <div style="font-size:11px;color:#4B5A70;margin-top:2px">Microsoft Azure</div>
+          </div>
+          <div class="radio-card" data-provider="gcp" style="flex-direction:column;align-items:center;padding:16px 10px;text-align:center">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="margin-bottom:8px"><circle cx="12" cy="12" r="9" fill="#4285F4" opacity=".15"></circle><path d="M12 7h5.5A5.5 5.5 0 0112 17.5" stroke="#4285F4" stroke-width="2"></path><circle cx="12" cy="12" r="2.5" fill="#34A853"></circle></svg>
+            <div style="font-size:13px;font-weight:500;color:#fff">GCP</div>
+            <div style="font-size:11px;color:#4B5A70;margin-top:2px">Google Cloud</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auth method -->
+      <div class="field">
+        <label>Authentication Method</label>
+        <select id="cred-auth-method" onchange="updateCredFields()">
+          <option value="oidc">OIDC Federation (Recommended)</option>
+          <option value="accesskey">Access Key / Secret</option>
+        </select>
+      </div>
+
+      <!-- Dynamic fields -->
+      <div id="cred-fields-oidc">
+        <div class="field">
+          <label>Account ID</label>
+          <input placeholder="e.g. 123456789012">
+        </div>
+        <div class="field">
+          <label>Region</label>
+          <select>
+            <option>eu-west-1 — Europe (Ireland)</option>
+            <option>us-east-1 — US East (N. Virginia)</option>
+            <option>us-west-2 — US West (Oregon)</option>
+            <option>ap-southeast-2 — Asia Pacific (Sydney)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Credential Name</label>
+          <input placeholder="e.g. Production AWS Account">
+        </div>
+        <div style="background:rgba(16,169,88,.08);border:1px solid rgba(16,169,88,.2);border-radius:8px;padding:12px 14px;font-size:13px;color:#72dc97;display:flex;align-items:flex-start;gap:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          OIDC federation is configured in the OIDC Setup tab. No secrets stored.
+        </div>
+      </div>
+
+      <div id="cred-fields-accesskey" style="display:none">
+        <div class="field">
+          <label>Credential Name</label>
+          <input placeholder="e.g. Development AWS Account">
+        </div>
+        <div class="field">
+          <label>Access Key ID</label>
+          <input placeholder="AKIAIOSFODNN7EXAMPLE" style="font-family:monospace">
+        </div>
+        <div class="field">
+          <label>Secret Access Key</label>
+          <input type="password" placeholder="••••••••••••••••••••••••••••••••••••••••">
+        </div>
+        <div class="field">
+          <label>Region</label>
+          <select>
+            <option>eu-west-1 — Europe (Ireland)</option>
+            <option>us-east-1 — US East (N. Virginia)</option>
+            <option>us-west-2 — US West (Oregon)</option>
+            <option>ap-southeast-2 — Asia Pacific (Sydney)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" data-close="modal-add-cred">Cancel</button>
+      <button class="btn btn-green" data-close="modal-add-cred">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Save Credential
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ EDIT CREDENTIAL MODAL ══════════ -->
+<div class="overlay" id="modal-edit-cred">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <div class="modal-title">Edit Credential</div>
+      <button class="modal-x" data-close="modal-edit-cred">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Credential Name</label>
+        <input id="edit-cred-name" value="Production AWS Account">
+      </div>
+      <div class="field">
+        <label>Region</label>
+        <select>
+          <option selected="">eu-west-1 — Europe (Ireland)</option>
+          <option>us-east-1 — US East (N. Virginia)</option>
+          <option>us-west-2 — US West (Oregon)</option>
+          <option>ap-southeast-2 — Asia Pacific (Sydney)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Account ID</label>
+        <input value="123456789012" style="font-family:monospace">
+      </div>
+      <div style="background:#142738;border:1px solid #1A3247;border-radius:8px;padding:12px 14px;font-size:13px;color:#8CA3B8">
+        Authentication method: <span style="color:#fff">OIDC Federation</span> · <span style="color:#4ad278;cursor:pointer">Change in OIDC Setup →</span>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" data-close="modal-edit-cred">Cancel</button>
+      <button class="btn btn-green" data-close="modal-edit-cred">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ROTATE CREDENTIAL MODAL ══════════ -->
+<div class="overlay" id="modal-rotate-cred">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <div class="modal-title">Rotate Credential</div>
+      <button class="modal-x" data-close="modal-rotate-cred">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:14px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:20px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <div style="font-size:13px;color:#fbbf24">Rotating will invalidate the current access key. Any services using it will need to be updated.</div>
+      </div>
+      <div class="field">
+        <label>New Access Key ID</label>
+        <input placeholder="AKIAIOSFODNN7EXAMPLE" style="font-family:monospace">
+      </div>
+      <div class="field">
+        <label>New Secret Access Key</label>
+        <input type="password" placeholder="••••••••••••••••••••••••••••••••••••••••">
+      </div>
+      <div class="field">
+        <label>Confirm Secret Access Key</label>
+        <input type="password" placeholder="••••••••••••••••••••••••••••••••••••••••">
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" data-close="modal-rotate-cred">Cancel</button>
+      <button class="btn btn-green" data-close="modal-rotate-cred">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"></path></svg>
+        Rotate Credential
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DELETE CREDENTIAL MODAL ══════════ -->
+<div class="overlay" id="modal-delete-cred">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <div class="modal-title">Delete Credential</div>
+      <button class="modal-x" data-close="modal-delete-cred">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:14px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:20px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <div style="font-size:13px;color:#f87171">This action cannot be undone. Fleets using this credential will lose access.</div>
+      </div>
+      <p style="font-size:14px;color:#8CA3B8;margin-bottom:16px">Are you sure you want to delete <span id="delete-cred-name" style="color:#fff;font-weight:500">Production AWS Account</span>?</p>
+      <div class="field">
+        <label>Type the credential name to confirm</label>
+        <input placeholder="Production AWS Account">
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" data-close="modal-delete-cred">Cancel</button>
+      <button class="btn" style="background:#c0392b;color:#fff" data-close="modal-delete-cred">Delete Credential</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="modal-details">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <div class="modal-title" id="det-title">7-Zip</div>
+      <button class="modal-x" data-close="modal-details">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px 24px">
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tbody><tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;width:140px;vertical-align:top">Publisher</td>
+          <td style="padding:10px 0;color:#fff" id="det-pub"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">Author</td>
+          <td style="padding:10px 0;color:#fff" id="det-author"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">Version</td>
+          <td style="padding:10px 0;color:#fff" id="det-ver"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">Short Description</td>
+          <td style="padding:10px 0;color:#fff" id="det-short"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">Description</td>
+          <td style="padding:10px 0;color:#fff;line-height:1.6" id="det-desc"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">Homepage</td>
+          <td style="padding:10px 0;color:#4ad278" id="det-home"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">License</td>
+          <td style="padding:10px 0;color:#fff" id="det-license"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">Tags</td>
+          <td style="padding:10px 0" id="det-tags"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f1d29">
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">Installer URL</td>
+          <td style="padding:10px 0;color:#fff;font-family:monospace;font-size:12px;word-break:break-all" id="det-url"></td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;color:#8CA3B8;vertical-align:top">Silent Switches</td>
+          <td style="padding:10px 0;color:#fff;font-family:monospace" id="det-switches"></td>
+        </tr>
+      </tbody></table>
+    </div>
+    <div class="modal-ft" style="justify-content:flex-end">
+      <button class="btn btn-green" id="det-pkg-btn">Package with Foundry</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ UPLOAD CUSTOM MODAL ══════════ -->
+<div class="overlay" id="modal-upload">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <div class="modal-title">Upload Custom Installer</div>
+      <button class="modal-x" data-close="modal-upload">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="border:2px dashed #1A3247;border-radius:10px;padding:40px;text-align:center;margin-bottom:16px;cursor:pointer;" id="upload-drop">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5" style="margin:0 auto 10px"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"></path></svg>
+        <p style="color:#8CA3B8;font-size:14px;margin-bottom:4px">Drop installer here or <span style="color:#4ad278;cursor:pointer">browse</span></p>
+        <p style="color:#4B5A70;font-size:12px">Supports .exe, .msi, .msix</p>
+      </div>
+      <div class="field"><label>Application Name</label><input placeholder="e.g. My Enterprise App"></div>
+      <div class="field-row">
+        <div class="field"><label>Version</label><input placeholder="1.0.0"></div>
+        <div class="field"><label>Publisher</label><input placeholder="Acme Corp"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" data-close="modal-upload">Cancel</button>
+      <button class="btn btn-green">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>
+        Upload &amp; Continue
+      </button>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="file:///cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+document.addEventListener("DOMContentLoaded", function() {
+
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const APPS = [
+  {name:'7-Zip',desc:'A free file archiver with a high compression ratio.',pub:'Igor Pavlov',author:'Igor Pavlov',ver:'23.01',license:'LGPL',tags:['ARCHIVER','COMPRESSION','UTILITY','OPEN-SOURCE'],home:'https://www.7-zip.org',installerUrl:'https://www.7-zip.org/a/7z2301-x64.exe',switches:'/S',fullDesc:'7-Zip is a free and open-source file archiver, a utility used to place groups of files within compressed containers known as archives. It supports formats including 7z, ZIP, RAR, TAR, GZI, BZIP2, and more.'},
+  {name:'Notepad++',desc:'A free source code editor and Notepad replacement.',pub:'Don Ho',author:'Don Ho',ver:'8.6.2',license:'GPL',tags:['EDITOR','TEXT','OPEN-SOURCE'],home:'https://notepad-plus-plus.org',installerUrl:'https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.2/npp.8.6.2.Installer.x64.exe',switches:'/S',fullDesc:'Notepad++ is a free source code editor and Notepad replacement that supports several programming languages. It runs in the MS Windows environment and is governed by GPL License.'},
+  {name:'VLC Media Player',desc:'A free and open source cross-platform multimedia player.',pub:'VideoLAN',author:'VideoLAN Organization',ver:'3.0.20',license:'LGPL',tags:['MEDIA','VIDEO','AUDIO','OPEN-SOURCE'],home:'https://www.videolan.org/vlc',installerUrl:'https://get.videolan.org/vlc/3.0.20/win64/vlc-3.0.20-win64.exe',switches:'/S',fullDesc:'VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files, DVDs, Audio CDs, VCDs, and various streaming protocols.'},
+  {name:'Mozilla Firefox',desc:'A fast, private and secure web browser.',pub:'Mozilla Foundation',author:'Mozilla Corporation',ver:'123.0',license:'MPL-2.0',tags:['BROWSER','WEB','OPEN-SOURCE'],home:'https://www.mozilla.org/firefox',installerUrl:'https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US',switches:'-ms -ma',fullDesc:'Firefox is a free and open-source web browser developed by the Mozilla Foundation. It uses the Gecko layout engine to render web pages, and focuses on security, privacy and standards compliance.'},
+  {name:'Git',desc:'A distributed version control system.',pub:'Software Freedom Conservancy',author:'Linus Torvalds',ver:'2.44.0',license:'GPL-2.0',tags:['VCS','DEVELOPER','OPEN-SOURCE'],home:'https://git-scm.com',installerUrl:'https://github.com/git-for-windows/git/releases/download/v2.44.0.windows.1/Git-2.44.0-64-bit.exe',switches:'/VERYSILENT /NORESTART',fullDesc:'Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.'},
+  {name:'Python',desc:'A high-level general-purpose programming language.',pub:'Python Software Foundation',author:'Guido van Rossum',ver:'3.12.2',license:'PSF',tags:['PROGRAMMING','DEVELOPER','OPEN-SOURCE'],home:'https://www.python.org',installerUrl:'https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe',switches:'/quiet InstallAllUsers=1 PrependPath=1',fullDesc:'Python is a high-level, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation. Python is dynamically typed and garbage-collected.'},
+  {name:'Node.js',desc:"A JavaScript runtime built on Chrome's V8 engine.",pub:'OpenJS Foundation',author:'Ryan Dahl',ver:'20.11.1',license:'MIT',tags:['RUNTIME','DEVELOPER','JAVASCRIPT','OPEN-SOURCE'],home:'https://nodejs.org',installerUrl:'https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi',switches:'/quiet',fullDesc:"Node.js is a cross-platform, open-source JavaScript runtime environment that can run on Windows, Linux, Unix, macOS, and more. Node.js runs on the V8 JavaScript engine, and executes JavaScript code outside a web browser."},
+  {name:'Visual Studio Code',desc:'A lightweight but powerful source code editor.',pub:'Microsoft',author:'Microsoft Corporation',ver:'1.87.0',license:'Proprietary',tags:['EDITOR','IDE','DEVELOPER'],home:'https://code.visualstudio.com',installerUrl:'https://update.code.visualstudio.com/1.87.0/win32-x64/stable',switches:'/VERYSILENT /MERGETASKS=!runcode',fullDesc:'Visual Studio Code is a lightweight but powerful source code editor which runs on your desktop and is available for Windows, macOS and Linux. It comes with built-in support for JavaScript, TypeScript and Node.js.'},
+  {name:'PuTTY',desc:'A free SSH and telnet client for Windows.',pub:'Simon Tatham',author:'Simon Tatham',ver:'0.80',license:'MIT',tags:['SSH','TELNET','NETWORKING','OPEN-SOURCE'],home:'https://www.putty.org',installerUrl:'https://the.earth.li/~sgtatham/putty/0.80/w64/putty-64bit-0.80-installer.msi',switches:'/quiet',fullDesc:'PuTTY is a free and open-source terminal emulator, serial console and network file transfer application. It supports several network protocols, including SCP, SSH, Telnet, rlogin, and raw socket connection.'},
+  {name:'WinSCP',desc:'A free SFTP, SCP, S3, and FTP client for Windows.',pub:'Martin Přikryl',author:'Martin Přikryl',ver:'6.3.2',license:'GPL',tags:['FTP','SFTP','FILE-TRANSFER','OPEN-SOURCE'],home:'https://winscp.net',installerUrl:'https://cdn.winscp.net/files/WinSCP-6.3.2-Setup.exe',switches:'/VERYSILENT /ALLUSERS',fullDesc:'WinSCP is a popular SFTP client and FTP client for Microsoft Windows. Its main function is file transfer between a local and a remote computer. Beyond this, WinSCP offers basic file manager and file synchronization functionality.'},
+  {name:'7-Zip Beta',desc:'Beta release of the 7-Zip archiver.',pub:'Igor Pavlov',author:'Igor Pavlov',ver:'24.00',license:'LGPL',tags:['ARCHIVER','COMPRESSION','BETA'],home:'https://www.7-zip.org',installerUrl:'https://www.7-zip.org/a/7z2400-x64.exe',switches:'/S',fullDesc:'Beta release of 7-Zip. Contains the latest features and improvements not yet in the stable release. Use with caution in production environments.'},
+  {name:'Greenshot',desc:'A light-weight screenshot tool for Windows.',pub:'Greenshot',author:'Thomas Braun',ver:'1.3.284',license:'GPL',tags:['SCREENSHOT','UTILITY','OPEN-SOURCE'],home:'https://getgreenshot.org',installerUrl:'https://github.com/greenshot/greenshot/releases/download/Greenshot-RELEASE-1.3.284/Greenshot-INSTALLER-1.3.284.0-RELEASE.exe',switches:'/VERYSILENT',fullDesc:'Greenshot is a light-weight screenshot software tool for Windows with the following key features: quick creation of screenshots of a selected region, window or fullscreen, and annotation, highlighting or obfuscating parts of the screenshot.'},
+  {name:'Zoom',desc:'Video conferencing and online meetings.',pub:'Zoom Video Communications',author:'Zoom Video Communications',ver:'5.17.1',license:'Proprietary',tags:['VIDEO','CONFERENCING','COMMUNICATION'],home:'https://zoom.us',installerUrl:'https://zoom.us/client/latest/ZoomInstallerFull.exe',switches:'/quiet /norestart',fullDesc:'Zoom is a proprietary videotelephony software program developed by Zoom Video Communications. The free plan provides a video conferencing service that allows up to 100 concurrent participants.'},
+  {name:'Slack',desc:'Business messaging and team collaboration.',pub:'Slack Technologies',author:'Slack Technologies',ver:'4.36.138',license:'Proprietary',tags:['MESSAGING','COLLABORATION','BUSINESS'],home:'https://slack.com',installerUrl:'https://downloads.slack-edge.com/releases/windows/4.36.138/prod/x64/slack-standalone-4.36.138.0.msi',switches:'/quiet',fullDesc:'Slack is a cloud-based team communication platform developed by Slack Technologies, which is currently owned by Salesforce. It offers many IRC-style features, including persistent chat rooms organized by topic, private groups, and direct messaging.'},
+  {name:'AutoCAD',desc:'Professional 2D and 3D design software.',pub:'Autodesk',author:'Autodesk Inc.',ver:'2024.1',license:'Proprietary',tags:['CAD','DESIGN','ENGINEERING'],home:'https://www.autodesk.com/autocad',installerUrl:'https://dl.autodesk.com/autodesk/autocad/2024/setup.exe',switches:'/q /passive',fullDesc:'AutoCAD is a commercial computer-aided design (CAD) and drafting software application. Developed and marketed by Autodesk, AutoCAD was first released in December 1982 as a desktop app running on microcomputers with internal graphics controllers.'},
+];
+
+const GS_STEPS = [
+  {num:1, label:'Select & Package', msg:'Browse the catalog and select an existing application from the table to package'},
+  {num:2, label:'Review', msg:'Review the pre-filled package information and click \'Package with Foundry\''},
+  {num:3, label:'Output Format', msg:'Choose your output format and click Next'},
+  {num:4, label:'Confirm', msg:'Review your package configuration and confirm to start packaging'},
+  {num:5, label:'Packaging', msg:'Your application is being packaged. This may take a few minutes'},
+  {num:6, label:'S3 Upload', msg:'Your package is being uploaded to your S3 bucket'},
+  {num:7, label:'WorkSpaces App', msg:'Creating your WorkSpaces Application entry'},
+  {num:8, label:'Fleet Assignment', msg:'Assigning your application to the selected elastic fleet'},
+  {num:9, label:'Complete', msg:'Your application is ready! Launch it from your WorkSpaces catalog'},
+];
+
+const PKG_STEPS = [
+  {label:'Upload', sub:'Installer'},
+  {label:'Details', sub:'App info'},
+  {label:'Install', sub:'Config'},
+  {label:'Advanced', sub:'Scripts'},
+  {label:'Output', sub:'Format'},
+  {label:'Review', sub:'Confirm'},
+];
+
+const OIDC_DATA = {
+  cf: {
+    desc: 'Deploy this CloudFormation template to automatically create the OIDC provider and IAM role.',
+    code: `AWSTemplateFormatVersion: '2010-09-09'\nDescription: Packaging Foundry OIDC Provider and Role\n\nResources:\n  PackagingFoundryOIDCProvider:\n    Type: AWS::IAM::OIDCProvider\n    Properties:\n      Url: https://oidc.packaging-foundry.example.com\n      ClientIdList:\n        - packaging-foundry\n      ThumbprintList:\n        - 9e99a48a9960b14926bb7f3b02e22da2b0ab7280\n\n  PackagingFoundryRole:\n    Type: AWS::IAM::Role\n    Properties:\n      RoleName: PackagingFoundryOIDCRole\n      AssumeRolePolicyDocument:\n        Version: '2012-10-17'\n        Statement:\n          - Effect: Allow\n            Principal:\n              Federated: !Ref PackagingFoundryOIDCProvider\n            Action: sts:AssumeRoleWithWebIdentity`
+  },
+  cli: {
+    desc: 'Run these AWS CLI commands to manually create the OIDC provider and IAM role.',
+    code: `aws iam create-open-id-connect-provider \\\n  --url https://oidc.packaging-foundry.example.com \\\n  --client-id-list packaging-foundry \\\n  --thumbprint-list 9e99a48a9960b14926bb7f3b02e22da2b0ab7280\n\naws iam create-role \\\n  --role-name PackagingFoundryOIDCRole \\\n  --assume-role-policy-document file://trust-policy.json`
+  },
+  console: {
+    desc: 'Follow these steps in the AWS Management Console to configure the OIDC provider.',
+    code: `1. Open IAM Console → Identity Providers → Add provider\n2. Provider type: OpenID Connect\n3. Provider URL: https://oidc.packaging-foundry.example.com\n4. Audience: packaging-foundry\n5. Click "Get thumbprint" then "Add provider"\n6. Create IAM Role with Web Identity federation\n7. Select the OIDC provider you just created`
+  },
+  llm: {
+    desc: 'Use this prompt with an LLM assistant (e.g. Claude) to generate custom configuration scripts.',
+    code: `You are an AWS IAM configuration assistant.\n\nConfigure OIDC federation for Packaging Foundry:\n- Provider URL: https://oidc.packaging-foundry.example.com\n- Audience: packaging-foundry\n- Role name: PackagingFoundryOIDCRole\n\nGenerate infrastructure as code in [your preferred format].`
+  }
+};
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let catPage = 1;
+let gsStep = 1;
+let ddApp = null;
+let pkgStep = 0;
+let pkgApp = null;
+let pkgData = {format:'Cloudhouse Package', silentSwitch:'/S', installDir:'', scripts:''};
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function navigate(page) {
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.toggle('active', i.dataset.page === page));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
+  if (page === 'catalog') renderCatalog();
+}
+
+document.querySelectorAll('.sb-item').forEach(i => i.addEventListener('click', () => navigate(i.dataset.page)));
+
+// ═══════════════════════════════════════
+// CATALOG
+// ═══════════════════════════════════════
+function pkgIconSVG() {
+  return `<div class="pkg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5A70" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>`;
+}
+
+function renderCatalog() {
+  const q = (document.getElementById('cat-search').value || '').toLowerCase();
+  const pp = parseInt(document.getElementById('cat-pp').value) || 10;
+  const filtered = APPS.filter(a =>
+    a.name.toLowerCase().includes(q) || a.pub.toLowerCase().includes(q) || a.author.toLowerCase().includes(q)
+  );
+  const pages = Math.max(1, Math.ceil(filtered.length / pp));
+  if (catPage > pages) catPage = 1;
+  const slice = filtered.slice((catPage - 1) * pp, catPage * pp);
+
+  document.getElementById('cat-rows').innerHTML = slice.length === 0
+    ? '<div class="tbl-empty">No applications found</div>'
+    : slice.map(a => `
+      <div class="tbl-row cols-cat" data-name="${a.name}" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px">${pkgIconSVG()}<div><div class="app-name">${a.name}</div><div class="app-desc">${a.desc}</div></div></div>
+        <div class="text-dim">${a.pub}</div>
+        <div class="text-dim">${a.author}</div>
+        <div><span class="ver-badge">${a.ver}</span></div>
+        <div><button class="dots-btn" data-name="${a.name}" data-ver="${a.ver}" data-pub="${a.pub}" data-author="${a.author}">···</button></div>
+      </div>`).join('');
+
+  // Row click → View Details
+  document.getElementById('cat-rows').querySelectorAll('.tbl-row').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.classList.contains('dots-btn') || e.target.closest('.dots-btn')) return;
+      const app = APPS.find(a => a.name === row.dataset.name);
+      if (app) openViewDetails(app);
+    });
+  });
+
+  // Pagination
+  const pag = document.getElementById('cat-pag');
+  let html = `<button class="pg-btn" id="pg-prev">‹</button>`;
+  for (let i = 1; i <= pages; i++) html += `<button class="pg-btn ${i === catPage ? 'active' : ''}" data-pg="${i}">${i}</button>`;
+  html += `<button class="pg-btn" id="pg-next">›</button>`;
+  pag.innerHTML = html;
+
+  pag.querySelectorAll('[data-pg]').forEach(b => b.addEventListener('click', () => { catPage = +b.dataset.pg; renderCatalog(); }));
+  document.getElementById('pg-prev').addEventListener('click', () => { if (catPage > 1) { catPage--; renderCatalog(); } });
+  document.getElementById('pg-next').addEventListener('click', () => { if (catPage < pages) { catPage++; renderCatalog(); } });
+
+  document.getElementById('cat-rows').querySelectorAll('.dots-btn').forEach(b => {
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      ddApp = {name: b.dataset.name, ver: b.dataset.ver, pub: b.dataset.pub, author: b.dataset.author};
+      const rect = b.getBoundingClientRect();
+      const dd = document.getElementById('ff-dd');
+      dd.style.display = 'block';
+      dd.style.top = (rect.bottom + 4) + 'px';
+      dd.style.left = Math.max(4, rect.right - 200) + 'px';
+    });
+  });
+}
+
+document.getElementById('cat-search').addEventListener('input', () => { catPage = 1; renderCatalog(); });
+document.getElementById('cat-pp').addEventListener('change', () => { catPage = 1; renderCatalog(); });
+
+// ═══════════════════════════════════════
+// VIEW DETAILS MODAL
+// ═══════════════════════════════════════
+function openViewDetails(app) {
+  document.getElementById('det-title').textContent = app.name;
+  document.getElementById('det-pub').textContent = app.pub;
+  document.getElementById('det-author').textContent = app.author;
+  document.getElementById('det-ver').textContent = app.ver;
+  document.getElementById('det-short').textContent = app.desc;
+  document.getElementById('det-desc').textContent = app.fullDesc || app.desc;
+  document.getElementById('det-home').textContent = app.home || '';
+  document.getElementById('det-license').textContent = app.license || 'N/A';
+  document.getElementById('det-url').textContent = app.installerUrl || '';
+  document.getElementById('det-switches').textContent = app.switches || '/S';
+  // Tags
+  const tags = app.tags || [];
+  document.getElementById('det-tags').innerHTML = tags.map(t =>
+    `<span style="display:inline-block;padding:2px 8px;border-radius:4px;background:#142738;border:1px solid #1A3247;color:#8CA3B8;font-size:11px;font-weight:600;margin-right:4px;letter-spacing:.05em">${t}</span>`
+  ).join('');
+  document.getElementById('modal-details').classList.add('open');
+  updateGS(2);
+}
+
+document.getElementById('det-pkg-btn').addEventListener('click', () => {
+  const app = APPS.find(a => a.name === document.getElementById('det-title').textContent);
+  document.getElementById('modal-details').classList.remove('open');
+  if (app) {
+    pkgApp = {name: app.name, ver: app.ver, pub: app.pub, author: app.author, switches: app.switches};
+    pkgStep = 0;
+    openPackageModal();
+  }
+});
+
+
+document.addEventListener('click', e => {
+  if (!e.target.classList.contains('dots-btn')) {
+    document.getElementById('ff-dd').style.display = 'none';
+  }
+});
+
+document.getElementById('dd-pkg').addEventListener('click', () => {
+  document.getElementById('ff-dd').style.display = 'none';
+  if (!ddApp) return;
+  pkgApp = ddApp;
+  pkgStep = 0;
+  openPackageModal();
+});
+
+document.getElementById('dd-view').addEventListener('click', () => {
+  document.getElementById('ff-dd').style.display = 'none';
+  if (!ddApp) return;
+  const app = APPS.find(a => a.name === ddApp.name);
+  if (app) openViewDetails(app);
+});
+document.getElementById('dd-dl').addEventListener('click', () => {
+  document.getElementById('ff-dd').style.display = 'none';
+});
+document.getElementById('dd-del').addEventListener('click', () => {
+  document.getElementById('ff-dd').style.display = 'none';
+});
+
+// ═══════════════════════════════════════
+// PACKAGE MODAL — STEPPER
+// ═══════════════════════════════════════
+function openPackageModal() {
+  renderStepper();
+  renderStepContent();
+  document.getElementById('modal-pkg').classList.add('open');
+  updateGS(2);
+}
+
+function renderStepper() {
+  const s = document.getElementById('pkg-stepper');
+  let html = '';
+  PKG_STEPS.forEach((step, i) => {
+    const isDone = i < pkgStep;
+    const isActive = i === pkgStep;
+    const cls = isDone ? 'done' : isActive ? 'active' : 'inactive';
+    html += `<div class="step">
+      <div class="step-circle ${cls}">${isDone ? '✓' : i + 1}</div>
+      <div class="step-label"><div class="sl-main">${step.label}</div><div class="sl-sub">${step.sub}</div></div>
+    </div>`;
+    if (i < PKG_STEPS.length - 1) {
+      html += `<div class="step-connector ${isDone ? 'done' : ''}"></div>`;
+    }
+  });
+  s.innerHTML = html;
+}
+
+function renderStepContent() {
+  const c = document.getElementById('pkg-step-content');
+  const backBtn = document.getElementById('pkg-back');
+  const nextBtn = document.getElementById('pkg-next');
+
+  backBtn.style.display = pkgStep === 0 ? 'none' : 'flex';
+  nextBtn.textContent = pkgStep === PKG_STEPS.length - 1 ? 'Finish' : 'Next';
+
+  switch (pkgStep) {
+    case 0: // Upload
+      c.innerHTML = `
+        <div class="step-title">Step 1: Upload Installer</div>
+        <div class="step-sub">The installer will be sourced automatically from the catalog.</div>
+        <div class="info-banner">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Installer will be sourced from catalog: <strong style="margin-left:4px">${pkgApp ? pkgApp.name : ''}</strong>
+        </div>`;
+      break;
+    case 1: // Details
+      c.innerHTML = `
+        <div class="step-title">Step 2: Application Details</div>
+        <div class="step-sub">Review and confirm the application information.</div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+          <button class="auto-detect-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Auto Detect
+          </button>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Application Name</label><input value="${pkgApp ? pkgApp.name : ''}"></div>
+          <div class="field"><label>Version</label><input value="${pkgApp ? pkgApp.ver : ''}"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Publisher</label><input value="${pkgApp ? pkgApp.pub : ''}"></div>
+          <div class="field"><label>Author</label><input value="${pkgApp ? pkgApp.author : ''}"></div>
+        </div>
+        <div class="field"><label>Description</label><textarea>A fast, private and secure application.</textarea></div>`;
+      break;
+    case 2: // Install Config
+      c.innerHTML = `
+        <div class="step-title">Step 3: Install Configuration</div>
+        <div class="step-sub">Configure how the application will be installed silently.</div>
+        <div class="field">
+          <label>Silent Install Switch</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input value="/S" style="flex:1">
+            <button class="auto-detect-btn">Auto Detect</button>
+          </div>
+          <div class="field-hint">The switch used to run the installer silently without user interaction</div>
+        </div>
+        <div class="field">
+          <label>Install Directory (optional)</label>
+          <input placeholder="e.g. C:\\Program Files\\MyApp">
+          <div class="field-hint">Leave blank to use the default installation directory</div>
+        </div>
+        <div class="field">
+          <label>Additional Parameters (optional)</label>
+          <input placeholder="e.g. ALLUSERS=1 REBOOT=ReallySuppress">
+        </div>`;
+      break;
+    case 3: // Advanced Scripts
+      c.innerHTML = `
+        <div class="step-title">Step 4: Advanced Scripts</div>
+        <div class="step-sub">Add custom pre/post install scripts and exclusion rules. Click the header above to expand or collapse.</div>
+        <div style="border:1px solid #1A3247;border-radius:10px;overflow:hidden;margin-bottom:12px">
+          <div style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:#142738" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+            <span style="font-size:14px;font-weight:500;color:#fff">Pre-Install Script</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8CA3B8" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div style="display:none;padding:14px 16px">
+            <textarea style="width:100%;background:#0B151E;border:1px solid #1A3247;border-radius:8px;padding:10px;color:#7dc4e4;font-family:monospace;font-size:12px;min-height:100px;outline:none" placeholder="# Script runs before installation&#10;Write-Host 'Pre-install'"></textarea>
+          </div>
+        </div>
+        <div style="border:1px solid #1A3247;border-radius:10px;overflow:hidden">
+          <div style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:#142738" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+            <span style="font-size:14px;font-weight:500;color:#fff">Post-Install Script</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8CA3B8" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div style="display:none;padding:14px 16px">
+            <textarea style="width:100%;background:#0B151E;border:1px solid #1A3247;border-radius:8px;padding:10px;color:#7dc4e4;font-family:monospace;font-size:12px;min-height:100px;outline:none" placeholder="# Script runs after installation&#10;Write-Host 'Post-install'"></textarea>
+          </div>
+        </div>`;
+      break;
+    case 4: // Output Format
+      c.innerHTML = `
+        <div class="step-title">Step 5: Output Format</div>
+        <div class="step-sub">Choose the packaging format for your application output.</div>
+        <div class="radio-card selected" data-fmt="Cloudhouse Package">
+          <div class="radio-dot"></div>
+          <div><div class="radio-label">Cloudhouse Package</div><div class="radio-desc">Cloudhouse package format — optimised for AppStream 2.0 and virtual desktop delivery</div></div>
+        </div>
+        <div class="radio-card" data-fmt="MSIX">
+          <div class="radio-dot"></div>
+          <div><div class="radio-label">MSIX</div><div class="radio-desc">Microsoft MSIX packaging format — modern Windows app package standard</div></div>
+        </div>
+        <div class="radio-card" data-fmt="Both">
+          <div class="radio-dot"></div>
+          <div><div class="radio-label">Both</div><div class="radio-desc">Generate both Cloudhouse Package and MSIX outputs in a single packaging run</div></div>
+        </div>`;
+      c.querySelectorAll('.radio-card').forEach(card => {
+        card.addEventListener('click', () => {
+          c.querySelectorAll('.radio-card').forEach(c2 => c2.classList.remove('selected'));
+          card.classList.add('selected');
+          pkgData.format = card.dataset.fmt;
+        });
+      });
+      break;
+    case 5: // Review
+      c.innerHTML = `
+        <div class="step-title">Review &amp; Confirm</div>
+        <div class="step-sub">Review the details below before starting the packaging process. Click Edit to make changes inline.</div>
+        <div style="border:1px solid #1A3247;border-radius:10px;overflow:hidden;margin-bottom:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#142738;border-bottom:1px solid #1A3247">
+            <span style="font-size:11px;font-weight:700;color:#4B5A70;text-transform:uppercase;letter-spacing:.08em">Application Details</span>
+            <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;color:#4ad278;font-size:13px;cursor:pointer;font-family:inherit">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+          </div>
+          <div style="padding:0 16px">
+            <div class="review-kv"><span class="review-k">Application Name</span><span class="review-v">${pkgApp ? pkgApp.name : ''}</span></div>
+            <div class="review-kv"><span class="review-k">Version</span><span class="review-v">${pkgApp ? pkgApp.ver : ''}</span></div>
+            <div class="review-kv"><span class="review-k">Publisher</span><span class="review-v">${pkgApp ? pkgApp.pub : ''}</span></div>
+            <div class="review-kv"><span class="review-k">Author</span><span class="review-v">${pkgApp ? pkgApp.author : ''}</span></div>
+            <div class="review-kv" style="border-bottom:none"><span class="review-k">Description</span><span class="review-v">A free file archiver with a high compression ratio.</span></div>
+          </div>
+        </div>
+        <div style="border:1px solid #1A3247;border-radius:10px;overflow:hidden;margin-bottom:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#142738;border-bottom:1px solid #1A3247">
+            <span style="font-size:11px;font-weight:700;color:#4B5A70;text-transform:uppercase;letter-spacing:.08em">Install Configuration</span>
+            <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;color:#4ad278;font-size:13px;cursor:pointer;font-family:inherit">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+          </div>
+          <div style="padding:0 16px">
+            <div class="review-kv" style="border-bottom:none"><span class="review-k">Silent Switches</span><span class="review-v" style="font-family:monospace">${pkgApp ? (pkgApp.switches || '/S') : '/S'}</span></div>
+          </div>
+        </div>
+        <div style="border:1px solid #1A3247;border-radius:10px;overflow:hidden;margin-bottom:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#142738;border-bottom:1px solid #1A3247">
+            <span style="font-size:11px;font-weight:700;color:#4B5A70;text-transform:uppercase;letter-spacing:.08em">Advanced Configuration</span>
+            <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;color:#4ad278;font-size:13px;cursor:pointer;font-family:inherit">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+          </div>
+          <div style="padding:0 16px">
+            <div class="review-kv"><span class="review-k">Install Script</span><span class="review-v" style="color:#4B5A70">None</span></div>
+            <div class="review-kv"><span class="review-k">Pre-Req Script</span><span class="review-v" style="color:#4B5A70">None</span></div>
+            <div class="review-kv"><span class="review-k">Post-Packaging Script</span><span class="review-v" style="color:#4B5A70">None</span></div>
+            <div class="review-kv"><span class="review-k">Exclusion List</span><span class="review-v" style="color:#4B5A70">None</span></div>
+            <div class="review-kv"><span class="review-k">Output Format</span><span class="review-v">${pkgData.format}</span></div>
+            <div class="review-kv" style="border-bottom:none"><span class="review-k">Source</span><span class="review-v">Catalog: ${pkgApp ? pkgApp.name : ''}</span></div>
+          </div>
+        </div>`;
+      nextBtn.textContent = 'Start Packaging';
+      nextBtn.style.background = 'linear-gradient(135deg,#3BD481,#10A958)';
+      break;
+  }
+}
+
+document.getElementById('pkg-next').addEventListener('click', () => {
+  if (pkgStep < PKG_STEPS.length - 1) {
+    pkgStep++;
+    renderStepper();
+    renderStepContent();
+    updateGS(Math.min(9, pkgStep + 2));
+  } else {
+    // Start Packaging → close modal, go to warehouse
+    document.getElementById('modal-pkg').classList.remove('open');
+    navigate('warehouse');
+    updateGS(5);
+  }
+});
+
+document.getElementById('pkg-back').addEventListener('click', () => {
+  if (pkgStep > 0) { pkgStep--; renderStepper(); renderStepContent(); }
+});
+
+// ═══════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════
+document.querySelectorAll('[data-close]').forEach(b => {
+  b.addEventListener('click', () => document.getElementById(b.dataset.close).classList.remove('open'));
+});
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+document.getElementById('btn-new-pkg').addEventListener('click', () => navigate('catalog'));
+document.getElementById('btn-add-fleet').addEventListener('click', () => document.getElementById('modal-fleet').classList.add('open'));
+document.getElementById('btn-upload').addEventListener('click', () => document.getElementById('modal-upload').classList.add('open'));
+
+// ═══════════════════════════════════════
+// TASK DRAWER
+// ═══════════════════════════════════════
+const DRAWER_DATA = {
+  vscode: {
+    app: 'Visual Studio Code', status: 'Running', fleet: 'prod-fleet-eu', started: 'Today, 09:10',
+    logs: [
+      {t:'09:10:02', cls:'log-info', msg:'[INFO] Packaging job started — VSCode v1.87.0'},
+      {t:'09:10:05', cls:'log-ok',   msg:'[OK]   Installer sourced from catalog'},
+      {t:'09:10:12', cls:'log-ok',   msg:'[OK]   Silent install switch detected: /VERYSILENT /MERGETASKS=!runcode'},
+      {t:'09:15:33', cls:'log-ok',   msg:'[OK]   Install completed successfully'},
+      {t:'09:18:44', cls:'log-info', msg:'[INFO] Compressing Cloudhouse Package...'},
+      {t:'09:22:01', cls:'log-info', msg:'[INFO] Uploading to S3: s3://foundry-prod/vscode-1.87.0.cpkg'},
+      {t:'09:30:11', cls:'log-info', msg:'[INFO] Upload 72% complete...'},
+    ],
+    timeline: [
+      {label:'Job created', time:'09:10:02', color:'#60a5fa', done:true},
+      {label:'Install completed', time:'09:15:33', color:'#4ad278', done:true},
+      {label:'Packaging completed', time:'09:22:01', color:'#4ad278', done:true},
+      {label:'Uploading to S3', time:'In progress', color:'#60a5fa', done:false},
+      {label:'Deploy to fleet', time:'Pending', color:'#4B5A70', done:false},
+    ]
+  },
+  autocad: {
+    app: 'AutoCAD 2024', status: 'Running', fleet: 'dev-fleet-us', started: 'Today, 07:51',
+    logs: [
+      {t:'07:51:00', cls:'log-info', msg:'[INFO] Packaging job started — AutoCAD v2024.1'},
+      {t:'07:51:08', cls:'log-ok',   msg:'[OK]   Installer uploaded (7.5 GB)'},
+      {t:'08:10:22', cls:'log-ok',   msg:'[OK]   Silent install completed'},
+      {t:'08:45:00', cls:'log-ok',   msg:'[OK]   Cloudhouse Package compressed (1.2 GB)'},
+      {t:'08:45:10', cls:'log-info', msg:'[INFO] Uploading to S3... 38% complete'},
+    ],
+    timeline: [
+      {label:'Job created', time:'07:51:00', color:'#60a5fa', done:true},
+      {label:'Install completed', time:'08:10:22', color:'#4ad278', done:true},
+      {label:'Packaging completed', time:'08:45:00', color:'#4ad278', done:true},
+      {label:'Uploading to S3', time:'In progress', color:'#60a5fa', done:false},
+      {label:'Deploy to fleet', time:'Pending', color:'#4B5A70', done:false},
+    ]
+  },
+  zoom: {
+    app: 'Zoom', status: 'Failed', fleet: 'dev-fleet-us', started: 'Today, 07:30',
+    logs: [
+      {t:'07:30:00', cls:'log-info', msg:'[INFO] Packaging job started — Zoom v5.17.1'},
+      {t:'07:30:04', cls:'log-ok',   msg:'[OK]   Installer sourced from catalog'},
+      {t:'07:30:10', cls:'log-info', msg:'[INFO] Running silent install with switch: /quiet /norestart'},
+      {t:'07:42:15', cls:'log-err',  msg:'[ERR]  Install process exited with code 1602 (user cancelled)'},
+      {t:'07:42:15', cls:'log-err',  msg:'[ERR]  Packaging failed — silent switch may be incorrect'},
+      {t:'07:42:16', cls:'log-info', msg:'[INFO] Suggestion: try /silent or /S instead of /quiet'},
+    ],
+    timeline: [
+      {label:'Job created', time:'07:30:00', color:'#60a5fa', done:true},
+      {label:'Install started', time:'07:30:10', color:'#4ad278', done:true},
+      {label:'Install failed', time:'07:42:15', color:'#f87171', done:true},
+      {label:'Job terminated', time:'07:42:16', color:'#f87171', done:true},
+    ]
+  },
+  firefox: {
+    app: 'Mozilla Firefox', status: 'Deployed', fleet: 'prod-fleet-eu', started: 'Today, 06:00',
+    logs: [
+      {t:'06:00:01', cls:'log-info', msg:'[INFO] Packaging job started — Firefox v123.0'},
+      {t:'06:00:05', cls:'log-ok',   msg:'[OK]   Silent install: -ms -ma'},
+      {t:'06:08:11', cls:'log-ok',   msg:'[OK]   Install completed'},
+      {t:'06:09:20', cls:'log-ok',   msg:'[OK]   Cloudhouse Package created'},
+      {t:'06:11:44', cls:'log-ok',   msg:'[OK]   Uploaded to S3'},
+      {t:'06:12:00', cls:'log-ok',   msg:'[OK]   WorkSpaces Application created with icon'},
+      {t:'06:12:05', cls:'log-ok',   msg:'[OK]   Assigned to prod-fleet-eu — DEPLOYMENT COMPLETE'},
+    ],
+    timeline: [
+      {label:'Job created', time:'06:00:01', color:'#60a5fa', done:true},
+      {label:'Packaging completed', time:'06:09:20', color:'#4ad278', done:true},
+      {label:'Uploaded to S3', time:'06:11:44', color:'#4ad278', done:true},
+      {label:'WorkSpaces App created', time:'06:12:00', color:'#4ad278', done:true},
+      {label:'Deployed to fleet', time:'06:12:05', color:'#4ad278', done:true},
+    ]
+  }
+};
+
+function openDrawer(id) {
+  const d = DRAWER_DATA[id];
+  if (!d) return;
+  document.getElementById('drawer-title').textContent = d.app + ' — Task Details';
+  document.getElementById('dr-app').textContent = d.app;
+  document.getElementById('dr-fleet').textContent = d.fleet;
+  document.getElementById('dr-started').textContent = d.started;
+  const statusEl = document.getElementById('dr-status');
+  const statusColors = {Running:'#60a5fa', Failed:'#f87171', Deployed:'#4ad278'};
+  statusEl.innerHTML = `<span style="color:${statusColors[d.status]||'#fff'}">${d.status}</span>`;
+
+  // Logs
+  document.getElementById('dr-logs').innerHTML = d.logs.map(l =>
+    `<div><span class="log-time">${l.t}</span> <span class="${l.cls}">${l.msg}</span></div>`
+  ).join('');
+
+  // Timeline
+  document.getElementById('dr-timeline').innerHTML = d.timeline.map(t =>
+    `<div class="drawer-tl-item">
+      <div style="position:relative;flex-shrink:0">
+        <div class="drawer-tl-dot" style="background:${t.color};opacity:${t.done?1:.3}"></div>
+        <div class="drawer-tl-line"></div>
+      </div>
+      <div>
+        <div class="drawer-tl-label" style="opacity:${t.done?1:.5}">${t.label}</div>
+        <div class="drawer-tl-time">${t.time}</div>
+      </div>
+    </div>`
+  ).join('');
+
+  document.getElementById('task-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('task-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+
+const CREDS = [
+  {id:'prod-aws', name:'Production AWS Account', provider:'aws', method:'OIDC Federation', accountId:'123456789012', region:'eu-west-1', status:'active', verified:'Today, 09:30'},
+  {id:'dev-aws', name:'Development AWS Account', provider:'aws', method:'Access Key', accountId:'987654321098', region:'us-east-1', status:'rotation', verified:'30 days ago'},
+];
+
+function providerIcon(p) {
+  if (p === 'aws') return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="#FF9900" opacity=".9"/><path d="M2 17l10 5 10-5" stroke="#FF9900" stroke-width="1.5" fill="none"/><path d="M2 12l10 5 10-5" stroke="#FF9900" stroke-width="1.5" fill="none"/></svg>`;
+  if (p === 'azure') return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13.5 2.5L5 16h6.5L5 21.5h14L13.5 2.5z" fill="#0078D4" opacity=".85"/></svg>`;
+  return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#4285F4" opacity=".15"/><path d="M12 7h5.5A5.5 5.5 0 0112 17.5" stroke="#4285F4" stroke-width="2"/><circle cx="12" cy="12" r="2.5" fill="#34A853"/></svg>`;
+}
+
+function providerLabel(p) {
+  return {aws:'Amazon Web Services', azure:'Microsoft Azure', gcp:'Google Cloud'}[p] || p;
+}
+
+function renderCreds() {
+  const list = document.getElementById('creds-list');
+  if (!list) return;
+  if (CREDS.length === 0) {
+    list.innerHTML = '<div class="tbl-empty" style="padding:48px 0">No credentials configured. Click "+ Add Credential" to get started.</div>';
+    return;
+  }
+  list.innerHTML = CREDS.map(c => {
+    const isRotation = c.status === 'rotation';
+    const statusBadge = isRotation
+      ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(245,158,11,.12);color:#fbbf24"><span style="width:6px;height:6px;border-radius:50%;background:#fbbf24;display:inline-block"></span>Rotation due</span>`
+      : `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(16,169,88,.15);color:#4ad278"><span style="width:6px;height:6px;border-radius:50%;background:#4ad278;display:inline-block"></span>Active</span>`;
+    const rotateBtn = isRotation
+      ? `<button class="btn btn-green" style="font-size:12px;padding:5px 12px" onclick="openRotateCred('${c.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> Rotate Now</button>`
+      : `<button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="openRotateCred('${c.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> Rotate</button>`;
+    return `<div class="kv-card" id="cred-card-${c.id}" style="max-width:100%;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:10px;background:#142738;border:1px solid #1A3247;display:flex;align-items:center;justify-content:center;flex-shrink:0">${providerIcon(c.provider)}</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#fff">${c.name}</div>
+            <div style="font-size:12px;color:#4B5A70;margin-top:2px">${providerLabel(c.provider)} · ${c.method}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          ${statusBadge}
+          <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="openEditCred('${c.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
+          ${rotateBtn}
+          <button class="btn btn-outline" style="font-size:12px;padding:5px 12px;color:#f87171;border-color:#f87171" onclick="openDeleteCred('${c.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg> Delete</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:14px;border-top:1px solid #0f1d29">
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Account ID</div><div style="font-size:13px;color:#fff;font-family:monospace">${c.accountId}</div></div>
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Region</div><div style="font-size:13px;color:#fff">${c.region}</div></div>
+        <div><div style="font-size:11px;color:#4B5A70;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Last Verified</div><div style="font-size:13px;color:${isRotation ? '#fbbf24' : '#fff'}">${c.verified}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('btn-add-cred').addEventListener('click', () => {
+  // reset form
+  document.getElementById('cred-auth-method').value = 'oidc';
+  updateCredFields();
+  document.querySelectorAll('#provider-cards .radio-card').forEach((c,i) => c.classList.toggle('selected', i===0));
+  document.getElementById('modal-add-cred').classList.add('open');
+});
+
+// Provider card selection
+document.querySelectorAll('#provider-cards .radio-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('#provider-cards .radio-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  });
+});
+
+function updateCredFields() {
+  const method = document.getElementById('cred-auth-method').value;
+  document.getElementById('cred-fields-oidc').style.display = method === 'oidc' ? 'block' : 'none';
+  document.getElementById('cred-fields-accesskey').style.display = method === 'accesskey' ? 'block' : 'none';
+}
+
+// Save new credential
+document.querySelector('#modal-add-cred .btn-green').addEventListener('click', () => {
+  const provider = document.querySelector('#provider-cards .radio-card.selected')?.dataset.provider || 'aws';
+  const method = document.getElementById('cred-auth-method').value;
+  const methodLabel = method === 'oidc' ? 'OIDC Federation' : 'Access Key';
+  // Get name from correct field
+  const nameInputs = document.querySelectorAll('#cred-fields-oidc input, #cred-fields-accesskey input');
+  let name = '';
+  nameInputs.forEach(inp => { if (inp.placeholder.includes('e.g.') && inp.value) name = inp.value; });
+  if (!name) name = providerLabel(provider) + ' Account';
+  const regions = {aws:'us-east-1', azure:'eastus', gcp:'us-central1'};
+  const newCred = {
+    id: 'cred-' + Date.now(),
+    name,
+    provider,
+    method: methodLabel,
+    accountId: Math.floor(Math.random()*900000000000+100000000000).toString(),
+    region: regions[provider] || 'us-east-1',
+    status: 'active',
+    verified: 'Just now'
+  };
+  CREDS.push(newCred);
+  renderCreds();
+  document.getElementById('modal-add-cred').classList.remove('open');
+});
+
+let deleteTargetId = null;
+
+function openEditCred(id) {
+  const c = CREDS.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('edit-cred-name').value = c.name;
+  document.getElementById('modal-edit-cred').classList.add('open');
+  document.querySelector('#modal-edit-cred .btn-green').onclick = () => {
+    c.name = document.getElementById('edit-cred-name').value || c.name;
+    renderCreds();
+    document.getElementById('modal-edit-cred').classList.remove('open');
+  };
+}
+
+function openRotateCred(id) {
+  document.getElementById('modal-rotate-cred').classList.add('open');
+}
+
+function openDeleteCred(id) {
+  deleteTargetId = id;
+  const c = CREDS.find(x => x.id === id);
+  document.getElementById('delete-cred-name').textContent = c ? c.name : '';
+  document.getElementById('modal-delete-cred').classList.add('open');
+}
+
+document.querySelector('#modal-delete-cred .btn[style*="c0392b"]').addEventListener('click', () => {
+  if (deleteTargetId) {
+    const idx = CREDS.findIndex(x => x.id === deleteTargetId);
+    if (idx !== -1) CREDS.splice(idx, 1);
+    deleteTargetId = null;
+    renderCreds();
+  }
+  document.getElementById('modal-delete-cred').classList.remove('open');
+});
+
+// Init render
+renderCreds();
+
+
+
+document.querySelectorAll('[data-stab]').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('[data-stab]').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('stab-' + t.dataset.stab).classList.add('active');
+  });
+});
+
+document.querySelectorAll('[data-oidc]').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('[data-oidc]').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const d = OIDC_DATA[t.dataset.oidc];
+    document.getElementById('oidc-desc').textContent = d.desc;
+    document.getElementById('oidc-code').textContent = d.code;
+  });
+});
+
+// ═══════════════════════════════════════
+// LOGS TOGGLE
+// ═══════════════════════════════════════
+document.getElementById('log-toggle').addEventListener('click', function() { this.classList.toggle('off'); });
+document.querySelectorAll('.log-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('inactive'));
+});
+
+// ═══════════════════════════════════════
+// AW FILTER CARDS
+// ═══════════════════════════════════════
+document.querySelectorAll('.aw-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.aw-card').forEach(c => c.classList.remove('sel'));
+    card.classList.add('sel');
+  });
+});
+
+// ═══════════════════════════════════════
+// GETTING STARTED BAR
+// ═══════════════════════════════════════
+function updateGS(step) {
+  gsStep = Math.max(1, Math.min(9, step));
+  const s = GS_STEPS[gsStep - 1];
+  document.getElementById('gs-num').textContent = gsStep;
+  document.getElementById('gs-step-label').textContent = ` — Step ${gsStep} of 9: ${s.label}`;
+  document.getElementById('gs-step-msg').textContent = s.msg;
+}
+
+document.getElementById('gs-close').addEventListener('click', () => {
+  document.getElementById('gs-bar').style.display = 'none';
+});
+
+document.getElementById('gs-go').addEventListener('click', () => {
+  if (gsStep === 1) navigate('catalog');
+  else if (gsStep <= 3) {
+    navigate('catalog');
+  }
+});
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+navigate('dashboard');
+
+});
+</script>
+
+</body></html>
