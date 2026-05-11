@@ -1411,11 +1411,6 @@ body.dark #changes-search { color: #698787 !important; }
 body.dark #changes-search::placeholder { color: #698787; }
 body.dark #node-search { color: #698787 !important; }
 body.dark #node-search::placeholder { color: #698787; }
-body.dark #node-action-compare,
-body.dark #node-action-scan {
-  border-color: rgba(255,255,255,0.28) !important;
-  color: rgba(255,255,255,0.65) !important;
-}
 body.dark #v-policies [style*="color:#374151"] { color: #CBD5E1 !important; }
 body.dark #v-policies [style*="color:#64748b"], body.dark #v-policies [style*="color:#475569"] { color: var(--text-sec) !important; }
 body.dark #pe-tag-pop [style*="background:#f1f5f9"] { background: #0E2A22 !important; border-color: #143A2F !important; color: #CBD5E1 !important; }
@@ -9062,14 +9057,17 @@ function updateScanSelected() {
     countEl.style.display = checked > 0 ? 'inline' : 'none';
     countEl.textContent = checked + ' node' + (checked === 1 ? '' : 's') + ' selected';
   }
+  const isDark = document.body.classList.contains('dark');
+  const inactiveBorder = isDark ? 'rgba(255,255,255,0.28)' : 'var(--border)';
+  const inactiveColor  = isDark ? 'rgba(255,255,255,0.65)' : 'var(--text-sec)';
   // Scan Selected — active when 1+
   if (scanBtn) {
     scanBtn.disabled = checked === 0;
     scanBtn.style.opacity = '1';
     scanBtn.style.cursor = checked > 0 ? 'pointer' : 'not-allowed';
-    scanBtn.style.borderColor = checked > 0 ? 'var(--green2)' : 'var(--border)';
-    scanBtn.style.color = checked > 0 ? 'var(--green2)' : 'var(--text-sec)';
-    scanBtn.style.background = checked > 0 ? 'rgba(63,200,120,0.08)' : 'transparent';
+    scanBtn.style.borderColor = checked > 0 ? 'var(--green2)' : inactiveBorder;
+    scanBtn.style.color = checked > 0 ? 'var(--green2)' : inactiveColor;
+    scanBtn.style.background = checked > 0 ? 'rgba(63,200,120,0.12)' : 'transparent';
   }
   // Compare — active only when exactly 2
   if (compareBtn) {
@@ -9077,9 +9075,9 @@ function updateScanSelected() {
     compareBtn.disabled = !canCompare;
     compareBtn.style.opacity = '1';
     compareBtn.style.cursor = canCompare ? 'pointer' : 'not-allowed';
-    compareBtn.style.borderColor = canCompare ? '#818CF8' : 'var(--border)';
-    compareBtn.style.color = canCompare ? '#818CF8' : 'var(--text-sec)';
-    compareBtn.style.background = canCompare ? 'rgba(99,102,241,0.08)' : 'transparent';
+    compareBtn.style.borderColor = canCompare ? '#818CF8' : inactiveBorder;
+    compareBtn.style.color = canCompare ? '#818CF8' : inactiveColor;
+    compareBtn.style.background = canCompare ? 'rgba(99,102,241,0.12)' : 'transparent';
   }
 
   const btn = document.getElementById('scan-selected-btn');
