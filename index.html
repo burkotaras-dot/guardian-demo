@@ -2287,6 +2287,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
         </div>
 
+        <!-- Managed / Detected tabs -->
+        <div id="nodes-tabs" style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:22px;">
+          <div id="nodes-tab-managed" onclick="setNodesTab('managed')" style="padding:10px 18px;font-size:13px;font-weight:600;color:#3FC878;border-bottom:2px solid #3FC878;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Managed <span id="nodes-tab-managed-count" style="font-size:11px;color:var(--text-sec);font-weight:500;">(4)</span></div>
+          <div id="nodes-tab-detected" onclick="setNodesTab('detected')" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Detected <span id="nodes-tab-detected-count" style="background:rgba(217,119,6,0.15);color:#d97706;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;">3</span></div>
+        </div>
+
+        <div id="nodes-managed-view">
+
         <!-- Fleet summary cards -->
         <div class="stat-grid" style="margin-bottom:24px;">
           <div class="stat-card">
@@ -2548,6 +2556,137 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-sec);">
           Click any device to view its full dashboard and scan results
         </div>
+
+        </div><!-- /#nodes-managed-view -->
+
+        <!-- ─────────── Detected nodes view ─────────── -->
+        <div id="nodes-detected-view" style="display:none;">
+
+          <!-- Info banner -->
+          <div style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.25);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,119,6,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#0F172A;" id="detected-banner-title">3 newly discovered assets awaiting review</div>
+              <div style="font-size:11px;color:var(--text-sec);margin-top:3px;">Promote to start monitoring · Dismiss to ignore. Detected nodes don't affect compliance score or drift until promoted.</div>
+            </div>
+          </div>
+
+          <!-- Search + filters + bulk actions -->
+          <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+            <div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0;">
+              <div style="position:relative;width:340px;flex-shrink:0;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input id="detected-search" type="text" placeholder="Search detected nodes…" oninput="filterDetected()" style="width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:white;color:#0F172A;outline:none;box-sizing:border-box;font-family:inherit;">
+              </div>
+              <div style="display:flex;gap:6px;" id="detected-source-btns">
+                <button onclick="setDetectedSource('all')" id="ds-all" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid #00D794;cursor:pointer;background:rgba(63,200,120,0.1);color:#15803d;font-family:inherit;">All</button>
+                <button onclick="setDetectedSource('agent')" id="ds-agent" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:white;color:var(--text-sec);font-family:inherit;">Agent</button>
+                <button onclick="setDetectedSource('aws')" id="ds-aws" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:white;color:var(--text-sec);font-family:inherit;">AWS</button>
+                <button onclick="setDetectedSource('cmdb')" id="ds-cmdb" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:white;color:var(--text-sec);font-family:inherit;">CMDB</button>
+              </div>
+            </div>
+            <div id="detected-bulk-bar" style="display:none;align-items:center;gap:8px;">
+              <span id="detected-bulk-count" style="font-size:12px;color:var(--text-sec);">0 selected</span>
+              <button onclick="bulkPromote()" class="btn-primary" style="width:auto;padding:7px 14px;font-size:12px;">Promote selected</button>
+              <button onclick="bulkDismiss()" class="btn-secondary" style="width:auto;padding:7px 14px;font-size:12px;">Dismiss</button>
+            </div>
+          </div>
+
+          <!-- Detected table -->
+          <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+
+            <!-- Table header -->
+            <div style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 200px;padding:10px 20px;background:#f8fafc;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+              <div><input type="checkbox" id="select-all-detected" onchange="toggleAllDetected(this)" style="cursor:pointer;accent-color:var(--green2);"></div>
+              <div>Device</div>
+              <div>Discovered via</div>
+              <div>First seen</div>
+              <div>Status</div>
+              <div></div>
+            </div>
+
+            <!-- Detected row 1: AWS Discovery -->
+            <div class="detected-row" data-name="new-ec2-prod-04 EC2 Amazon Linux us-east-1" data-source="aws" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 200px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+              <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                </div>
+                <div>
+                  <div style="font-size:13px;font-weight:600;color:#0F172A;font-family:'DM Mono',monospace;">new-ec2-prod-04</div>
+                  <div style="font-size:11px;color:var(--text-sec);">EC2 · Amazon Linux 2 · us-east-1</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.6"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"/></svg>
+                <span style="font-size:12px;color:#0F172A;font-weight:500;">AWS Discovery</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-sec);">2 hours ago</div>
+              <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn-primary" style="width:auto;padding:6px 12px;font-size:11px;" onclick="promoteNode(this)">Promote</button>
+                <button class="btn-secondary" style="width:auto;padding:6px 12px;font-size:11px;" onclick="dismissNode(this)">Dismiss</button>
+              </div>
+            </div>
+
+            <!-- Detected row 2: Agent install -->
+            <div class="detected-row" data-name="DESKTOP-LH92K Windows 11 Pro" data-source="agent" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 200px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+              <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                </div>
+                <div>
+                  <div style="font-size:13px;font-weight:600;color:#0F172A;">DESKTOP-LH92K</div>
+                  <div style="font-size:11px;color:var(--text-sec);">Windows 11 Pro · 192.168.1.42</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.6"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <span style="font-size:12px;color:#0F172A;font-weight:500;">Agent install</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-sec);">1 day ago</div>
+              <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn-primary" style="width:auto;padding:6px 12px;font-size:11px;" onclick="promoteNode(this)">Promote</button>
+                <button class="btn-secondary" style="width:auto;padding:6px 12px;font-size:11px;" onclick="dismissNode(this)">Dismiss</button>
+              </div>
+            </div>
+
+            <!-- Detected row 3: CMDB / ServiceNow -->
+            <div class="detected-row" data-name="srv-db-replica Linux CMDB" data-source="cmdb" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 200px;padding:14px 20px;align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+              <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:8px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <div>
+                  <div style="font-size:13px;font-weight:600;color:#0F172A;font-family:'DM Mono',monospace;">srv-db-replica</div>
+                  <div style="font-size:11px;color:var(--text-sec);">Linux · CI0043217 · Database tier</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.6"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <span style="font-size:12px;color:#0F172A;font-weight:500;">ServiceNow CMDB</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-sec);">3 days ago</div>
+              <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn-primary" style="width:auto;padding:6px 12px;font-size:11px;" onclick="promoteNode(this)">Promote</button>
+                <button class="btn-secondary" style="width:auto;padding:6px 12px;font-size:11px;" onclick="dismissNode(this)">Dismiss</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Footer hint -->
+          <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-sec);">
+            Detected nodes are not monitored until promoted. Sources: agent, AWS, network scan, CMDB.
+          </div>
+
+        </div><!-- /#nodes-detected-view -->
 
 
         <!-- AWS Integration card — Connect state (default) -->
@@ -8678,6 +8817,158 @@ function toggleAllNodes(cb) {
     if (!row || row.style.display !== 'none') c.checked = cb.checked;
   });
   updateScanSelected();
+}
+
+// ── Managed / Detected tabs ──
+function setNodesTab(tab) {
+  var managedView = document.getElementById('nodes-managed-view');
+  var detectedView = document.getElementById('nodes-detected-view');
+  var mTab = document.getElementById('nodes-tab-managed');
+  var dTab = document.getElementById('nodes-tab-detected');
+  var isDark = document.body.classList.contains('dark');
+  var activeColor = '#3FC878';
+  var inactiveColor = isDark ? '#94A3B8' : 'var(--text-sec)';
+
+  if (tab === 'detected') {
+    managedView.style.display = 'none';
+    detectedView.style.display = 'block';
+    dTab.style.color = activeColor;
+    dTab.style.borderBottomColor = activeColor;
+    mTab.style.color = inactiveColor;
+    mTab.style.borderBottomColor = 'transparent';
+  } else {
+    managedView.style.display = 'block';
+    detectedView.style.display = 'none';
+    mTab.style.color = activeColor;
+    mTab.style.borderBottomColor = activeColor;
+    dTab.style.color = inactiveColor;
+    dTab.style.borderBottomColor = 'transparent';
+  }
+}
+
+// ── Detected nodes — filter by source ──
+var _detectedSource = 'all';
+function setDetectedSource(s) {
+  _detectedSource = s;
+  var isDark = document.body.classList.contains('dark');
+  var inactiveBg     = isDark ? '#062528' : 'white';
+  var inactiveColor  = isDark ? '#CBD5E1' : 'var(--text-sec)';
+  var inactiveBorder = isDark ? 'rgba(255,255,255,0.12)' : 'var(--border)';
+  var activeBg       = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
+  var activeColor    = isDark ? '#34D399' : '#15803d';
+  var activeBorder   = '#00D794';
+  ['all','agent','aws','cmdb'].forEach(function(id) {
+    var btn = document.getElementById('ds-' + id);
+    if (!btn) return;
+    btn.style.background  = id === s ? activeBg : inactiveBg;
+    btn.style.color       = id === s ? activeColor : inactiveColor;
+    btn.style.borderColor = id === s ? activeBorder : inactiveBorder;
+  });
+  filterDetected();
+}
+function filterDetected() {
+  var q = (document.getElementById('detected-search')?.value || '').toLowerCase();
+  var rows = document.querySelectorAll('.detected-row');
+  rows.forEach(function(row) {
+    var name = (row.dataset.name || '').toLowerCase();
+    var src = row.dataset.source || '';
+    var matchSearch = !q || name.includes(q);
+    var matchSrc = _detectedSource === 'all' || _detectedSource === src;
+    row.style.display = (matchSearch && matchSrc) ? 'grid' : 'none';
+  });
+}
+
+// ── Detected — bulk selection ──
+function updateDetectedBulk() {
+  var checked = document.querySelectorAll('.detected-checkbox:checked').length;
+  var total = document.querySelectorAll('.detected-checkbox').length;
+  var bar = document.getElementById('detected-bulk-bar');
+  var cnt = document.getElementById('detected-bulk-count');
+  var all = document.getElementById('select-all-detected');
+  if (bar) bar.style.display = checked > 0 ? 'flex' : 'none';
+  if (cnt) cnt.textContent = checked + ' selected';
+  if (all) {
+    all.indeterminate = checked > 0 && checked < total;
+    all.checked = checked === total && total > 0;
+  }
+}
+function toggleAllDetected(cb) {
+  document.querySelectorAll('.detected-checkbox').forEach(function(c) {
+    var row = c.closest('.detected-row');
+    if (!row || row.style.display !== 'none') c.checked = cb.checked;
+  });
+  updateDetectedBulk();
+}
+
+// ── Detected — promote / dismiss ──
+function _updateDetectedTabCount() {
+  var remaining = document.querySelectorAll('.detected-row').length;
+  var badge = document.getElementById('nodes-tab-detected-count');
+  var banner = document.getElementById('detected-banner-title');
+  if (badge) badge.textContent = remaining;
+  if (banner) banner.textContent = remaining === 0
+    ? 'No detected nodes — all assets are managed'
+    : remaining + ' newly discovered asset' + (remaining === 1 ? '' : 's') + ' awaiting review';
+}
+function _updateManagedTabCount(delta) {
+  var el = document.getElementById('nodes-tab-managed-count');
+  if (!el) return;
+  var m = el.textContent.match(/\((\d+)\)/);
+  var n = m ? parseInt(m[1], 10) : 4;
+  el.textContent = '(' + (n + delta) + ')';
+}
+function promoteNode(btn) {
+  var row = btn.closest('.detected-row');
+  if (!row) return;
+  var nameEl = row.querySelector('[style*="font-weight:600"]');
+  var nm = nameEl ? nameEl.textContent.trim() : 'Node';
+  row.style.transition = 'opacity 0.3s, transform 0.3s';
+  row.style.opacity = '0';
+  row.style.transform = 'translateX(20px)';
+  setTimeout(function() {
+    row.remove();
+    _updateDetectedTabCount();
+    _updateManagedTabCount(1);
+    updateDetectedBulk();
+    showToast(nm + ' promoted to Managed · monitoring started');
+  }, 300);
+}
+function dismissNode(btn) {
+  var row = btn.closest('.detected-row');
+  if (!row) return;
+  var nameEl = row.querySelector('[style*="font-weight:600"]');
+  var nm = nameEl ? nameEl.textContent.trim() : 'Node';
+  row.style.transition = 'opacity 0.3s';
+  row.style.opacity = '0';
+  setTimeout(function() {
+    row.remove();
+    _updateDetectedTabCount();
+    updateDetectedBulk();
+    showToast(nm + ' dismissed');
+  }, 300);
+}
+function bulkPromote() {
+  var rows = document.querySelectorAll('.detected-checkbox:checked');
+  var count = rows.length;
+  rows.forEach(function(cb) {
+    var row = cb.closest('.detected-row');
+    if (row) row.remove();
+  });
+  _updateDetectedTabCount();
+  _updateManagedTabCount(count);
+  updateDetectedBulk();
+  showToast(count + ' node' + (count === 1 ? '' : 's') + ' promoted to Managed');
+}
+function bulkDismiss() {
+  var rows = document.querySelectorAll('.detected-checkbox:checked');
+  var count = rows.length;
+  rows.forEach(function(cb) {
+    var row = cb.closest('.detected-row');
+    if (row) row.remove();
+  });
+  _updateDetectedTabCount();
+  updateDetectedBulk();
+  showToast(count + ' node' + (count === 1 ? '' : 's') + ' dismissed');
 }
 
 function skipChange() {
