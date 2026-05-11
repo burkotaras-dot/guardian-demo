@@ -2289,8 +2289,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <!-- Managed / Detected tabs -->
         <div id="nodes-tabs" style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:22px;">
-          <div id="nodes-tab-managed" onclick="setNodesTab('managed')" style="padding:10px 18px;font-size:13px;font-weight:600;color:#3FC878;border-bottom:2px solid #3FC878;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Managed <span id="nodes-tab-managed-count" style="font-size:11px;color:var(--text-sec);font-weight:500;">(4)</span></div>
-          <div id="nodes-tab-detected" onclick="setNodesTab('detected')" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Detected <span id="nodes-tab-detected-count" style="background:rgba(217,119,6,0.15);color:#d97706;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;">3</span></div>
+          <div id="nodes-tab-managed" onclick="setNodesTab('managed')" style="padding:10px 18px;font-size:13px;font-weight:600;color:#3FC878;border-bottom:2px solid #3FC878;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Managed <span id="nodes-tab-managed-count" style="background:rgba(100,116,139,0.12);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;">4</span></div>
+          <div id="nodes-tab-detected" onclick="setNodesTab('detected')" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Detected <span id="nodes-tab-detected-count" style="background:rgba(100,116,139,0.12);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;">3</span></div>
         </div>
 
         <div id="nodes-managed-view">
@@ -8913,9 +8913,8 @@ function _updateDetectedTabCount() {
 function _updateManagedTabCount(delta) {
   var el = document.getElementById('nodes-tab-managed-count');
   if (!el) return;
-  var m = el.textContent.match(/\((\d+)\)/);
-  var n = m ? parseInt(m[1], 10) : 4;
-  el.textContent = '(' + (n + delta) + ')';
+  var n = parseInt(el.textContent.trim(), 10) || 4;
+  el.textContent = n + delta;
 }
 function promoteNode(btn) {
   var row = btn.closest('.detected-row');
