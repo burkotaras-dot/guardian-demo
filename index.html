@@ -2280,6 +2280,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;vertical-align:middle;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Scan Selected
             </button>
+            <button id="compare-nodes-btn" onclick="showCompare()" style="display:none;width:auto;padding:10px 20px;font-size:13px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;background:#f1f5f9;border:1px solid #cbd5e1;color:#475569;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px;vertical-align:middle;"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+              Compare
+            </button>
             <button class="btn-primary" style="width:auto;padding:10px 20px;font-size:13px;" onclick="openAddDeviceModal()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add Device
@@ -2291,6 +2295,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div id="nodes-tabs" style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:22px;">
           <div id="nodes-tab-managed" onclick="setNodesTab('managed')" style="padding:10px 18px;font-size:13px;font-weight:600;color:#3FC878;border-bottom:2px solid #3FC878;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Managed <span id="nodes-tab-managed-count" style="background:rgba(100,116,139,0.12);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;">4</span></div>
           <div id="nodes-tab-detected" onclick="setNodesTab('detected')" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Detected <span id="nodes-tab-detected-count" style="background:rgba(100,116,139,0.12);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;">3</span></div>
+          <div id="nodes-tab-peer" onclick="setNodesTab('peer')" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Peer Baseline</div>
         </div>
 
         <div id="nodes-managed-view">
@@ -2688,6 +2693,133 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         </div><!-- /#nodes-detected-view -->
 
+        <!-- ─────────── Peer Baseline view ─────────── -->
+        <div id="nodes-peer-view" style="display:none;">
+
+          <!-- Header + Group selector -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:#0F172A;">Peer Baseline</div>
+              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">Compares each node's attributes against the majority pattern within its group to surface outliers.</div>
+            </div>
+            <div style="display:flex;gap:6px;" id="peer-group-btns">
+              <button onclick="setPeerGroup('os')" id="pg-os" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid #00D794;cursor:pointer;background:rgba(63,200,120,0.1);color:#15803d;font-family:inherit;">By OS</button>
+              <button onclick="setPeerGroup('team')" id="pg-team" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:white;color:var(--text-sec);font-family:inherit;">By Team</button>
+            </div>
+          </div>
+
+          <!-- OS groups -->
+          <div id="peer-os-view">
+
+            <!-- Group: Windows (3 nodes) -->
+            <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+              <div style="padding:14px 20px;background:#f8fafc;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                  </div>
+                  <div><span style="font-size:13px;font-weight:700;color:#0F172A;">Windows</span> <span style="font-size:12px;color:var(--text-sec);">· 3 nodes · MACBOOK-TARAS, SARAH-LAPTOP-01, JAMES-WIN-DESK</span></div>
+                </div>
+                <span style="font-size:11px;font-weight:600;color:#FB3C44;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.2);padding:3px 9px;border-radius:10px;">5 outliers</span>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:8px 20px;background:#f8fafc;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                <div>Attribute</div>
+                <div>Majority (2/3)</div>
+                <div>Outlier</div>
+              </div>
+              <!-- Rows -->
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:12px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                <div style="font-size:13px;font-weight:500;color:#0F172A;">Antivirus</div>
+                <div style="font-size:12px;color:var(--text-sec);">Defender · Enabled</div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:12px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                <div style="font-size:13px;font-weight:500;color:#0F172A;">Screen Lock timeout</div>
+                <div style="font-size:12px;color:var(--text-sec);">5 min</div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">30 min</span></div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:12px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                <div style="font-size:13px;font-weight:500;color:#0F172A;">Disk Encryption</div>
+                <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:12px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                <div style="font-size:13px;font-weight:500;color:#0F172A;">Local Admin accounts</div>
+                <div style="font-size:12px;color:var(--text-sec);">1 account</div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">3 accounts</span></div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:12px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                <div style="font-size:13px;font-weight:500;color:#0F172A;">Firewall</div>
+                <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:12px 20px;align-items:center;">
+                <div style="font-size:13px;font-weight:500;color:#0F172A;">Auto-update</div>
+                <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                <div style="font-size:12px;color:#00AF73;font-weight:600;">✓ All match</div>
+              </div>
+            </div>
+
+            <!-- Group: macOS (1 node) -->
+            <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+              <div style="padding:14px 20px;background:#f8fafc;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(63,200,120,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                  </div>
+                  <div><span style="font-size:13px;font-weight:700;color:#0F172A;">macOS</span> <span style="font-size:12px;color:var(--text-sec);">· 1 node · DEV-MACPRO-03</span></div>
+                </div>
+                <span style="font-size:11px;font-weight:500;color:var(--text-sec);background:rgba(100,116,139,0.1);border:1px solid rgba(100,116,139,0.2);padding:3px 9px;border-radius:10px;">Needs 2+ nodes for comparison</span>
+              </div>
+              <div style="padding:20px;text-align:center;color:var(--text-sec);font-size:12px;">
+                Add another macOS node to enable peer comparison within this group.
+              </div>
+            </div>
+
+          </div><!-- /#peer-os-view -->
+
+          <!-- Team groups (hidden by default) -->
+          <div id="peer-team-view" style="display:none;">
+            <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+              <div style="padding:14px 20px;background:#f8fafc;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  </div>
+                  <div><span style="font-size:13px;font-weight:700;color:#0F172A;">Engineering</span> <span style="font-size:12px;color:var(--text-sec);">· 3 nodes · MACBOOK-TARAS, DEV-MACPRO-03, JAMES-WIN-DESK</span></div>
+                </div>
+                <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">2 outliers</span>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:8px 20px;background:#f8fafc;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                <div>Attribute</div><div>Majority (2/3)</div><div>Outlier</div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:12px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                <div style="font-size:13px;font-weight:500;color:#0F172A;">Screen Lock timeout</div>
+                <div style="font-size:12px;color:var(--text-sec);">5 min</div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.1);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Never</span></div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr;padding:12px 20px;align-items:center;background:rgba(217,119,6,0.03);">
+                <div style="font-size:13px;font-weight:500;color:#0F172A;">Disk Encryption</div>
+                <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.1);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Pending scan</span></div>
+              </div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+              <div style="padding:14px 20px;background:#f8fafc;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  </div>
+                  <div><span style="font-size:13px;font-weight:700;color:#0F172A;">Finance</span> <span style="font-size:12px;color:var(--text-sec);">· 1 node · SARAH-LAPTOP-01</span></div>
+                </div>
+                <span style="font-size:11px;font-weight:500;color:var(--text-sec);background:rgba(100,116,139,0.1);border:1px solid rgba(100,116,139,0.2);padding:3px 9px;border-radius:10px;">Needs 2+ nodes for comparison</span>
+              </div>
+              <div style="padding:20px;text-align:center;color:var(--text-sec);font-size:12px;">Add another Finance team node to enable peer comparison.</div>
+            </div>
+          </div><!-- /#peer-team-view -->
+
+        </div><!-- /#nodes-peer-view -->
+
 
         <!-- AWS Integration card — Connect state (default) -->
         <div id="aws-connect-card" style="background:var(--intg-aws-bg);border:1px solid var(--intg-aws-bd);border-radius:12px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;">
@@ -2745,6 +2877,134 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <!-- ═══════════════════════════════════════
          NODE DETAIL
     ═══════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════
+         7A — Node-to-Node Compare View
+    ══════════════════════════════════════ -->
+    <div class="view" id="v-compare-nodes">
+      <div class="dash-main" style="max-width:100%;">
+
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <button class="btn-outline" onclick="showView('all-devices')" style="padding:6px 12px;font-size:12px;">← All Nodes</button>
+            <div>
+              <div style="font-size:18px;font-weight:700;color:#0F172A;letter-spacing:-0.4px;">Node Comparison</div>
+              <div style="font-size:12px;color:var(--text-sec);margin-top:3px;">MACBOOK-TARAS &nbsp;vs&nbsp; SARAH-LAPTOP-01</div>
+            </div>
+          </div>
+          <!-- Filter pills -->
+          <div style="display:flex;gap:6px;">
+            <button onclick="setCompareFilter('all')" id="cf-all" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid #00D794;cursor:pointer;background:rgba(63,200,120,0.1);color:#15803d;font-family:inherit;">All (12)</button>
+            <button onclick="setCompareFilter('diff')" id="cf-diff" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:white;color:var(--text-sec);font-family:inherit;">Differences (9)</button>
+            <button onclick="setCompareFilter('fail')" id="cf-fail" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:white;color:var(--text-sec);font-family:inherit;">Failing (7)</button>
+          </div>
+        </div>
+
+        <!-- Summary banner -->
+        <div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+          <div style="background:rgba(251,60,68,0.06);border:1px solid rgba(251,60,68,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:160px;">
+            <div style="font-size:22px;font-weight:700;color:#FB3C44;">9</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">attributes differ</div>
+          </div>
+          <div style="background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:160px;">
+            <div style="font-size:22px;font-weight:700;color:#00AF73;">3</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">attributes match</div>
+          </div>
+          <div style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:160px;">
+            <div style="font-size:22px;font-weight:700;color:#d97706;">SARAH-LAPTOP-01</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">more deviations</div>
+          </div>
+        </div>
+
+        <!-- Comparison table -->
+        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+
+          <!-- Table header -->
+          <div style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:10px 20px;background:#f8fafc;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+            <div>Attribute</div>
+            <div>MACBOOK-TARAS</div>
+            <div>SARAH-LAPTOP-01</div>
+            <div style="text-align:center;">Match</div>
+          </div>
+
+          <!-- Rows — data-match="diff|match" for filter -->
+          <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Antivirus</div>
+            <div style="font-size:12px;color:var(--text-sec);">Defender · <span style="color:#00AF73;font-weight:600;">Enabled</span></div>
+            <div style="font-size:12px;color:var(--text-sec);">Defender · <span style="color:#FB3C44;font-weight:600;">Disabled</span></div>
+            <div style="text-align:center;font-size:16px;color:#FB3C44;">✗</div>
+          </div>
+          <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Screen Lock timeout</div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">5 min</span></div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">30 min</span></div>
+            <div style="text-align:center;font-size:16px;color:#FB3C44;">✗</div>
+          </div>
+          <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Disk Encryption</div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Enabled (BitLocker)</span></div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Disabled</span></div>
+            <div style="text-align:center;font-size:16px;color:#FB3C44;">✗</div>
+          </div>
+          <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Firewall</div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Enabled (Domain)</span></div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Disabled</span></div>
+            <div style="text-align:center;font-size:16px;color:#FB3C44;">✗</div>
+          </div>
+          <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Local Admin accounts</div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">1</span></div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">3</span></div>
+            <div style="text-align:center;font-size:16px;color:#FB3C44;">✗</div>
+          </div>
+          <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Remote Desktop</div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Disabled</span></div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Enabled</span></div>
+            <div style="text-align:center;font-size:16px;color:#FB3C44;">✗</div>
+          </div>
+          <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">USB access</div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Blocked</span></div>
+            <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Allowed</span></div>
+            <div style="text-align:center;font-size:16px;color:#FB3C44;">✗</div>
+          </div>
+          <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">OS Version</div>
+            <div style="font-size:12px;color:var(--text-sec);">Windows 11 · 22H2</div>
+            <div style="font-size:12px;color:var(--text-sec);">Windows 11 Pro · 21H2</div>
+            <div style="text-align:center;font-size:14px;color:#d97706;">≠</div>
+          </div>
+          <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Password policy</div>
+            <div style="font-size:12px;color:var(--text-sec);">≥12 chars</div>
+            <div style="font-size:12px;color:var(--text-sec);">≥8 chars</div>
+            <div style="text-align:center;font-size:14px;color:#d97706;">≠</div>
+          </div>
+          <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;opacity:0.7;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Auto-update</div>
+            <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+            <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+            <div style="text-align:center;font-size:16px;color:#00AF73;">✓</div>
+          </div>
+          <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;opacity:0.7;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Audit logging</div>
+            <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+            <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+            <div style="text-align:center;font-size:16px;color:#00AF73;">✓</div>
+          </div>
+          <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 80px;padding:13px 20px;align-items:center;border-left:3px solid transparent;opacity:0.7;">
+            <div style="font-size:13px;font-weight:500;color:#0F172A;">Screensaver lock</div>
+            <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+            <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+            <div style="text-align:center;font-size:16px;color:#00AF73;">✓</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <div class="view" id="v-node-detail">
       <div class="page-header">
         <div style="display:flex;align-items:center;gap:12px;">
@@ -8380,7 +8640,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 <div class="screen-lbl" id="lbl">s01 · Landing</div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','changes-done','all-devices','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
+const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Device',
   s05:'s05 · Install Agent',
@@ -8394,6 +8654,7 @@ const LABELS = {
   'changes-done':'s16 · All Reconciled',
   'all-devices':'s10 · All Nodes',
   'node-detail':'Node · MACBOOK-TARAS',
+  'compare-nodes':'Compare · MACBOOK-TARAS vs SARAH-LAPTOP-01',
   'policies':'Policies',
   'policy-create':'Policy · Create',
   'policy-detail':'Policy Detail',
@@ -8781,6 +9042,9 @@ function undoAcceptRisk() {
 function updateScanSelected() {
   const checked = document.querySelectorAll('.node-checkbox:checked').length;
   const total = document.querySelectorAll('.node-checkbox').length;
+  // Compare button — show only when exactly 2 selected
+  const compareBtn = document.getElementById('compare-nodes-btn');
+  if (compareBtn) compareBtn.style.display = checked === 2 ? 'inline-flex' : 'none';
   const btn = document.getElementById('scan-selected-btn');
   const all = document.getElementById('select-all-nodes');
   if (btn) {
@@ -8819,31 +9083,87 @@ function toggleAllNodes(cb) {
   updateScanSelected();
 }
 
-// ── Managed / Detected tabs ──
+// ── Managed / Detected / Peer Baseline tabs ──
 function setNodesTab(tab) {
   var managedView = document.getElementById('nodes-managed-view');
   var detectedView = document.getElementById('nodes-detected-view');
+  var peerView    = document.getElementById('nodes-peer-view');
   var mTab = document.getElementById('nodes-tab-managed');
   var dTab = document.getElementById('nodes-tab-detected');
+  var pTab = document.getElementById('nodes-tab-peer');
   var isDark = document.body.classList.contains('dark');
-  var activeColor = '#3FC878';
+  var activeColor   = '#3FC878';
   var inactiveColor = isDark ? '#94A3B8' : 'var(--text-sec)';
 
-  if (tab === 'detected') {
-    managedView.style.display = 'none';
+  [managedView, detectedView, peerView].forEach(function(v) { if (v) v.style.display = 'none'; });
+  [mTab, dTab, pTab].forEach(function(t) { if (t) { t.style.color = inactiveColor; t.style.borderBottomColor = 'transparent'; } });
+
+  if (tab === 'detected' && detectedView && dTab) {
     detectedView.style.display = 'block';
-    dTab.style.color = activeColor;
-    dTab.style.borderBottomColor = activeColor;
-    mTab.style.color = inactiveColor;
-    mTab.style.borderBottomColor = 'transparent';
+    dTab.style.color = activeColor; dTab.style.borderBottomColor = activeColor;
+  } else if (tab === 'peer' && peerView && pTab) {
+    peerView.style.display = 'block';
+    pTab.style.color = activeColor; pTab.style.borderBottomColor = activeColor;
   } else {
-    managedView.style.display = 'block';
-    detectedView.style.display = 'none';
-    mTab.style.color = activeColor;
-    mTab.style.borderBottomColor = activeColor;
-    dTab.style.color = inactiveColor;
-    dTab.style.borderBottomColor = 'transparent';
+    if (managedView) managedView.style.display = 'block';
+    if (mTab) { mTab.style.color = activeColor; mTab.style.borderBottomColor = activeColor; }
   }
+}
+
+// ── Peer Baseline — group switcher ──
+var _peerGroup = 'os';
+function setPeerGroup(g) {
+  _peerGroup = g;
+  var isDark = document.body.classList.contains('dark');
+  var inactiveBg = isDark ? '#062528' : 'white';
+  var inactiveColor = isDark ? '#CBD5E1' : 'var(--text-sec)';
+  var inactiveBorder = isDark ? 'rgba(255,255,255,0.12)' : 'var(--border)';
+  var activeBg = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
+  var activeColor = isDark ? '#34D399' : '#15803d';
+  ['os','team'].forEach(function(id) {
+    var btn = document.getElementById('pg-' + id);
+    if (!btn) return;
+    btn.style.background  = id === g ? activeBg : inactiveBg;
+    btn.style.color       = id === g ? activeColor : inactiveColor;
+    btn.style.borderColor = id === g ? '#00D794' : inactiveBorder;
+  });
+  var osView   = document.getElementById('peer-os-view');
+  var teamView = document.getElementById('peer-team-view');
+  if (osView)   osView.style.display   = g === 'os'   ? 'block' : 'none';
+  if (teamView) teamView.style.display = g === 'team' ? 'block' : 'none';
+}
+
+// ── Compare filter ──
+var _compareFilter = 'all';
+function setCompareFilter(f) {
+  _compareFilter = f;
+  var isDark = document.body.classList.contains('dark');
+  var inactiveBg = isDark ? '#062528' : 'white';
+  var inactiveColor = isDark ? '#CBD5E1' : 'var(--text-sec)';
+  var inactiveBorder = isDark ? 'rgba(255,255,255,0.12)' : 'var(--border)';
+  var activeBg = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
+  var activeColor = isDark ? '#34D399' : '#15803d';
+  ['all','diff','fail'].forEach(function(id) {
+    var btn = document.getElementById('cf-' + id);
+    if (!btn) return;
+    btn.style.background  = id === f ? activeBg : inactiveBg;
+    btn.style.color       = id === f ? activeColor : inactiveColor;
+    btn.style.borderColor = id === f ? '#00D794' : inactiveBorder;
+  });
+  document.querySelectorAll('.compare-row').forEach(function(row) {
+    var match   = row.dataset.match;
+    var failing = row.dataset.failing === 'true';
+    var show = true;
+    if (f === 'diff')  show = match === 'diff';
+    if (f === 'fail')  show = failing;
+    row.style.display = show ? 'grid' : 'none';
+  });
+}
+
+// ── Show Compare view ──
+function showCompare() {
+  showView('compare-nodes');
+  setCompareFilter('all');
 }
 
 // ── Detected nodes — filter by source ──
