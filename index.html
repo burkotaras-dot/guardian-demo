@@ -8755,9 +8755,16 @@ document.addEventListener('click', function(e) {
 
 function filterChanges(type) {
   const isDark = document.body.classList.contains('dark');
-  const activeBg     = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
-  const activeBorder = isDark ? '#34D399' : '#3FC878';
-  const activeColor  = isDark ? '#FFFFFF' : '#15803d';
+  const styles = {
+    all:      isDark ? { bg:'rgba(16,185,129,0.18)',  border:'#34D399',              color:'#FFFFFF' }
+                     : { bg:'rgba(63,200,120,0.1)',   border:'#3FC878',              color:'#15803d' },
+    modified: isDark ? { bg:'rgba(194,65,12,0.18)',   border:'rgba(253,186,116,0.7)',color:'#FFFFFF' }
+                     : { bg:'rgba(194,65,12,0.07)',   border:'#fed7aa',              color:'#c2410c' },
+    added:    isDark ? { bg:'rgba(37,99,235,0.18)',   border:'rgba(147,197,253,0.7)',color:'#FFFFFF' }
+                     : { bg:'rgba(37,99,235,0.07)',   border:'#bfdbfe',              color:'#2563eb' },
+    removed:  isDark ? { bg:'rgba(251,60,68,0.18)',   border:'rgba(251,60,68,0.5)',  color:'#FFFFFF' }
+                     : { bg:'rgba(251,60,68,0.07)',   border:'#fca5a5',              color:'#dc2626' },
+  };
   // Update active pill
   ['all','modified','added','removed'].forEach(t => {
     const pill = document.getElementById('filter-' + t);
@@ -8767,10 +8774,11 @@ function filterChanges(type) {
     pill.style.color = '';
   });
   const active = document.getElementById('filter-' + type);
+  const s = styles[type] || styles.all;
   if (active) {
-    active.style.background = activeBg;
-    active.style.borderColor = activeBorder;
-    active.style.color = activeColor;
+    active.style.background = s.bg;
+    active.style.borderColor = s.border;
+    active.style.color = s.color;
     active.style.fontWeight = '600';
   }
   // Show/hide cards
