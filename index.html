@@ -5391,9 +5391,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
         document.body.classList.add('dark');
         // inline sync needs full DOM — wait for DOMContentLoaded
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function(){ _syncInlineTheme(true); });
+          document.addEventListener('DOMContentLoaded', function(){ _syncInlineTheme(true); filterChanges('all'); });
         } else {
-          _syncInlineTheme(true);
+          _syncInlineTheme(true); filterChanges('all');
         }
       }
     })();
@@ -8757,7 +8757,7 @@ function filterChanges(type) {
   const isDark = document.body.classList.contains('dark');
   const activeBg     = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
   const activeBorder = isDark ? '#34D399' : '#3FC878';
-  const activeColor  = isDark ? '#34D399' : '#15803d';
+  const activeColor  = isDark ? '#FFFFFF' : '#15803d';
   // Update active pill
   ['all','modified','added','removed'].forEach(t => {
     const pill = document.getElementById('filter-' + t);
