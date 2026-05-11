@@ -2276,14 +2276,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div id="all-devices-sub" style="font-size:12px;color:var(--text-sec);margin-top:3px;">4 devices monitored · Last scan up to 2 hours ago</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
-            <button id="scan-selected-btn" style="width:auto;padding:10px 20px;font-size:13px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;color:#64748b;font-family:'DM Sans',sans-serif;font-weight:500;cursor:not-allowed;" disabled>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;vertical-align:middle;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              Scan Selected
-            </button>
-            <button id="compare-nodes-btn" onclick="showCompare()" style="display:none;width:auto;padding:10px 20px;font-size:13px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;background:#f1f5f9;border:1px solid #cbd5e1;color:#475569;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px;vertical-align:middle;"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
-              Compare
-            </button>
             <button class="btn-primary" style="width:auto;padding:10px 20px;font-size:13px;" onclick="openAddDeviceModal()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add Device
@@ -9042,9 +9034,15 @@ function undoAcceptRisk() {
 function updateScanSelected() {
   const checked = document.querySelectorAll('.node-checkbox:checked').length;
   const total = document.querySelectorAll('.node-checkbox').length;
-  // Compare button — show only when exactly 2 selected
-  const compareBtn = document.getElementById('compare-nodes-btn');
-  if (compareBtn) compareBtn.style.display = checked === 2 ? 'inline-flex' : 'none';
+
+  // Floating action bar
+  const bar = document.getElementById('node-action-bar');
+  const countEl = document.getElementById('node-action-count');
+  const compareBtn = document.getElementById('node-action-compare');
+  if (bar) bar.style.display = checked > 0 ? 'flex' : 'none';
+  if (countEl) countEl.textContent = checked + ' node' + (checked === 1 ? '' : 's') + ' selected';
+  if (compareBtn) compareBtn.style.display = checked === 2 ? 'flex' : 'none';
+
   const btn = document.getElementById('scan-selected-btn');
   const all = document.getElementById('select-all-nodes');
   if (btn) {
@@ -9080,6 +9078,10 @@ function toggleAllNodes(cb) {
     const row = c.closest('.node-row');
     if (!row || row.style.display !== 'none') c.checked = cb.checked;
   });
+  updateScanSelected();
+}
+function clearNodeSelection() {
+  document.querySelectorAll('.node-checkbox, #select-all-nodes').forEach(function(c) { c.checked = false; c.indeterminate = false; });
   updateScanSelected();
 }
 
@@ -10532,6 +10534,21 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
 </div>
 
 <!-- Global success toast -->
+<!-- Floating node action bar -->
+<div id="node-action-bar" style="display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:9990;background:#0F172A;border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.35);align-items:center;gap:12px;font-family:'DM Sans',sans-serif;">
+  <span id="node-action-count" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);white-space:nowrap;">2 nodes selected</span>
+  <div style="width:1px;height:20px;background:rgba(255,255,255,0.15);"></div>
+  <button id="node-action-scan" onclick="go('s07')" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;background:rgba(63,200,120,0.15);border:1px solid rgba(63,200,120,0.35);color:#3FC878;font-family:inherit;white-space:nowrap;">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Scan
+  </button>
+  <button id="node-action-compare" onclick="showCompare()" style="display:none;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.4);color:#818CF8;font-family:inherit;white-space:nowrap;">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+    Compare
+  </button>
+  <button onclick="clearNodeSelection()" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:transparent;cursor:pointer;color:rgba(255,255,255,0.5);font-size:16px;padding:0;font-family:inherit;" title="Clear selection">✕</button>
+</div>
+
 <div id="success-toast" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:9998;background:#166534;color:white;font-size:13px;font-weight:600;padding:12px 22px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.18);display:flex;align-items:center;gap:10px;pointer-events:none;opacity:0;transition:opacity 0.25s ease;">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="success-toast-msg">Done</span>
