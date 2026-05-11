@@ -9060,14 +9060,17 @@ function updateScanSelected() {
   const isDark = document.body.classList.contains('dark');
   const inactiveBorder = isDark ? 'rgba(255,255,255,0.28)' : 'var(--border)';
   const inactiveColor  = isDark ? 'rgba(255,255,255,0.65)' : 'var(--text-sec)';
+  const scanActiveBorder = isDark ? 'rgba(16,185,129,0.45)' : 'var(--green2)';
+  const scanActiveColor  = isDark ? '#34D399' : 'var(--green2)';
+  const scanActiveBg     = isDark ? 'rgba(16,185,129,0.08)' : 'rgba(63,200,120,0.12)';
   // Scan Selected — active when 1+
   if (scanBtn) {
     scanBtn.disabled = checked === 0;
     scanBtn.style.opacity = '1';
     scanBtn.style.cursor = checked > 0 ? 'pointer' : 'not-allowed';
-    scanBtn.style.borderColor = checked > 0 ? 'var(--green2)' : inactiveBorder;
-    scanBtn.style.color = checked > 0 ? 'var(--green2)' : inactiveColor;
-    scanBtn.style.background = checked > 0 ? 'rgba(63,200,120,0.12)' : 'transparent';
+    scanBtn.style.borderColor = checked > 0 ? scanActiveBorder : inactiveBorder;
+    scanBtn.style.color = checked > 0 ? scanActiveColor : inactiveColor;
+    scanBtn.style.background = checked > 0 ? scanActiveBg : 'transparent';
   }
   // Compare — active only when exactly 2
   if (compareBtn) {
