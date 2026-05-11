@@ -2315,8 +2315,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
 
         <!-- Inline search + filter -->
-        <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;">
-          <div style="position:relative;width:calc((100% - 28px) / 3);flex-shrink:0;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;justify-content:space-between;">
+          <div style="display:flex;gap:10px;align-items:center;">
+          <div style="position:relative;width:340px;flex-shrink:0;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input id="node-search" type="text" placeholder="Search nodes…" oninput="filterNodes()" style="width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:white;color:#0F172A;outline:none;box-sizing:border-box;font-family:inherit;">
           </div>
@@ -2324,6 +2325,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <button onclick="setNodeFilter('all')" id="nf-all" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid #00D794;cursor:pointer;background:rgba(63,200,120,0.1);color:#15803d;transition:all 0.15s;font-family:inherit;">All</button>
             <button onclick="setNodeFilter('local')" id="nf-local" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:white;color:var(--text-sec);transition:all 0.15s;font-family:inherit;">Local</button>
             <button onclick="setNodeFilter('aws')" id="nf-aws" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:white;color:var(--text-sec);transition:all 0.15s;font-family:inherit;">AWS</button>
+          </div>
+          </div><!-- end left group -->
+          <!-- Right: selection actions -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span id="node-action-count" style="display:none;font-size:12px;font-weight:500;color:var(--text-sec);white-space:nowrap;"></span>
+            <button id="node-action-compare" onclick="showCompare()" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:white;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:0.45;white-space:nowrap;transition:all 0.15s;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+              Compare
+            </button>
+            <button id="node-action-scan" onclick="go('s07')" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:white;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:0.45;white-space:nowrap;transition:all 0.15s;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Scan Selected
+            </button>
           </div>
         </div>
 
@@ -9035,13 +9049,33 @@ function updateScanSelected() {
   const checked = document.querySelectorAll('.node-checkbox:checked').length;
   const total = document.querySelectorAll('.node-checkbox').length;
 
-  // Floating action bar
-  const bar = document.getElementById('node-action-bar');
+  // Inline action buttons (right of search row)
   const countEl = document.getElementById('node-action-count');
   const compareBtn = document.getElementById('node-action-compare');
-  if (bar) bar.style.display = checked > 0 ? 'flex' : 'none';
-  if (countEl) countEl.textContent = checked + ' node' + (checked === 1 ? '' : 's') + ' selected';
-  if (compareBtn) compareBtn.style.display = checked === 2 ? 'flex' : 'none';
+  const scanBtn = document.getElementById('node-action-scan');
+  if (countEl) {
+    countEl.style.display = checked > 0 ? 'inline' : 'none';
+    countEl.textContent = checked + ' node' + (checked === 1 ? '' : 's') + ' selected';
+  }
+  // Scan Selected — active when 1+
+  if (scanBtn) {
+    scanBtn.disabled = checked === 0;
+    scanBtn.style.opacity = checked > 0 ? '1' : '0.45';
+    scanBtn.style.cursor = checked > 0 ? 'pointer' : 'not-allowed';
+    scanBtn.style.borderColor = checked > 0 ? 'var(--green2)' : 'var(--border)';
+    scanBtn.style.color = checked > 0 ? 'var(--green2)' : 'var(--text-sec)';
+    scanBtn.style.background = checked > 0 ? 'rgba(63,200,120,0.08)' : 'white';
+  }
+  // Compare — active only when exactly 2
+  if (compareBtn) {
+    const canCompare = checked === 2;
+    compareBtn.disabled = !canCompare;
+    compareBtn.style.opacity = canCompare ? '1' : '0.45';
+    compareBtn.style.cursor = canCompare ? 'pointer' : 'not-allowed';
+    compareBtn.style.borderColor = canCompare ? '#818CF8' : 'var(--border)';
+    compareBtn.style.color = canCompare ? '#818CF8' : 'var(--text-sec)';
+    compareBtn.style.background = canCompare ? 'rgba(99,102,241,0.08)' : 'white';
+  }
 
   const btn = document.getElementById('scan-selected-btn');
   const all = document.getElementById('select-all-nodes');
@@ -10534,20 +10568,6 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
 </div>
 
 <!-- Global success toast -->
-<!-- Floating node action bar -->
-<div id="node-action-bar" style="display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:9990;background:#0F172A;border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.35);align-items:center;gap:12px;font-family:'DM Sans',sans-serif;">
-  <span id="node-action-count" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);white-space:nowrap;">2 nodes selected</span>
-  <div style="width:1px;height:20px;background:rgba(255,255,255,0.15);"></div>
-  <button id="node-action-scan" onclick="go('s07')" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;background:rgba(63,200,120,0.15);border:1px solid rgba(63,200,120,0.35);color:#3FC878;font-family:inherit;white-space:nowrap;">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-    Scan
-  </button>
-  <button id="node-action-compare" onclick="showCompare()" style="display:none;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.4);color:#818CF8;font-family:inherit;white-space:nowrap;">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
-    Compare
-  </button>
-  <button onclick="clearNodeSelection()" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:transparent;cursor:pointer;color:rgba(255,255,255,0.5);font-size:16px;padding:0;font-family:inherit;" title="Clear selection">✕</button>
-</div>
 
 <div id="success-toast" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:9998;background:#166534;color:white;font-size:13px;font-weight:600;padding:12px 22px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.18);display:flex;align-items:center;gap:10px;pointer-events:none;opacity:0;transition:opacity 0.25s ease;">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
