@@ -8920,8 +8920,14 @@ function _updateManagedTabCount(delta) {
 function promoteNode(btn) {
   var row = btn.closest('.detected-row');
   if (!row) return;
-  var nameEl = row.querySelector('[style*="font-weight:600"]');
-  var nm = nameEl ? nameEl.textContent.trim() : 'Node';
+  // Extract device info from detected row structure
+  var deviceCell = row.children[1];
+  var iconDiv   = deviceCell ? deviceCell.querySelector('[style*="width:32px"]') : null;
+  var textDiv   = iconDiv ? iconDiv.nextElementSibling : null;
+  var nm        = textDiv ? (textDiv.firstElementChild || {}).textContent.trim() : 'Node';
+  var subtitle  = textDiv ? (textDiv.lastElementChild  || {}).textContent.trim() : '';
+  var iconHTML  = iconDiv ? iconDiv.outerHTML : '';
+
   row.style.transition = 'opacity 0.3s, transform 0.3s';
   row.style.opacity = '0';
   row.style.transform = 'translateX(20px)';
@@ -8930,6 +8936,49 @@ function promoteNode(btn) {
     _updateDetectedTabCount();
     _updateManagedTabCount(1);
     updateDetectedBulk();
+
+    // Build new managed row
+    var newRow = document.createElement('div');
+    newRow.className = 'node-row';
+    newRow.dataset.name = nm + ' ' + subtitle;
+    newRow.dataset.type = 'local';
+    newRow.style.cssText = 'display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;background:white;';
+    newRow.setAttribute('onmouseover', "this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'");
+    newRow.setAttribute('onmouseout', "this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'");
+    newRow.innerHTML =
+      '<div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>' +
+      '<div style="display:flex;align-items:center;gap:10px;">' + iconHTML +
+        '<div><div style="font-size:13px;font-weight:600;color:#0F172A;">' + nm + '</div>' +
+        '<div style="font-size:11px;color:var(--text-sec);">' + subtitle + '</div></div></div>' +
+      '<div style="font-size:12px;font-style:italic;color:var(--text-sec);">Pending scan</div>' +
+      '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
+      '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
+      '<div style="font-size:12px;color:var(--text-sec);">Never</div>' +
+      '<div><button class="btn-primary" style="font-size:11px;padding:5px 12px;width:auto;" onclick="event.stopPropagation();showToast(\'Scan started\')">Scan now</button></div>';
+
+    // Insert before AWS rows section (or at end of table)
+    var managedTable = document.querySelector('#nodes-managed-view [style*="box-shadow"]');
+    if (managedTable) {
+      var awsRows = managedTable.querySelector('#aws-device-rows');
+      if (awsRows) { managedTable.insertBefore(newRow, awsRows); }
+      else { managedTable.appendChild(newRow); }
+    }
+
+    // Apply dark mode transforms to the new node's inline styles
+    var isDark = document.body.classList.contains('dark');
+    if (isDark) _syncInlineTheme(true);
+
+    // Switch to Managed tab and highlight the new row
+    setNodesTab('managed');
+    setTimeout(function() {
+      newRow.style.background = isDark ? 'rgba(63,200,120,0.08)' : 'rgba(63,200,120,0.06)';
+      newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(function() {
+        newRow.style.transition = 'background 1.2s';
+        newRow.style.background = isDark ? 'var(--bg-card)' : 'white';
+      }, 1200);
+    }, 150);
+
     showToast(nm + ' promoted to Managed · monitoring started');
   }, 300);
 }
@@ -8948,15 +8997,59 @@ function dismissNode(btn) {
   }, 300);
 }
 function bulkPromote() {
-  var rows = document.querySelectorAll('.detected-checkbox:checked');
-  var count = rows.length;
-  rows.forEach(function(cb) {
+  var cbs = document.querySelectorAll('.detected-checkbox:checked');
+  var count = cbs.length;
+  var managedTable = document.querySelector('#nodes-managed-view [style*="box-shadow"]');
+  var awsRows = managedTable ? managedTable.querySelector('#aws-device-rows') : null;
+  var isDark = document.body.classList.contains('dark');
+  var newRows = [];
+  cbs.forEach(function(cb) {
     var row = cb.closest('.detected-row');
-    if (row) row.remove();
+    if (!row) return;
+    var deviceCell = row.children[1];
+    var iconDiv  = deviceCell ? deviceCell.querySelector('[style*="width:32px"]') : null;
+    var textDiv  = iconDiv ? iconDiv.nextElementSibling : null;
+    var nm       = textDiv ? (textDiv.firstElementChild || {}).textContent.trim() : 'Node';
+    var subtitle = textDiv ? (textDiv.lastElementChild  || {}).textContent.trim() : '';
+    var iconHTML = iconDiv ? iconDiv.outerHTML : '';
+    row.remove();
+    var newRow = document.createElement('div');
+    newRow.className = 'node-row';
+    newRow.dataset.name = nm + ' ' + subtitle;
+    newRow.dataset.type = 'local';
+    newRow.style.cssText = 'display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;background:white;';
+    newRow.setAttribute('onmouseover', "this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'");
+    newRow.setAttribute('onmouseout', "this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'");
+    newRow.innerHTML =
+      '<div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>' +
+      '<div style="display:flex;align-items:center;gap:10px;">' + iconHTML +
+        '<div><div style="font-size:13px;font-weight:600;color:#0F172A;">' + nm + '</div>' +
+        '<div style="font-size:11px;color:var(--text-sec);">' + subtitle + '</div></div></div>' +
+      '<div style="font-size:12px;font-style:italic;color:var(--text-sec);">Pending scan</div>' +
+      '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
+      '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
+      '<div style="font-size:12px;color:var(--text-sec);">Never</div>' +
+      '<div><button class="btn-primary" style="font-size:11px;padding:5px 12px;width:auto;" onclick="event.stopPropagation();showToast(\'Scan started\')">Scan now</button></div>';
+    if (managedTable) {
+      if (awsRows) { managedTable.insertBefore(newRow, awsRows); }
+      else { managedTable.appendChild(newRow); }
+    }
+    newRows.push(newRow);
   });
+  if (isDark) _syncInlineTheme(true);
   _updateDetectedTabCount();
   _updateManagedTabCount(count);
   updateDetectedBulk();
+  setNodesTab('managed');
+  if (newRows[0]) {
+    setTimeout(function() {
+      newRows.forEach(function(r) { r.style.background = isDark ? 'rgba(63,200,120,0.08)' : 'rgba(63,200,120,0.06)'; });
+      newRows[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(function() {
+        newRows.forEach(function(r) { r.style.transition = 'background 1.2s'; r.style.background = isDark ? 'var(--bg-card)' : 'white'; });
+      }, 1200);
+    }, 150);
+  }
   showToast(count + ' node' + (count === 1 ? '' : 's') + ' promoted to Managed');
 }
 function bulkDismiss() {
