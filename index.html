@@ -908,6 +908,8 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 .stat-bar-fill { height:100%; border-radius:2px; background:var(--btn-grad); }
 .donut-seg { transition: opacity 0.15s; }
 .donut-seg:hover { opacity: 0.75; }
+#donut-tip { position:fixed; z-index:9999; background:#0F172A; color:#fff; font-size:11px; font-weight:500; padding:5px 10px; border-radius:7px; pointer-events:none; white-space:nowrap; display:none; box-shadow:0 4px 14px rgba(0,0,0,0.18); }
+body.dark #donut-tip { background:#E2E8F0; color:#0F172A; }
 .donut-legend { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; font-size:11px; margin-top:8px; }
 .donut-legend-item { display:flex; align-items:center; gap:4px; cursor:pointer; }
 .donut-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
@@ -2165,8 +2167,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
               <svg width="76" height="76" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="11"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="11" stroke-dasharray="183.3 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="11" stroke-dasharray="49.5 238.8" stroke-dashoffset="-186.3" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="11" stroke-dasharray="183.3 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')" onmouseenter="showDonutTip(event,'✓ Pass: 78 checks')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="11" stroke-dasharray="49.5 238.8" stroke-dashoffset="-186.3" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')" onmouseenter="showDonutTip(event,'✗ Fail: 22 checks')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
               </svg>
               <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
                 <div style="font-size:17px;font-weight:800;color:#0F172A;line-height:1;">78</div>
@@ -2194,9 +2196,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
               <svg width="76" height="76" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="11"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="11" stroke-dasharray="76.6 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#f59e0b" stroke-width="11" stroke-dasharray="103.1 238.8" stroke-dashoffset="-79.6" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="11" stroke-dasharray="50.1 238.8" stroke-dashoffset="-185.7" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="11" stroke-dasharray="76.6 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')" onmouseenter="showDonutTip(event,'Critical: 9 issues')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#f59e0b" stroke-width="11" stroke-dasharray="103.1 238.8" stroke-dashoffset="-79.6" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')" onmouseenter="showDonutTip(event,'Medium: 12 issues')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="11" stroke-dasharray="50.1 238.8" stroke-dashoffset="-185.7" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')" onmouseenter="showDonutTip(event,'Low: 6 issues')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
               </svg>
               <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
                 <div style="font-size:17px;font-weight:800;color:#FB3C44;line-height:1;">27</div>
@@ -2228,8 +2230,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
               <svg width="76" height="76" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="11"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#d97706" stroke-width="11" stroke-dasharray="156.2 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#3b82f6" stroke-width="11" stroke-dasharray="76.6 238.8" stroke-dashoffset="-159.2" transform="rotate(-90 50 50)" class="donut-seg"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#d97706" stroke-width="11" stroke-dasharray="156.2 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'Modified: 2 items')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#3b82f6" stroke-width="11" stroke-dasharray="76.6 238.8" stroke-dashoffset="-159.2" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'Added: 1 item')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
               </svg>
               <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
                 <div style="font-size:17px;font-weight:800;color:#d97706;line-height:1;" id="dash-unreconciled-val">3</div>
@@ -2257,8 +2259,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
               <svg width="76" height="76" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="11"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="11" stroke-dasharray="65.2 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#6366f1" stroke-width="11" stroke-dasharray="167.6 238.8" stroke-dashoffset="-68.2" transform="rotate(-90 50 50)" class="donut-seg"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="11" stroke-dasharray="65.2 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'Local: 4 nodes')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#6366f1" stroke-width="11" stroke-dasharray="167.6 238.8" stroke-dashoffset="-68.2" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'Cloud: 10 nodes')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"/>
               </svg>
               <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
                 <div style="font-size:17px;font-weight:800;color:#0F172A;line-height:1;">14</div>
@@ -10705,5 +10707,25 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
   </div>
 </div>
 
+<div id="donut-tip"></div>
+<script>
+function showDonutTip(e, text) {
+  var tip = document.getElementById('donut-tip');
+  tip.textContent = text;
+  tip.style.display = 'block';
+  tip.style.left = (e.clientX + 14) + 'px';
+  tip.style.top  = (e.clientY - 32) + 'px';
+}
+function hideDonutTip() {
+  document.getElementById('donut-tip').style.display = 'none';
+}
+function moveDonutTip(e) {
+  var tip = document.getElementById('donut-tip');
+  if (tip.style.display === 'block') {
+    tip.style.left = (e.clientX + 14) + 'px';
+    tip.style.top  = (e.clientY - 32) + 'px';
+  }
+}
+</script>
 </body>
 </html>
