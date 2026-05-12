@@ -906,6 +906,11 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 .stat-sub        { font-size:11px; color:var(--text-sec); margin-top:4px; }
 .stat-bar-wrap { height:4px; background:#CBD5E1; border-radius:2px; margin-top:24px; }
 .stat-bar-fill { height:100%; border-radius:2px; background:var(--btn-grad); }
+.donut-seg { transition: opacity 0.15s; }
+.donut-seg:hover { opacity: 0.75; }
+.donut-legend { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; font-size:11px; margin-top:8px; }
+.donut-legend-item { display:flex; align-items:center; gap:4px; cursor:pointer; }
+.donut-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 
 .issues-card {
   background:transparent; border:none; padding:0;
@@ -2154,30 +2159,93 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
         </div>
         <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);">
-          <div class="stat-card">
-            <div class="stat-card-label">Compliance Score</div>
-            <div class="stat-value">78<span style="font-size:16px;color:var(--text-sec);font-weight:500;">/100</span></div>
-            <div class="stat-sub">Compliance Policy · Windows 11</div>
-            <div class="stat-bar-wrap"><div class="stat-bar-fill" style="width:78%;"></div></div>
+
+          <!-- Compliance Score donut -->
+          <div class="stat-card" style="display:flex;flex-direction:column;align-items:center;">
+            <div class="stat-card-label" style="width:100%;text-align:left;">Compliance Score</div>
+            <div style="position:relative;width:88px;height:88px;margin:6px auto 0;">
+              <svg width="88" height="88" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="36" fill="none" stroke="var(--border)" stroke-width="12"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#3FC878" stroke-width="12" stroke-dasharray="174.4 226.2" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#FB3C44" stroke-width="12" stroke-dasharray="47.8 226.2" stroke-dashoffset="-176.4" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                <div style="font-size:20px;font-weight:800;color:#0F172A;line-height:1;">78</div>
+                <div style="font-size:9px;color:var(--text-sec);font-weight:600;">/100</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <span class="donut-legend-item" onclick="showView('results')"><span class="donut-dot" style="background:#3FC878;"></span><span style="color:var(--text-sec);">Pass <strong style="color:#0F172A;">78</strong></span></span>
+              <span class="donut-legend-item" onclick="showView('results')"><span class="donut-dot" style="background:#FB3C44;"></span><span style="color:var(--text-sec);">Fail <strong style="color:#FB3C44;">22</strong></span></span>
+            </div>
+            <div style="font-size:10px;color:var(--text-sec);margin-top:6px;text-align:center;">Compliance Policy · Windows 11</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-card-label">Failed Checks</div>
-            <div class="stat-value" style="color:#FB3C44;">27</div>
-            <div class="stat-sub"><span style="color:#FB3C44;font-weight:600;">9 critical</span> · 12 med · 6 low</div>
-            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;margin-top:12px;" onclick="showView('results')">View all →</button>
+
+          <!-- Failed Checks donut -->
+          <div class="stat-card" style="display:flex;flex-direction:column;align-items:center;">
+            <div class="stat-card-label" style="width:100%;text-align:left;">Failed Checks</div>
+            <div style="position:relative;width:88px;height:88px;margin:6px auto 0;">
+              <svg width="88" height="88" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="36" fill="none" stroke="var(--border)" stroke-width="12"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#FB3C44" stroke-width="12" stroke-dasharray="73.4 226.2" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#f59e0b" stroke-width="12" stroke-dasharray="98.5 226.2" stroke-dashoffset="-75.4" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#94a3b8" stroke-width="12" stroke-dasharray="48.3 226.2" stroke-dashoffset="-175.9" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView('results')"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                <div style="font-size:20px;font-weight:800;color:#FB3C44;line-height:1;">27</div>
+                <div style="font-size:9px;color:var(--text-sec);font-weight:600;">issues</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <span class="donut-legend-item" onclick="showView('results')"><span class="donut-dot" style="background:#FB3C44;"></span><span style="color:var(--text-sec);">Crit <strong style="color:#FB3C44;">9</strong></span></span>
+              <span class="donut-legend-item" onclick="showView('results')"><span class="donut-dot" style="background:#f59e0b;"></span><span style="color:var(--text-sec);">Med <strong style="color:#f59e0b;">12</strong></span></span>
+              <span class="donut-legend-item" onclick="showView('results')"><span class="donut-dot" style="background:#94a3b8;"></span><span style="color:var(--text-sec);">Low <strong style="color:#94a3b8;">6</strong></span></span>
+            </div>
+            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;margin-top:10px;" onclick="showView('results')">View all →</button>
           </div>
-          <div class="stat-card" style="cursor:pointer;" onclick="showView('changes')">
-            <div class="stat-card-label">Unreconciled Drift</div>
-            <div class="stat-value" style="color:#d97706;" id="dash-unreconciled-val">3</div>
-            <div class="stat-sub" id="dash-unreconciled-sub"><span style="color:#d97706;font-weight:600;">2 modified</span> · 1 added</div>
-            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;margin-top:12px;" onclick="event.stopPropagation();showView('changes')">Review now →</button>
+
+          <!-- Unreconciled Drift donut -->
+          <div class="stat-card" style="display:flex;flex-direction:column;align-items:center;cursor:pointer;" onclick="showView('changes')">
+            <div class="stat-card-label" style="width:100%;text-align:left;">Unreconciled Drift</div>
+            <div style="position:relative;width:88px;height:88px;margin:6px auto 0;">
+              <svg width="88" height="88" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="36" fill="none" stroke="var(--border)" stroke-width="12"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#d97706" stroke-width="12" stroke-dasharray="148.8 226.2" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#3b82f6" stroke-width="12" stroke-dasharray="73.4 226.2" stroke-dashoffset="-150.8" transform="rotate(-90 50 50)" class="donut-seg"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                <div style="font-size:20px;font-weight:800;color:#d97706;line-height:1;" id="dash-unreconciled-val">3</div>
+                <div style="font-size:9px;color:var(--text-sec);font-weight:600;">drift</div>
+              </div>
+            </div>
+            <div class="donut-legend" id="dash-unreconciled-sub">
+              <span class="donut-legend-item"><span class="donut-dot" style="background:#d97706;"></span><span style="color:var(--text-sec);">Modified <strong style="color:#d97706;">2</strong></span></span>
+              <span class="donut-legend-item"><span class="donut-dot" style="background:#3b82f6;"></span><span style="color:var(--text-sec);">Added <strong style="color:#3b82f6;">1</strong></span></span>
+            </div>
+            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;margin-top:10px;" onclick="event.stopPropagation();showView('changes')">Review now →</button>
           </div>
-          <div class="stat-card" style="cursor:pointer;" onclick="showView('all-devices')">
-            <div class="stat-card-label">Nodes Monitored</div>
-            <div class="stat-value" style="color:#2563eb;">14</div>
-            <div class="stat-sub"><span style="font-weight:600;">5 devices</span> · 4 local · 10 cloud</div>
-            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;margin-top:12px;">View all nodes →</button>
+
+          <!-- Nodes Monitored donut -->
+          <div class="stat-card" style="display:flex;flex-direction:column;align-items:center;cursor:pointer;" onclick="showView('all-devices')">
+            <div class="stat-card-label" style="width:100%;text-align:left;">Nodes Monitored</div>
+            <div style="position:relative;width:88px;height:88px;margin:6px auto 0;">
+              <svg width="88" height="88" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="36" fill="none" stroke="var(--border)" stroke-width="12"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#3FC878" stroke-width="12" stroke-dasharray="62.6 226.2" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg"/>
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#6366f1" stroke-width="12" stroke-dasharray="159.6 226.2" stroke-dashoffset="-64.6" transform="rotate(-90 50 50)" class="donut-seg"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                <div style="font-size:20px;font-weight:800;color:#0F172A;line-height:1;">14</div>
+                <div style="font-size:9px;color:var(--text-sec);font-weight:600;">nodes</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <span class="donut-legend-item"><span class="donut-dot" style="background:#3FC878;"></span><span style="color:var(--text-sec);">Local <strong style="color:#0F172A;">4</strong></span></span>
+              <span class="donut-legend-item"><span class="donut-dot" style="background:#6366f1;"></span><span style="color:var(--text-sec);">Cloud <strong style="color:#6366f1;">10</strong></span></span>
+            </div>
+            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;margin-top:10px;">View all nodes →</button>
           </div>
+
         </div>
         <div class="issues-card">
           <div class="issues-card-title">Critical issues to fix first</div>
