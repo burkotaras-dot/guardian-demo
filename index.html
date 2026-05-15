@@ -6613,7 +6613,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
           el.setAttribute('style', s);
         } else {
           var orig = el.getAttribute('data-ls');
-          if (orig !== null) { el.setAttribute('style', orig); el.removeAttribute('data-ls'); }
+          if (orig !== null) {
+            var curDisplay = el.style.display;
+            el.setAttribute('style', orig);
+            if (curDisplay) el.style.display = curDisplay;
+            el.removeAttribute('data-ls');
+          }
         }
       });
     }
