@@ -10060,7 +10060,7 @@ function applySelectionConsensus(selectedNames) {
         var t = badge.textContent.trim();
         return selectedNames.some(function(sel) { return t === sel; });
       });
-      row.style.display = hasMatch ? '' : 'none';
+      row.style.display = hasMatch ? 'grid' : 'none';
     });
   });
 }
@@ -10083,8 +10083,12 @@ function clearSelectionConsensus() {
   // Restore all cards and rows
   document.querySelectorAll('#peer-os-view > div').forEach(function(card) {
     card.style.display = '';
-    card.querySelectorAll('div[style*="border-bottom"]').forEach(function(row) {
-      row.style.display = '';
+    // Restore only badge-containing rows (outlier data rows) back to grid
+    Array.from(card.querySelectorAll('div')).forEach(function(row) {
+      if (row.querySelectorAll('span[style*="border-radius:8px"]').length > 0 &&
+          (row.parentElement === card || row.parentElement.parentElement === card)) {
+        row.style.display = 'grid';
+      }
     });
   });
 
