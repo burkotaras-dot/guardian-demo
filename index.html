@@ -10050,12 +10050,13 @@ function applySelectionConsensus(selectedNames) {
     if (!hasSelected) { card.style.display = 'none'; return; }
     card.style.display = '';
 
-    // Filter outlier rows within this group — find rows that contain node badges
+    // Filter outlier rows within this group — find rows that contain node badges.
+    // Outlier rows are 3-div-cell grid rows; the third cell holds the badges.
     Array.from(card.querySelectorAll('div')).forEach(function(row) {
-      var badges = row.querySelectorAll('span[style*="border-radius:8px"]');
-      if (badges.length === 0) return; // no badges — summary/header row, skip
-      // Only process direct-ish rows (not nested badge containers)
-      if (row.parentElement !== card && row.parentElement.parentElement !== card) return;
+      var divChildren = Array.from(row.children).filter(function(c){ return c.tagName === 'DIV'; });
+      if (divChildren.length !== 3) return; // not an outlier row
+      var badges = divChildren[2].querySelectorAll('span[style*="border-radius:8px"]');
+      if (badges.length === 0) return; // 3rd cell has no node badges — not an outlier row
       var hasMatch = Array.from(badges).some(function(badge) {
         var t = badge.textContent.trim();
         return selectedNames.some(function(sel) { return t === sel; });
@@ -10089,11 +10090,11 @@ function clearSelectionConsensus() {
   document.querySelectorAll('#peer-os-view > div').forEach(function(card) {
     card.style.display = '';
     Array.from(card.querySelectorAll('div')).forEach(function(row) {
-      if (row.querySelectorAll('span[style*="border-radius:8px"]').length > 0 &&
-          (row.parentElement === card || row.parentElement.parentElement === card)) {
-        row.style.display = 'grid';
-        row.style.gridTemplateColumns = '2fr 1.5fr 2fr';
-      }
+      var divChildren = Array.from(row.children).filter(function(c){ return c.tagName === 'DIV'; });
+      if (divChildren.length !== 3) return;
+      if (divChildren[2].querySelectorAll('span[style*="border-radius:8px"]').length === 0) return;
+      row.style.display = 'grid';
+      row.style.gridTemplateColumns = '2fr 1.5fr 2fr';
     });
   });
 
