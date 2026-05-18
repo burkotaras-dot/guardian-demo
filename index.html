@@ -6565,6 +6565,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
           s = s.replace(/background:\s*white\b/gi,          'background:' + _DK_BG)
                .replace(/background:\s*#fff(?![0-9a-f])/gi, 'background:' + _DK_BG)
                .replace(/background:\s*#ffffff\b/gi,         'background:' + _DK_BG)
+               .replace(/background:\s*rgb\(\s*255\s*,\s*255\s*,\s*255\s*\)/gi, 'background:' + _DK_BG)
+               .replace(/background:\s*rgb\(\s*241\s*,\s*245\s*,\s*249\s*\)/gi, 'background:rgba(255,255,255,0.07)')
                .replace(/background:\s*#f9fafb\b/gi,         'background:' + _DK_BG)
                .replace(/background:\s*#f8fafb\b/gi,         'background:' + _DK_BG)
                .replace(/background:\s*#f1f5f9\b/gi,         'background:rgba(255,255,255,0.07)')
@@ -10047,8 +10049,8 @@ function applySelectionConsensus(selectedNames) {
     var hasSelected = selectedNames.some(function(sel) {
       return groupNodes.some(function(gn) { return gn === sel; });
     });
-    if (!hasSelected) { card.style.display = 'none'; return; }
-    card.style.display = '';
+    if (!hasSelected) { if (card.style.display !== 'none') card.style.display = 'none'; return; }
+    if (card.style.display === 'none') card.style.display = '';
 
     // Filter outlier rows within this group — find rows that contain node badges.
     // Outlier rows are 3-div-cell grid rows; the third cell holds the badges.
@@ -10086,15 +10088,17 @@ function clearSelectionConsensus() {
     if (subEl) subEl.textContent = "Compares each node's attributes against the majority pattern within its group to surface outliers.";
   }
 
-  // Restore all cards and rows
+  // Restore all cards and rows — only touch styles that were actually changed
   document.querySelectorAll('#peer-os-view > div').forEach(function(card) {
-    card.style.display = '';
+    if (card.style.display === 'none') card.style.display = '';
     Array.from(card.querySelectorAll('div')).forEach(function(row) {
       var divChildren = Array.from(row.children).filter(function(c){ return c.tagName === 'DIV'; });
       if (divChildren.length !== 3) return;
       if (divChildren[2].querySelectorAll('span[style*="border-radius:8px"]').length === 0) return;
-      row.style.display = 'grid';
-      row.style.gridTemplateColumns = '2fr 1.5fr 2fr';
+      if (row.style.display === 'none') {
+        row.style.display = 'grid';
+        row.style.gridTemplateColumns = '2fr 1.5fr 2fr';
+      }
     });
   });
 
