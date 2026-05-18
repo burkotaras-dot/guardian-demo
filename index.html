@@ -1646,6 +1646,13 @@ body.dark .pe-sev-btn[data-val="critical"] { border-color: rgba(255,107,107,0.5)
 body.dark .pe-sev-btn[data-val="high"] { border-color: rgba(251,191,36,0.5) !important; background: rgba(251,191,36,0.12) !important; color: #FBBF24 !important; }
 body.dark .pe-sev-btn[data-val="medium"] { border-color: rgba(156,163,175,0.4) !important; background: rgba(107,114,128,0.12) !important; color: #9CA3AF !important; }
 body.dark .pe-sev-btn[data-val="low"] { border-color: rgba(52,211,153,0.5) !important; background: rgba(52,211,153,0.12) !important; color: #34D399 !important; }
+/* Add Check — section dropdown options */
+.ac-sec-opt { padding:8px 12px;font-size:13px;color:var(--text-default);cursor:pointer;transition:background 0.1s; }
+.ac-sec-opt:hover { background:var(--bg-canvas); }
+body.dark #ac-sec-btn { background:var(--bg-surface);border-color:var(--border);color:#94a3b8; }
+body.dark #ac-sec-pop { background:#00262A;border-color:#1A3D40;box-shadow:0 8px 32px rgba(0,0,0,0.5); }
+body.dark .ac-sec-opt { color:#CBD5E1; }
+body.dark .ac-sec-opt:hover { background:rgba(255,255,255,0.05); }
 /* Policy-edit column header row and section headers — make dividers visible in dark mode */
 body.dark div:has(> #pe-col-header) { border-bottom-color: rgba(255,255,255,0.12) !important; }
 body.dark [onclick^="peToggleSec"] { border-bottom-color: rgba(255,255,255,0.12) !important; }
@@ -5475,17 +5482,20 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <input type="text" class="form-input" placeholder="e.g. Antivirus active and up to date" />
             </div>
             <!-- Section -->
-            <div class="form-group">
+            <div class="form-group" style="position:relative;">
               <label class="form-label">Section</label>
-              <select class="form-input" style="cursor:pointer;">
-                <option value="">Select a section…</option>
-                <option value="general">General</option>
-                <option value="authentication">Authentication</option>
-                <option value="network">Network</option>
-                <option value="encryption">Encryption</option>
-                <option value="logging">Logging</option>
-                <option value="monitoring">Monitoring</option>
-              </select>
+              <div id="ac-sec-btn" onclick="acToggleSec(event)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-500);font-size:13px;cursor:pointer;gap:8px;user-select:none;">
+                <span id="ac-sec-label">Select a section…</span>
+                <svg id="ac-sec-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div id="ac-sec-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;">
+                <div onclick="acPickSec('general','General')" class="ac-sec-opt">General</div>
+                <div onclick="acPickSec('authentication','Authentication')" class="ac-sec-opt">Authentication</div>
+                <div onclick="acPickSec('network','Network')" class="ac-sec-opt">Network</div>
+                <div onclick="acPickSec('encryption','Encryption')" class="ac-sec-opt">Encryption</div>
+                <div onclick="acPickSec('logging','Logging')" class="ac-sec-opt">Logging</div>
+                <div onclick="acPickSec('monitoring','Monitoring')" class="ac-sec-opt">Monitoring</div>
+              </div>
             </div>
             <!-- Severity pills -->
             <div class="form-group">
@@ -6413,6 +6423,29 @@ body.dark .theme-toggle .icon-moon { display: none; }
         });
       }, 0);
     }
+
+    function acToggleSec(e) {
+      e.stopPropagation();
+      var pop = document.getElementById('ac-sec-pop');
+      var chev = document.getElementById('ac-sec-chev');
+      var isOpen = pop.style.display !== 'none';
+      pop.style.display = isOpen ? 'none' : 'block';
+      chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+    function acPickSec(val, label) {
+      var lbl = document.getElementById('ac-sec-label');
+      lbl.textContent = label;
+      lbl.style.color = 'var(--text-default)';
+      document.getElementById('ac-sec-pop').style.display = 'none';
+      document.getElementById('ac-sec-chev').style.transform = '';
+    }
+    document.addEventListener('click', function(e) {
+      var pop = document.getElementById('ac-sec-pop');
+      if (pop && pop.style.display !== 'none' && !document.getElementById('ac-sec-btn').contains(e.target)) {
+        pop.style.display = 'none';
+        document.getElementById('ac-sec-chev').style.transform = '';
+      }
+    });
 
     function acSetSev(radio) {
       document.querySelectorAll('.ac-sev-pill').forEach(function(p) {
