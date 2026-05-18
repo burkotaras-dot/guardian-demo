@@ -2680,7 +2680,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div id="nodes-tabs" style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:22px;">
           <div id="nodes-tab-managed" onclick="setNodesTab('managed')" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--p-green-400);border-bottom:2px solid #3FC878;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Managed <span id="nodes-tab-managed-count" style="background:rgba(100,116,139,0.12);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;">4</span></div>
           <div id="nodes-tab-detected" onclick="setNodesTab('detected')" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Detected <span id="nodes-tab-detected-count" style="background:rgba(100,116,139,0.12);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;">3</span></div>
-          <div id="nodes-tab-peer" onclick="setNodesTab('peer')" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Consensus Comparison</div>
+          <div id="nodes-tab-peer" onclick="setNodesTab('peer');clearSelectionConsensus()" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Consensus Comparison</div>
         </div>
 
         <div id="nodes-managed-view">
@@ -2731,7 +2731,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Scan Selected
             </button>
-            <button id="node-action-consensus" onclick="showView('all-devices');setNodesTab('peer')" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-consensus" onclick="(function(){var n=Array.from(document.querySelectorAll('.node-checkbox:checked')).map(function(cb){var r=cb.closest('.node-row');return r?(r.dataset.name||'').split(' ')[0]:'';}).filter(Boolean);showView('all-devices');setNodesTab('peer');applySelectionConsensus(n);})()" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               Consensus Comparison
             </button>
@@ -10000,6 +10000,95 @@ function setNodesTab(tab) {
     if (managedView) managedView.style.display = 'block';
     if (mTab) { mTab.style.color = activeColor; mTab.style.borderBottomColor = activeColor; }
   }
+}
+
+// ── Consensus Comparison — selection-driven mode ──
+function applySelectionConsensus(selectedNames) {
+  if (!selectedNames || selectedNames.length === 0) return;
+  var peerView = document.getElementById('nodes-peer-view');
+  if (!peerView) return;
+
+  // Show/update banner
+  var banner = document.getElementById('peer-sel-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'peer-sel-banner';
+    peerView.insertBefore(banner, peerView.firstChild);
+  }
+  var isDark = document.body.classList.contains('dark');
+  banner.style.cssText = 'background:' + (isDark ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)') + ';border:1px solid rgba(99,102,241,0.25);border-radius:8px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;';
+  banner.innerHTML = '<span style="font-size:12px;color:#818CF8;font-weight:500;"><strong style="color:#6366F1;">' + selectedNames.length + ' nodes selected:</strong> ' + selectedNames.join(', ') + '</span>' +
+    '<button onclick="clearSelectionConsensus()" style="font-size:11px;color:var(--text-sec);background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:4px 10px;font-family:inherit;">View all nodes ×</button>';
+
+  // Update subtitle
+  var headerDiv = document.querySelector('#nodes-peer-view > div[style*="justify-content:space-between"]');
+  if (headerDiv) {
+    var subEl = headerDiv.querySelector('div > div:last-child');
+    if (subEl) subEl.textContent = 'Showing consensus for ' + selectedNames.length + ' selected nodes · outliers from this selection highlighted below';
+  }
+
+  // Hide group switcher
+  var groupBtns = document.getElementById('peer-group-btns');
+  if (groupBtns) groupBtns.style.display = 'none';
+
+  // Show only OS view (relevant for selected nodes)
+  var osView = document.getElementById('peer-os-view');
+  var teamView = document.getElementById('peer-team-view');
+  if (osView) osView.style.display = 'block';
+  if (teamView) teamView.style.display = 'none';
+
+  // Filter group cards
+  var groupCards = document.querySelectorAll('#peer-os-view > div');
+  groupCards.forEach(function(card) {
+    var nodeSpan = card.querySelector('span[style*="color:var(--text-sec)"]');
+    if (!nodeSpan) { card.style.display = ''; return; }
+    var m = nodeSpan.textContent.match(/·\s*\d+\s*nodes?\s*·\s*(.+)/);
+    var groupNodes = m ? m[1].split(',').map(function(n){ return n.trim(); }) : [];
+    var hasSelected = selectedNames.some(function(sel) {
+      return groupNodes.some(function(gn) { return gn === sel; });
+    });
+    if (!hasSelected) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    // Filter outlier rows within this group — find rows that contain node badges
+    Array.from(card.querySelectorAll('div')).forEach(function(row) {
+      var badges = row.querySelectorAll('span[style*="border-radius:8px"]');
+      if (badges.length === 0) return; // no badges — summary/header row, skip
+      // Only process direct-ish rows (not nested badge containers)
+      if (row.parentElement !== card && row.parentElement.parentElement !== card) return;
+      var hasMatch = Array.from(badges).some(function(badge) {
+        var t = badge.textContent.trim();
+        return selectedNames.some(function(sel) { return t === sel; });
+      });
+      row.style.display = hasMatch ? '' : 'none';
+    });
+  });
+}
+
+function clearSelectionConsensus() {
+  var banner = document.getElementById('peer-sel-banner');
+  if (banner) banner.style.display = 'none';
+
+  // Restore group switcher
+  var groupBtns = document.getElementById('peer-group-btns');
+  if (groupBtns) groupBtns.style.display = 'flex';
+
+  // Restore subtitle
+  var headerDiv = document.querySelector('#nodes-peer-view > div[style*="justify-content:space-between"]');
+  if (headerDiv) {
+    var subEl = headerDiv.querySelector('div > div:last-child');
+    if (subEl) subEl.textContent = "Compares each node's attributes against the majority pattern within its group to surface outliers.";
+  }
+
+  // Restore all cards and rows
+  document.querySelectorAll('#peer-os-view > div').forEach(function(card) {
+    card.style.display = '';
+    card.querySelectorAll('div[style*="border-bottom"]').forEach(function(row) {
+      row.style.display = '';
+    });
+  });
+
+  setPeerGroup(_peerGroup || 'os');
 }
 
 // ── Peer Baseline — group switcher ──
