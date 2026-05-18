@@ -2731,6 +2731,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Scan Selected
             </button>
+            <button id="node-action-consensus" onclick="showView('nodes-peer-view')" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              Consensus Comparison
+            </button>
           </div>
         </div>
 
@@ -9916,6 +9920,17 @@ function updateScanSelected() {
     compareBtn.style.borderColor = canCompare ? '#818CF8' : inactiveBorder;
     compareBtn.style.color = canCompare ? '#818CF8' : inactiveColor;
     compareBtn.style.background = canCompare ? 'rgba(99,102,241,0.12)' : 'transparent';
+  }
+  // Consensus Comparison — active when 3+
+  const consensusBtn = document.getElementById('node-action-consensus');
+  if (consensusBtn) {
+    const canConsensus = checked >= 3;
+    consensusBtn.disabled = !canConsensus;
+    consensusBtn.style.opacity = '1';
+    consensusBtn.style.cursor = canConsensus ? 'pointer' : 'not-allowed';
+    consensusBtn.style.borderColor = canConsensus ? (isDark ? 'rgba(52,211,153,0.45)' : '#10B981') : inactiveBorder;
+    consensusBtn.style.color = canConsensus ? (isDark ? '#34D399' : '#059669') : inactiveColor;
+    consensusBtn.style.background = canConsensus ? (isDark ? 'rgba(16,185,129,0.08)' : 'rgba(16,185,129,0.1)') : 'transparent';
   }
 
   const btn = document.getElementById('scan-selected-btn');
