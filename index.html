@@ -1722,6 +1722,14 @@ body.dark #v-all-devices [style*="background:#F9FAFC"] { background: #00262A !im
 body.dark #nodes-peer-view [style*="background:var(--bg-canvas)"] { background: #00262A !important; }
 body.dark #nodes-peer-view [style*="background:#fff"] { background: var(--bg-card) !important; }
 
+/* Peer card sections — show/hide match rows */
+.peer-card.show-all .peer-row-match { display: grid !important; }
+.peer-sec-hdr:hover { background: rgba(100,116,139,0.1) !important; }
+body.dark .peer-sec-hdr { background: rgba(255,255,255,0.03) !important; }
+body.dark .peer-sec-hdr:hover { background: rgba(255,255,255,0.06) !important; }
+body.dark .peer-row-match { background: transparent !important; }
+body.dark #nodes-peer-view [style*="background:rgba(100,116,139,0.05)"] { background: rgba(255,255,255,0.03) !important; }
+
 /* Node Detail dark mode */
 body.dark #v-node-detail [style*="background:var(--bg-surface)"] { background: var(--bg-card) !important; }
 body.dark #v-node-detail [style*="background:var(--bg-canvas)"],
@@ -1879,7 +1887,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
 <!-- GLOBAL SEARCH OVERLAY -->
 <div id="search-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,20,35,0.6);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding-top:80px;" onclick="if(event.target===this)closeSearch()">
-  <div style="background:#fff;border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,0.25);width:640px;max-width:90vw;overflow:hidden;">
+  <div style="background:var(--bg-surface);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,0.25);width:640px;max-width:90vw;overflow:hidden;">
     <!-- Search input row -->
     <div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid #e8edf2;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -1888,7 +1896,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <button id="search-filter-btn" onclick="toggleFilterDropdown(event)" style="width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border-default);background:var(--bg-canvas);cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.08)':'#f0f4f8'" onmouseout="this.style.background='var(--bg-canvas)'">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
-        <div id="filter-dropdown" style="display:none;position:absolute;right:0;top:36px;background:#fff;border:1px solid var(--border-default);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:180px;z-index:10;">
+        <div id="filter-dropdown" style="display:none;position:absolute;right:0;top:36px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:180px;z-index:10;">
           <div style="font-size:10px;font-weight:700;color:var(--p-neutral-400);letter-spacing:1px;padding:4px 8px 8px;text-transform:uppercase;">Add filter · Domain</div>
           <div class="search-filter-item" onclick="applyFilter('Nodes')">Nodes</div>
           <div class="search-filter-item" onclick="applyFilter('Groups')">Groups</div>
@@ -1990,7 +1998,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <button onclick="openSearch()" id="nav-search-btn" style="display:flex;align-items:center;gap:8px;background:var(--bg-surface);border:1.5px solid rgba(16,185,129,0.3);border-radius:8px;padding:0 14px;cursor:pointer;color:var(--p-neutral-600);font-size:12px;width:280px;height:32px;box-sizing:border-box;margin-right:16px;" onmouseover="this.style.borderColor='rgba(16,185,129,0.7)';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderColor='rgba(16,185,129,0.3)';this.style.background='var(--bg-surface)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <span style="flex:1;text-align:left;">Search nodes, scans, changes…</span>
-      <kbd style="font-size:9px;background:#F1F5F9;border:1px solid var(--border-default);border-radius:3px;padding:1px 5px;color:var(--p-neutral-400);flex-shrink:0;">⌘K</kbd>
+      <kbd style="font-size:9px;background:var(--bg-subtle);border:1px solid var(--border-default);border-radius:3px;padding:1px 5px;color:var(--p-neutral-400);flex-shrink:0;">⌘K</kbd>
     </button>
     <div class="nav-avatar">T</div>
     <span>bambuk&#64;cloudhouse&#46;io</span>
@@ -2528,7 +2536,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:12px;font-weight:700;color:#f59e0b;">12</span>
                 </div>
                 <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showView('results')">
-                  <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;"></span>Low</span>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);flex-shrink:0;"></span>Low</span>
                   <span style="font-size:12px;font-weight:700;color:var(--p-neutral-400);">6</span>
                 </div>
               </div>
@@ -3137,147 +3145,395 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <!-- OS groups -->
           <div id="peer-os-view">
 
-            <!-- Group: Windows (5 nodes) -->
-            <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div style="padding:14px 20px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <!-- Group: Windows 11 (67 nodes) -->
+            <div class="peer-card" id="peer-card-win" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+              <div onclick="togglePeerCard('win')" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                  </div>
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
                   <div>
                     <span style="font-size:13px;font-weight:700;color:var(--text-default);">Windows 11</span>
-                    <span style="font-size:12px;color:var(--text-sec);">· 5 nodes · MACBOOK-TARAS, SARAH-LAPTOP-01, JAMES-WIN-DESK, PETER-SALES-02, ANNA-HR-DESK</span>
+                    <span style="font-size:12px;color:var(--text-sec);">· 67 nodes · MACBOOK-TARAS, SARAH-LAPTOP-01, JAMES-WIN-DESK <span style="background:rgba(100,116,139,0.12);color:var(--text-muted);font-size:10px;font-weight:600;padding:1px 7px;border-radius:8px;margin-left:2px;">+64 more</span></span>
                   </div>
                 </div>
-                <span style="font-size:11px;font-weight:600;color:#FB3C44;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.2);padding:3px 9px;border-radius:10px;">9 outliers</span>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
-                <div>Attribute</div><div>Majority (3+/5)</div><div>Outlier node · value</div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Antivirus status</div>
-                <div style="font-size:12px;color:var(--text-sec);">Defender · Enabled</div>
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Disk encryption</div>
-                <div style="font-size:12px;color:var(--text-sec);">On (BitLocker)</div>
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Off</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Firewall</div>
-                <div style="font-size:12px;color:var(--text-sec);">Enabled (Domain)</div>
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Screen lock timeout</div>
-                <div style="font-size:12px;color:var(--text-sec);">5 min</div>
-                <div style="display:grid;grid-template-columns:max-content max-content;column-gap:6px;row-gap:6px;align-items:center;justify-content:start;">
-                  <span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">30 min</span>
-                  <span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Never</span>
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                  <span style="font-size:11px;font-weight:600;color:#FB3C44;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.2);padding:3px 9px;border-radius:10px;">15 outliers</span>
+                  <button onclick="event.stopPropagation();toggleShowAll('win')" id="win-showall-btn" data-show-label="Show all 47 attributes" style="font-size:11px;color:var(--text-sec);background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:4px 10px;font-family:inherit;white-space:nowrap;">Show all 47 attributes</button>
+                  <svg id="win-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Local admin accounts</div>
-                <div style="font-size:12px;color:var(--text-sec);">1 account</div>
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">3 accounts</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">USB access control</div>
-                <div style="font-size:12px;color:var(--text-sec);">Blocked</div>
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Allowed</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">VPN client</div>
-                <div style="font-size:12px;color:var(--text-sec);">AnyConnect · Connected</div>
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Not installed</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Microsoft 365 version</div>
-                <div style="font-size:12px;color:var(--text-sec);">2401 (current)</div>
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                  <span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">ANNA-HR-DESK</span><span style="font-size:11px;color:var(--text-sec);">2209 (outdated)</span>
+              <div id="peer-card-win-body">
+                <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                  <div>Attribute</div><div>Majority (52+/67)</div><div>Outlier nodes · value</div>
                 </div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Open inbound ports</div>
-                <div style="font-size:12px;color:var(--text-sec);">80, 443</div>
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PETER-SALES-02</span><span style="font-size:11px;color:var(--text-sec);">+ 8080, 8443</span></div>
-              </div>
-              <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
-                <span style="font-size:13px;color:#00AF73;">✓</span>
-                <span style="font-size:12px;color:var(--text-sec);">26 attributes match across all nodes — auto-updates, domain membership, Secure Boot, TPM, audit logging, screensaver lock, WMI, DNS, Chrome version, Slack, Teams, PowerShell policy and 14 more</span>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('win-security')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Security</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#FB3C44;font-weight:600;">5 differences</span>
+                      <svg id="win-security-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="win-security-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Antivirus status</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Defender · Enabled</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">LAPTOPUK-034</span><span style="font-size:11px;color:var(--text-sec);">Legacy AV (unsupported)</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">LAPTOPUK-056</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Disk encryption</div>
+                      <div style="font-size:12px;color:var(--text-sec);">BitLocker · On</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Off</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">MOBWIN-007</span><span style="font-size:11px;color:var(--text-sec);">Off</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">MOBWIN-019</span><span style="font-size:11px;color:var(--text-sec);">Off</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Firewall</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled (Domain)</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Defender ATP</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enrolled</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">SRV-WIN-APP-17</span><span style="font-size:11px;color:var(--text-sec);">Not enrolled</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">TPM version</div>
+                      <div style="font-size:12px;color:var(--text-sec);">2.0</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LEGACYW-003</span><span style="font-size:11px;color:var(--text-sec);">1.2 (upgrade required)</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Secure Boot</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Audit logging</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Defender definitions</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Current (updated daily)</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('win-access')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Access Control</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#d97706;font-weight:600;">4 differences</span>
+                      <svg id="win-access-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="win-access-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Screen lock timeout</div>
+                      <div style="font-size:12px;color:var(--text-sec);">5 min</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">30 min</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Never</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">MOBWIN-007</span><span style="font-size:11px;color:var(--text-sec);">30 min</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">MOBWIN-019</span><span style="font-size:11px;color:var(--text-sec);">30 min</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Local admin accounts</div>
+                      <div style="font-size:12px;color:var(--text-sec);">1 account</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">3 accounts</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SRV-WIN-APP-17</span><span style="font-size:11px;color:var(--text-sec);">Elevated (unmanaged)</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">USB access control</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Blocked</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Allowed</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Remote Desktop (RDP)</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">SRV-WIN-APP-04</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">SRV-WIN-APP-17</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Password policy</div>
+                      <div style="font-size:12px;color:var(--text-sec);">14 chars · complexity on</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Account lockout</div>
+                      <div style="font-size:12px;color:var(--text-sec);">5 attempts</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Guest account</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('win-network')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Network</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#d97706;font-weight:600;">3 differences</span>
+                      <svg id="win-network-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="win-network-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">VPN client</div>
+                      <div style="font-size:12px;color:var(--text-sec);">AnyConnect · Connected</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Not installed</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">MOBWIN-019</span><span style="font-size:11px;color:var(--text-sec);">Disconnected (5 days)</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Open inbound ports</div>
+                      <div style="font-size:12px;color:var(--text-sec);">80, 443</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PETER-SALES-02</span><span style="font-size:11px;color:var(--text-sec);">+ 8080, 8443</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">SRV-WIN-APP-17</span><span style="font-size:11px;color:var(--text-sec);">+ 3389, 5985</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">DNS over HTTPS</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LEGACYW-003</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LAPTOPUK-089</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">SMB signing</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Required</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">IPv6</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('win-software')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Software</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#d97706;font-weight:600;">3 differences</span>
+                      <svg id="win-software-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="win-software-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Windows Update</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Current</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LEGACYW-003</span><span style="font-size:11px;color:var(--text-sec);">47 days behind</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LAPTOPUK-056</span><span style="font-size:11px;color:var(--text-sec);">89 days behind</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:start;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Microsoft 365</div>
+                      <div style="font-size:12px;color:var(--text-sec);">2401 (current)</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">ANNA-HR-DESK</span><span style="font-size:11px;color:var(--text-sec);">2209 (outdated)</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LAPTOPUK-089</span><span style="font-size:11px;color:var(--text-sec);">2302 (outdated)</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">PowerShell policy</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Restricted</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">DEVWIN-22</span><span style="font-size:11px;color:var(--text-sec);">Unrestricted</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Chrome</div>
+                      <div style="font-size:12px;color:var(--text-sec);">120.0 (current)</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Slack</div>
+                      <div style="font-size:12px;color:var(--text-sec);">4.35 (current)</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Teams</div>
+                      <div style="font-size:12px;color:var(--text-sec);">23.4.1 (current)</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Auto-updates</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 67 nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:13px;color:#00AF73;">✓</span>
+                  <span style="font-size:12px;color:var(--text-sec);">32 attributes match across all 67 nodes — domain membership, password policy, account lockout, Secure Boot, SMB signing, Chrome, Slack, Teams, auto-updates, IPv6 disabled, screensaver lock and 21 more</span>
+                </div>
               </div>
             </div>
 
             <!-- Group: macOS (2 nodes) -->
-            <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div style="padding:14px 20px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div class="peer-card" id="peer-card-mac" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+              <div onclick="togglePeerCard('mac')" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(63,200,120,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-                  </div>
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(63,200,120,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></div>
                   <div>
                     <span style="font-size:13px;font-weight:700;color:var(--text-default);">macOS</span>
                     <span style="font-size:12px;color:var(--text-sec);">· 2 nodes · DEV-MACPRO-03, LISA-DESIGN-MBP</span>
                   </div>
                 </div>
-                <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">3 outliers</span>
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                  <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">3 outliers</span>
+                  <button onclick="event.stopPropagation();toggleShowAll('mac')" id="mac-showall-btn" data-show-label="Show all 22 attributes" style="font-size:11px;color:var(--text-sec);background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:4px 10px;font-family:inherit;white-space:nowrap;">Show all 22 attributes</button>
+                  <svg id="mac-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
-                <div>Attribute</div><div>Majority (1/2)</div><div>Outlier node · value</div>
+              <div id="peer-card-mac-body">
+              <div style="display:flex;align-items:center;gap:7px;padding:9px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span style="font-size:11px;color:var(--text-muted);font-style:italic;">Consensus is less meaningful for groups of two nodes.</span>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">macOS version</div>
-                <div style="font-size:12px;color:var(--text-sec);">Ventura 13.6.3</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LISA-DESIGN-MBP</span><span style="font-size:11px;color:var(--text-sec);">Monterey 12.7.2</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">XProtect definitions</div>
-                <div style="font-size:12px;color:var(--text-sec);">2024-01-15 (current)</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LISA-DESIGN-MBP</span><span style="font-size:11px;color:var(--text-sec);">2023-10-02 (outdated)</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Gatekeeper</div>
-                <div style="font-size:12px;color:var(--text-sec);">Enabled (App Store + Identified Devs)</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LISA-DESIGN-MBP</span><span style="font-size:11px;color:var(--text-sec);">Anywhere (disabled)</span></div>
-              </div>
-              <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
-                <span style="font-size:13px;color:#00AF73;">✓</span>
-                <span style="font-size:12px;color:var(--text-sec);">19 attributes match across all nodes — FileVault, SIP, Firewall, screen lock, SSH, Touch ID, auto-updates, audit logging and 11 more</span>
+                <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                  <div>Attribute</div><div>Majority (1/2)</div><div>Outlier nodes · value</div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('mac-security')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Security</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#d97706;font-weight:600;">3 differences</span>
+                      <svg id="mac-security-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="mac-security-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">macOS version</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Ventura 13.6.3</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LISA-DESIGN-MBP</span><span style="font-size:11px;color:var(--text-sec);">Monterey 12.7.2</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">XProtect definitions</div>
+                      <div style="font-size:12px;color:var(--text-sec);">2024-01-15 (current)</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LISA-DESIGN-MBP</span><span style="font-size:11px;color:var(--text-sec);">2023-10-02 (outdated)</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Gatekeeper</div>
+                      <div style="font-size:12px;color:var(--text-sec);">App Store + Identified Devs</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LISA-DESIGN-MBP</span><span style="font-size:11px;color:var(--text-sec);">Anywhere (disabled)</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">FileVault</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">SIP</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Firewall</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('mac-access')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Access Control</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#00AF73;font-weight:600;">0 differences</span>
+                      <svg id="mac-access-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="mac-access-body">
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Screen lock timeout</div>
+                      <div style="font-size:12px;color:var(--text-sec);">5 min</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Touch ID for sudo</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">SSH remote login</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:13px;color:#00AF73;">✓</span>
+                  <span style="font-size:12px;color:var(--text-sec);">19 attributes match across both nodes — FileVault, SIP, Firewall, screen lock, SSH, Touch ID, auto-updates, audit logging and 11 more</span>
+                </div>
               </div>
             </div>
 
             <!-- Group: Linux (2 nodes) -->
-            <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div style="padding:14px 20px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div class="peer-card" id="peer-card-lnx" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+              <div onclick="togglePeerCard('lnx')" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                  </div>
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
                   <div>
                     <span style="font-size:13px;font-weight:700;color:var(--text-default);">Linux</span>
                     <span style="font-size:12px;color:var(--text-sec);">· 2 nodes · PROD-SRV-LNX-01, PROD-SRV-LNX-02</span>
                   </div>
                 </div>
-                <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">2 outliers</span>
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                  <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">3 outliers</span>
+                  <button onclick="event.stopPropagation();toggleShowAll('lnx')" id="lnx-showall-btn" data-show-label="Show all 31 attributes" style="font-size:11px;color:var(--text-sec);background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:4px 10px;font-family:inherit;white-space:nowrap;">Show all 31 attributes</button>
+                  <svg id="lnx-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
-                <div>Attribute</div><div>Majority (1/2)</div><div>Outlier node · value</div>
+              <div id="peer-card-lnx-body">
+              <div style="display:flex;align-items:center;gap:7px;padding:9px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span style="font-size:11px;color:var(--text-muted);font-style:italic;">Consensus is less meaningful for groups of two nodes.</span>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Kernel version</div>
-                <div style="font-size:12px;color:var(--text-sec);">5.15.0-91-generic</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">5.15.0-76-generic</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Unattended upgrades</div>
-                <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
-              </div>
-              <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
-                <span style="font-size:13px;color:#00AF73;">✓</span>
-                <span style="font-size:12px;color:var(--text-sec);">24 attributes match — SELinux, UFW, SSH config, auditd, fail2ban, cron hardening, syslog and 17 more</span>
+                <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                  <div>Attribute</div><div>Majority (1/2)</div><div>Outlier nodes · value</div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('lnx-security')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Security</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#d97706;font-weight:600;">1 difference</span>
+                      <svg id="lnx-security-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="lnx-security-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">SSH root login</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">SELinux</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enforcing</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">UFW</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('lnx-software')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Software</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#d97706;font-weight:600;">2 differences</span>
+                      <svg id="lnx-software-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="lnx-software-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Kernel version</div>
+                      <div style="font-size:12px;color:var(--text-sec);">5.15.0-91-generic</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">5.15.0-76-generic</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Unattended upgrades</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">auditd</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Running</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">fail2ban</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Active</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Both nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:13px;color:#00AF73;">✓</span>
+                  <span style="font-size:12px;color:var(--text-sec);">28 attributes match across both nodes — SELinux, UFW, auditd, fail2ban, SSH config, Docker security, cron hardening and 21 more</span>
+                </div>
               </div>
             </div>
 
@@ -3287,131 +3543,182 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div id="peer-team-view" style="display:none;">
 
             <!-- Engineering (4 nodes) -->
-            <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div style="padding:14px 20px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div class="peer-card" id="peer-card-eng" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+              <div onclick="togglePeerCard('eng')" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  </div>
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                   <div>
                     <span style="font-size:13px;font-weight:700;color:var(--text-default);">Engineering</span>
-                    <span style="font-size:12px;color:var(--text-sec);">· 4 nodes · MACBOOK-TARAS, DEV-MACPRO-03, JAMES-WIN-DESK, PROD-SRV-LNX-01</span>
+                    <span style="font-size:12px;color:var(--text-sec);">· 4 nodes · MACBOOK-TARAS, DEV-MACPRO-03, JAMES-WIN-DESK <span style="background:rgba(100,116,139,0.12);color:var(--text-muted);font-size:10px;font-weight:600;padding:1px 7px;border-radius:8px;margin-left:2px;">+1 more</span></span>
                   </div>
                 </div>
-                <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">4 outliers</span>
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                  <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">4 outliers</span>
+                  <button onclick="event.stopPropagation();toggleShowAll('eng')" id="eng-showall-btn" data-show-label="Show all 35 attributes" style="font-size:11px;color:var(--text-sec);background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:4px 10px;font-family:inherit;white-space:nowrap;">Show all 35 attributes</button>
+                  <svg id="eng-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
-                <div>Attribute</div><div>Majority (3+/4)</div><div>Outlier node · value</div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Screen lock timeout</div>
-                <div style="font-size:12px;color:var(--text-sec);">5 min</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Never</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">VPN client</div>
-                <div style="font-size:12px;color:var(--text-sec);">AnyConnect · Connected</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Not installed</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Python runtime</div>
-                <div style="font-size:12px;color:var(--text-sec);">Not installed (policy)</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">DEV-MACPRO-03</span><span style="font-size:11px;color:var(--text-sec);">3.11.2 (unapproved)</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">SSH root login</div>
-                <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">PROD-SRV-LNX-01</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div>
-              </div>
-              <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
-                <span style="font-size:13px;color:#00AF73;">✓</span>
-                <span style="font-size:12px;color:var(--text-sec);">31 attributes match across all nodes — firewall, disk encryption, domain, Slack, auto-updates, audit logging, Zoom, Teams and 23 more</span>
+              <div id="peer-card-eng-body">
+                <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                  <div>Attribute</div><div>Majority (3+/4)</div><div>Outlier nodes · value</div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('eng-security')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Security</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#FB3C44;font-weight:600;">2 differences</span>
+                      <svg id="eng-security-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="eng-security-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Python runtime</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Not installed (policy)</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">DEV-MACPRO-03</span><span style="font-size:11px;color:var(--text-sec);">3.11.2 (unapproved)</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">SSH root login</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">PROD-SRV-LNX-01</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Disk encryption</div>
+                      <div style="font-size:12px;color:var(--text-sec);">On</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 4 nodes match</div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Firewall</div>
+                      <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 4 nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" onclick="togglePeerSec('eng-access')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Access Control</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:11px;color:#d97706;font-weight:600;">2 differences</span>
+                      <svg id="eng-access-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                  </div>
+                  <div id="eng-access-body">
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Screen lock timeout</div>
+                      <div style="font-size:12px;color:var(--text-sec);">5 min</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Never</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">VPN client</div>
+                      <div style="font-size:12px;color:var(--text-sec);">AnyConnect · Connected</div>
+                      <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Not installed</span></div></div>
+                    </div>
+                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                      <div style="font-size:12px;font-weight:500;color:var(--text-default);">Password policy</div>
+                      <div style="font-size:12px;color:var(--text-sec);">14 chars · complexity on</div>
+                      <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 4 nodes match</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:13px;color:#00AF73;">✓</span>
+                  <span style="font-size:12px;color:var(--text-sec);">31 attributes match across all nodes — firewall, disk encryption, domain, Slack, auto-updates, audit logging, Zoom, Teams and 23 more</span>
+                </div>
               </div>
             </div>
 
             <!-- Finance (3 nodes) -->
-            <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div style="padding:14px 20px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div class="peer-card" id="peer-card-fin" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+              <div onclick="togglePeerCard('fin')" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  </div>
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                   <div>
                     <span style="font-size:13px;font-weight:700;color:var(--text-default);">Finance</span>
                     <span style="font-size:12px;color:var(--text-sec);">· 3 nodes · SARAH-LAPTOP-01, ANNA-HR-DESK, PETER-SALES-02</span>
                   </div>
                 </div>
-                <span style="font-size:11px;font-weight:600;color:#FB3C44;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.2);padding:3px 9px;border-radius:10px;">6 outliers</span>
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                  <span style="font-size:11px;font-weight:600;color:#FB3C44;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.2);padding:3px 9px;border-radius:10px;">6 outliers</span>
+                  <svg id="fin-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
-                <div>Attribute</div><div>Majority (2+/3)</div><div>Outlier node · value</div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Antivirus status</div>
-                <div style="font-size:12px;color:var(--text-sec);">Defender · Enabled</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Disk encryption</div>
-                <div style="font-size:12px;color:var(--text-sec);">On (BitLocker)</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Off</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Local admin accounts</div>
-                <div style="font-size:12px;color:var(--text-sec);">1 account</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">3 accounts</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Remote Desktop (RDP)</div>
-                <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Microsoft 365 version</div>
-                <div style="font-size:12px;color:var(--text-sec);">2401 (current)</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">ANNA-HR-DESK</span><span style="font-size:11px;color:var(--text-sec);">2209 (outdated)</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Open inbound ports</div>
-                <div style="font-size:12px;color:var(--text-sec);">80, 443</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PETER-SALES-02</span><span style="font-size:11px;color:var(--text-sec);">+ 8080, 8443</span></div>
-              </div>
-              <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
-                <span style="font-size:13px;color:#00AF73;">✓</span>
-                <span style="font-size:12px;color:var(--text-sec);">29 attributes match across all nodes — domain, auto-updates, firewall (2/3), screen lock (2/3), audit logging, Zoom, Teams, Slack and 21 more</span>
+              <div id="peer-card-fin-body">
+                <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                  <div>Attribute</div><div>Majority (2+/3)</div><div>Outlier node · value</div>
+                </div>
+                <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                  <div style="font-size:12px;font-weight:500;color:var(--text-default);">Antivirus status</div>
+                  <div style="font-size:12px;color:var(--text-sec);">Defender · Enabled</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
+                </div>
+                <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                  <div style="font-size:12px;font-weight:500;color:var(--text-default);">Disk encryption</div>
+                  <div style="font-size:12px;color:var(--text-sec);">On (BitLocker)</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Off</span></div>
+                </div>
+                <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                  <div style="font-size:12px;font-weight:500;color:var(--text-default);">Local admin accounts</div>
+                  <div style="font-size:12px;color:var(--text-sec);">1 account</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">3 accounts</span></div>
+                </div>
+                <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(251,60,68,0.03);">
+                  <div style="font-size:12px;font-weight:500;color:var(--text-default);">Remote Desktop (RDP)</div>
+                  <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">SARAH-LAPTOP-01</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div>
+                </div>
+                <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                  <div style="font-size:12px;font-weight:500;color:var(--text-default);">Microsoft 365 version</div>
+                  <div style="font-size:12px;color:var(--text-sec);">2401 (current)</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">ANNA-HR-DESK</span><span style="font-size:11px;color:var(--text-sec);">2209 (outdated)</span></div>
+                </div>
+                <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                  <div style="font-size:12px;font-weight:500;color:var(--text-default);">Open inbound ports</div>
+                  <div style="font-size:12px;color:var(--text-sec);">80, 443</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PETER-SALES-02</span><span style="font-size:11px;color:var(--text-sec);">+ 8080, 8443</span></div>
+                </div>
+                <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:13px;color:#00AF73;">✓</span>
+                  <span style="font-size:12px;color:var(--text-sec);">29 attributes match across all nodes — domain, auto-updates, firewall, screen lock, audit logging, Zoom, Teams, Slack and 21 more</span>
+                </div>
               </div>
             </div>
 
             <!-- DevOps (2 nodes) -->
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-              <div style="padding:14px 20px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div class="peer-card" id="peer-card-devops" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+              <div onclick="togglePeerCard('devops')" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(16,185,129,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  </div>
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(16,185,129,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                   <div>
                     <span style="font-size:13px;font-weight:700;color:var(--text-default);">DevOps</span>
                     <span style="font-size:12px;color:var(--text-sec);">· 2 nodes · PROD-SRV-LNX-01, PROD-SRV-LNX-02</span>
                   </div>
                 </div>
-                <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">2 outliers</span>
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                  <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">2 outliers</span>
+                  <svg id="devops-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
-                <div>Attribute</div><div>Majority (1/2)</div><div>Outlier node · value</div>
+              <div id="peer-card-devops-body">
+              <div style="display:flex;align-items:center;gap:7px;padding:9px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span style="font-size:11px;color:var(--text-muted);font-style:italic;">Consensus is less meaningful for groups of two nodes.</span>
               </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Kernel version</div>
-                <div style="font-size:12px;color:var(--text-sec);">5.15.0-91-generic</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">5.15.0-76-generic</span></div>
-              </div>
-              <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
-                <div style="font-size:12px;font-weight:500;color:var(--text-default);">Unattended upgrades</div>
-                <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
-              </div>
-              <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
-                <span style="font-size:13px;color:#00AF73;">✓</span>
-                <span style="font-size:12px;color:var(--text-sec);">28 attributes match across all nodes — SELinux, UFW, auditd, fail2ban, SSH config, Docker security, cron hardening and 21 more</span>
+                <div style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                  <div>Attribute</div><div>Majority (1/2)</div><div>Outlier node · value</div>
+                </div>
+                <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                  <div style="font-size:12px;font-weight:500;color:var(--text-default);">Kernel version</div>
+                  <div style="font-size:12px;color:var(--text-sec);">5.15.0-91-generic</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">5.15.0-76-generic</span></div>
+                </div>
+                <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;background:rgba(217,119,6,0.03);">
+                  <div style="font-size:12px;font-weight:500;color:var(--text-default);">Unattended upgrades</div>
+                  <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PROD-SRV-LNX-02</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div>
+                </div>
+                <div style="padding:11px 20px;background:rgba(0,175,115,0.03);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:13px;color:#00AF73;">✓</span>
+                  <span style="font-size:12px;color:var(--text-sec);">28 attributes match across both nodes — SELinux, UFW, auditd, fail2ban, SSH config, Docker security, cron hardening and 21 more</span>
+                </div>
               </div>
             </div>
 
@@ -3523,7 +3830,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
 
           <!-- Table header -->
-          <div class="compare-thead" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:10px 20px 10px 26px;background:#fff;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+          <div class="compare-thead" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:10px 20px 10px 26px;background:var(--bg-surface);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
             <div>Attribute</div>
             <div>MACBOOK-TARAS</div>
             <div>SARAH-LAPTOP-01</div>
@@ -3579,13 +3886,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">TPM version</div>
                 <div style="font-size:12px;color:var(--text-sec);">2.0</div>
                 <div style="font-size:12px;color:var(--text-sec);">2.0</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Gatekeeper / SmartScreen</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Enabled</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
             </div>
           </div>
@@ -3633,13 +3940,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Login banner</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Account lockout policy</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">After 5 attempts</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">After 5 attempts</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
             </div>
           </div>
@@ -3687,13 +3994,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">System hostname</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">MACBOOK-TARAS</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">SARAH-LAPTOP-01</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Domain membership</div>
                 <div style="font-size:12px;color:var(--text-sec);">CORP-DOMAIN</div>
                 <div style="font-size:12px;color:var(--text-sec);">CORP-DOMAIN</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
             </div>
           </div>
@@ -3741,13 +4048,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Firewall rules</div>
                 <div style="font-size:12px;color:var(--text-sec);">Policy compliant</div>
                 <div style="font-size:12px;color:var(--text-sec);">Policy compliant</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">IPv6</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Disabled</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Disabled</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
             </div>
           </div>
@@ -3789,13 +4096,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Prohibited software</div>
                 <div style="font-size:12px;color:var(--text-sec);">None detected</div>
                 <div style="font-size:12px;color:var(--text-sec);">None detected</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Teams installed</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Yes</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Yes</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
             </div>
           </div>
@@ -3813,7 +4120,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Audit logging</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Screensaver lock</div>
@@ -3825,19 +4132,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">WMI service</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Running</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Running</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">PowerShell logging</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Event log retention</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">90 days</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">90 days</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
             </div>
           </div>
@@ -3855,7 +4162,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Manufacturer</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Dell Inc.</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Dell Inc.</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">RAM</div>
@@ -3867,19 +4174,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Serial number</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">A1B2C3D4</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">X9Y8Z7W6</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Device enrolled (MDM)</div>
                 <div style="font-size:12px;color:var(--text-sec);">Yes · Intune</div>
                 <div style="font-size:12px;color:var(--text-sec);">Yes · Intune</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
               <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Certificate</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Corp-Device-Cert · Valid</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Corp-Device-Cert · Valid</div>
-                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:#94a3b8;font-weight:600;">=</span></div>
+                <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
             </div>
           </div>
@@ -4506,8 +4813,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
                 <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">CIS security baseline for Windows 11 — password policy, account settings, network &amp; system config.</div>
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:#FFFFFF;border:1px solid #3B82F6;">Security</span>
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#10B981;color:#FFFFFF;border:1px solid #10B981;">Compliance</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:var(--on-brand);border:1px solid #3B82F6;">Security</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#10B981;color:var(--on-brand);border:1px solid #10B981;">Compliance</span>
                 </div>
               </div>
               <div style="text-align:right;flex-shrink:0;">
@@ -4541,8 +4848,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
                 <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Ensures antivirus, EDR, and endpoint monitoring agents are active on all managed nodes.</div>
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:#FFFFFF;border:1px solid #3B82F6;">Security</span>
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#14B8A6;color:#FFFFFF;border:1px solid #14B8A6;">Monitoring</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:var(--on-brand);border:1px solid #3B82F6;">Security</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#14B8A6;color:var(--on-brand);border:1px solid #14B8A6;">Monitoring</span>
                 </div>
               </div>
               <div style="text-align:right;flex-shrink:0;">
@@ -4576,8 +4883,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
                 <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">CIS security baseline for macOS 13 Ventura — system preferences, FileVault, firewall, and privacy settings.</div>
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:#FFFFFF;border:1px solid #3B82F6;">Security</span>
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#64748B;color:#FFFFFF;border:1px solid #64748B;">Config</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:var(--on-brand);border:1px solid #3B82F6;">Security</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#64748B;color:var(--on-brand);border:1px solid #64748B;">Config</span>
                 </div>
               </div>
               <div style="text-align:right;flex-shrink:0;">
@@ -4611,8 +4918,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
                 <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Validates network isolation controls, VLAN configuration, and inter-segment traffic rules across all nodes.</div>
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#06B6D4;color:#FFFFFF;border:1px solid #06B6D4;">Network</span>
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#10B981;color:#FFFFFF;border:1px solid #10B981;">Compliance</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#06B6D4;color:var(--on-brand);border:1px solid #06B6D4;">Network</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#10B981;color:var(--on-brand);border:1px solid #10B981;">Compliance</span>
                 </div>
               </div>
               <div style="text-align:right;flex-shrink:0;">
@@ -4646,8 +4953,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
                 <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Enforces data lifecycle policies — log retention periods, backup schedules, and storage access controls.</div>
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#6366F1;color:#FFFFFF;border:1px solid #6366F1;">Data</span>
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#10B981;color:#FFFFFF;border:1px solid #10B981;">Compliance</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#6366F1;color:var(--on-brand);border:1px solid #6366F1;">Data</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#10B981;color:var(--on-brand);border:1px solid #10B981;">Compliance</span>
                 </div>
               </div>
               <div style="text-align:right;flex-shrink:0;">
@@ -4672,7 +4979,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
           <!-- Policy card 6: CIS Ubuntu 22.04 (not assigned / archived look) -->
           <div data-pol-type="archived" data-tags="Security Config Monitoring" style="background:#fafafa;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);opacity:0.75;transition:box-shadow 0.15s,opacity 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-md)';this.style.opacity='1'" onmouseout="this.style.boxShadow='var(--shadow-sm)';this.style.opacity='0.75'">
-            <div style="width:4px;background:#94a3b8;flex-shrink:0;"></div>
+            <div style="width:4px;background:var(--text-muted);flex-shrink:0;"></div>
             <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:0;">
               <div style="flex:1;min-width:0;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
@@ -4681,9 +4988,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
                 <div style="font-size:12px;color:#b0bec5;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">CIS security baseline for Ubuntu Linux 22.04 LTS — kernel hardening, SSH, firewall, and user account controls.</div>
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:#FFFFFF;border:1px solid #3B82F6;">Security</span>
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#64748B;color:#FFFFFF;border:1px solid #64748B;">Config</span>
-                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#14B8A6;color:#FFFFFF;border:1px solid #14B8A6;">Monitoring</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:var(--on-brand);border:1px solid #3B82F6;">Security</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#64748B;color:var(--on-brand);border:1px solid #64748B;">Config</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#14B8A6;color:var(--on-brand);border:1px solid #14B8A6;">Monitoring</span>
                 </div>
               </div>
               <div style="text-align:right;flex-shrink:0;">
@@ -4799,7 +5106,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label">Policy tags</label>
               <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;" id="pc-tags-container">
-                <button onclick="pcAddTag(this)" style="font-size:11px;padding:4px 11px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.12s;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='#94a3b8';this.style.color='#64748b'">
+                <button onclick="pcAddTag(this)" style="font-size:11px;padding:4px 11px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.12s;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='#94a3b8';this.style.color='#64748b'">
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   Add tag
                 </button>
@@ -4843,7 +5150,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
               <div>
                 <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus active and up to date</div>
-                <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:#FFFFFF;border:1px solid #3B82F6;">Security</span></div>
+                <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#3B82F6;color:var(--on-brand);border:1px solid #3B82F6;">Security</span></div>
               </div>
               <div class="pe-sev-btn" data-val="critical" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fca5a5;background:#fef2f2;color:#FB3C44;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Critical</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
               <button onclick="this.closest('.pc-check-row').remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor='#fca5a5';this.style.color='#FB3C44';this.style.background='#fef2f2'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#94a3b8';this.style.background='white'">×</button>
@@ -4855,7 +5162,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
               <div>
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Host firewall enabled</div>
-                <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#06B6D4;color:#FFFFFF;border:1px solid #06B6D4;">Network</span></div>
+                <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#06B6D4;color:var(--on-brand);border:1px solid #06B6D4;">Network</span></div>
               </div>
               <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
               <button onclick="this.closest('.pc-check-row').remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor='#fca5a5';this.style.color='#FB3C44';this.style.background='#fef2f2'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#94a3b8';this.style.background='white'">×</button>
@@ -4867,7 +5174,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
               <div>
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Endpoint encryption enabled</div>
-                <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#6366F1;color:#FFFFFF;border:1px solid #6366F1;">Data</span></div>
+                <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#6366F1;color:var(--on-brand);border:1px solid #6366F1;">Data</span></div>
               </div>
               <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
               <button onclick="this.closest('.pc-check-row').remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor='#fca5a5';this.style.color='#FB3C44';this.style.background='#fef2f2'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#94a3b8';this.style.background='white'">×</button>
@@ -4967,8 +5274,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <!-- Policy tags row -->
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
               <span style="font-size:11px;font-weight:600;color:var(--text-sec);white-space:nowrap;">Policy tags:</span>
-              <span id="pd-tag-1" style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#3B82F6;color:#FFFFFF;border:1px solid #3B82F6;">Security</span>
-              <span id="pd-tag-2" style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#10B981;color:#FFFFFF;border:1px solid #10B981;">Compliance</span>
+              <span id="pd-tag-1" style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#3B82F6;color:var(--on-brand);border:1px solid #3B82F6;">Security</span>
+              <span id="pd-tag-2" style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#10B981;color:var(--on-brand);border:1px solid #10B981;">Compliance</span>
               <button style="font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;background:none;border:1px dashed var(--border);color:var(--text-sec);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.12s;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-sec)'">
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Add tag
@@ -5121,7 +5428,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div id="pe-policy-tags" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:1;">
           <span onclick="peRemoveTag(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg-subtle);color:var(--p-neutral-500);cursor:pointer;border:1px solid var(--border-default);">Security ×</span>
           <span onclick="peRemoveTag(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg-subtle);color:var(--p-neutral-500);cursor:pointer;border:1px solid var(--border-default);">Compliance ×</span>
-          <button onclick="pePolicyTagMenu(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ Add tag</button>
+          <button onclick="pePolicyTagMenu(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ Add tag</button>
         </div>
         <a href="#" onclick="return false;" style="font-size:11px;color:var(--green2);white-space:nowrap;text-decoration:none;">Manage tags in Settings →</a>
       </div>
@@ -5179,7 +5486,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div id="pe-a-tags-0" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
-                <button onclick="peAddTagMenu(this,0)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
+                <button onclick="peAddTagMenu(this,0)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
               <button onclick="showView('edit-check')" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#64748b'">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -5195,7 +5502,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="pe-sev-btn" data-idx="1" data-val="high" onclick="peOpenSevPick(this,1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
               <div id="pe-a-tags-1" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Network ×</span>
-                <button onclick="peAddTagMenu(this,1)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
+                <button onclick="peAddTagMenu(this,1)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
               <button onclick="showView('edit-check')" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#64748b'">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -5211,7 +5518,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="pe-sev-btn" data-idx="2" data-val="high" onclick="peOpenSevPick(this,2)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
               <div id="pe-a-tags-2" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
-                <button onclick="peAddTagMenu(this,2)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
+                <button onclick="peAddTagMenu(this,2)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
               <button onclick="showView('edit-check')" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#64748b'">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -5232,10 +5539,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
               <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Vulnerability scanner present</div>
-              <div class="pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#f9fafb;color:#374151;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Medium</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+              <div class="pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#f9fafb;color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Medium</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
               <div id="pe-a-tags-3" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
-                <button onclick="peAddTagMenu(this,3)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
+                <button onclick="peAddTagMenu(this,3)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
               <button onclick="showView('edit-check')" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#64748b'">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -5252,7 +5559,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div id="pe-a-tags-4" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Data ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
-                <button onclick="peAddTagMenu(this,4)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
+                <button onclick="peAddTagMenu(this,4)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
               <button onclick="showView('edit-check')" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#64748b'">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -5273,11 +5580,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
               <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Security logs retained ≥ 90 days</div>
-              <div class="pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#f9fafb;color:#374151;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Medium</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+              <div class="pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#f9fafb;color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Medium</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
               <div id="pe-a-tags-5" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
-                <button onclick="peAddTagMenu(this,5)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
+                <button onclick="peAddTagMenu(this,5)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
               <button onclick="showView('edit-check')" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='#64748b'">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -5365,7 +5672,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="flex:1;display:flex;align-items:center;gap:8px;">
               <span style="font-size:13px;font-weight:600;color:var(--text-default);">macOS Devices</span>
               <span style="font-size:11px;color:var(--text-sec);">8 nodes</span>
-              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#7C3AED;color:#FFFFFF;border:1px solid #7C3AED;">macOS</span>
+              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#7C3AED;color:var(--on-brand);border:1px solid #7C3AED;">macOS</span>
             </div>
           </div>
         </div>
@@ -5407,7 +5714,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <!-- STAGING-WIN-01 -->
           <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);">
             <input type="checkbox" style="accent-color:var(--green2);width:15px;height:15px;cursor:pointer;flex-shrink:0;" />
-            <div style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);flex-shrink:0;"></div>
             <div style="flex:1;">
               <div style="font-size:13px;font-weight:600;color:var(--text-default);">STAGING-WIN-01</div>
               <div style="font-size:11px;color:var(--text-sec);">Windows 11</div>
@@ -5637,7 +5944,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div id="ec-tags" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg-subtle);color:var(--p-neutral-500);cursor:pointer;border:1px solid var(--border-default);">Security ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg-subtle);color:var(--p-neutral-500);cursor:pointer;border:1px solid var(--border-default);">Compliance ×</span>
-                <button onclick="peAddTagMenu(this,-1)" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px dashed #94a3b8;background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ Add tag</button>
+                <button onclick="peAddTagMenu(this,-1)" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ Add tag</button>
               </div>
             </div>
             <!-- Finding message -->
@@ -8948,15 +9255,15 @@ body.dark .theme-toggle .icon-moon { display: none; }
                       <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-01</td><td style="font-size:11px;font-family:monospace;color:var(--text-default);">10.0.9.20</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
                       <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: PROD-DB-02</div></td><td style="font-size:11px;font-family:monospace;color:var(--text-default);">10.0.2.11<div style="font-size:10px;color:#d97706;">Guardian: 10.0.2.15</div></td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td><span style="font-size:10px;background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">◑ Partial match</span></td></tr>
                       <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">api-gateway-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: API-GW-02</div></td><td style="font-size:11px;font-family:monospace;color:var(--text-default);">10.1.4.20<div style="font-size:10px;color:#d97706;">Guardian: 10.1.4.22</div></td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">◑ Partial match</span></td></tr>
-                      <tr style="opacity:0.4;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-01</td><td style="font-size:11px;font-family:monospace;color:#9ca3af;">10.0.7.14</td><td style="font-size:11px;color:#9ca3af;">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                      <tr style="opacity:0.4;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-03</td><td style="font-size:11px;font-family:monospace;color:#9ca3af;">10.2.0.3</td><td style="font-size:11px;color:#9ca3af;">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                      <tr style="opacity:0.4;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-01</td><td style="font-size:11px;font-family:monospace;color:var(--text-muted);">10.0.7.14</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                      <tr style="opacity:0.4;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-03</td><td style="font-size:11px;font-family:monospace;color:var(--text-muted);">10.2.0.3</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
                     </tbody>
                   </table>
                   <!-- Pagination + collapse -->
                   <div style="padding:8px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg-surface);">
                     <span id="accord-page-info" style="font-size:11px;color:var(--text-sec);">Page 1 of <span id="accord-total-pages">94</span> · <span style="color:#6b7280;">2 rows skipped (already monitored)</span></span>
                     <div style="display:flex;gap:3px;align-items:center;">
-                      <button style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;background:var(--bg-surface);color:#9ca3af;cursor:not-allowed;">← Prev</button>
+                      <button style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;background:var(--bg-surface);color:var(--text-muted);cursor:not-allowed;">← Prev</button>
                       <button style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;background:var(--green1);color:white;font-weight:600;">1</button>
                       <button style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">2</button>
                       <button style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">3</button>
@@ -9061,11 +9368,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
                       <td><span style="font-size:10px;background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">◑ Partial match</span><div style="font-size:10px;color:#6b7280;margin-top:2px;">IP differs — will update existing record</div></td>
                     </tr>
                     <!-- Already monitored — disabled -->
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">infra-node-08</td><td style="font-size:11px;font-family:monospace;color:#9ca3af;">10.0.5.22</td><td style="font-size:11px;color:#9ca3af;">Ubuntu 20.04</td><td><span style="font-size:10px;background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-01</td><td style="font-size:11px;font-family:monospace;color:#9ca3af;">10.0.7.14</td><td style="font-size:11px;color:#9ca3af;">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-02</td><td style="font-size:11px;font-family:monospace;color:#9ca3af;">10.0.7.15</td><td style="font-size:11px;color:#9ca3af;">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-03</td><td style="font-size:11px;font-family:monospace;color:#9ca3af;">10.2.0.3</td><td style="font-size:11px;color:#9ca3af;">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-04</td><td style="font-size:11px;font-family:monospace;color:#9ca3af;">10.2.0.4</td><td style="font-size:11px;color:#9ca3af;">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">infra-node-08</td><td style="font-size:11px;font-family:monospace;color:var(--text-muted);">10.0.5.22</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 20.04</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-01</td><td style="font-size:11px;font-family:monospace;color:var(--text-muted);">10.0.7.14</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-02</td><td style="font-size:11px;font-family:monospace;color:var(--text-muted);">10.0.7.15</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-03</td><td style="font-size:11px;font-family:monospace;color:var(--text-muted);">10.2.0.3</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-04</td><td style="font-size:11px;font-family:monospace;color:var(--text-muted);">10.2.0.4</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
                   </tbody>
                 </table>
               </div>
@@ -9074,7 +9381,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
                 <span style="font-size:11px;color:var(--text-sec);">Page 1 of 94 · <span style="color:#6b7280;">2 rows skipped (already monitored)</span></span>
                 <div style="display:flex;gap:4px;">
-                  <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:#9ca3af;cursor:not-allowed;">← Prev</button>
+                  <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:var(--text-muted);cursor:not-allowed;">← Prev</button>
                   <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--green1);color:white;font-weight:600;cursor:default;">1</button>
                   <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">2</button>
                   <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">3</button>
@@ -10050,6 +10357,37 @@ function setNodesTab(tab) {
   } else {
     if (managedView) managedView.style.display = 'block';
     if (mTab) { mTab.style.color = activeColor; mTab.style.borderBottomColor = activeColor; }
+  }
+}
+
+// ── Peer card collapse / section / show-all ──────────────────────────────
+function togglePeerCard(id) {
+  var body = document.getElementById('peer-card-' + id + '-body');
+  var chev = document.getElementById(id + '-chev');
+  if (!body) return;
+  var collapsed = body.style.display === 'none';
+  body.style.display = collapsed ? '' : 'none';
+  if (chev) chev.style.transform = collapsed ? '' : 'rotate(-90deg)';
+}
+function togglePeerSec(id) {
+  var body = document.getElementById(id + '-body');
+  var chev = document.getElementById(id + '-chev');
+  if (!body) return;
+  var collapsed = body.style.display === 'none';
+  body.style.display = collapsed ? '' : 'none';
+  if (chev) chev.style.transform = collapsed ? '' : 'rotate(-90deg)';
+}
+function toggleShowAll(cardId) {
+  var card = document.getElementById('peer-card-' + cardId);
+  var btn  = document.getElementById(cardId + '-showall-btn');
+  if (!card) return;
+  var isShowAll = card.classList.contains('show-all');
+  if (isShowAll) {
+    card.classList.remove('show-all');
+    if (btn) btn.textContent = btn.dataset.showLabel || 'Show all attributes';
+  } else {
+    card.classList.add('show-all');
+    if (btn) btn.textContent = 'Show differences only';
   }
 }
 
@@ -11148,11 +11486,11 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
             <div>
               <label style="display:block;font-size:11px;font-weight:700;color:var(--p-neutral-400);letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">First name</label>
-              <input type="text" placeholder="Taras" style="width:100%;padding:11px 13px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;background:#fff;box-sizing:border-box;" onfocus="this.style.borderColor='#3FC878';this.style.boxShadow='0 0 0 3px rgba(63,200,120,0.1)'" onblur="this.style.borderColor='#e9ecef';this.style.boxShadow='none'">
+              <input type="text" placeholder="Taras" style="width:100%;padding:11px 13px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;background:var(--bg-surface);box-sizing:border-box;" onfocus="this.style.borderColor='#3FC878';this.style.boxShadow='0 0 0 3px rgba(63,200,120,0.1)'" onblur="this.style.borderColor='#e9ecef';this.style.boxShadow='none'">
             </div>
             <div>
               <label style="display:block;font-size:11px;font-weight:700;color:var(--p-neutral-400);letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">Last name</label>
-              <input type="text" placeholder="Bambuk" style="width:100%;padding:11px 13px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;background:#fff;box-sizing:border-box;" onfocus="this.style.borderColor='#3FC878';this.style.boxShadow='0 0 0 3px rgba(63,200,120,0.1)'" onblur="this.style.borderColor='#e9ecef';this.style.boxShadow='none'">
+              <input type="text" placeholder="Bambuk" style="width:100%;padding:11px 13px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;background:var(--bg-surface);box-sizing:border-box;" onfocus="this.style.borderColor='#3FC878';this.style.boxShadow='0 0 0 3px rgba(63,200,120,0.1)'" onblur="this.style.borderColor='#e9ecef';this.style.boxShadow='none'">
             </div>
           </div>
           <!-- Company -->
@@ -11294,7 +11632,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <div style="text-align:center;margin-bottom:24px;">
               <button onclick="showAuth('auth-activated')" style="display:inline-block;padding:13px 32px;background:linear-gradient(135deg,#3FC878,#26A257);border:none;border-radius:8px;color:white;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-0.2px;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">Confirm Email Address</button>
             </div>
-            <div style="font-size:12px;color:#9ca3af;line-height:1.6;border-top:1px solid #f0f0f0;padding-top:16px;">This link will expire in 24 hours. If you didn't create a Guardian account, you can safely ignore this email.<br><br>Questions? Contact us at <span style="color:var(--p-green-400);">support@cloudhouse.io</span></div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.6;border-top:1px solid #f0f0f0;padding-top:16px;">This link will expire in 24 hours. If you didn't create a Guardian account, you can safely ignore this email.<br><br>Questions? Contact us at <span style="color:var(--p-green-400);">support@cloudhouse.io</span></div>
           </div>
         </div>
       </div>
@@ -11448,7 +11786,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <div style="text-align:center;margin-bottom:20px;">
               <button onclick="showAuth('auth-invite')" style="display:inline-block;padding:13px 32px;background:linear-gradient(135deg,#3FC878,#26A257);border:none;border-radius:8px;color:white;font-size:14px;font-weight:700;cursor:pointer;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">Accept invitation →</button>
             </div>
-            <div style="font-size:12px;color:#9ca3af;line-height:1.6;border-top:1px solid #f0f0f0;padding-top:16px;">This invitation expires in 48 hours. If you didn't expect this invitation, you can safely ignore this email.<br><br>Questions? Contact us at <span style="color:var(--p-green-400);">support@cloudhouse.io</span></div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.6;border-top:1px solid #f0f0f0;padding-top:16px;">This invitation expires in 48 hours. If you didn't expect this invitation, you can safely ignore this email.<br><br>Questions? Contact us at <span style="color:var(--p-green-400);">support@cloudhouse.io</span></div>
           </div>
         </div>
       </div>
@@ -11549,7 +11887,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <div style="text-align:center;margin-bottom:20px;">
               <button onclick="showAuth('auth-login')" style="display:inline-block;padding:13px 32px;background:linear-gradient(135deg,#3FC878,#26A257);border:none;border-radius:8px;color:white;font-size:14px;font-weight:700;cursor:pointer;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">Unlock my account</button>
             </div>
-            <div style="font-size:12px;color:#9ca3af;line-height:1.6;border-top:1px solid #f0f0f0;padding-top:16px;">This link expires in 1 hour. If you didn't attempt to sign in, please contact us immediately at <span style="color:var(--p-green-400);">security@cloudhouse.io</span></div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.6;border-top:1px solid #f0f0f0;padding-top:16px;">This link expires in 1 hour. If you didn't attempt to sign in, please contact us immediately at <span style="color:var(--p-green-400);">security@cloudhouse.io</span></div>
           </div>
         </div>
       </div>
@@ -11618,12 +11956,12 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
 <div id="pe-sev-pick" style="display:none;position:fixed;z-index:10000;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:5px;box-shadow:0 8px 24px rgba(0,0,0,0.25);">
   <div onclick="pePickSev('critical')" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:#FB3C44;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">Critical</div>
   <div onclick="pePickSev('high')" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:#92400e;" onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background=''">High</div>
-  <div onclick="pePickSev('medium')" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:#374151;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">Medium</div>
+  <div onclick="pePickSev('medium')" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:var(--text-default);" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">Medium</div>
   <div onclick="pePickSev('low')" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:#00AF73;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background=''">Low</div>
 </div>
 
 <div id="pe-tag-pop" style="display:none;position:fixed;z-index:9999;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,0.25);min-width:210px;">
-  <div style="font-size:11px;color:var(--text-sec);margin-bottom:10px;">Approved tags <span style="color:#9ca3af;">(example)</span></div>
+  <div style="font-size:11px;color:var(--text-sec);margin-bottom:10px;">Approved tags <span style="color:var(--text-muted);">(example)</span></div>
   <div style="display:flex;flex-direction:column;gap:4px;">
     <div onclick="peApplyTag('Security','#f1f5f9','#64748b')" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Security</div>
     <div onclick="peApplyTag('Network','#f1f5f9','#64748b')" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Network</div>
