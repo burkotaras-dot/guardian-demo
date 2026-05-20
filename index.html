@@ -6957,9 +6957,17 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <input type="text" id="drift-node-search" placeholder="Search nodes…" oninput="filterDriftNodes(this.value)" style="width:100%;box-sizing:border-box;padding:6px 8px 6px 26px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg-canvas);color:var(--text-default);outline:none;">
               </div>
               <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:14px;">
-                <div class="drift-node-opt" data-val="all" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--green1);font-weight:600;background:rgba(0,175,115,0.08);">All nodes</div>
-                <div class="drift-node-opt drift-node-specific" data-val="MACBOOK-TARAS" onclick="selectDriftNode(this)" style="display:none;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">MACBOOK-TARAS</div>
-                <div class="drift-node-opt drift-node-specific" data-val="SARAH-LAPTOP-01" onclick="selectDriftNode(this)" style="display:none;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">SARAH-LAPTOP-01</div>
+                <!-- Default state: All nodes + hint -->
+                <div id="drift-node-default">
+                  <div class="drift-node-opt" data-val="all" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--green1);font-weight:600;background:rgba(0,175,115,0.08);">All nodes</div>
+                  <div id="drift-node-hint" style="padding:4px 10px;font-size:11px;color:var(--text-muted);font-style:italic;">Start typing to find a node</div>
+                </div>
+                <!-- Search results (shown when typing) -->
+                <div id="drift-node-results" style="display:none;flex-direction:column;gap:2px;">
+                  <div class="drift-node-opt drift-node-specific" data-val="MACBOOK-TARAS" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">MACBOOK-TARAS</div>
+                  <div class="drift-node-opt drift-node-specific" data-val="SARAH-LAPTOP-01" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">SARAH-LAPTOP-01</div>
+                  <div id="drift-node-empty" style="display:none;padding:6px 10px;font-size:12px;color:var(--text-muted);font-style:italic;">No nodes found</div>
+                </div>
               </div>
                             <button onclick="toggleChangesFilter()" style="width:100%;padding:8px;border:none;border-radius:var(--radius-md);background:var(--green1);color:white;font-size:12px;font-weight:600;cursor:pointer;">Apply</button>
             </div>
@@ -10749,15 +10757,24 @@ function pickSort(el, label) {
 }
 
 function filterDriftNodes(q) {
+  var defaultEl = document.getElementById('drift-node-default');
+  var resultsEl = document.getElementById('drift-node-results');
+  var emptyEl = document.getElementById('drift-node-empty');
   var nodes = document.querySelectorAll('.drift-node-specific');
+  if (!q.trim()) {
+    defaultEl.style.display = 'block';
+    resultsEl.style.display = 'none';
+    return;
+  }
+  defaultEl.style.display = 'none';
+  resultsEl.style.display = 'flex';
+  var anyVisible = false;
   nodes.forEach(function(n) {
-    if (!q.trim()) {
-      n.style.display = 'none';
-    } else {
-      var match = n.getAttribute('data-val').toLowerCase().indexOf(q.toLowerCase()) !== -1;
-      n.style.display = match ? 'block' : 'none';
-    }
+    var match = n.getAttribute('data-val').toLowerCase().indexOf(q.toLowerCase()) !== -1;
+    n.style.display = match ? 'block' : 'none';
+    if (match) anyVisible = true;
   });
+  emptyEl.style.display = anyVisible ? 'none' : 'block';
 }
 function selectDriftNode(el) {
   document.querySelectorAll('.drift-node-opt').forEach(function(opt) {
