@@ -6941,7 +6941,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div id="changes-filter-wrap" style="position:relative;flex-shrink:0;">
             <div id="changes-filter-btn" onclick="toggleChangesFilter()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-              Filters
+              Filters<span id="drift-filter-active-label"></span>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div id="changes-filter-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:16px;min-width:220px;z-index:100;">
@@ -6952,10 +6952,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:11px;font-weight:700;color:var(--text-default);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;">CIS Impact</div>
               <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:6px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green2);"> CIS Fail</label>
               <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:14px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--green2);"> CIS Pass</label>
-              <div style="font-size:11px;font-weight:700;color:var(--text-default);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;">Node</div>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:6px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green2);"> All nodes</label>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:6px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green2);"> MACBOOK-TARAS</label>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:14px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green2);"> SARAH-LAPTOP-01</label>
+              <div style="font-size:11px;font-weight:700;color:var(--text-default);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Node</div>
+              <div style="position:relative;margin-bottom:8px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="Search nodes…" style="width:100%;box-sizing:border-box;padding:6px 8px 6px 26px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg-canvas);color:var(--text-default);outline:none;">
+              </div>
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:6px;cursor:pointer;"><input type="checkbox" class="drift-node-cb" style="accent-color:var(--green2);" onchange="updateDriftFilterLabel()"> MACBOOK-TARAS</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:14px;cursor:pointer;"><input type="checkbox" class="drift-node-cb" style="accent-color:var(--green2);" onchange="updateDriftFilterLabel()"> SARAH-LAPTOP-01</label>
                             <button onclick="toggleChangesFilter()" style="width:100%;padding:8px;border:none;border-radius:var(--radius-md);background:var(--green1);color:white;font-size:12px;font-weight:600;cursor:pointer;">Apply</button>
             </div>
           </div>
@@ -10731,6 +10734,17 @@ function pickSort(el, label) {
   sortChanges(el.dataset.val);
 }
 
+function updateDriftFilterLabel() {
+  var checked = document.querySelectorAll('.drift-node-cb:checked').length;
+  var lbl = document.getElementById('drift-filter-active-label');
+  if (!lbl) return;
+  if (checked > 0) {
+    lbl.textContent = ' · Node';
+    lbl.style.color = 'var(--green1)';
+  } else {
+    lbl.textContent = '';
+  }
+}
 function toggleChangesFilter() {
   const dd = document.getElementById('changes-filter-dropdown');
   if (dd) dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
