@@ -6882,8 +6882,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       <!-- Scope bar — neutral -->
       <div style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <span style="font-size:12px;font-weight:600;color:var(--text-default);">All Nodes</span>
-        <span style="font-size:11px;color:var(--text-sec);">· 14 nodes · Showing all detected drift</span>
+        <span id="drift-scope-label" style="font-size:12px;font-weight:600;color:var(--text-default);">All Detected Drift</span>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;">
 
@@ -6957,8 +6956,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 <input type="text" placeholder="Search nodes…" style="width:100%;box-sizing:border-box;padding:6px 8px 6px 26px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg-canvas);color:var(--text-default);outline:none;">
               </div>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:6px;cursor:pointer;"><input type="checkbox" class="drift-node-cb" style="accent-color:var(--green2);" onchange="updateDriftFilterLabel()"> MACBOOK-TARAS</label>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:14px;cursor:pointer;"><input type="checkbox" class="drift-node-cb" style="accent-color:var(--green2);" onchange="updateDriftFilterLabel()"> SARAH-LAPTOP-01</label>
+              <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:14px;">
+                <div class="drift-node-opt" data-val="all" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--green1);font-weight:600;background:rgba(0,175,115,0.08);">All nodes</div>
+                <div class="drift-node-opt" data-val="MACBOOK-TARAS" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">MACBOOK-TARAS</div>
+                <div class="drift-node-opt" data-val="SARAH-LAPTOP-01" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">SARAH-LAPTOP-01</div>
+              </div>
                             <button onclick="toggleChangesFilter()" style="width:100%;padding:8px;border:none;border-radius:var(--radius-md);background:var(--green1);color:white;font-size:12px;font-weight:600;cursor:pointer;">Apply</button>
             </div>
           </div>
@@ -6978,10 +6980,20 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div><!-- end right group -->
         </div>
 
+        <!-- Bulk action bar — shown when 1+ drift items selected -->
+        <div id="drift-bulk-bar" style="display:none;align-items:center;gap:12px;padding:10px 16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:12px;">
+          <span id="drift-bulk-count" style="font-size:12px;font-weight:600;color:var(--text-default);">0 selected</span>
+          <div style="width:1px;height:16px;background:var(--border);"></div>
+          <button onclick="driftBulkAction('approve')" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;">Approve</button>
+          <button onclick="driftBulkAction('unapprove')" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;">Unapprove</button>
+          <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;margin-left:auto;">Clear selection</button>
+        </div>
+
         <!-- Drift items — neutral cards, color only in diff blocks -->
         <div class="check-card" id="change-card-0" data-change-type="modified" onclick="openChange(0)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
               <span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
               <div class="check-title">Windows Defender — Real-time protection</div>
             </div>
@@ -7009,6 +7021,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div class="check-card" id="change-card-1" data-change-type="modified" onclick="openChange(1)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
               <span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
               <div class="check-title">Screen lock timeout</div>
             </div>
@@ -7036,6 +7049,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div class="check-card" id="change-card-2" data-change-type="added" onclick="openChange(2)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
               <span class="badge" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;">Added</span>
               <div class="check-title">New local user account created</div>
               <span style="font-size:10px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 8px;white-space:nowrap;">Latest detected</span>
@@ -10734,16 +10748,55 @@ function pickSort(el, label) {
   sortChanges(el.dataset.val);
 }
 
-function updateDriftFilterLabel() {
-  var checked = document.querySelectorAll('.drift-node-cb:checked').length;
+function selectDriftNode(el) {
+  document.querySelectorAll('.drift-node-opt').forEach(function(opt) {
+    opt.style.background = '';
+    opt.style.color = 'var(--text-default)';
+    opt.style.fontWeight = '';
+  });
+  el.style.background = 'rgba(0,175,115,0.08)';
+  el.style.color = 'var(--green1)';
+  el.style.fontWeight = '600';
+  var isAll = el.getAttribute('data-val') === 'all';
   var lbl = document.getElementById('drift-filter-active-label');
-  if (!lbl) return;
-  if (checked > 0) {
-    lbl.textContent = ' · Node';
-    lbl.style.color = 'var(--green1)';
-  } else {
-    lbl.textContent = '';
-  }
+  if (lbl) { lbl.textContent = isAll ? '' : ' · Node'; lbl.style.color = 'var(--green1)'; }
+  var scope = document.getElementById('drift-scope-label');
+  if (scope) scope.textContent = isAll ? 'All Detected Drift' : 'Filtered Detected Drift';
+}
+function updateDriftFilterLabel() {}
+function updateDriftBulkBar() {
+  var cbs = document.querySelectorAll('.drift-select-cb:checked');
+  var bar = document.getElementById('drift-bulk-bar');
+  var cnt = document.getElementById('drift-bulk-count');
+  if (!bar) return;
+  bar.style.display = cbs.length > 0 ? 'flex' : 'none';
+  if (cnt) cnt.textContent = cbs.length + ' selected';
+}
+function driftBulkAction(action) {
+  var cbs = document.querySelectorAll('.drift-select-cb:checked');
+  cbs.forEach(function(cb) {
+    var idx = cb.getAttribute('data-idx');
+    var statusEl = document.getElementById('change-status-' + idx);
+    if (statusEl) {
+      if (action === 'approve') {
+        statusEl.textContent = 'Approved';
+        statusEl.style.background = 'rgba(0,175,115,0.08)';
+        statusEl.style.color = '#00AF73';
+        statusEl.style.borderColor = 'rgba(0,175,115,0.3)';
+      } else {
+        statusEl.textContent = 'Pending';
+        statusEl.style.background = 'var(--bg-canvas)';
+        statusEl.style.color = 'var(--text-sec)';
+        statusEl.style.borderColor = 'var(--border)';
+      }
+    }
+    cb.checked = false;
+  });
+  updateDriftBulkBar();
+}
+function driftClearSelection() {
+  document.querySelectorAll('.drift-select-cb').forEach(function(cb){ cb.checked = false; });
+  updateDriftBulkBar();
 }
 function toggleChangesFilter() {
   const dd = document.getElementById('changes-filter-dropdown');
