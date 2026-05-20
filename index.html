@@ -6954,12 +6954,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:11px;font-weight:700;color:var(--text-default);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Node</div>
               <div style="position:relative;margin-bottom:8px;">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" placeholder="Search nodes…" style="width:100%;box-sizing:border-box;padding:6px 8px 6px 26px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg-canvas);color:var(--text-default);outline:none;">
+                <input type="text" id="drift-node-search" placeholder="Search nodes…" oninput="filterDriftNodes(this.value)" style="width:100%;box-sizing:border-box;padding:6px 8px 6px 26px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg-canvas);color:var(--text-default);outline:none;">
               </div>
               <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:14px;">
                 <div class="drift-node-opt" data-val="all" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--green1);font-weight:600;background:rgba(0,175,115,0.08);">All nodes</div>
-                <div class="drift-node-opt" data-val="MACBOOK-TARAS" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">MACBOOK-TARAS</div>
-                <div class="drift-node-opt" data-val="SARAH-LAPTOP-01" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">SARAH-LAPTOP-01</div>
+                <div class="drift-node-opt drift-node-specific" data-val="MACBOOK-TARAS" onclick="selectDriftNode(this)" style="display:none;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">MACBOOK-TARAS</div>
+                <div class="drift-node-opt drift-node-specific" data-val="SARAH-LAPTOP-01" onclick="selectDriftNode(this)" style="display:none;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">SARAH-LAPTOP-01</div>
               </div>
                             <button onclick="toggleChangesFilter()" style="width:100%;padding:8px;border:none;border-radius:var(--radius-md);background:var(--green1);color:white;font-size:12px;font-weight:600;cursor:pointer;">Apply</button>
             </div>
@@ -10748,6 +10748,17 @@ function pickSort(el, label) {
   sortChanges(el.dataset.val);
 }
 
+function filterDriftNodes(q) {
+  var nodes = document.querySelectorAll('.drift-node-specific');
+  nodes.forEach(function(n) {
+    if (!q.trim()) {
+      n.style.display = 'none';
+    } else {
+      var match = n.getAttribute('data-val').toLowerCase().indexOf(q.toLowerCase()) !== -1;
+      n.style.display = match ? 'block' : 'none';
+    }
+  });
+}
 function selectDriftNode(el) {
   document.querySelectorAll('.drift-node-opt').forEach(function(opt) {
     opt.style.background = '';
