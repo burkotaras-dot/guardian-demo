@@ -11021,22 +11021,33 @@ go = function(key) {
 
 // J4 nav step update
 function updateJ4Nav(key) {
-  const stepMap = {
-    'j4-connect':1,'j4-connecting':1,'j4-connected':1,'j4-connect-failed':1,
-    'j4-match':2,
-    'j4-active':3,'j4-no-crs':3,'j4-partial-match':3,'j4-summary':3
-  };
   const nav = document.getElementById('j4-step-nav');
-  if (!nav || !stepMap[key]) return;
+  if (!nav) return;
+  const exitBtn = `<button onclick="showView('settings-integrations')" style="margin-left:18px;background:none;border:none;font-size:11px;color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.color='#1a2a3a';this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.color='#94a3b8';this.style.background='none'"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Exit</button>`;
+  const connectionPhase = ['j4-connect','j4-connecting','j4-connected','j4-connect-failed'].includes(key);
+  const reconPhase = ['j4-match','j4-active','j4-no-crs','j4-partial-match','j4-summary'].includes(key);
+  if (!connectionPhase && !reconPhase) return;
   nav.style.display = 'flex';
-  const current = stepMap[key];
-  nav.querySelectorAll('.step-item').forEach((el, i) => {
-    const num = i + 1;
-    el.classList.toggle('done',   num < current);
-    el.classList.toggle('active', num === current);
-    const dot = el.querySelector('.step-dot');
-    if (dot) dot.textContent = num;
-  });
+  if (connectionPhase) {
+    nav.innerHTML = `
+      <div class="step-item active" onclick="go('j4-connect')" style="cursor:pointer;"><div class="step-dot">1</div>&nbsp;Connection</div>
+      <div class="step-line"></div>
+      <div class="step-item" onclick="go('j4-match')" style="cursor:pointer;"><div class="step-dot">2</div>&nbsp;Match Nodes</div>
+      <div class="step-line"></div>
+      <div class="step-item" onclick="go('j4-active')" style="cursor:pointer;"><div class="step-dot">3</div>&nbsp;Recon Active</div>
+      ${exitBtn}`;
+  } else {
+    const matchActive = key === 'j4-match';
+    nav.innerHTML = `
+      <div style="display:flex;align-items:center;gap:6px;padding:4px 10px 4px 0;border-right:1px solid rgba(255,255,255,0.12);margin-right:4px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span style="font-size:10px;color:rgba(255,255,255,0.55);white-space:nowrap;">company.service-now.com</span>
+      </div>
+      <div class="step-item ${matchActive ? 'active' : 'done'}" onclick="go('j4-match')" style="cursor:pointer;"><div class="step-dot">1</div>&nbsp;Match Nodes</div>
+      <div class="step-line"></div>
+      <div class="step-item ${!matchActive ? 'active' : ''}" onclick="go('j4-active')" style="cursor:pointer;"><div class="step-dot">2</div>&nbsp;Recon Active</div>
+      ${exitBtn}`;
+  }
 }
 
 // J3 nav step update
