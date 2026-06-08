@@ -6919,29 +6919,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:11px;color:var(--text-sec);">Match detected drift against approved Change Requests to filter out expected changes</div>
             </div>
           </div>
-          <!-- Divider -->
-          <div style="width:1px;height:40px;background:var(--border);flex-shrink:0;"></div>
-          <!-- Scores -->
-          <div style="display:flex;align-items:center;gap:24px;flex-shrink:0;">
-            <div>
-              <div style="font-size:10px;color:var(--text-sec);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">Previous Score</div>
-              <div style="font-size:22px;font-weight:700;color:var(--text-default);">82<span style="font-size:13px;color:var(--text-sec)">/100</span></div>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            <div>
-              <div style="font-size:10px;color:var(--text-sec);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">Current Score</div>
-              <div style="font-size:22px;font-weight:700;color:#FB3C44;">78<span style="font-size:13px;color:var(--text-sec)">/100</span></div>
-            </div>
-          </div>
-          <!-- Delta -->
-          <div style="text-align:right;flex-shrink:0;">
-            <div style="font-size:13px;font-weight:600;color:#FB3C44;" id="changes-score-delta">−4 points</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:2px;" id="changes-score-note">3 unreconciled drift items</div>
-          </div>
-          <!-- Divider -->
-          <div style="width:1px;height:40px;background:var(--border);flex-shrink:0;"></div>
           <!-- Right: button -->
-          <button style="white-space:nowrap;padding:7px 16px;font-size:12px;flex-shrink:0;width:auto;background:#8B5CF6;color:white;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:600;" onclick="go('j4-connect')">Connect ServiceNow →</button>
+          <button style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;background:#8B5CF6;color:white;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:600;" onclick="go('j4-connect')">Connect ServiceNow →</button>
         </div>
 
         <!-- Pills + Search / Filter / Sort — pills left, controls right -->
@@ -11259,8 +11238,10 @@ function goToDashboardFromJ4() {
   if (unreconVal) { unreconVal.textContent = '1'; unreconVal.style.color = '#d97706'; }
   if (unreconSub) unreconSub.innerHTML = '<span style="color:#d97706;font-weight:600;">1 unresolved</span> · 2 reconciled via SN';
 
-  // ── 3. Show ServiceNow summary on Dashboard ──
+  // ── 3. Flip ServiceNow cards on Dashboard ──
+  const dashConnect = document.getElementById('dash-sn-connect');
   const snSummary = document.getElementById('dash-sn-summary');
+  if (dashConnect) dashConnect.style.display = 'none';
   if (snSummary) snSummary.style.display = 'flex';
 
   // ── 4. Update Changes tab ──
