@@ -8805,7 +8805,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="padding:10px 14px;border-right:1px solid var(--border);font-size:11px;color:var(--text-sec);">Permissions</div>
               <div style="padding:10px 14px;font-size:11px;color:#00AF73;font-weight:600;">change_request.read ✓ · sys_user.read ✓</div>
             </div>
-            <button class="btn-primary" style="width:100%;padding:12px;" onclick="go('j4-match')">Match Guardian Nodes →</button>
+            <button class="btn-primary" style="width:100%;padding:12px;" onclick="showView('changes')">Go to Detected Drift →</button>
           </div>
         </div>
       </div>
@@ -10975,8 +10975,8 @@ go = function(key) {
   if (key === 'j4-connecting') {
     setTimeout(() => _origGo('j4-connected'), 2000);
   }
-  if (key === 'j4-active') {
-    // Flip Settings + Dashboard to connected state
+  if (key === 'j4-connected') {
+    // Connection confirmed — flip Settings + Dashboard + update Detected Drift banner
     const sc = document.getElementById('settings-sn-connect-card');
     const scon = document.getElementById('settings-sn-connected-card');
     if (sc)   sc.style.display = 'none';
@@ -10985,7 +10985,6 @@ go = function(key) {
     const dashSummary = document.getElementById('dash-sn-summary');
     if (dashConnect) dashConnect.style.display = 'none';
     if (dashSummary) dashSummary.style.display = 'flex';
-    // Update Detected Drift banner: "connected, ready to reconcile"
     const snBanner = document.getElementById('sn-reconcile-banner');
     if (snBanner) {
       snBanner.innerHTML = `
