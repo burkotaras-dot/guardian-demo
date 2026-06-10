@@ -8843,7 +8843,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                     </div>
                   </div>
                   <div id="ci-list" style="max-height:200px;overflow-y:auto;border-top:1px solid var(--border);"></div>
-                  <div style="padding:8px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+                  <div style="padding:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                    <span id="ci-count" style="font-size:11px;color:var(--text-sec);"></span>
                     <button onclick="document.getElementById('ci-pop').style.display='none'" style="background:#10B981;border:none;border-radius:6px;font-size:12px;color:#fff;cursor:pointer;padding:6px 16px;font-weight:500;">Done</button>
                   </div>
                 </div>
@@ -11229,6 +11230,7 @@ function ciTogglePop() {
     var s = document.getElementById('ci-search');
     if (s) { s.value=''; s.focus(); }
     ciFilterList();
+    ciUpdateCount();
   }
 }
 function ciFilterList() {
@@ -11256,11 +11258,16 @@ function ciFilterList() {
     }).join('');
   }
 }
+function ciUpdateCount() {
+  var el = document.getElementById('ci-count');
+  if (el) el.textContent = _ciSelected.length + ' selected';
+}
 function ciToggleItem(val) {
   var idx = _ciSelected.indexOf(val);
   if (idx === -1) { _ciSelected.push(val); } else { _ciSelected.splice(idx, 1); }
   ciRenderChips();
   ciFilterList();
+  ciUpdateCount();
 }
 function ciAdd(val) { ciToggleItem(val); }
 document.addEventListener('click', function(e) {
