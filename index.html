@@ -1146,6 +1146,10 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .empty-title { font-size:20px; font-weight:700; color:var(--text-default); margin-bottom:8px; letter-spacing:-0.4px; }
 .empty-sub   { font-size:13px; color:var(--text-sec); line-height:1.65; margin-bottom:28px; }
 
+/* Custom checkbox for filter panels */
+.rf-chk.rf-unchecked { background:transparent !important; }
+.rf-chk.rf-unchecked svg { display:none; }
+
 /* FILTER PILLS */
 .filter-pills { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
 .pill {
@@ -2380,14 +2384,24 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;position:relative;">
               <div style="position:relative;">
-                <button class="btn-secondary" style="padding:5px 12px;font-size:11px;" onclick="toggleResultsFilter(this)">⊞ Filter</button>
+                <button onclick="toggleResultsFilter(this)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                  Filters
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
                 <div id="results-filter-panel" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
                   <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Sort by</div>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;margin-bottom:8px;"><input type="radio" name="rf-sort" checked style="accent-color:var(--green1);"> Severity</label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;margin-bottom:14px;"><input type="radio" name="rf-sort" style="accent-color:var(--green1);"> Control ID</label>
                   <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Show</div>
-                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;margin-bottom:8px;"><input type="checkbox" checked style="accent-color:var(--green1);color-scheme:dark;width:15px;height:15px;"> Failed checks</label>
-                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green1);color-scheme:dark;width:15px;height:15px;"> Passed checks</label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;margin-bottom:8px;" onclick="this.querySelector('.rf-chk').classList.toggle('rf-unchecked')">
+                    <div class="rf-chk" style="width:15px;height:15px;border-radius:3px;background:var(--green1);border:1.5px solid var(--green1);flex-shrink:0;display:flex;align-items:center;justify-content:center;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    Failed checks
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;" onclick="this.querySelector('.rf-chk').classList.toggle('rf-unchecked')">
+                    <div class="rf-chk" style="width:15px;height:15px;border-radius:3px;background:var(--green1);border:1.5px solid var(--green1);flex-shrink:0;display:flex;align-items:center;justify-content:center;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    Passed checks
+                  </label>
                 </div>
               </div>
               <button class="btn-secondary" style="padding:5px 12px;font-size:11px;" onclick="exportResults()">↓ Export</button>
