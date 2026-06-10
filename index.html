@@ -8781,43 +8781,74 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="max-width:680px;margin:0 auto;">
 
           <!-- Connection form -->
-          <div class="card" style="margin-bottom:0;">
-            <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;">ServiceNow Instance</div>
-            <div style="font-size:12px;color:var(--text-sec);margin-bottom:12px;">These credentials are shared across all ServiceNow workflows — node matching, reconciliation, and future flows.</div>
-            <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-md);padding:9px 13px;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              <span style="font-size:11px;color:#6D28D9;font-weight:500;">Table mapping configured for node acquisition · cmdb_ci_server → Guardian Nodes</span>
-            </div>
-            <!-- Instance URL -->
-            <div class="form-group">
-              <label class="form-label">SERVICENOW INSTANCE URL</label>
-              <input class="form-input" type="text" value="https://company.service-now.com" placeholder="https://yourinstance.service-now.com"/>
-            </div>
-            <!-- Auth method -->
-            <div class="form-group">
-              <label class="form-label">AUTHENTICATION METHOD</label>
-              <div class="toggle-group">
-                <button class="toggle-btn active" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">OAuth 2.0</button>
-                <button class="toggle-btn" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Basic Auth</button>
+          <div class="card" style="margin-bottom:0;padding:0;overflow:hidden;">
+
+            <!-- Section 1: Connection -->
+            <div style="padding:20px 24px 20px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <div style="width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <span style="font-size:13px;font-weight:700;color:var(--text-default);">Connection</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-sec);margin-bottom:16px;margin-left:30px;">Your ServiceNow instance credentials</div>
+              <div class="form-group">
+                <label class="form-label">SERVICENOW INSTANCE URL</label>
+                <input class="form-input" type="text" value="https://company.service-now.com" placeholder="https://yourinstance.service-now.com"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">AUTHENTICATION METHOD</label>
+                <div class="toggle-group">
+                  <button class="toggle-btn active" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">OAuth 2.0</button>
+                  <button class="toggle-btn" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Basic Auth</button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">CLIENT ID</label>
+                  <input class="form-input" type="text" value="guardian-accelerator-client"/>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">CLIENT SECRET</label>
+                  <input class="form-input" type="password" value="••••••••••••••••"/>
+                </div>
               </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">CLIENT ID</label>
-              <input class="form-input" type="text" value="guardian-accelerator-client"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">CLIENT SECRET</label>
-              <input class="form-input" type="password" value="••••••••••••••••"/>
-            </div>
-            <!-- Permissions -->
-            <div style="background:rgba(37,167,96,0.06);border:1px solid rgba(37,167,96,0.15);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:20px;">
-              <div style="font-size:11px;font-weight:700;color:#15803d;margin-bottom:6px;">Required ServiceNow permissions</div>
-              <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                <span style="font-size:11px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-default);">change_request.read</span>
-                <span style="font-size:11px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-default);">sys_user.read</span>
+
+            <!-- Divider -->
+            <div style="border-top:1px solid var(--border);"></div>
+
+            <!-- Section 2: Sync Scope -->
+            <div style="padding:20px 24px;background:var(--bg-canvas);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <div style="width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
+                <span style="font-size:13px;font-weight:700;color:var(--text-default);">Sync Scope</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;margin-left:30px;">CI classes Guardian will import from your CMDB</div>
+              <!-- Selected chips -->
+              <div id="ci-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:28px;"></div>
+              <!-- Add CI type button + popover -->
+              <div style="position:relative;display:inline-block;">
+                <button id="ci-add-btn" onclick="ciTogglePop()" style="background:none;border:1px dashed rgba(139,92,246,0.4);border-radius:6px;font-size:11px;color:#8B5CF6;cursor:pointer;padding:5px 12px;display:flex;align-items:center;gap:5px;transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.background='rgba(139,92,246,0.06)'" onmouseout="this.style.background='none'">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add CI class
+                </button>
+                <div id="ci-pop" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;width:340px;background:var(--bg-surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:200;overflow:hidden;">
+                  <div style="padding:8px;">
+                    <div style="position:relative;">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input id="ci-search" type="text" placeholder="Search CI classes…" oninput="ciFilterList()" style="width:100%;padding:7px 8px 7px 28px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text-default);background:var(--bg-page);outline:none;box-sizing:border-box;"/>
+                    </div>
+                  </div>
+                  <div id="ci-list" style="max-height:200px;overflow-y:auto;border-top:1px solid var(--border);"></div>
+                </div>
               </div>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+
+            <!-- Footer -->
+            <div style="border-top:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:12px;">
                 <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Credentials stored securely</div>
                 <button style="background:none;border:none;font-size:11px;color:#FB3C44;cursor:pointer;text-decoration:underline;white-space:nowrap;" onclick="go('j4-connect-failed')">↗ Error state</button>
@@ -8874,7 +8905,47 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="padding:10px 14px;border-right:1px solid var(--border);font-size:11px;color:var(--text-sec);">Permissions</div>
               <div style="padding:10px 14px;font-size:11px;color:#00AF73;font-weight:600;">change_request.read ✓ · sys_user.read ✓</div>
             </div>
-            <button class="btn-primary" style="width:100%;padding:12px;" onclick="go('j4-match')">Next: Match Nodes →</button>
+            <button class="btn-primary" style="width:100%;padding:12px;" onclick="go('j4-syncing')">Next: Match Nodes →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- J4-SYNCING -->
+    <div class="view" id="v-j4-syncing">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Detecting Nodes from ServiceNow…</div>
+          <div class="page-sub">Syncing CI records — match results will appear automatically once complete</div>
+        </div>
+      </div>
+      <div style="flex:1;background:var(--bg-page);padding:24px;display:flex;align-items:center;justify-content:center;">
+        <div style="max-width:480px;width:100%;">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;box-shadow:var(--shadow-sm);">
+            <div style="font-size:15px;font-weight:700;color:var(--text-default);margin-bottom:6px;">Syncing nodes from ServiceNow</div>
+            <div style="font-size:12px;color:var(--text-sec);margin-bottom:24px;">Guardian is pulling CI records from your CMDB. This may take a moment.</div>
+            <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;">
+              <div id="j4s-step1" style="display:flex;align-items:center;gap:12px;">
+                <div style="width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,0.12);border:1.5px solid #10B981;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span style="font-size:13px;font-weight:600;color:#10B981;">Syncing ServiceNow nodes</span>
+              </div>
+              <div id="j4s-step2" style="display:flex;align-items:center;gap:12px;">
+                <div style="width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,0.1);border:1.5px solid #8B5CF6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <div class="progress-dots" style="transform:scale(0.5);margin:0;gap:2px;"><span style="background:#8B5CF6;width:5px;height:5px;"></span><span style="background:#8B5CF6;width:5px;height:5px;"></span><span style="background:#8B5CF6;width:5px;height:5px;"></span></div>
+                </div>
+                <span style="font-size:13px;font-weight:600;color:#7C3AED;">Detecting CI records…</span>
+              </div>
+              <div id="j4s-step3" style="display:flex;align-items:center;gap:12px;opacity:0.45;">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--bg-canvas);border:1.5px solid var(--border);flex-shrink:0;"></div>
+                <span style="font-size:13px;color:var(--text-sec);">Looking for possible matches</span>
+              </div>
+            </div>
+            <div style="background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.18);border-radius:6px;padding:10px 14px;font-size:11px;color:#6D28D9;line-height:1.5;">
+              Manual match options will be available once the CI sync completes
+            </div>
+            <button class="btn-outline" style="width:100%;margin-top:16px;font-size:12px;" onclick="go('j4-match')">Skip — show results →</button>
           </div>
         </div>
       </div>
@@ -8893,6 +8964,15 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </button>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
+
+        <!-- Post-sync success banner -->
+        <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.25);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+          <div style="flex:1;font-size:12px;color:#065f46;line-height:1.5;">
+            <strong>Sync complete</strong> · 47 CIs detected from ServiceNow (cmdb_ci_server, cmdb_ci_computer)
+          </div>
+          <span style="font-size:11px;font-weight:600;color:#10B981;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:20px;padding:2px 10px;white-space:nowrap;">Manual match available</span>
+        </div>
 
         <!-- Info banner -->
         <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px;">
@@ -9822,7 +9902,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 <div class="screen-lbl" id="lbl">s01 · Landing</div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
+const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Device',
   s05:'s05 · Install Agent',
@@ -9846,7 +9926,7 @@ const LABELS = {
   'edit-check':'Policy · Edit Check'
 ,'j3-connect':'J3 · Connect AWS','j3-connecting':'J3 · Connecting','j3-connected':'J3 · Connected','j3-syncing':'J3 · Syncing','j3-inventory':'J3 · Node Inventory','j3-cmdb':'J3 · CMDB Match','j3-matched':'J3 · Match Confirmed','j3-scan-config':'J3 · Scan Config','j3-scanning':'J3 · Scanning','j3-scan-complete':'J3 · Scan Complete','j3-results':'J3 · Results','j3-connect-failed':'J3 · Connection Failed','j3-no-resources':'J3 · No Resources','j3-manual-match':'J3 · Manual Match','j3-scan-failed':'J3 · Scan Failed'
 ,'settings-integrations':'Settings · Integrations'
-,'j4-connect':'J4 · Configure ServiceNow','j4-connecting':'J4 · Connecting','j4-connected':'J4 · Connected','j4-match':'J4 · Match Nodes','j4-active':'J4 · Recon Active','j4-summary':'J4 · Summary','j4-connect-failed':'J4 · Connection Failed','j4-no-crs':'J4 · No CRs Found','j4-partial-match':'J4 · Partial Match'
+,'j4-connect':'J4 · Configure ServiceNow','j4-connecting':'J4 · Connecting','j4-connected':'J4 · Connected','j4-syncing':'J4 · Syncing Nodes','j4-match':'J4 · Match Nodes','j4-active':'J4 · Recon Active','j4-summary':'J4 · Summary','j4-connect-failed':'J4 · Connection Failed','j4-no-crs':'J4 · No CRs Found','j4-partial-match':'J4 · Partial Match'
 ,'cmdb-connect':'CMDB · Connect','cmdb-connecting':'CMDB · Connecting','cmdb-connect-failed':'CMDB · Connection Failed','cmdb-browse':'CMDB · Select Nodes','cmdb-importing':'CMDB · Importing','cmdb-complete':'CMDB · Complete'};
 const STEPS = {
   s02:{done:[],active:[0]}, s05:{done:[0],active:[1]},
@@ -9928,7 +10008,7 @@ function filterNodes() {
 function go(key) {
   hideAuth();
   const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key);
-  const isJ4Onboarding = ['j4-connect','j4-connecting','j4-connected','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(key);
+  const isJ4Onboarding = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(key);
   const isJ1Onboarding = ['s01','s02','s05','s07'].includes(key);
   const isOnboarding = isJ1Onboarding || isJ3Onboarding || isJ4Onboarding;
 
@@ -9962,7 +10042,7 @@ function go(key) {
 
 function showView(name) {
   const isJ3Nav = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(name);
-  const isJ4Nav = ['j4-connect','j4-connecting','j4-connected','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(name);
+  const isJ4Nav = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(name);
   const isJ3Sidebar = ['j3-no-resources','j3-manual-match','j3-scan-failed'].includes(name);
   const isJ3 = isJ3Nav || isJ3Sidebar;
   const isJ4 = isJ4Nav;
@@ -11041,8 +11121,25 @@ go = function(key) {
   if (key === 'j3-connecting') {
     setTimeout(() => _origGo('j3-connected'), 2000);
   }
+  if (key === 'j4-connect') {
+    // Reset CI types to defaults and close popover on every visit
+    _ciSelected = ['cmdb_ci_server','cmdb_ci_computer'];
+    var pop = document.getElementById('ci-pop');
+    if (pop) pop.style.display = 'none';
+    setTimeout(ciRenderChips, 50);
+  }
   if (key === 'j4-connecting') {
     setTimeout(() => go('j4-connected'), 2000);
+  }
+  if (key === 'j4-syncing') {
+    // Animate step 3 after 1.5s, then advance to j4-match after 3s
+    setTimeout(function() {
+      var s3 = document.getElementById('j4s-step3');
+      var s2 = document.getElementById('j4s-step2');
+      if (s3) s3.style.opacity = '1';
+      if (s2) s2.querySelector('span.progress-dots') && (s2.style.opacity = '0.6');
+    }, 1500);
+    setTimeout(() => go('j4-match'), 3000);
   }
   if (key === 'j4-connected') {
     // Connection confirmed — flip Settings + Dashboard + update Detected Drift banner
@@ -11087,13 +11184,89 @@ go = function(key) {
   }
 };
 
+// ── CI type selector (j4-connect Sync Scope) ──
+var _ciSelected = ['cmdb_ci_server','cmdb_ci_computer'];
+var _ciAll = [
+  {val:'cmdb_ci_server',      label:'Physical & virtual servers'},
+  {val:'cmdb_ci_computer',    label:'Workstations & laptops'},
+  {val:'cmdb_ci_linux_server',label:'Linux servers'},
+  {val:'cmdb_ci_win_server',  label:'Windows servers'},
+  {val:'cmdb_ci_cluster',     label:'Clusters'},
+  {val:'cmdb_ci_database',    label:'Database instances'},
+  {val:'cmdb_ci_app_server',  label:'Application servers'},
+  {val:'cmdb_ci_storage_server',label:'Storage servers'},
+  {val:'cmdb_ci_network_adapter',label:'Network adapters'},
+];
+function ciRenderChips() {
+  var c = document.getElementById('ci-chips');
+  if (!c) return;
+  if (_ciSelected.length === 0) {
+    c.innerHTML = '<span style="font-size:11px;color:var(--text-sec);font-style:italic;">No CI types selected</span>';
+    return;
+  }
+  c.innerHTML = _ciSelected.map(function(v) {
+    var info = _ciAll.find(function(x){ return x.val===v; });
+    return '<span style="display:inline-flex;align-items:center;gap:6px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.25);border-radius:5px;padding:4px 8px 4px 10px;">' +
+      '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:#6D28D9;">' + v + '</span>' +
+      '<button onclick="ciRemove(\'' + v + '\')" title="Remove" style="background:none;border:none;cursor:pointer;padding:0;line-height:1;color:#8B5CF6;font-size:13px;display:flex;align-items:center;">×</button>' +
+      '</span>';
+  }).join('');
+}
+function ciRemove(val) {
+  _ciSelected = _ciSelected.filter(function(v){ return v!==val; });
+  ciRenderChips();
+  ciFilterList();
+}
+function ciTogglePop() {
+  var pop = document.getElementById('ci-pop');
+  if (!pop) return;
+  var open = pop.style.display !== 'none';
+  pop.style.display = open ? 'none' : 'block';
+  if (!open) {
+    var s = document.getElementById('ci-search');
+    if (s) { s.value=''; s.focus(); }
+    ciFilterList();
+  }
+}
+function ciFilterList() {
+  var q = (document.getElementById('ci-search')||{}).value||'';
+  q = q.toLowerCase();
+  var list = document.getElementById('ci-list');
+  if (!list) return;
+  var available = _ciAll.filter(function(c){
+    return _ciSelected.indexOf(c.val)===-1 && (!q || c.val.includes(q) || c.label.toLowerCase().includes(q));
+  });
+  if (available.length===0) {
+    list.innerHTML = '<div style="padding:12px;text-align:center;font-size:11px;color:var(--text-sec);">' + (q ? 'No results for "'+q+'"' : 'All CI types added') + '</div>';
+  } else {
+    list.innerHTML = available.map(function(c){
+      return '<div onclick="ciAdd(\''+c.val+'\')" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);" onmouseover="this.style.background=\'var(--bg-canvas)\'" onmouseout="this.style.background=\'\'">' +
+        '<div style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--text-default);">'+c.val+'</div>' +
+        '<div style="font-size:10px;color:var(--text-sec);margin-top:1px;">'+c.label+'</div>' +
+        '</div>';
+    }).join('');
+  }
+}
+function ciAdd(val) {
+  if (_ciSelected.indexOf(val)===-1) _ciSelected.push(val);
+  ciRenderChips();
+  ciFilterList();
+}
+document.addEventListener('click', function(e) {
+  var btn = document.getElementById('ci-add-btn');
+  var pop = document.getElementById('ci-pop');
+  if (pop && pop.style.display!=='none' && !pop.contains(e.target) && e.target!==btn && !btn.contains(e.target)) {
+    pop.style.display='none';
+  }
+});
+
 // J4 nav step update
 function updateJ4Nav(key) {
   const nav = document.getElementById('j4-step-nav');
   if (!nav) return;
   const exitBtn = `<button onclick="showView('settings-integrations')" style="margin-left:18px;background:none;border:none;font-size:11px;color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.color='#1a2a3a';this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.color='#94a3b8';this.style.background='none'"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Exit</button>`;
   const connectionPhase = ['j4-connect','j4-connecting','j4-connected','j4-connect-failed'].includes(key);
-  const reconPhase = ['j4-match','j4-active','j4-no-crs','j4-partial-match','j4-summary'].includes(key);
+  const reconPhase = ['j4-syncing','j4-match','j4-active','j4-no-crs','j4-partial-match','j4-summary'].includes(key);
   if (!connectionPhase && !reconPhase) return;
   nav.style.display = 'flex';
   if (connectionPhase) {
