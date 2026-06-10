@@ -8781,60 +8781,72 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="max-width:680px;margin:0 auto;">
 
           <!-- Connection form -->
-          <div class="card" style="margin-bottom:0;">
-            <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;">ServiceNow Instance</div>
-            <div style="font-size:12px;color:var(--text-sec);margin-bottom:12px;">These credentials are shared across all ServiceNow workflows — node matching, reconciliation, and future flows.</div>
-            <!-- CI Types -->
-            <div class="form-group" style="margin-bottom:16px;">
-              <label class="form-label">INCLUDED CI TYPES</label>
-              <div style="font-size:11px;color:var(--text-sec);margin-bottom:10px;">Guardian will import nodes from these ServiceNow CI classes</div>
-              <div style="display:flex;flex-direction:column;gap:8px;">
-                <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg-page);">
+          <div class="card" style="margin-bottom:0;padding:0;overflow:hidden;">
+
+            <!-- Section 1: Connection -->
+            <div style="padding:20px 24px 20px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <div style="width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <span style="font-size:13px;font-weight:700;color:var(--text-default);">Connection</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-sec);margin-bottom:16px;margin-left:30px;">Your ServiceNow instance credentials</div>
+              <div class="form-group">
+                <label class="form-label">SERVICENOW INSTANCE URL</label>
+                <input class="form-input" type="text" value="https://company.service-now.com" placeholder="https://yourinstance.service-now.com"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">AUTHENTICATION METHOD</label>
+                <div class="toggle-group">
+                  <button class="toggle-btn active" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">OAuth 2.0</button>
+                  <button class="toggle-btn" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Basic Auth</button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">CLIENT ID</label>
+                  <input class="form-input" type="text" value="guardian-accelerator-client"/>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">CLIENT SECRET</label>
+                  <input class="form-input" type="password" value="••••••••••••••••"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div style="border-top:1px solid var(--border);"></div>
+
+            <!-- Section 2: Sync Scope -->
+            <div style="padding:20px 24px;background:var(--bg-canvas);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <div style="width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
+                <span style="font-size:13px;font-weight:700;color:var(--text-default);">Sync Scope</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;margin-left:30px;">CI classes Guardian will import from your CMDB</div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+                <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg-surface);">
                   <input type="checkbox" checked style="accent-color:#8B5CF6;width:14px;height:14px;flex-shrink:0;"/>
                   <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-default);">cmdb_ci_server</span>
                   <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">Physical &amp; virtual servers</span>
                 </label>
-                <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg-page);">
+                <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg-surface);">
                   <input type="checkbox" checked style="accent-color:#8B5CF6;width:14px;height:14px;flex-shrink:0;"/>
                   <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-default);">cmdb_ci_computer</span>
                   <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">Workstations &amp; laptops</span>
                 </label>
               </div>
-              <button style="background:none;border:none;font-size:11px;color:#8B5CF6;cursor:pointer;padding:6px 0 0;display:flex;align-items:center;gap:5px;" onclick="alert('Add CI type — not wired in prototype')">
+              <button style="background:none;border:none;font-size:11px;color:#8B5CF6;cursor:pointer;padding:0;display:flex;align-items:center;gap:5px;" onclick="alert('Add CI type — not wired in prototype')">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Add CI type
               </button>
             </div>
-            <!-- Instance URL -->
-            <div class="form-group">
-              <label class="form-label">SERVICENOW INSTANCE URL</label>
-              <input class="form-input" type="text" value="https://company.service-now.com" placeholder="https://yourinstance.service-now.com"/>
-            </div>
-            <!-- Auth method -->
-            <div class="form-group">
-              <label class="form-label">AUTHENTICATION METHOD</label>
-              <div class="toggle-group">
-                <button class="toggle-btn active" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">OAuth 2.0</button>
-                <button class="toggle-btn" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Basic Auth</button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">CLIENT ID</label>
-              <input class="form-input" type="text" value="guardian-accelerator-client"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">CLIENT SECRET</label>
-              <input class="form-input" type="password" value="••••••••••••••••"/>
-            </div>
-            <!-- Permissions -->
-            <div style="background:rgba(37,167,96,0.06);border:1px solid rgba(37,167,96,0.15);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:20px;">
-              <div style="font-size:11px;font-weight:700;color:#15803d;margin-bottom:6px;">Required ServiceNow permissions</div>
-              <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                <span style="font-size:11px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-default);">change_request.read</span>
-                <span style="font-size:11px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-default);">sys_user.read</span>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+
+            <!-- Footer -->
+            <div style="border-top:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:12px;">
                 <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Credentials stored securely</div>
                 <button style="background:none;border:none;font-size:11px;color:#FB3C44;cursor:pointer;text-decoration:underline;white-space:nowrap;" onclick="go('j4-connect-failed')">↗ Error state</button>
@@ -9888,7 +9900,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 <div class="screen-lbl" id="lbl">s01 · Landing</div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
+const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Device',
   s05:'s05 · Install Agent',
