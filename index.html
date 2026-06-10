@@ -11233,30 +11233,42 @@ function ciFilterList() {
   q = q.toLowerCase();
   var list = document.getElementById('ci-list');
   if (!list) return;
-  var available = _ciAll.filter(function(c){
-    return _ciSelected.indexOf(c.val)===-1 && (!q || c.val.includes(q) || c.label.toLowerCase().includes(q));
+  var filtered = _ciAll.filter(function(c){
+    return !q || c.val.includes(q) || c.label.toLowerCase().includes(q);
   });
-  if (available.length===0) {
-    list.innerHTML = '<div style="padding:12px;text-align:center;font-size:11px;color:var(--text-sec);">' + (q ? 'No results for "'+q+'"' : 'All CI types added') + '</div>';
+  if (filtered.length===0) {
+    list.innerHTML = '<div style="padding:12px;text-align:center;font-size:11px;color:var(--text-sec);">No results for "'+q+'"</div>';
   } else {
-    list.innerHTML = available.map(function(c){
-      return '<div onclick="ciAdd(\''+c.val+'\')" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);" onmouseover="this.style.background=\'var(--bg-canvas)\'" onmouseout="this.style.background=\'\'">' +
-        '<div style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--text-default);">'+c.val+'</div>' +
-        '<div style="font-size:10px;color:var(--text-sec);margin-top:1px;">'+c.label+'</div>' +
+    list.innerHTML = filtered.map(function(c){
+      var checked = _ciSelected.indexOf(c.val) !== -1;
+      var rowBg = checked ? 'rgba(139,92,246,0.06)' : 'transparent';
+      var chkBorder = checked ? '#8B5CF6' : 'var(--border)';
+      var chkBg = checked ? '#8B5CF6' : 'transparent';
+      var chkMark = checked ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>' : '';
+      return '<div onclick="ciToggleItem(\''+c.val+'\')" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:'+rowBg+';" onmouseover="this.style.background=\''+(checked?'rgba(139,92,246,0.1)':'var(--bg-canvas)')+'\';" onmouseout="this.style.background=\''+rowBg+'\';">' +
+        '<div style="width:15px;height:15px;border-radius:3px;border:1.5px solid '+chkBorder+';background:'+chkBg+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">'+chkMark+'</div>' +
+        '<div><div style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--text-default);">'+c.val+'</div>' +
+        '<div style="font-size:10px;color:var(--text-sec);margin-top:1px;">'+c.label+'</div></div>' +
         '</div>';
     }).join('');
   }
 }
-function ciAdd(val) {
-  if (_ciSelected.indexOf(val)===-1) _ciSelected.push(val);
+function ciToggleItem(val) {
+  var idx = _ciSelected.indexOf(val);
+  if (idx === -1) { _ciSelected.push(val); } else { _ciSelected.splice(idx, 1); }
   ciRenderChips();
   ciFilterList();
 }
+function ciAdd(val) { ciToggleItem(val); }
 document.addEventListener('click', function(e) {
   var btn = document.getElementById('ci-add-btn');
   var pop = document.getElementById('ci-pop');
-  if (pop && pop.style.display!=='none' && !pop.contains(e.target) && e.target!==btn && !btn.contains(e.target)) {
-    pop.style.display='none';
+  if (pop && pop.style.display!=='none') {
+    // Use composedPath so clicks inside pop are detected even after innerHTML re-render removes e.target
+    var path = e.composedPath ? e.composedPath() : [];
+    var insidePop = path.indexOf(pop) !== -1 || pop.contains(e.target);
+    var insideBtn = path.indexOf(btn) !== -1 || e.target === btn || (btn && btn.contains(e.target));
+    if (!insidePop && !insideBtn) pop.style.display = 'none';
   }
 });
 
