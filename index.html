@@ -8827,22 +8827,24 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <span style="font-size:13px;font-weight:700;color:var(--text-default);">Sync Scope</span>
               </div>
               <div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;margin-left:30px;">CI classes Guardian will import from your CMDB</div>
-              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
-                <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg-surface);">
-                  <input type="checkbox" checked style="accent-color:#8B5CF6;width:14px;height:14px;flex-shrink:0;"/>
-                  <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-default);">cmdb_ci_server</span>
-                  <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">Physical &amp; virtual servers</span>
-                </label>
-                <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg-surface);">
-                  <input type="checkbox" checked style="accent-color:#8B5CF6;width:14px;height:14px;flex-shrink:0;"/>
-                  <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-default);">cmdb_ci_computer</span>
-                  <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">Workstations &amp; laptops</span>
-                </label>
+              <!-- Selected chips -->
+              <div id="ci-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:28px;"></div>
+              <!-- Add CI type button + popover -->
+              <div style="position:relative;display:inline-block;">
+                <button id="ci-add-btn" onclick="ciTogglePop()" style="background:none;border:1px dashed rgba(139,92,246,0.4);border-radius:6px;font-size:11px;color:#8B5CF6;cursor:pointer;padding:5px 12px;display:flex;align-items:center;gap:5px;transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.background='rgba(139,92,246,0.06)'" onmouseout="this.style.background='none'">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add CI type
+                </button>
+                <div id="ci-pop" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;width:280px;background:var(--bg-surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:200;overflow:hidden;">
+                  <div style="padding:8px;">
+                    <div style="position:relative;">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input id="ci-search" type="text" placeholder="Search CI classes…" oninput="ciFilterList()" style="width:100%;padding:7px 8px 7px 28px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text-default);background:var(--bg-page);outline:none;box-sizing:border-box;"/>
+                    </div>
+                  </div>
+                  <div id="ci-list" style="max-height:200px;overflow-y:auto;border-top:1px solid var(--border);"></div>
+                </div>
               </div>
-              <button style="background:none;border:none;font-size:11px;color:#8B5CF6;cursor:pointer;padding:0;display:flex;align-items:center;gap:5px;" onclick="alert('Add CI type — not wired in prototype')">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add CI type
-              </button>
             </div>
 
             <!-- Footer -->
@@ -11119,6 +11121,9 @@ go = function(key) {
   if (key === 'j3-connecting') {
     setTimeout(() => _origGo('j3-connected'), 2000);
   }
+  if (key === 'j4-connect') {
+    setTimeout(ciRenderChips, 50);
+  }
   if (key === 'j4-connecting') {
     setTimeout(() => go('j4-connected'), 2000);
   }
@@ -11174,6 +11179,82 @@ go = function(key) {
     }
   }
 };
+
+// ── CI type selector (j4-connect Sync Scope) ──
+var _ciSelected = ['cmdb_ci_server','cmdb_ci_computer'];
+var _ciAll = [
+  {val:'cmdb_ci_server',      label:'Physical & virtual servers'},
+  {val:'cmdb_ci_computer',    label:'Workstations & laptops'},
+  {val:'cmdb_ci_linux_server',label:'Linux servers'},
+  {val:'cmdb_ci_win_server',  label:'Windows servers'},
+  {val:'cmdb_ci_cluster',     label:'Clusters'},
+  {val:'cmdb_ci_database',    label:'Database instances'},
+  {val:'cmdb_ci_app_server',  label:'Application servers'},
+  {val:'cmdb_ci_storage_server',label:'Storage servers'},
+  {val:'cmdb_ci_network_adapter',label:'Network adapters'},
+];
+function ciRenderChips() {
+  var c = document.getElementById('ci-chips');
+  if (!c) return;
+  if (_ciSelected.length === 0) {
+    c.innerHTML = '<span style="font-size:11px;color:var(--text-sec);font-style:italic;">No CI types selected</span>';
+    return;
+  }
+  c.innerHTML = _ciSelected.map(function(v) {
+    var info = _ciAll.find(function(x){ return x.val===v; });
+    return '<span style="display:inline-flex;align-items:center;gap:6px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.25);border-radius:5px;padding:4px 8px 4px 10px;">' +
+      '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:#6D28D9;">' + v + '</span>' +
+      '<button onclick="ciRemove(\'' + v + '\')" title="Remove" style="background:none;border:none;cursor:pointer;padding:0;line-height:1;color:#8B5CF6;font-size:13px;display:flex;align-items:center;">×</button>' +
+      '</span>';
+  }).join('');
+}
+function ciRemove(val) {
+  _ciSelected = _ciSelected.filter(function(v){ return v!==val; });
+  ciRenderChips();
+  ciFilterList();
+}
+function ciTogglePop() {
+  var pop = document.getElementById('ci-pop');
+  if (!pop) return;
+  var open = pop.style.display !== 'none';
+  pop.style.display = open ? 'none' : 'block';
+  if (!open) {
+    var s = document.getElementById('ci-search');
+    if (s) { s.value=''; s.focus(); }
+    ciFilterList();
+  }
+}
+function ciFilterList() {
+  var q = (document.getElementById('ci-search')||{}).value||'';
+  q = q.toLowerCase();
+  var list = document.getElementById('ci-list');
+  if (!list) return;
+  var available = _ciAll.filter(function(c){
+    return _ciSelected.indexOf(c.val)===-1 && (!q || c.val.includes(q) || c.label.toLowerCase().includes(q));
+  });
+  if (available.length===0) {
+    list.innerHTML = '<div style="padding:12px;text-align:center;font-size:11px;color:var(--text-sec);">' + (q ? 'No results for "'+q+'"' : 'All CI types added') + '</div>';
+  } else {
+    list.innerHTML = available.map(function(c){
+      return '<div onclick="ciAdd(\''+c.val+'\')" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);" onmouseover="this.style.background=\'var(--bg-canvas)\'" onmouseout="this.style.background=\'\'">' +
+        '<div style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--text-default);">'+c.val+'</div>' +
+        '<div style="font-size:10px;color:var(--text-sec);margin-top:1px;">'+c.label+'</div>' +
+        '</div>';
+    }).join('');
+  }
+}
+function ciAdd(val) {
+  if (_ciSelected.indexOf(val)===-1) _ciSelected.push(val);
+  ciRenderChips();
+  ciFilterList();
+}
+document.addEventListener('click', function(e) {
+  var btn = document.getElementById('ci-add-btn');
+  var pop = document.getElementById('ci-pop');
+  if (pop && pop.style.display!=='none' && !pop.contains(e.target) && e.target!==btn && !btn.contains(e.target)) {
+    pop.style.display='none';
+  }
+});
 
 // J4 nav step update
 function updateJ4Nav(key) {
