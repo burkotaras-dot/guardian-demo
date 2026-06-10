@@ -1707,6 +1707,12 @@ body.dark #ci-chips span span { color: #C4B5FD !important; }
 body.dark #ci-chips span button { color: #A78BFA !important; }
 body.dark #ci-add-btn { border-color: rgba(139,92,246,0.5) !important; color: #A78BFA !important; }
 body.dark #v-j4-connect [style*="background:var(--bg-canvas)"] { background: rgba(255,255,255,0.03) !important; }
+body.dark #ci-pop { background: #1e293b !important; border-color: rgba(255,255,255,0.14) !important; box-shadow: 0 8px 32px rgba(0,0,0,0.55) !important; }
+body.dark #ci-search { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.1) !important; color: #e2e8f0 !important; }
+body.dark #ci-list { scrollbar-color: rgba(255,255,255,0.18) transparent; scrollbar-width: thin; }
+body.dark #ci-list::-webkit-scrollbar { width: 5px; }
+body.dark #ci-list::-webkit-scrollbar-track { background: transparent; }
+body.dark #ci-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 3px; }
 
 /* Policy Detail dark mode */
 body.dark #v-policy-detail [style*="background:var(--bg-surface)"],
@@ -11262,6 +11268,7 @@ function ciFilterList() {
   q = q.toLowerCase();
   var list = document.getElementById('ci-list');
   if (!list) return;
+  var isDark = document.body.classList.contains('dark');
   var filtered = _ciAll.filter(function(c){
     return !q || c.val.includes(q) || c.label.toLowerCase().includes(q);
   });
@@ -11270,14 +11277,18 @@ function ciFilterList() {
   } else {
     list.innerHTML = filtered.map(function(c){
       var checked = _ciSelected.indexOf(c.val) !== -1;
-      var rowBg = checked ? 'rgba(139,92,246,0.06)' : 'transparent';
-      var chkBorder = checked ? '#8B5CF6' : 'var(--border)';
+      var rowBg = checked ? (isDark ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.06)') : 'transparent';
+      var rowHover = checked ? (isDark ? 'rgba(139,92,246,0.28)' : 'rgba(139,92,246,0.1)') : (isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-canvas)');
+      var chkBorder = checked ? '#8B5CF6' : (isDark ? 'rgba(255,255,255,0.3)' : 'var(--border)');
       var chkBg = checked ? '#8B5CF6' : 'transparent';
       var chkMark = checked ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>' : '';
-      return '<div onclick="ciToggleItem(\''+c.val+'\')" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:'+rowBg+';" onmouseover="this.style.background=\''+(checked?'rgba(139,92,246,0.1)':'var(--bg-canvas)')+'\';" onmouseout="this.style.background=\''+rowBg+'\';">' +
+      var rowBorder = isDark ? 'rgba(255,255,255,0.06)' : 'var(--border)';
+      var textColor = isDark ? '#e2e8f0' : 'var(--text-default)';
+      var subColor = isDark ? '#64748b' : 'var(--text-sec)';
+      return '<div onclick="ciToggleItem(\''+c.val+'\')" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid '+rowBorder+';display:flex;align-items:center;gap:10px;background:'+rowBg+';" onmouseover="this.style.background=\''+rowHover+'\';" onmouseout="this.style.background=\''+rowBg+'\';">' +
         '<div style="width:15px;height:15px;border-radius:3px;border:1.5px solid '+chkBorder+';background:'+chkBg+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">'+chkMark+'</div>' +
-        '<div><div style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--text-default);">'+c.val+'</div>' +
-        '<div style="font-size:10px;color:var(--text-sec);margin-top:1px;">'+c.label+'</div></div>' +
+        '<div><div style="font-family:\'DM Mono\',monospace;font-size:12px;color:'+textColor+';">'+c.val+'</div>' +
+        '<div style="font-size:10px;color:'+subColor+';margin-top:1px;">'+c.label+'</div></div>' +
         '</div>';
     }).join('');
   }
