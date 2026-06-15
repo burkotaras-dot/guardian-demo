@@ -8972,6 +8972,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
                 <span style="font-size:13px;font-weight:600;color:#10B981;">Detecting CI records…</span>
               </div>
+              <!-- Per-CI-type progress -->
+              <div id="j4s-ci-progress" style="margin-left:34px;padding:12px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;gap:10px;"></div>
               <div id="j4s-step3" style="display:flex;align-items:center;gap:12px;opacity:0.55;">
                 <div style="width:22px;height:22px;border-radius:50%;background:transparent;border:1.5px solid rgba(255,255,255,0.3);flex-shrink:0;"></div>
                 <span style="font-size:13px;color:var(--text-sec);">Looking for possible matches</span>
@@ -11167,14 +11169,7 @@ go = function(key) {
     setTimeout(() => go('j4-connected'), 2000);
   }
   if (key === 'j4-syncing') {
-    // Animate step 3 after 1.5s, then advance to j4-match after 3s
-    setTimeout(function() {
-      var s3 = document.getElementById('j4s-step3');
-      var s2 = document.getElementById('j4s-step2');
-      if (s3) s3.style.opacity = '1';
-      if (s2) s2.querySelector('span.progress-dots') && (s2.style.opacity = '0.6');
-    }, 1500);
-    setTimeout(() => go('j4-match'), 3000);
+    j4SyncStart();
   }
   if (key === 'j4-connected') {
     // Connection confirmed — flip Settings + Dashboard + update Detected Drift banner
@@ -11306,6 +11301,58 @@ function ciToggleItem(val) {
   ciUpdateCount();
 }
 function ciAdd(val) { ciToggleItem(val); }
+
+// J4 sync per-CI-type progress animation
+var _j4SyncInterval = null;
+var _j4SyncData = [];
+var _ciTotals = {
+  'cmdb_ci_server':1200,'cmdb_ci_computer':400,'cmdb_ci_linux_server':320,
+  'cmdb_ci_win_server':280,'cmdb_ci_cluster':45,'cmdb_ci_database':180,
+  'cmdb_ci_app_server':95,'cmdb_ci_storage_server':60,'cmdb_ci_network_adapter':210
+};
+function j4SyncStart() {
+  if (_j4SyncInterval) clearInterval(_j4SyncInterval);
+  _j4SyncData = _ciSelected.map(function(val) {
+    return { val:val, total:(_ciTotals[val]||200), current:0, done:false };
+  });
+  j4SyncRender();
+  var ciIdx = 0;
+  var totalDuration = 2600;
+  var stepsPerCI = 10;
+  var interval = Math.max(60, Math.floor(totalDuration / (_j4SyncData.length * stepsPerCI)));
+  _j4SyncInterval = setInterval(function() {
+    if (ciIdx >= _j4SyncData.length) { clearInterval(_j4SyncInterval); return; }
+    var ci = _j4SyncData[ciIdx];
+    ci.current = Math.min(ci.current + Math.ceil(ci.total / stepsPerCI), ci.total);
+    if (ci.current >= ci.total) { ci.done = true; ciIdx++; }
+    j4SyncRender();
+    if (ciIdx >= _j4SyncData.length) {
+      clearInterval(_j4SyncInterval);
+      var s3 = document.getElementById('j4s-step3');
+      if (s3) s3.style.opacity = '1';
+      setTimeout(function() { go('j4-match'); }, 700);
+    }
+  }, interval);
+}
+function j4SyncRender() {
+  var el = document.getElementById('j4s-ci-progress');
+  if (!el) return;
+  el.innerHTML = _j4SyncData.map(function(ci) {
+    var pct = Math.round(ci.current / ci.total * 100);
+    var countStr = ci.done ? '✓ ' + ci.total.toLocaleString() + ' imported' : ci.current.toLocaleString() + ' of ' + ci.total.toLocaleString();
+    var countColor = ci.done ? '#10B981' : 'var(--text-sec)';
+    return '<div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+        '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-default);">' + ci.val + '</span>' +
+        '<span style="font-size:10px;color:' + countColor + ';">' + countStr + '</span>' +
+      '</div>' +
+      '<div style="height:3px;background:var(--border);border-radius:2px;overflow:hidden;">' +
+        '<div style="height:100%;width:' + pct + '%;background:#10B981;border-radius:2px;"></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
 document.addEventListener('click', function(e) {
   var btn = document.getElementById('ci-add-btn');
   var pop = document.getElementById('ci-pop');
