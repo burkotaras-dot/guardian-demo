@@ -1200,6 +1200,14 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .pill.active-med  { background:rgba(217,119,6,0.07); border-color:rgba(217,119,6,0.25); color:var(--sev-medium-txt); }
 .pill.active-low  { background:rgba(37,99,235,0.07); border-color:rgba(37,99,235,0.25); color:var(--sev-low-txt); }
 .pill.active-pass { background:rgba(37,167,96,0.07); border-color:rgba(37,167,96,0.2); color:var(--brand-hover); }
+/* Embedded filter pills inside drift cards (click node/CR/type → filter) */
+.drift-meta-pill {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600;
+  border:1px solid var(--border); background:var(--bg-surface);
+  color:var(--text-sec); cursor:pointer; white-space:nowrap; transition:all 0.12s;
+}
+.drift-meta-pill:hover { border-color:var(--green2); color:var(--green1); background:rgba(0,175,115,0.06); }
 
 /* CATEGORY TAG HIERARCHY
    Top "type" tag (Compliance Policy / Custom / etc) stays as solid colored pill (font-size:10px, font-weight:700).
@@ -7268,11 +7276,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
 
         <!-- Drift items — neutral cards, color only in diff blocks -->
-        <div class="check-card" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" onclick="openChange(0)">
+        <div class="check-card" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(0)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:8px;">
               <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
+              <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;">Modified</span>
               <div class="check-title">Windows Defender — Real-time protection</div>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -7290,17 +7298,23 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:10px;color:#FB3C44;">✗ CIS Fail</div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:11px;color:var(--text-sec);">Control 8.1 · Detected 2 hours ago</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','MACBOOK-TARAS')" title="Filter by node">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
+              </span>
+              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request">No CR</span>
+              <span style="font-size:11px;color:var(--text-sec);">Control 8.1 · Detected 2 hours ago</span>
+            </div>
             <span id="change-status-0" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
           </div>
         </div>
 
-        <div class="check-card" id="change-card-1" data-change-type="modified" data-recon="pending" data-cr="CR-1842" onclick="openChange(1)">
+        <div class="check-card" id="change-card-1" data-change-type="modified" data-recon="pending" data-cr="CR-1842" data-node="SARAH-LAPTOP-01" onclick="openChange(1)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:8px;">
               <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
+              <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;">Modified</span>
               <div class="check-title">Screen lock timeout</div>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -7318,17 +7332,23 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:10px;color:#FB3C44;">✗ CIS Fail</div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:11px;color:var(--text-sec);">Control 1.2 · Detected 2 hours ago</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','SARAH-LAPTOP-01')" title="Filter by node">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>SARAH-LAPTOP-01
+              </span>
+              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','CR-1842')" title="Filter by change request">CR-1842</span>
+              <span style="font-size:11px;color:var(--text-sec);">Control 1.2 · Detected 2 hours ago</span>
+            </div>
             <span id="change-status-1" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
           </div>
         </div>
 
-        <div class="check-card" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" onclick="openChange(2)">
+        <div class="check-card" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(2)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:8px;">
               <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;">Added</span>
+              <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','added')" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;">Added</span>
               <div class="check-title">New local user account created</div>
               <span style="font-size:10px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 8px;white-space:nowrap;">Latest detected</span>
             </div>
@@ -7347,8 +7367,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:10px;color:#FB3C44;">Admin privileges</div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:11px;color:var(--text-sec);">Control 5.4 · Detected 2 hours ago</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','MACBOOK-TARAS')" title="Filter by node">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
+              </span>
+              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request">No CR</span>
+              <span style="font-size:11px;color:var(--text-sec);">Control 5.4 · Detected 2 hours ago</span>
+            </div>
             <span id="change-status-2" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
           </div>
         </div>
@@ -11248,7 +11274,22 @@ document.addEventListener('click', function(e) {
   if (dd && wrap && !wrap.contains(e.target)) dd.style.display = 'none';
 });
 
+// Multi-dimension drift filter state — Status + CR + Node + Type combine via AND
+let driftFilters = { status: null, cr: null, node: null, type: null };
+
+// Status-pill entry point (also handles All reset + No CR quick filter)
 function filterChanges(type) {
+  if (type === 'all') driftFilters = { status: null, cr: null, node: null, type: null };
+  else if (type === 'nocr') driftFilters.cr = 'none';
+  else driftFilters.status = type;
+  applyDriftFilters();
+}
+// Embedded-pill entry points (node / cr / type clicked inside a change card)
+function setDriftFilter(dim, val) { driftFilters[dim] = val; applyDriftFilters(); }
+function clearDriftFilter(dim) { driftFilters[dim] = null; applyDriftFilters(); }
+
+function applyDriftFilters() {
+  const f = driftFilters;
   const isDark = document.body.classList.contains('dark');
   const styles = {
     all:          isDark ? { bg:'rgba(16,185,129,0.18)', border:'#34D399',              color:'#FFFFFF' }
@@ -11264,60 +11305,58 @@ function filterChanges(type) {
     nocr:         isDark ? { bg:'rgba(148,163,184,0.18)',border:'rgba(148,163,184,0.6)',color:'#FFFFFF' }
                          : { bg:'rgba(100,116,139,0.07)',border:'#cbd5e1',              color:'#475569' },
   };
-  const FILTERS = ['all','unreconciled','pending','reconciled','flagged','nocr'];
-  // Update active pill
-  FILTERS.forEach(t => {
-    const pill = document.getElementById('filter-' + t);
+  const allNull = !f.status && !f.cr && !f.node && !f.type;
+  // Pill highlights — All when nothing set, status pills for status dim, No CR for cr==='none'
+  ['all','unreconciled','pending','reconciled','flagged','nocr'].forEach(k => {
+    const pill = document.getElementById('filter-' + k);
     if (!pill) return;
-    pill.style.background = '';
-    pill.style.borderColor = '';
-    pill.style.color = '';
-    pill.style.fontWeight = '';
+    let on;
+    if (k === 'all') on = allNull;
+    else if (k === 'nocr') on = f.cr === 'none';
+    else on = f.status === k;
+    if (on) {
+      const s = styles[k];
+      pill.style.background = s.bg; pill.style.borderColor = s.border; pill.style.color = s.color; pill.style.fontWeight = '600';
+    } else {
+      pill.style.background = ''; pill.style.borderColor = ''; pill.style.color = ''; pill.style.fontWeight = '';
+    }
   });
-  const active = document.getElementById('filter-' + type);
-  const s = styles[type] || styles.all;
-  if (active) {
-    active.style.background = s.bg;
-    active.style.borderColor = s.border;
-    active.style.color = s.color;
-    active.style.fontWeight = '600';
-  }
-  // Show/hide cards by reconciliation status
+  // Card visibility — AND across every active dimension
   let visible = 0;
   for (let i = 0; i < 3; i++) {
     const card = document.getElementById('change-card-' + i);
     if (!card) continue;
-    let match;
-    if (type === 'all') match = true;
-    else if (type === 'nocr') match = card.dataset.cr === 'none';
-    else match = card.dataset.recon === type;
-    card.style.display = match ? '' : 'none';
-    if (match) visible++;
+    let ok = true;
+    if (f.status && card.dataset.recon !== f.status) ok = false;
+    if (f.cr) { if (f.cr === 'none') { if (card.dataset.cr !== 'none') ok = false; } else if (card.dataset.cr !== f.cr) ok = false; }
+    if (f.node && card.dataset.node !== f.node) ok = false;
+    if (f.type && card.dataset.changeType !== f.type) ok = false;
+    card.style.display = ok ? '' : 'none';
+    if (ok) visible++;
   }
-  // Active-filters row — show a removable chip when a filter is applied
-  const LABELS = {
-    unreconciled: 'Status: Unreconciled',
-    pending:      'Status: Pending',
-    reconciled:   'Status: Reconciled',
-    flagged:      'Status: Flagged',
-    nocr:         'CR: No CR',
-  };
+  // Active-filters chips — one removable chip per active dimension
+  const STATUS_LBL = { unreconciled:'Unreconciled', pending:'Pending', reconciled:'Reconciled', flagged:'Flagged' };
+  const TYPE_LBL = { modified:'Modified', added:'Added', removed:'Removed' };
+  const chipDefs = [];
+  if (f.status) chipDefs.push({ dim:'status', label:'Status: ' + (STATUS_LBL[f.status] || f.status) });
+  if (f.cr)     chipDefs.push({ dim:'cr',     label:'CR: ' + (f.cr === 'none' ? 'No CR' : f.cr) });
+  if (f.node)   chipDefs.push({ dim:'node',   label:'Node: ' + f.node });
+  if (f.type)   chipDefs.push({ dim:'type',   label:'Type: ' + (TYPE_LBL[f.type] || f.type) });
   const row = document.getElementById('changes-active-filters');
   const chips = document.getElementById('changes-active-chips');
   if (row && chips) {
-    if (type === 'all') {
-      row.style.display = 'none';
-      chips.innerHTML = '';
-    } else {
+    if (chipDefs.length === 0) { row.style.display = 'none'; chips.innerHTML = ''; }
+    else {
       row.style.display = 'flex';
-      chips.innerHTML =
+      chips.innerHTML = chipDefs.map(c =>
         '<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);">' +
-          (LABELS[type] || type) +
-          '<span onclick="filterChanges(\'all\')" title="Remove filter" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;" onmouseover="this.style.color=\'var(--text-default)\'" onmouseout="this.style.color=\'var(--text-muted)\'">&times;</span>' +
-        '</span>';
+          c.label +
+          '<span onclick="clearDriftFilter(\'' + c.dim + '\')" title="Remove filter" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;" onmouseover="this.style.color=\'var(--text-default)\'" onmouseout="this.style.color=\'var(--text-muted)\'">&times;</span>' +
+        '</span>'
+      ).join('');
     }
   }
-  // Empty state when a filter matches nothing
+  // Empty state when nothing matches
   const emptyMsg = document.getElementById('changes-empty');
   if (visible === 0) {
     if (!emptyMsg) {
