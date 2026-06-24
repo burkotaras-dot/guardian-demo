@@ -1209,6 +1209,17 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 }
 .drift-meta-pill:hover { border-color:var(--green2); color:var(--green1); background:rgba(0,175,115,0.06); }
 
+/* Reconcile node tri-state chips (F5c) — include=green, exclude=red */
+.recon-node-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; transition:all 0.12s; }
+.recon-node-chip[data-state="include"] { border-color:#3FC878; background:rgba(0,175,115,0.08); color:#15803d; }
+.recon-node-chip[data-state="include"] .recon-node-ico { color:#15803d; }
+.recon-node-chip[data-state="exclude"] { border-color:#fca5a5; background:rgba(251,60,68,0.07); color:#dc2626; }
+.recon-node-chip[data-state="exclude"] .recon-node-ico { color:#dc2626; }
+body.dark .recon-node-chip[data-state="include"] { border-color:rgba(16,185,129,0.55) !important; background:rgba(16,185,129,0.18) !important; color:#fff !important; }
+body.dark .recon-node-chip[data-state="include"] .recon-node-ico { color:#10B981 !important; }
+body.dark .recon-node-chip[data-state="exclude"] { border-color:rgba(251,60,68,0.55) !important; background:rgba(251,60,68,0.18) !important; color:#fff !important; }
+body.dark .recon-node-chip[data-state="exclude"] .recon-node-ico { color:#FF4646 !important; }
+
 /* CATEGORY TAG HIERARCHY
    Top "type" tag (Compliance Policy / Custom / etc) stays as solid colored pill (font-size:10px, font-weight:700).
    Bottom "category" tags (Security/Compliance/Network/Data/Monitoring/Config) at font-size:11px font-weight:600
@@ -7251,6 +7262,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <span id="recon-search-count" style="font-size:11px;font-weight:600;color:var(--green1);"></span>
             </div>
           </div>
+          <!-- Node include / exclude — tri-state chips (F5c) -->
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:14px;">
+            <span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;">Nodes</span>
+            <div class="recon-node-chip" data-node="MACBOOK-TARAS" data-state="off" onclick="cycleReconNode(this)"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>MACBOOK-TARAS</div>
+            <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>SARAH-LAPTOP-01</div>
+            <span id="recon-node-clear" onclick="clearReconNodes()" style="display:none;font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;">Clear</span>
+          </div>
         </div>
 
         <!-- Active filters row — removable chips reflecting the current filter -->
@@ -11308,6 +11326,7 @@ function exitReconcileMode() {
   if (tb) tb.style.display = 'flex';
   if (panel) panel.style.display = 'none';
   clearReconSearch();
+  clearReconNodes();
 }
 
 // Compound search (F5b) — include / -exclude / wildcard*
@@ -11332,6 +11351,33 @@ function clearReconSearch() {
   if (inp) inp.value = '';
   driftSearch = { include: [], exclude: [] };
   const clr = document.getElementById('recon-search-clear');
+  if (clr) clr.style.display = 'none';
+  applyDriftFilters();
+}
+// Node include / exclude (F5c) — tri-state chips: off → include → exclude → off
+let driftNode = { include: [], exclude: [] };
+function cycleReconNode(chip) {
+  const node = chip.dataset.node;
+  const next = chip.dataset.state === 'off' ? 'include' : (chip.dataset.state === 'include' ? 'exclude' : 'off');
+  chip.dataset.state = next;
+  const ico = chip.querySelector('.recon-node-ico');
+  if (ico) ico.textContent = next === 'include' ? '\u2713' : (next === 'exclude' ? '\u2715' : '');
+  driftNode.include = driftNode.include.filter(n => n !== node);
+  driftNode.exclude = driftNode.exclude.filter(n => n !== node);
+  if (next === 'include') driftNode.include.push(node);
+  else if (next === 'exclude') driftNode.exclude.push(node);
+  const clr = document.getElementById('recon-node-clear');
+  if (clr) clr.style.display = (driftNode.include.length || driftNode.exclude.length) ? 'inline' : 'none';
+  applyDriftFilters();
+}
+function clearReconNodes() {
+  driftNode = { include: [], exclude: [] };
+  document.querySelectorAll('.recon-node-chip').forEach(function(chip) {
+    chip.dataset.state = 'off';
+    const ico = chip.querySelector('.recon-node-ico');
+    if (ico) ico.textContent = '';
+  });
+  const clr = document.getElementById('recon-node-clear');
   if (clr) clr.style.display = 'none';
   applyDriftFilters();
 }
@@ -11410,6 +11456,8 @@ function applyDriftFilters() {
     if (f.node && card.dataset.node !== f.node) ok = false;
     if (f.type && card.dataset.changeType !== f.type) ok = false;
     if (ok && !matchesDriftSearch(card)) ok = false;
+    if (ok && driftNode.include.length && driftNode.include.indexOf(card.dataset.node) === -1) ok = false;
+    if (ok && driftNode.exclude.indexOf(card.dataset.node) !== -1) ok = false;
     card.style.display = ok ? '' : 'none';
     if (ok) visible++;
     else { const sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]'); if (sel) sel.checked = false; }
