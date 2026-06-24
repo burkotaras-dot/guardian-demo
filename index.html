@@ -7269,6 +7269,23 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>SARAH-LAPTOP-01</div>
             <span id="recon-node-clear" onclick="clearReconNodes()" style="display:none;font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;">Clear</span>
           </div>
+          <!-- Save view (F5d) — capture current search + node filters as a named, re-applicable chip -->
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:14px;">
+            <div id="recon-save-btn" onclick="openSaveView()" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius-md);font-size:12px;font-weight:600;border:1px dashed var(--border);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;user-select:none;opacity:0.5;pointer-events:none;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save view
+            </div>
+            <div id="recon-save-input-wrap" style="display:none;align-items:center;gap:6px;">
+              <input type="text" id="recon-save-name" placeholder="View name" onkeydown="if(event.key==='Enter')saveReconView();if(event.key==='Escape')cancelSaveView();" style="box-sizing:border-box;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);color:var(--text-default);outline:none;width:200px;" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+              <button onclick="saveReconView()" style="padding:6px 12px;border:none;border-radius:var(--radius-md);background:var(--green1);color:#fff;font-size:12px;font-weight:600;cursor:pointer;">Save</button>
+              <span onclick="cancelSaveView()" style="font-size:12px;color:var(--text-muted);cursor:pointer;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">Cancel</span>
+            </div>
+          </div>
+          <!-- Saved views row — re-applicable chips (in-memory demo) -->
+          <div id="recon-saved-row" style="display:none;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px;">
+            <span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;">Saved views</span>
+            <div id="recon-saved-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"></div>
+          </div>
         </div>
 
         <!-- Active filters row — removable chips reflecting the current filter -->
@@ -11327,6 +11344,7 @@ function exitReconcileMode() {
   if (panel) panel.style.display = 'none';
   clearReconSearch();
   clearReconNodes();
+  cancelSaveView();
 }
 
 // Compound search (F5b) — include / -exclude / wildcard*
@@ -11380,6 +11398,91 @@ function clearReconNodes() {
   const clr = document.getElementById('recon-node-clear');
   if (clr) clr.style.display = 'none';
   applyDriftFilters();
+}
+
+// Save view (F5d) — capture current search + node filters as a named, re-applicable chip (in-memory)
+let reconSavedViews = [];
+function reconHasActiveFilters() {
+  const q = (document.getElementById('recon-search') || {}).value || '';
+  return !!q.trim() || driftNode.include.length > 0 || driftNode.exclude.length > 0;
+}
+function updateSaveViewBtn() {
+  const btn = document.getElementById('recon-save-btn');
+  if (!btn) return;
+  const on = reconHasActiveFilters();
+  btn.style.opacity = on ? '1' : '0.5';
+  btn.style.pointerEvents = on ? 'auto' : 'none';
+  if (on) { btn.style.borderColor = 'var(--green1)'; btn.style.color = 'var(--green1)'; }
+  else { btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text-sec)'; }
+}
+function _autoViewName() {
+  const parts = [];
+  const q = ((document.getElementById('recon-search') || {}).value || '').trim();
+  if (q) parts.push(q);
+  if (driftNode.include.length) parts.push('+' + driftNode.include.join(','));
+  if (driftNode.exclude.length) parts.push('\u2212' + driftNode.exclude.join(','));
+  return parts.join(' \u00b7 ') || 'Saved view';
+}
+function openSaveView() {
+  if (!reconHasActiveFilters()) return;
+  document.getElementById('recon-save-btn').style.display = 'none';
+  const wrap = document.getElementById('recon-save-input-wrap');
+  wrap.style.display = 'flex';
+  const inp = document.getElementById('recon-save-name');
+  inp.value = _autoViewName();
+  inp.focus();
+  inp.select();
+}
+function cancelSaveView() {
+  document.getElementById('recon-save-input-wrap').style.display = 'none';
+  document.getElementById('recon-save-name').value = '';
+  document.getElementById('recon-save-btn').style.display = 'inline-flex';
+}
+function saveReconView() {
+  const name = (document.getElementById('recon-save-name').value || '').trim() || _autoViewName();
+  reconSavedViews.push({
+    name: name,
+    search: ((document.getElementById('recon-search') || {}).value || ''),
+    include: driftNode.include.slice(),
+    exclude: driftNode.exclude.slice()
+  });
+  renderSavedViews();
+  cancelSaveView();
+}
+function renderSavedViews() {
+  const row = document.getElementById('recon-saved-row');
+  const chips = document.getElementById('recon-saved-chips');
+  if (!row || !chips) return;
+  if (reconSavedViews.length === 0) { row.style.display = 'none'; chips.innerHTML = ''; return; }
+  row.style.display = 'flex';
+  chips.innerHTML = reconSavedViews.map(function(v, i) {
+    return '<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:20px;background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);">' +
+      '<span onclick="applySavedView(' + i + ')" style="cursor:pointer;">' + v.name.replace(/</g, '&lt;') + '</span>' +
+      '<span onclick="deleteSavedView(' + i + ')" title="Delete view" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;" onmouseover="this.style.color=\'var(--text-default)\'" onmouseout="this.style.color=\'var(--text-muted)\'">&times;</span>' +
+      '</span>';
+  }).join('');
+}
+function applySavedView(i) {
+  const v = reconSavedViews[i];
+  if (!v) return;
+  const inp = document.getElementById('recon-search');
+  if (inp) inp.value = v.search;
+  // restore node chip states
+  document.querySelectorAll('.recon-node-chip').forEach(function(chip) {
+    const n = chip.dataset.node;
+    const state = v.include.indexOf(n) !== -1 ? 'include' : (v.exclude.indexOf(n) !== -1 ? 'exclude' : 'off');
+    chip.dataset.state = state;
+    const ico = chip.querySelector('.recon-node-ico');
+    if (ico) ico.textContent = state === 'include' ? '\u2713' : (state === 'exclude' ? '\u2715' : '');
+  });
+  driftNode = { include: v.include.slice(), exclude: v.exclude.slice() };
+  const ndClr = document.getElementById('recon-node-clear');
+  if (ndClr) ndClr.style.display = (driftNode.include.length || driftNode.exclude.length) ? 'inline' : 'none';
+  applyReconSearch(v.search);
+}
+function deleteSavedView(i) {
+  reconSavedViews.splice(i, 1);
+  renderSavedViews();
 }
 function matchesDriftSearch(card) {
   if (driftSearch.include.length === 0 && driftSearch.exclude.length === 0) return true;
@@ -11505,6 +11608,7 @@ function applyDriftFilters() {
   // Reconcile compound-search live count
   const reconCount = document.getElementById('recon-search-count');
   if (reconCount) reconCount.textContent = (driftSearch.include.length || driftSearch.exclude.length) ? (visible + ' of 3 match') : '';
+  updateSaveViewBtn();
   // Arrange the visible cards into groups (None / Node / Change Request)
   applyDriftGrouping();
   // Sync master + group checkboxes and bulk bar against current selection
