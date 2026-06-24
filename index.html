@@ -1220,6 +1220,13 @@ body.dark .recon-node-chip[data-state="include"] .recon-node-ico { color:#10B981
 body.dark .recon-node-chip[data-state="exclude"] { border-color:rgba(251,60,68,0.55) !important; background:rgba(251,60,68,0.18) !important; color:#fff !important; }
 body.dark .recon-node-chip[data-state="exclude"] .recon-node-ico { color:#FF4646 !important; }
 
+/* Density segmented control + compact rows (F6a) */
+.density-seg { padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer; user-select:none; background:var(--bg-surface); color:var(--text-sec); transition:all 0.12s; }
+.density-seg.active { background:rgba(0,175,115,0.08); color:var(--green1); }
+body.dark .density-seg.active { background:rgba(16,185,129,0.18) !important; color:#5BE3B3 !important; }
+.drift-compact .check-card { padding-top:10px; padding-bottom:10px; }
+.drift-compact .check-card > div:nth-child(2) { display:none !important; }
+
 /* CATEGORY TAG HIERARCHY
    Top "type" tag (Compliance Policy / Custom / etc) stays as solid colored pill (font-size:10px, font-weight:700).
    Bottom "category" tags (Security/Compliance/Network/Data/Monitoring/Config) at font-size:11px font-weight:600
@@ -7236,6 +7243,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="group-opt" data-val="cr" onclick="pickGroup(this,'Change Request')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Change Request</div>
             </div>
           </div>
+          <!-- Density segmented control — Comfortable / Compact (F6a) -->
+          <div style="display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;flex-shrink:0;">
+            <div id="density-comfortable" class="density-seg active" onclick="setDriftDensity('comfortable')">Comfortable</div>
+            <div id="density-compact" class="density-seg" onclick="setDriftDensity('compact')" style="border-left:1px solid var(--border);">Compact</div>
+          </div>
           </div><!-- end right group -->
         </div>
 
@@ -11514,6 +11526,17 @@ function filterChanges(type) {
 // Embedded-pill entry points (node / cr / type clicked inside a change card)
 function setDriftFilter(dim, val) { driftFilters[dim] = val; applyDriftFilters(); }
 function clearDriftFilter(dim) { driftFilters[dim] = null; applyDriftFilters(); }
+
+// Row density (F6a) — Comfortable (full cards) / Compact (collapsed diff blocks)
+function setDriftDensity(mode) {
+  const first = document.getElementById('change-card-0');
+  const container = first ? first.parentNode : null;
+  if (container) container.classList.toggle('drift-compact', mode === 'compact');
+  const comf = document.getElementById('density-comfortable');
+  const comp = document.getElementById('density-compact');
+  if (comf) comf.classList.toggle('active', mode === 'comfortable');
+  if (comp) comp.classList.toggle('active', mode === 'compact');
+}
 
 function applyDriftFilters() {
   const f = driftFilters;
