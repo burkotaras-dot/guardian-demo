@@ -7275,6 +7275,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;margin-left:auto;">Clear selection</button>
         </div>
 
+        <!-- Master select-all for currently filtered drift events -->
+        <div id="drift-select-all-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <input type="checkbox" id="drift-select-all-cb" onclick="toggleSelectAllVisible(this)" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
+          <label for="drift-select-all-cb" style="font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;">Select all · <span id="drift-select-all-count">3</span> events</label>
+        </div>
+
         <!-- Drift items — neutral cards, color only in diff blocks -->
         <div class="check-card" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(0)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -11226,12 +11232,45 @@ function clearDriftScope() {
 }
 function updateDriftFilterLabel() {}
 function updateDriftBulkBar() {
-  var cbs = document.querySelectorAll('.drift-select-cb:checked');
   var bar = document.getElementById('drift-bulk-bar');
-  var cnt = document.getElementById('drift-bulk-count');
   if (!bar) return;
-  bar.style.display = cbs.length > 0 ? 'flex' : 'none';
-  if (cnt) cnt.textContent = cbs.length + ' selected';
+  var visible = [], checked = [];
+  for (var i = 0; i < 3; i++) {
+    var card = document.getElementById('change-card-' + i);
+    if (!card || card.style.display === 'none') continue;
+    visible.push(i);
+    var sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]');
+    if (sel && sel.checked) checked.push(i);
+  }
+  bar.style.display = checked.length > 0 ? 'flex' : 'none';
+  var cnt = document.getElementById('drift-bulk-count');
+  if (cnt) cnt.textContent = checked.length + ' selected';
+  // Master "select all" — checked / indeterminate / unchecked
+  var master = document.getElementById('drift-select-all-cb');
+  if (master) {
+    master.checked = visible.length > 0 && checked.length === visible.length;
+    master.indeterminate = checked.length > 0 && checked.length < visible.length;
+  }
+  // Keep group-header checkboxes in sync with their cards
+  document.querySelectorAll('.drift-group-cb').forEach(function(g) {
+    var idxs = (g.dataset.idxs || '').split(',').filter(Boolean);
+    var on = idxs.filter(function(ix) {
+      var s = document.querySelector('.drift-select-cb[data-idx="' + ix + '"]');
+      return s && s.checked;
+    });
+    g.checked = idxs.length > 0 && on.length === idxs.length;
+    g.indeterminate = on.length > 0 && on.length < idxs.length;
+  });
+}
+// Master select-all — selects every currently filtered (visible) drift event
+function toggleSelectAllVisible(cb) {
+  for (var i = 0; i < 3; i++) {
+    var card = document.getElementById('change-card-' + i);
+    if (!card || card.style.display === 'none') continue;
+    var sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]');
+    if (sel) sel.checked = cb.checked;
+  }
+  updateDriftBulkBar();
 }
 function driftBulkAction(action) {
   var cbs = document.querySelectorAll('.drift-select-cb:checked');
@@ -11334,6 +11373,7 @@ function applyDriftFilters() {
     if (f.type && card.dataset.changeType !== f.type) ok = false;
     card.style.display = ok ? '' : 'none';
     if (ok) visible++;
+    else { const sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]'); if (sel) sel.checked = false; }
   }
   // Active-filters chips — one removable chip per active dimension
   const STATUS_LBL = { unreconciled:'Unreconciled', pending:'Pending', reconciled:'Reconciled', flagged:'Flagged' };
@@ -11370,8 +11410,15 @@ function applyDriftFilters() {
   } else {
     if (emptyMsg) emptyMsg.remove();
   }
+  // Master select-all row — count of currently filtered events; hidden when none
+  const allRow = document.getElementById('drift-select-all-row');
+  const allCount = document.getElementById('drift-select-all-count');
+  if (allCount) allCount.textContent = visible;
+  if (allRow) allRow.style.display = visible === 0 ? 'none' : 'flex';
   // Arrange the visible cards into groups (None / Node / Change Request)
   applyDriftGrouping();
+  // Sync master + group checkboxes and bulk bar against current selection
+  updateDriftBulkBar();
 }
 
 // Group visible drift cards under headers; each header has a select-all checkbox
