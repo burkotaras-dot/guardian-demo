@@ -7239,6 +7239,18 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <span style="font-size:16px;font-weight:700;color:var(--text-default);">Reconciliation mode</span>
           </div>
           <div style="font-size:12px;color:var(--text-sec);margin-top:4px;">Compound search, include / exclude and bulk reconcile across all drift events.</div>
+          <!-- Compound search — include / -exclude / wildcard* (F5b) -->
+          <div style="margin-top:14px;max-width:520px;">
+            <div style="position:relative;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:9px 30px 9px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+              <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
+              <span style="font-size:11px;color:var(--text-muted);">Use <b style="color:var(--text-sec);">-word</b> to exclude, <b style="color:var(--text-sec);">word*</b> for wildcard</span>
+              <span id="recon-search-count" style="font-size:11px;font-weight:600;color:var(--green1);"></span>
+            </div>
+          </div>
         </div>
 
         <!-- Active filters row — removable chips reflecting the current filter -->
@@ -11295,6 +11307,45 @@ function exitReconcileMode() {
   const panel = document.getElementById('drift-reconcile-panel');
   if (tb) tb.style.display = 'flex';
   if (panel) panel.style.display = 'none';
+  clearReconSearch();
+}
+
+// Compound search (F5b) — include / -exclude / wildcard*
+let driftSearch = { include: [], exclude: [] };
+function _reconTermToRegex(t) {
+  const esc = t.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
+  return new RegExp(esc, 'i');
+}
+function applyReconSearch(raw) {
+  const inc = [], exc = [];
+  (raw || '').trim().split(/\s+/).filter(Boolean).forEach(function(tok) {
+    if (tok.length > 1 && tok[0] === '-') exc.push(_reconTermToRegex(tok.slice(1)));
+    else inc.push(_reconTermToRegex(tok));
+  });
+  driftSearch = { include: inc, exclude: exc };
+  const clr = document.getElementById('recon-search-clear');
+  if (clr) clr.style.display = (raw && raw.length) ? 'inline' : 'none';
+  applyDriftFilters();
+}
+function clearReconSearch() {
+  const inp = document.getElementById('recon-search');
+  if (inp) inp.value = '';
+  driftSearch = { include: [], exclude: [] };
+  const clr = document.getElementById('recon-search-clear');
+  if (clr) clr.style.display = 'none';
+  applyDriftFilters();
+}
+function matchesDriftSearch(card) {
+  if (driftSearch.include.length === 0 && driftSearch.exclude.length === 0) return true;
+  const titleEl = card.querySelector('.check-title');
+  const title = titleEl ? titleEl.textContent : '';
+  const node = card.dataset.node || '';
+  const cr = (card.dataset.cr && card.dataset.cr !== 'none') ? card.dataset.cr : 'No CR';
+  const type = card.dataset.changeType || '';
+  const hay = title + ' ' + node + ' ' + cr + ' ' + type;
+  for (let i = 0; i < driftSearch.include.length; i++) { if (!driftSearch.include[i].test(hay)) return false; }
+  for (let j = 0; j < driftSearch.exclude.length; j++) { if (driftSearch.exclude[j].test(hay)) return false; }
+  return true;
 }
 
 function sortChanges(value) {
@@ -11358,6 +11409,7 @@ function applyDriftFilters() {
     if (f.cr) { if (f.cr === 'none') { if (card.dataset.cr !== 'none') ok = false; } else if (card.dataset.cr !== f.cr) ok = false; }
     if (f.node && card.dataset.node !== f.node) ok = false;
     if (f.type && card.dataset.changeType !== f.type) ok = false;
+    if (ok && !matchesDriftSearch(card)) ok = false;
     card.style.display = ok ? '' : 'none';
     if (ok) visible++;
     else { const sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]'); if (sel) sel.checked = false; }
@@ -11402,6 +11454,9 @@ function applyDriftFilters() {
   const allCount = document.getElementById('drift-select-all-count');
   if (allCount) allCount.textContent = visible;
   if (allRow) allRow.style.display = visible === 0 ? 'none' : 'flex';
+  // Reconcile compound-search live count
+  const reconCount = document.getElementById('recon-search-count');
+  if (reconCount) reconCount.textContent = (driftSearch.include.length || driftSearch.exclude.length) ? (visible + ' of 3 match') : '';
   // Arrange the visible cards into groups (None / Node / Change Request)
   applyDriftGrouping();
   // Sync master + group checkboxes and bulk bar against current selection
