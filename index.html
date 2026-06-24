@@ -1125,8 +1125,8 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .action-meta { font-size:11.5px; color:var(--text-sec); margin-top:3px; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
 .type-pill { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; padding:2px 7px; border-radius:999px; white-space:nowrap; }
 .meta-chip { font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:6px; background:var(--bg-canvas); border:1px solid var(--border); color:var(--text-sec); white-space:nowrap; }
-.action-cta { display:inline-flex; align-items:center; gap:5px; padding:7px 15px; border-radius:8px; background:var(--bg-surface); border:1.5px solid rgba(63,200,120,0.45); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:var(--green2); cursor:pointer; flex-shrink:0; transition:all .12s; white-space:nowrap; }
-.action-cta:hover { border-color:var(--green1); background:rgba(63,200,120,0.06); }
+.action-cta { display:inline-flex; align-items:center; gap:5px; padding:7px 15px; border-radius:8px; background:var(--bg-canvas); border:1.5px solid #10B981; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:var(--text-default); cursor:pointer; flex-shrink:0; transition:all .12s; white-space:nowrap; }
+.action-cta:hover { border-color:#10B981; background:rgba(16,185,129,0.08); }
 /* Compact drift queue (Option B) — operational table layout */
 .drift-table { border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; background:var(--bg-surface); }
 .drift-grid { display:grid; grid-template-columns:26px 1.1fr 1.4fr 0.9fr 1fr 1.1fr 88px; align-items:center; gap:14px; padding:11px 16px; }
@@ -1396,8 +1396,8 @@ body.dark {
   --intg-aws-sub:    #94A3B8;
   --intg-aws-con-bg: var(--p-dark-subtle);
   --intg-aws-con-bd: var(--p-green-700);
-  --intg-sn-bg:      #0B1A26;
-  --intg-sn-bd:      #372F72;
+  --intg-sn-bg:      #16122B;
+  --intg-sn-bd:      #463A82;
   --intg-sn-icon-bg: #2A2459;
   --intg-sn-icon-fg: #9359FF;
 
@@ -2782,33 +2782,95 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
         </div>
 
-        <!-- AWS Integration card — Connect state -->
-        <div id="dash-aws-connect-card" style="background:var(--intg-aws-bg);border:1px solid var(--intg-aws-bd);border-radius:12px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;">
-          <div style="display:flex;align-items:center;gap:14px;">
-            <div style="width:38px;height:38px;border-radius:10px;background:var(--intg-aws-icon-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--intg-aws-icon-fg)" stroke-width="1.5"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"/></svg></div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--intg-title);margin-bottom:2px;">AWS Integration Available</div>
-              <div style="font-size:11px;color:var(--intg-aws-sub);">Scan EC2, ECS, EKS, Lambda and RDS for compliance checks</div>
+        <!-- Integrations row: 2 columns, each toggles connect↔connected in place -->
+        <div style="display:flex;gap:16px;margin-top:16px;align-items:stretch;flex-wrap:wrap;">
+
+          <!-- ServiceNow column -->
+          <div style="flex:1 1 0;min-width:320px;display:flex;">
+          <!-- ServiceNow — Change reconciliation (NOT connected) -->
+          <div id="dash-sn-connect" style="width:100%;background:var(--intg-sn-bg);border:1px solid var(--intg-sn-bd);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;flex-wrap:nowrap;">
+                <img src="ServiceNow_logo.svg" class="sn-logo" style="height:15px;width:auto;display:block;flex-shrink:0;" alt="ServiceNow"/>
+                <span style="font-size:14px;font-weight:700;color:var(--intg-title);white-space:nowrap;">Change reconciliation</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#7c3aed;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:999px;padding:2px 9px;">Not connected</span>
+              </div>
+              <div style="font-size:11.5px;line-height:1.5;color:var(--text-sec);margin-bottom:9px;">Manual reconciliation is available. Connect ServiceNow to match drift events with approved Change Requests.</div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Manual review available</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:var(--text-muted);"></span>No CR sync configured</span>
+              </div>
+            </div>
+            <div style="flex-shrink:0;">
+              <button style="padding:9px 18px;font-size:12px;background:#8B5CF6;color:white;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:600;white-space:nowrap;" onclick="go('j4-connect')">Connect ServiceNow →</button>
             </div>
           </div>
-          <button class="btn-primary" style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;width:auto;" onclick="go('j3-connect')">Connect AWS &#8594;</button>
+          <!-- ServiceNow — Change reconciliation (CONNECTED, after J4) -->
+          <div id="dash-sn-summary" style="display:none;width:100%;background:var(--intg-sn-bg);border:1px solid var(--intg-sn-bd);border-radius:12px;padding:18px 20px;align-items:center;gap:16px;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;flex-wrap:nowrap;">
+                <img src="ServiceNow_logo.svg" class="sn-logo" style="height:15px;width:auto;display:block;flex-shrink:0;" alt="ServiceNow"/>
+                <span style="font-size:14px;font-weight:700;color:var(--intg-title);white-space:nowrap;">Change reconciliation</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#15803d;background:rgba(37,167,96,0.12);border:1px solid rgba(37,167,96,0.3);border-radius:999px;padding:2px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;"></span>Connected</span>
+              </div>
+              <div style="font-size:11.5px;line-height:1.5;color:var(--text-sec);margin-bottom:9px;">ServiceNow connected · Last synced 2 minutes ago.</div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>24 linked to CR</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>8 without CR</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:#2563eb;"></span>3 pending match</span>
+              </div>
+            </div>
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+              <button style="white-space:nowrap;padding:9px 18px;font-size:12px;background:#8B5CF6;color:white;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:600;" onclick="showView('changes')">View reconciliation →</button>
+              <span style="font-size:11px;font-weight:600;color:var(--intg-sn-btn-fg);cursor:pointer;white-space:nowrap;" onclick="go('j4-summary')">Manage</span>
+            </div>
+          </div>
+          </div>
+
+          <!-- AWS column -->
+          <div style="flex:1 1 0;min-width:320px;display:flex;">
+          <!-- AWS integration — connect (NOT connected) -->
+          <div id="dash-aws-connect-card" style="width:100%;background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;">
+                <div style="width:30px;height:30px;border-radius:8px;background:var(--bg-canvas);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.5"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"/></svg></div>
+                <span style="font-size:14px;font-weight:700;color:var(--intg-title);">AWS integration</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:999px;padding:2px 9px;">Not connected</span>
+              </div>
+              <div style="font-size:11.5px;line-height:1.5;color:var(--text-sec);margin-bottom:9px;">Extend compliance checks to your AWS resources — scan EC2, ECS, EKS, Lambda and RDS for drift.</div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;">EC2 · ECS · EKS</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;">Lambda · RDS</span>
+              </div>
+            </div>
+            <div style="flex-shrink:0;">
+              <button class="btn-secondary" style="width:auto;padding:9px 18px;font-size:12px;white-space:nowrap;background:var(--bg-canvas);border:1.5px solid #10B981;color:var(--text-default);" onclick="go('j3-connect')">Connect AWS &#8594;</button>
+            </div>
+          </div>
+          <!-- AWS integration (CONNECTED, after J3) -->
+          <div id="dash-aws-connected" style="display:none;width:100%;background:var(--intg-aws-con-bg);border:1px solid var(--intg-aws-con-bd);border-radius:12px;padding:18px 20px;align-items:center;gap:16px;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;">
+                <div style="width:30px;height:30px;border-radius:8px;background:rgba(37,167,96,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <span style="font-size:14px;font-weight:700;color:var(--intg-title);">AWS integration</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#15803d;background:rgba(37,167,96,0.12);border:1px solid rgba(37,167,96,0.3);border-radius:999px;padding:2px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;"></span>Connected</span>
+              </div>
+              <div style="font-size:11.5px;line-height:1.5;color:var(--text-sec);margin-bottom:9px;">Account 123456789012 · us-east-1, eu-west-1 · 12 nodes scanned.</div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;">EC2 · ECS · EKS</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;">Lambda · RDS</span>
+              </div>
+            </div>
+            <div style="flex-shrink:0;">
+              <button class="btn-secondary" style="white-space:nowrap;width:auto;padding:9px 18px;font-size:12px;background:var(--bg-canvas);border:1.5px solid #10B981;color:var(--text-default);" onclick="showView('all-devices')">View all nodes &#8594;</button>
+            </div>
+          </div>
+          </div>
+
         </div>
 
-        <!-- AWS Fleet summary — shown after J3 -->
-        <div id="dash-aws-summary" style="display:none;margin-top:16px;">
-          <!-- Connected status bar -->
-          <div style="background:var(--intg-aws-con-bg);border:1px solid var(--intg-aws-con-bd);border-radius:12px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px;">
-            <div style="display:flex;align-items:center;gap:14px;">
-              <div style="width:38px;height:38px;border-radius:10px;background:rgba(37,167,96,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div>
-                <div style="font-size:13px;font-weight:700;color:var(--intg-title);margin-bottom:2px;">AWS Connected ✓ · 12 nodes</div>
-                <div style="font-size:11px;color:var(--text-sec);">Account 123456789012 · us-east-1, eu-west-1</div>
-              </div>
-            </div>
-            <button class="btn-secondary" style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;width:auto;border-color:rgba(63,200,120,0.3);color:var(--p-green-400);" onclick="showView('all-devices')">View all nodes &#8594;</button>
-          </div>
+        <!-- AWS Fleet stats — shown after J3 -->
+        <div id="dash-aws-summary" style="display:none;margin-top:12px;">
           <!-- AWS stats grid -->
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
             <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;">
@@ -2827,34 +2889,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">EC2 · ECS · EKS · RDS</div>
             </div>
           </div>
-        </div>
-
-        <!-- ServiceNow connect prompt — hidden after J4 -->
-        <div id="dash-sn-connect" style="margin-top:12px;background:var(--intg-sn-bg);border:1px solid var(--intg-sn-bd);border-radius:12px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-          <div style="display:flex;align-items:center;gap:14px;">
-            <div style="height:38px;display:flex;align-items:center;flex-shrink:0;">
-              <img src="ServiceNow_logo.svg" class="sn-logo" style="height:20px;width:auto;display:block;" alt="ServiceNow"/>
-            </div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--intg-title);margin-bottom:2px;">Change Reconciliation</div>
-              <div style="font-size:11px;color:var(--intg-sn-sub);">Connect to automatically reconcile detected drift with approved Change Requests</div>
-            </div>
-          </div>
-          <button style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;background:#8B5CF6;color:white;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:600;" onclick="go('j4-connect')">Connect ServiceNow →</button>
-        </div>
-
-        <!-- ServiceNow summary — shown after J4 -->
-        <div id="dash-sn-summary" style="display:none;margin-top:12px;background:var(--intg-sn-bg);border:1px solid var(--intg-sn-bd);border-radius:12px;padding:16px 22px;align-items:center;justify-content:space-between;gap:16px;">
-          <div style="display:flex;align-items:center;gap:14px;">
-            <div style="height:38px;display:flex;align-items:center;flex-shrink:0;">
-              <img src="ServiceNow_logo.svg" class="sn-logo" style="height:18px;width:auto;display:block;" alt="ServiceNow"/>
-            </div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--intg-title);margin-bottom:2px;">Connected ✓ · 3 CRs matched</div>
-              <div style="font-size:11px;color:var(--intg-sn-sub);">1 change requires manual review · Audit trail recorded</div>
-            </div>
-          </div>
-          <button style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;background:transparent;color:var(--intg-sn-btn-fg);border:1px solid var(--intg-sn-bd);border-radius:var(--radius-md);cursor:pointer;font-weight:600;" onclick="showView('changes')">Review 1 change &#8594;</button>
         </div>
 
       </div>
@@ -11543,8 +11577,10 @@ function goToAllDevicesFromJ3() {
   if (sub)           sub.textContent = '16 devices monitored · 12 AWS nodes added just now';
   // Dashboard updates
   const dashConnect = document.getElementById('dash-aws-connect-card');
+  const dashConnected = document.getElementById('dash-aws-connected');
   const dashSummary = document.getElementById('dash-aws-summary');
   if (dashConnect) dashConnect.style.display = 'none';
+  if (dashConnected) dashConnected.style.display = 'flex';
   if (dashSummary) dashSummary.style.display = 'block';
   showView('all-devices');
   // Toast notification
