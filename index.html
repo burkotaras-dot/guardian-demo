@@ -1111,6 +1111,22 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
   color:var(--text-default); cursor:pointer; transition:background 0.12s, border-color 0.12s;
 }
 .issue-fix-btn:hover { background:var(--bg-canvas); border-color:var(--green1); }
+/* Dashboard "what needs action" — 2 concepts for client review */
+.dash-block-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+.dash-seg { display:inline-flex; background:var(--bg-canvas); border:1px solid var(--border); border-radius:9px; padding:3px; gap:2px; }
+.dash-seg-btn { font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:var(--text-sec); background:transparent; border:none; padding:6px 13px; border-radius:6px; cursor:pointer; white-space:nowrap; transition:all .12s; }
+.dash-seg-btn.active { background:var(--bg-surface); color:var(--text-default); box-shadow:var(--shadow-sm); }
+.dash-seg-btn:hover:not(.active) { color:var(--text-default); }
+.action-row { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 16px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:10px; cursor:pointer; transition:border-color .12s, background .12s; }
+.action-row:hover { border-color:var(--green1); background:var(--bg-canvas); }
+.action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
+.action-ico { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.action-name { font-size:13px; font-weight:600; color:var(--text-default); }
+.action-meta { font-size:11.5px; color:var(--text-sec); margin-top:3px; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.type-pill { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; padding:2px 7px; border-radius:999px; white-space:nowrap; }
+.meta-chip { font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:6px; background:var(--bg-canvas); border:1px solid var(--border); color:var(--text-sec); white-space:nowrap; }
+.action-cta { display:inline-flex; align-items:center; gap:5px; padding:7px 15px; border-radius:8px; background:var(--bg-surface); border:1.5px solid rgba(63,200,120,0.45); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:var(--green2); cursor:pointer; flex-shrink:0; transition:all .12s; white-space:nowrap; }
+.action-cta:hover { border-color:var(--green1); background:rgba(63,200,120,0.06); }
 .issue-pagination {
   display:flex; align-items:center; justify-content:space-between;
   margin-top:14px; font-size:12px;
@@ -2668,20 +2684,83 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         </div>
         <div class="issues-card">
-          <div class="issues-card-title">Critical issues to fix first</div>
-          <div class="issue-row" onclick="showView('remediation')">
-            <div class="issue-info"><span class="badge badge-critical">Critical</span><span class="issue-name">Windows Defender real-time protection disabled</span></div>
-            <button class="issue-fix-btn" onclick="event.stopPropagation();showView('remediation')">Fix now</button>
+          <div class="dash-block-head">
+            <div class="dash-seg">
+              <button id="dash-seg-attention" class="dash-seg-btn active" onclick="dashSetConcept('attention')">Option A · Needs your attention</button>
+              <button id="dash-seg-drift" class="dash-seg-btn" onclick="dashSetConcept('drift')">Option B · Drift requiring review</button>
+            </div>
+            <span style="font-size:11px;color:var(--text-muted);font-style:italic;">Concept comparison — not a final product control</span>
           </div>
-          <div class="issue-row" onclick="showView('remediation')">
-            <div class="issue-info"><span class="badge badge-critical">Critical</span><span class="issue-name">BitLocker encryption not enabled</span></div>
-            <button class="issue-fix-btn" onclick="event.stopPropagation();showView('remediation')">Fix now</button>
+
+          <!-- CONCEPT A: Needs your attention — mixed, prioritised action queue -->
+          <div id="dash-concept-attention">
+            <div class="action-row" onclick="showView('changes')">
+              <div class="action-row-l">
+                <div class="action-ico" style="background:rgba(217,119,6,0.12);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
+                <div style="min-width:0;">
+                  <div class="action-name">Unreconciled drift detected on LAPTOP-042</div>
+                  <div class="action-meta"><span class="type-pill" style="color:#d97706;background:rgba(217,119,6,0.12);border:1px solid rgba(217,119,6,0.3);">Drift</span> 3 config changes · No matching CR · Detected in latest scan</div>
+                </div>
+              </div>
+              <button class="action-cta" onclick="event.stopPropagation();showView('changes')">Review →</button>
+            </div>
+            <div class="action-row" onclick="showView('changes')">
+              <div class="action-row-l">
+                <div class="action-ico" style="background:rgba(139,92,246,0.12);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+                <div style="min-width:0;">
+                  <div class="action-name">Change request CR-1842 pending reconciliation</div>
+                  <div class="action-meta"><span class="type-pill" style="color:#8B5CF6;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);">Change request</span> 5 nodes affected · Awaiting match · 2h ago</div>
+                </div>
+              </div>
+              <button class="action-cta" onclick="event.stopPropagation();showView('changes')">Reconcile →</button>
+            </div>
+            <div class="action-row" onclick="showView('results')">
+              <div class="action-row-l">
+                <div class="action-ico" style="background:rgba(148,163,184,0.14);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                <div style="min-width:0;">
+                  <div class="action-name">Critical compliance failure on 3 nodes</div>
+                  <div class="action-meta"><span class="type-pill" style="color:#FB3C44;background:rgba(251,60,68,0.1);border:1px solid rgba(251,60,68,0.3);">Compliance</span> Windows Defender disabled · BitLocker off · Latest scan</div>
+                </div>
+              </div>
+              <button class="action-cta" onclick="event.stopPropagation();showView('results')">View issue →</button>
+            </div>
+            <div style="text-align:center;margin-top:14px;font-size:12px;"><span style="color:var(--issues-link);cursor:pointer;font-weight:500;" onclick="showView('changes')">View all activity →</span></div>
           </div>
-          <div class="issue-row" onclick="showView('remediation')">
-            <div class="issue-info"><span class="badge badge-critical">Critical</span><span class="issue-name">Remote Desktop enabled without NLA</span></div>
-            <button class="issue-fix-btn" onclick="event.stopPropagation();showView('remediation')">Fix now</button>
+
+          <!-- CONCEPT B: Drift requiring review — drift-focused queue -->
+          <div id="dash-concept-drift" style="display:none;">
+            <div class="action-row" onclick="showView('changes')">
+              <div class="action-row-l">
+                <div style="min-width:0;">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span class="action-name">web-prod-01</span><span class="meta-chip" style="color:#d97706;background:rgba(217,119,6,0.1);border-color:rgba(217,119,6,0.28);">Modified</span></div>
+                  <div style="font-size:12px;color:var(--text-default);margin-top:3px;">Firewall rule changed</div>
+                  <div class="action-meta"><span class="meta-chip">No CR</span><span class="meta-chip"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#d97706;margin-right:5px;vertical-align:middle;"></span>Unreconciled</span></div>
+                </div>
+              </div>
+              <button class="action-cta" onclick="event.stopPropagation();showView('changes')">Review →</button>
+            </div>
+            <div class="action-row" onclick="showView('changes')">
+              <div class="action-row-l">
+                <div style="min-width:0;">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span class="action-name">LAPTOP-042</span><span class="meta-chip" style="color:#2563eb;background:rgba(37,99,235,0.1);border-color:rgba(37,99,235,0.28);">Added</span></div>
+                  <div style="font-size:12px;color:var(--text-default);margin-top:3px;">Registry key added</div>
+                  <div class="action-meta"><span class="meta-chip">No CR</span><span class="meta-chip"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#d97706;margin-right:5px;vertical-align:middle;"></span>Unreconciled</span></div>
+                </div>
+              </div>
+              <button class="action-cta" onclick="event.stopPropagation();showView('changes')">Review →</button>
+            </div>
+            <div class="action-row" onclick="showView('changes')">
+              <div class="action-row-l">
+                <div style="min-width:0;">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span class="action-name">api-server-02</span><span class="meta-chip" style="color:#FB3C44;background:rgba(251,60,68,0.09);border-color:rgba(251,60,68,0.28);">Removed</span></div>
+                  <div style="font-size:12px;color:var(--text-default);margin-top:3px;">Service account removed</div>
+                  <div class="action-meta"><span class="meta-chip" style="color:#2563eb;">CR-1842</span><span class="meta-chip"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#d97706;margin-right:5px;vertical-align:middle;"></span>Pending</span></div>
+                </div>
+              </div>
+              <button class="action-cta" onclick="event.stopPropagation();showView('changes')">Review →</button>
+            </div>
+            <div style="text-align:center;margin-top:14px;font-size:12px;"><span style="color:var(--issues-link);cursor:pointer;font-weight:500;" onclick="showView('changes')">View all detected drift →</span></div>
           </div>
-          <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--text-sec);"><span style="color:var(--issues-more-txt);">+ 24 more ·</span> <span style="color:var(--issues-link);cursor:pointer;font-weight:500;" onclick="showView('results')">View full report →</span></div>
         </div>
 
         <!-- AWS Integration card — Connect state -->
@@ -12394,6 +12473,13 @@ function moveDonutTip(e) {
     tip.style.left = (e.clientX + 14) + 'px';
     tip.style.top  = (e.clientY - 32) + 'px';
   }
+}
+function dashSetConcept(c) {
+  var drift = c === 'drift';
+  document.getElementById('dash-concept-attention').style.display = drift ? 'none' : 'block';
+  document.getElementById('dash-concept-drift').style.display = drift ? 'block' : 'none';
+  document.getElementById('dash-seg-attention').classList.toggle('active', !drift);
+  document.getElementById('dash-seg-drift').classList.toggle('active', drift);
 }
 </script>
 </body>
