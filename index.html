@@ -7131,7 +7131,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
          S12: CHANGE SUMMARY VIEW
     ═══════════════════════════════════════ -->
     <div class="view" id="v-changes">
-      <div class="page-header">
+      <div class="page-header" style="border-bottom:none;">
         <div>
           <div class="page-title">Detected Drift Summary</div>
           <div class="page-sub" id="changes-sub">Detected since last scan · 3 unreconciled · 1 flagged · across 2 nodes</div>
@@ -7142,31 +7142,37 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
         </div>
       </div>
-      <!-- Scope bar — neutral -->
-      <div style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <span id="drift-scope-label" style="font-size:12px;font-weight:600;color:var(--text-default);">All nodes · 14 monitored</span>
-      </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;">
 
-        <!-- ServiceNow banner — not connected by default, replaced after J4 -->
-        <div id="sn-reconcile-banner" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:20px;">
-          <!-- Left: title + subtitle -->
+        <!-- Reconciliation prompt — contextual, not configured by default, replaced after J4 -->
+        <div id="sn-reconcile-banner" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+          <!-- Reconcile icon (neutral, not branded) -->
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--bg-canvas);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+          <!-- Left: title + description + chips -->
           <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
-              <img src="ServiceNow_logo.svg" class="sn-logo" style="height:14px;width:auto;max-width:100px;display:block;flex-shrink:0;" alt="ServiceNow"/>
-              <span style="font-size:13px;font-weight:600;color:var(--text-default);">· Connect to reconcile drift</span>
+            <div style="font-size:13px;font-weight:600;color:var(--text-default);margin-bottom:3px;">Change reconciliation is not configured</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-bottom:8px;">Manual review is available. Configure a service management tool to match drift events with approved Change Requests.</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Manual review available</span>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:3px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:var(--text-muted);"></span>No CR sync configured</span>
             </div>
-            <div style="font-size:11px;color:var(--text-sec);">Match detected drift against approved Change Requests to filter out expected changes</div>
           </div>
-          <!-- Right: button -->
-          <button style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;background:#8B5CF6;color:white;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:600;" onclick="go('j4-connect')">Connect ServiceNow →</button>
+          <!-- Right: secondary CTA + dismiss -->
+          <button class="btn-secondary" style="white-space:nowrap;width:auto;padding:8px 16px;font-size:12px;flex-shrink:0;background:var(--bg-canvas);border:1.5px solid #10B981;color:var(--text-default);" onclick="go('j4-connect')">Configure service management &#8594;</button>
+          <button onclick="document.getElementById('sn-reconcile-banner').style.display='none'" aria-label="Dismiss" style="flex-shrink:0;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;display:flex;align-items:center;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
 
         <!-- Pills + Search / Filter / Sort — pills left, controls right -->
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px;flex-wrap:nowrap;">
           <!-- Pills left -->
-          <div style="display:flex;gap:6px;flex-shrink:0;">
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <!-- Scope chip — node context (All nodes ↔ specific node) -->
+            <div id="drift-scope-chip" style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;flex-shrink:0;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <span id="drift-scope-label">All nodes · 14 monitored</span>
+              <span id="drift-scope-clear" onclick="clearDriftScope()" title="Clear scope" style="display:none;cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;padding-left:1px;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+            </div>
+            <div style="width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0;"></div>
             <div class="pill" id="filter-all" style="cursor:pointer;background:rgba(63,200,120,0.1);border-color:var(--p-green-400);color:#15803d;font-weight:600;" onclick="filterChanges('all')">All (3)</div>
             <div class="pill" id="filter-modified" style="cursor:pointer;" onclick="filterChanges('modified')">Modified (2)</div>
             <div class="pill" id="filter-added" style="cursor:pointer;" onclick="filterChanges('added')">Added (1)</div>
@@ -11134,7 +11140,13 @@ function selectDriftNode(el) {
   var lbl = document.getElementById('drift-filter-active-label');
   if (lbl) { lbl.textContent = isAll ? '' : ' · Node'; lbl.style.color = 'var(--green1)'; }
   var scope = document.getElementById('drift-scope-label');
-  if (scope) scope.textContent = isAll ? 'All nodes · 14 monitored' : 'Showing drift for ' + el.getAttribute('data-val');
+  if (scope) scope.textContent = isAll ? 'All nodes · 14 monitored' : el.getAttribute('data-val');
+  var scopeClear = document.getElementById('drift-scope-clear');
+  if (scopeClear) scopeClear.style.display = isAll ? 'none' : 'inline';
+}
+function clearDriftScope() {
+  var allOpt = document.querySelector('.drift-node-opt[data-val="all"]');
+  if (allOpt) selectDriftNode(allOpt);
 }
 function updateDriftFilterLabel() {}
 function updateDriftBulkBar() {
