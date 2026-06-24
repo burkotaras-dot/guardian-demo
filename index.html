@@ -11180,6 +11180,7 @@ function pickGroup(el, label) {
   document.getElementById('changes-group-label').textContent = 'Group: ' + label;
   document.getElementById('changes-group-dropdown').style.display = 'none';
   driftGroupBy = el.dataset.val;
+  applyDriftFilters();
 }
 
 function filterDriftNodes(q) {
@@ -11369,6 +11370,60 @@ function applyDriftFilters() {
   } else {
     if (emptyMsg) emptyMsg.remove();
   }
+  // Arrange the visible cards into groups (None / Node / Change Request)
+  applyDriftGrouping();
+}
+
+// Group visible drift cards under headers; each header has a select-all checkbox
+function applyDriftGrouping() {
+  const first = document.getElementById('change-card-0');
+  if (!first) return;
+  const container = first.parentNode;
+  container.querySelectorAll('.drift-group-head').forEach(h => h.remove());
+  const cards = [0, 1, 2].map(i => document.getElementById('change-card-' + i)).filter(Boolean);
+  const emptyMsg = document.getElementById('changes-empty');
+  if (driftGroupBy === 'none') {
+    cards.forEach(c => container.appendChild(c));
+    if (emptyMsg) container.appendChild(emptyMsg);
+    return;
+  }
+  const dimLabel = driftGroupBy === 'node' ? 'Node' : 'Change Request';
+  const keyOf = c => driftGroupBy === 'node'
+    ? (c.dataset.node || '—')
+    : (c.dataset.cr && c.dataset.cr !== 'none' ? c.dataset.cr : 'No CR');
+  const visibleCards = cards.filter(c => c.style.display !== 'none');
+  const order = [];
+  const groups = {};
+  visibleCards.forEach(c => {
+    const k = keyOf(c);
+    if (!groups[k]) { groups[k] = []; order.push(k); }
+    groups[k].push(c);
+  });
+  order.forEach(k => {
+    const groupCards = groups[k];
+    const idxs = groupCards.map(c => c.id.replace('change-card-', '')).join(',');
+    const head = document.createElement('div');
+    head.className = 'drift-group-head';
+    head.style.cssText = 'display:flex;align-items:center;gap:10px;margin:16px 0 8px;';
+    head.innerHTML =
+      '<input type="checkbox" class="drift-group-cb" onclick="toggleGroupSelect(this)" data-idxs="' + idxs + '" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">' +
+      '<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-sec);">' + dimLabel + '</span>' +
+      '<span style="font-size:13px;font-weight:700;color:var(--text-default);">' + k + '</span>' +
+      '<span style="font-size:11px;color:var(--text-muted);">' + groupCards.length + (groupCards.length === 1 ? ' event' : ' events') + '</span>';
+    container.appendChild(head);
+    groupCards.forEach(c => container.appendChild(c));
+  });
+  cards.filter(c => c.style.display === 'none').forEach(c => container.appendChild(c));
+  if (emptyMsg) container.appendChild(emptyMsg);
+}
+
+// Select-all-in-group — checks every card checkbox in the group, drives the bulk bar
+function toggleGroupSelect(cb) {
+  (cb.dataset.idxs || '').split(',').filter(Boolean).forEach(idx => {
+    const sel = document.querySelector('.drift-select-cb[data-idx="' + idx + '"]');
+    if (sel) sel.checked = cb.checked;
+  });
+  updateDriftBulkBar();
 }
 
 function updateChangeList() {
