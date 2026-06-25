@@ -1220,10 +1220,6 @@ body.dark .recon-node-chip[data-state="include"] .recon-node-ico { color:#10B981
 body.dark .recon-node-chip[data-state="exclude"] { border-color:rgba(251,60,68,0.55) !important; background:rgba(251,60,68,0.18) !important; color:#fff !important; }
 body.dark .recon-node-chip[data-state="exclude"] .recon-node-ico { color:#FF4646 !important; }
 
-/* Density segmented control + compact rows (F6a) */
-.density-seg { padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer; user-select:none; background:var(--bg-surface); color:var(--text-sec); transition:all 0.12s; }
-.density-seg.active { background:rgba(0,175,115,0.08); color:var(--green1); }
-body.dark .density-seg.active { background:rgba(16,185,129,0.18) !important; color:#5BE3B3 !important; }
 .hh-toggle { display:flex; align-items:center; gap:6px; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); font-size:12px; font-weight:600; color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; flex-shrink:0; transition:all 0.12s; }
 .hh-toggle .hh-check { visibility:hidden; }
 .hh-toggle.active { background:rgba(0,175,115,0.08); border-color:var(--green1); color:var(--green1); }
@@ -1231,8 +1227,8 @@ body.dark .density-seg.active { background:rgba(16,185,129,0.18) !important; col
 body.dark .hh-toggle.active { background:rgba(16,185,129,0.18) !important; border-color:#34D399 !important; color:#5BE3B3 !important; }
 .check-card.drift-handled { opacity:0.62; background:var(--bg-subtle); }
 .check-card.drift-handled:hover { opacity:0.85; }
-.drift-compact .check-card { padding-top:10px; padding-bottom:10px; }
-.drift-compact .check-card > div:nth-child(2) { display:none !important; }
+/* Compact single-line drift row — operational list (replaces tall diff cards) */
+.check-card.drift-row { display:grid; grid-template-columns:18px 86px minmax(140px,1fr) 168px 120px 124px 124px 18px; align-items:center; gap:12px; padding:11px 16px; }
 
 /* CATEGORY TAG HIERARCHY
    Top "type" tag (Compliance Policy / Custom / etc) stays as solid colored pill (font-size:10px, font-weight:700).
@@ -7298,113 +7294,52 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <!-- Drift items — neutral cards, color only in diff blocks -->
         <div id="drift-cards">
-        <div class="check-card" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(0)">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;">Modified</span>
-              <div class="check-title">Windows Defender — Real-time protection</div>
-            </div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(0)">
+          <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
+          <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
+          <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection</div>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
+          </span>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
+          <span id="change-status-0" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);justify-self:start;white-space:nowrap;">Pending</span>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
+            <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 7px;" title="This change has notes">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1
+            </span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-bottom:10px;">
-            <div style="flex:1;padding:8px 10px;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.5px;margin-bottom:3px;">BEFORE</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">Enabled</div>
-              <div style="font-size:10px;color:#15803d;">✓ CIS Pass</div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--p-neutral-400);">→</div>
-            <div style="flex:1;padding:8px 10px;background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#FB3C44;letter-spacing:0.5px;margin-bottom:3px;">AFTER</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">Disabled</div>
-              <div style="font-size:10px;color:#FB3C44;">✗ CIS Fail</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
-              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','MACBOOK-TARAS')" title="Filter by node">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
-              </span>
-              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request">No CR</span>
-              <span style="font-size:11px;color:var(--text-sec);">Control 8.1 · Detected 2 hours ago</span>
-              <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 8px;white-space:nowrap;" title="This change has notes">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1 note
-              </span>
-            </div>
-            <span id="change-status-0" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
-          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card drift-handled" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="SARAH-LAPTOP-01" onclick="openChange(1)">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;">Modified</span>
-              <div class="check-title">Screen lock timeout</div>
-            </div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="SARAH-LAPTOP-01" onclick="openChange(1)">
+          <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
+          <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
+          <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Screen lock timeout</div>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','SARAH-LAPTOP-01')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>SARAH-LAPTOP-01
+          </span>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','CHG0012345')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">CHG0012345</span>
+          <span id="change-status-1" class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);justify-self:start;white-space:nowrap;">Reconciled</span>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
+            <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-bottom:10px;">
-            <div style="flex:1;padding:8px 10px;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.5px;margin-bottom:3px;">BEFORE</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">10 minutes</div>
-              <div style="font-size:10px;color:#15803d;">✓ CIS Pass</div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--p-neutral-400);">→</div>
-            <div style="flex:1;padding:8px 10px;background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#FB3C44;letter-spacing:0.5px;margin-bottom:3px;">AFTER</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">30 minutes</div>
-              <div style="font-size:10px;color:#FB3C44;">✗ CIS Fail</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
-              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','SARAH-LAPTOP-01')" title="Filter by node">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>SARAH-LAPTOP-01
-              </span>
-              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','CHG0012345')" title="Filter by change request">CHG0012345</span>
-              <span style="font-size:11px;color:var(--text-sec);">Control 1.2 · Detected 2 hours ago</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span onclick="event.stopPropagation();showView('cr-audit')" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View audit &#8594;</span>
-              <span id="change-status-1" class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);">Reconciled via CHG0012345</span>
-            </div>
-          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(2)">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','added')" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;">Added</span>
-              <div class="check-title">New local user account created</div>
-              <span style="font-size:10px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 8px;white-space:nowrap;">Latest detected</span>
-            </div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(2)">
+          <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
+          <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','added')" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;justify-self:start;">Added</span>
+          <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">New local user account created</div>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
+          </span>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
+          <span id="change-status-2" class="badge" style="background:rgba(251,60,68,0.1);color:#FB3C44;border:1px solid rgba(251,60,68,0.2);justify-self:start;white-space:nowrap;">Flagged</span>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
+            <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-bottom:10px;">
-            <div class="ch-before-empty" style="flex:1;padding:8px 10px;background:var(--bg-subtle);border:1px solid var(--border-default);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;margin-bottom:3px;">BEFORE</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">Not present</div>
-              <div style="font-size:10px;color:var(--text-sec);">—</div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--p-neutral-400);">→</div>
-            <div style="flex:1;padding:8px 10px;background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#FB3C44;letter-spacing:0.5px;margin-bottom:3px;">AFTER</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">user_temp</div>
-              <div style="font-size:10px;color:#FB3C44;">Admin privileges</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
-              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','MACBOOK-TARAS')" title="Filter by node">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
-              </span>
-              <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request">No CR</span>
-              <span style="font-size:11px;color:var(--text-sec);">Control 5.4 · Detected 2 hours ago</span>
-            </div>
-            <span id="change-status-2" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
-          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         </div><!-- /drift-cards -->
 
@@ -11791,16 +11726,6 @@ function filterChanges(type) {
 function setDriftFilter(dim, val) { driftFilters[dim] = val; applyDriftFilters(); }
 function clearDriftFilter(dim) { driftFilters[dim] = null; applyDriftFilters(); }
 
-// Row density (F6a) — Comfortable (full cards) / Compact (collapsed diff blocks)
-function setDriftDensity(mode) {
-  const first = document.getElementById('change-card-0');
-  const container = first ? first.parentNode : null;
-  if (container) container.classList.toggle('drift-compact', mode === 'compact');
-  const comf = document.getElementById('density-comfortable');
-  const comp = document.getElementById('density-compact');
-  if (comf) comf.classList.toggle('active', mode === 'comfortable');
-  if (comp) comp.classList.toggle('active', mode === 'compact');
-}
 
 function applyDriftFilters() {
   const f = driftFilters;
