@@ -2729,14 +2729,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
         <div class="issues-card">
           <div class="dash-block-head">
-            <div class="dash-seg">
-              <button id="dash-seg-attention" class="dash-seg-btn active" onclick="dashSetConcept('attention')">Option A · Needs your attention</button>
-              <button id="dash-seg-drift" class="dash-seg-btn" onclick="dashSetConcept('drift')">Option B · Drift requiring review</button>
-            </div>
-            <span style="font-size:11px;color:var(--text-muted);font-style:italic;">Concept comparison — not a final product control</span>
+            <div style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</div>
           </div>
 
-          <!-- CONCEPT A: Needs your attention — mixed, prioritised action queue -->
+          <!-- Needs your attention — mixed, prioritised action queue -->
           <div id="dash-concept-attention">
             <div class="action-row" onclick="showView('changes')">
               <div class="action-row-l">
@@ -2769,43 +2765,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <button class="action-cta" onclick="event.stopPropagation();showView('results')">View issue →</button>
             </div>
             <div style="text-align:center;margin-top:14px;font-size:12px;"><span style="color:var(--issues-link);cursor:pointer;font-weight:500;" onclick="showView('changes')">View all activity →</span></div>
-          </div>
-
-          <!-- CONCEPT B: Drift requiring review — compact operational drift queue -->
-          <div id="dash-concept-drift" style="display:none;">
-            <div class="drift-table">
-              <div class="drift-grid drift-thead">
-                <span></span><span>Node</span><span>Change</span><span>Type</span><span>Change Request</span><span>Status</span><span style="justify-self:end;">Action</span>
-              </div>
-              <div class="drift-grid drift-row" onclick="showView('changes')">
-                <span class="drift-ico" style="background:rgba(217,119,6,0.12);color:#d97706;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
-                <span class="drift-node">web-prod-01</span>
-                <span class="drift-change">Firewall rule changed</span>
-                <span><span class="type-pill" style="color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.28);">Modified</span></span>
-                <span class="drift-cr" style="color:var(--text-muted);">No CR</span>
-                <span class="drift-status"><span class="dot" style="background:#d97706;"></span>Unreconciled</span>
-                <span class="drift-action">Review →</span>
-              </div>
-              <div class="drift-grid drift-row" onclick="showView('changes')">
-                <span class="drift-ico" style="background:rgba(37,99,235,0.12);color:#2563eb;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
-                <span class="drift-node">LAPTOP-042</span>
-                <span class="drift-change">Registry key added</span>
-                <span><span class="type-pill" style="color:#2563eb;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.28);">Added</span></span>
-                <span class="drift-cr" style="color:var(--text-muted);">No CR</span>
-                <span class="drift-status"><span class="dot" style="background:#d97706;"></span>Unreconciled</span>
-                <span class="drift-action">Review →</span>
-              </div>
-              <div class="drift-grid drift-row" onclick="showView('changes')">
-                <span class="drift-ico" style="background:rgba(251,60,68,0.12);color:#FB3C44;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg></span>
-                <span class="drift-node">api-server-02</span>
-                <span class="drift-change">Service account removed</span>
-                <span><span class="type-pill" style="color:#FB3C44;background:rgba(251,60,68,0.09);border:1px solid rgba(251,60,68,0.28);">Removed</span></span>
-                <span class="drift-cr" style="color:#2563eb;">CR-1842</span>
-                <span class="drift-status"><span class="dot" style="background:#2563eb;"></span>Pending</span>
-                <span class="drift-action">Review →</span>
-              </div>
-            </div>
-            <div style="text-align:center;margin-top:14px;font-size:12px;"><span style="color:var(--issues-link);cursor:pointer;font-weight:500;" onclick="showView('changes')">View all detected drift →</span></div>
           </div>
         </div>
 
@@ -13041,13 +13000,6 @@ function moveDonutTip(e) {
     tip.style.left = (e.clientX + 14) + 'px';
     tip.style.top  = (e.clientY - 32) + 'px';
   }
-}
-function dashSetConcept(c) {
-  var drift = c === 'drift';
-  document.getElementById('dash-concept-attention').style.display = drift ? 'none' : 'block';
-  document.getElementById('dash-concept-drift').style.display = drift ? 'block' : 'none';
-  document.getElementById('dash-seg-attention').classList.toggle('active', !drift);
-  document.getElementById('dash-seg-drift').classList.toggle('active', drift);
 }
 </script>
 </body>
