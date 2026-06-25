@@ -7498,6 +7498,20 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span>
           </div>
 
+          <!-- Notes — audit trail, separate from the approve/reject decision reason -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.8" style="flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span style="font-size:13px;font-weight:700;color:var(--text-default);">Notes</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-sec);line-height:1.5;margin-bottom:12px;">Audit notes about this change — separate from the approve / reject decision reason.</div>
+            <textarea id="change-note-input" class="form-input" rows="2" placeholder="Add a note about this change..." style="resize:vertical;margin-bottom:8px;"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+              <button onclick="addChangeNote()" class="btn-primary" style="padding:7px 16px;font-size:12px;width:auto;">Add note</button>
+            </div>
+            <div id="change-notes-list" style="display:flex;flex-direction:column;gap:0;"></div>
+          </div>
+
         </div>
       </div>
 
@@ -11140,6 +11154,41 @@ function skipChange() {
   updateChangeList();
   showView('changes');
 }
+
+// Change Notes — audit trail on the change-detail view (separate from approve/reject reason)
+let changeNotes = [
+  { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration, CR pending.' }
+];
+function _escNote(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function renderChangeNotes() {
+  const list = document.getElementById('change-notes-list');
+  if (!list) return;
+  if (changeNotes.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-muted);font-style:italic;border-top:1px solid var(--border);padding-top:12px;">No notes yet.</div>';
+    return;
+  }
+  list.innerHTML = changeNotes.map(function(n) {
+    return '<div style="border-top:1px solid var(--border);padding:12px 0;">' +
+      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">' +
+        '<span style="font-size:12px;font-weight:600;color:var(--text-default);">' + _escNote(n.author) + '</span>' +
+        '<span style="font-size:11px;color:var(--text-muted);">· ' + _escNote(n.time) + '</span>' +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text-sec);line-height:1.55;">' + _escNote(n.text) + '</div>' +
+    '</div>';
+  }).join('');
+}
+function addChangeNote() {
+  const inp = document.getElementById('change-note-input');
+  if (!inp) return;
+  const val = inp.value.trim();
+  if (!val) return;
+  changeNotes.push({ author:'bambuk@cloudhouse.io', time:'Just now', text:val });
+  inp.value = '';
+  renderChangeNotes();
+}
+renderChangeNotes();
 
 function approveChange() {
   changeStatuses[currentChangeIdx] = 'approved';
