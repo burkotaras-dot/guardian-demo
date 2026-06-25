@@ -1224,6 +1224,13 @@ body.dark .recon-node-chip[data-state="exclude"] .recon-node-ico { color:#FF4646
 .density-seg { padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer; user-select:none; background:var(--bg-surface); color:var(--text-sec); transition:all 0.12s; }
 .density-seg.active { background:rgba(0,175,115,0.08); color:var(--green1); }
 body.dark .density-seg.active { background:rgba(16,185,129,0.18) !important; color:#5BE3B3 !important; }
+.hh-toggle { display:flex; align-items:center; gap:6px; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); font-size:12px; font-weight:600; color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; flex-shrink:0; transition:all 0.12s; }
+.hh-toggle .hh-check { visibility:hidden; }
+.hh-toggle.active { background:rgba(0,175,115,0.08); border-color:var(--green1); color:var(--green1); }
+.hh-toggle.active .hh-check { visibility:visible; }
+body.dark .hh-toggle.active { background:rgba(16,185,129,0.18) !important; border-color:#34D399 !important; color:#5BE3B3 !important; }
+.check-card.drift-handled { opacity:0.62; background:var(--bg-subtle); }
+.check-card.drift-handled:hover { opacity:0.85; }
 .drift-compact .check-card { padding-top:10px; padding-bottom:10px; }
 .drift-compact .check-card > div:nth-child(2) { display:none !important; }
 
@@ -7161,8 +7168,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0;"></div>
             <div class="pill" id="filter-all" style="cursor:pointer;background:rgba(63,200,120,0.1);border-color:var(--p-green-400);color:#15803d;font-weight:600;" onclick="filterChanges('all')">All (3)</div>
             <div class="pill" id="filter-unreconciled" style="cursor:pointer;" onclick="filterChanges('unreconciled')">Unreconciled (1)</div>
-            <div class="pill" id="filter-pending" style="cursor:pointer;" onclick="filterChanges('pending')">Pending (1)</div>
-            <div class="pill" id="filter-reconciled" style="cursor:pointer;" onclick="filterChanges('reconciled')">Reconciled (0)</div>
+            <div class="pill" id="filter-pending" style="cursor:pointer;" onclick="filterChanges('pending')">Pending (0)</div>
+            <div class="pill" id="filter-reconciled" style="cursor:pointer;" onclick="filterChanges('reconciled')">Reconciled (1)</div>
             <div class="pill" id="filter-flagged" style="cursor:pointer;" onclick="filterChanges('flagged')">Flagged (1)</div>
             <div class="pill" id="filter-nocr" style="cursor:pointer;" onclick="filterChanges('nocr')">No CR (2)</div>
           </div>
@@ -7201,6 +7208,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="group-opt" data-val="node" onclick="pickGroup(this,'Node')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Node</div>
               <div class="group-opt" data-val="cr" onclick="pickGroup(this,'Change Request')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Change Request</div>
             </div>
+          </div>
+          <!-- Hide handled toggle (#2) — drops reconciled events from the active list, ON by default -->
+          <div id="drift-hide-handled" class="hh-toggle active" onclick="toggleHideHandled()" title="Hide events that are already reconciled or handled">
+            <svg class="hh-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Hide handled
           </div>
           <!-- Density segmented control — Comfortable / Compact (F6a) -->
           <div style="display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;flex-shrink:0;">
@@ -7320,7 +7332,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
         </div>
 
-        <div class="check-card" id="change-card-1" data-change-type="modified" data-recon="pending" data-cr="CR-1842" data-node="SARAH-LAPTOP-01" onclick="openChange(1)">
+        <div class="check-card drift-handled" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CR-1842" data-node="SARAH-LAPTOP-01" onclick="openChange(1)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:8px;">
               <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
@@ -7350,7 +7362,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','CR-1842')" title="Filter by change request">CR-1842</span>
               <span style="font-size:11px;color:var(--text-sec);">Control 1.2 · Detected 2 hours ago</span>
             </div>
-            <span id="change-status-1" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
+            <span id="change-status-1" class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);">Reconciled via CR-1842</span>
           </div>
         </div>
 
@@ -10354,6 +10366,7 @@ function showView(name) {
   if (isJ4Nav) updateJ4Nav(name);
   document.getElementById('lbl').textContent = LABELS[name] || name;
   if (name === 'changes') {
+    applyDriftFilters();
     setTimeout(() => {
       const latest = document.getElementById('change-card-2');
       if (latest) latest.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -11576,6 +11589,15 @@ function sortChanges(value) {
 
 // Multi-dimension drift filter state — Status + CR + Node + Type combine via AND
 let driftFilters = { status: null, cr: null, node: null, type: null };
+// Hide handled (#2) — when on, reconciled/handled events drop out of the active list (ON by default)
+let driftHideHandled = true;
+const DRIFT_HANDLED_STATUSES = ['reconciled', 'approved'];
+function toggleHideHandled() {
+  driftHideHandled = !driftHideHandled;
+  const el = document.getElementById('drift-hide-handled');
+  if (el) el.classList.toggle('active', driftHideHandled);
+  applyDriftFilters();
+}
 
 // Status-pill entry point (also handles All reset + No CR quick filter)
 function filterChanges(type) {
@@ -11645,6 +11667,8 @@ function applyDriftFilters() {
     if (ok && !matchesDriftSearch(card)) ok = false;
     if (ok && driftNode.include.length && driftNode.include.indexOf(card.dataset.node) === -1) ok = false;
     if (ok && driftNode.exclude.indexOf(card.dataset.node) !== -1) ok = false;
+    // Hide handled — drop reconciled/handled cards unless the user explicitly filters by that status
+    if (ok && driftHideHandled && DRIFT_HANDLED_STATUSES.indexOf(card.dataset.recon) !== -1 && DRIFT_HANDLED_STATUSES.indexOf(f.status) === -1) ok = false;
     card.style.display = ok ? '' : 'none';
     if (ok) visible++;
     else { const sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]'); if (sel) sel.checked = false; }
