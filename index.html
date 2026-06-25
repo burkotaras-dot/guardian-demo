@@ -7323,6 +7323,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
 
         <!-- Drift items — neutral cards, color only in diff blocks -->
+        <div id="drift-cards">
         <div class="check-card" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(0)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -7423,6 +7424,36 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <span style="font-size:11px;color:var(--text-sec);">Control 5.4 · Detected 2 hours ago</span>
             </div>
             <span id="change-status-2" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
+          </div>
+        </div>
+        </div><!-- /drift-cards -->
+
+        <!-- Pagination footer -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:var(--text-sec);">Rows per page</span>
+            <div style="position:relative;">
+              <div id="drift-rpp-btn" onclick="toggleDriftRpp(event)" style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;user-select:none;white-space:nowrap;">
+                <span id="drift-rpp-label">10</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div id="drift-rpp-dropdown" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;min-width:70px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 6px 20px rgba(0,0,0,0.12);overflow:hidden;z-index:30;">
+                <div onclick="pickRpp('10')" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='transparent'">10</div>
+                <div onclick="pickRpp('25')" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='transparent'">25</div>
+                <div onclick="pickRpp('50')" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='transparent'">50</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span id="drift-page-range" style="font-size:12px;color:var(--text-sec);">1–3 of 3</span>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);color:var(--p-neutral-400);cursor:not-allowed;opacity:0.55;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);color:var(--p-neutral-400);cursor:not-allowed;opacity:0.55;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -11230,6 +11261,25 @@ function pickGroup(el, label) {
   applyDriftFilters();
 }
 
+function toggleDriftRpp(e) {
+  if (e) e.stopPropagation();
+  var dd = document.getElementById('drift-rpp-dropdown');
+  var btn = document.getElementById('drift-rpp-btn');
+  var open = dd.style.display !== 'none';
+  dd.style.display = open ? 'none' : 'block';
+  if (!open) {
+    setTimeout(function() {
+      document.addEventListener('click', function h(ev) {
+        if (!dd.contains(ev.target) && !btn.contains(ev.target)) { dd.style.display = 'none'; document.removeEventListener('click', h); }
+      });
+    }, 10);
+  }
+}
+function pickRpp(val) {
+  document.getElementById('drift-rpp-label').textContent = val;
+  document.getElementById('drift-rpp-dropdown').style.display = 'none';
+}
+
 function filterDriftNodes(q) {
   var defaultEl = document.getElementById('drift-node-default');
   var resultsEl = document.getElementById('drift-node-results');
@@ -11628,6 +11678,9 @@ function applyDriftFilters() {
   const allCount = document.getElementById('drift-select-all-count');
   if (allCount) allCount.textContent = visible;
   if (allRow) allRow.style.display = visible === 0 ? 'none' : 'flex';
+  // Pagination footer range (single-page demo)
+  const pageRange = document.getElementById('drift-page-range');
+  if (pageRange) pageRange.textContent = visible === 0 ? '0 of 0' : ('1–' + visible + ' of ' + visible);
   // Reconcile compound-search live count
   const reconCount = document.getElementById('recon-search-count');
   if (reconCount) reconCount.textContent = (driftSearch.include.length || driftSearch.exclude.length) ? (visible + ' of 3 match') : '';
