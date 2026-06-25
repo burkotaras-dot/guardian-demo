@@ -7234,6 +7234,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:14px;font-weight:700;color:var(--text-default);line-height:1.2;">Reconciliation mode</div>
                 <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">Search, include / exclude and node scope to build a working set for bulk reconcile.</div>
               </div>
+              <span id="recon-set-count" style="margin-left:auto;flex-shrink:0;font-size:11.5px;font-weight:700;color:var(--green1);background:rgba(0,175,115,0.1);border:1px solid rgba(0,175,115,0.28);border-radius:20px;padding:4px 11px;white-space:nowrap;">0 events in set</span>
             </div>
             <!-- Body controls -->
             <div style="padding:16px 18px;display:flex;flex-direction:column;gap:14px;">
@@ -7244,17 +7245,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:9px 30px 9px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
                   <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:12px;margin-top:7px;">
+                <div style="margin-top:7px;">
                   <span style="font-size:11px;color:var(--text-muted);">Use <b style="color:var(--text-sec);">-word</b> to exclude, <b style="color:var(--text-sec);">word*</b> for wildcard</span>
-                  <span id="recon-search-count" style="font-size:11px;font-weight:600;color:var(--green1);"></span>
                 </div>
               </div>
               <!-- Node include / exclude — tri-state chips (F5c) -->
-              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
-                <span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;">Node scope</span>
-                <div class="recon-node-chip" data-node="MACBOOK-TARAS" data-state="off" onclick="cycleReconNode(this)"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>MACBOOK-TARAS</div>
-                <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>SARAH-LAPTOP-01</div>
-                <span id="recon-node-clear" onclick="clearReconNodes()" style="display:none;font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;">Clear</span>
+              <div>
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+                  <span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;">Node scope</span>
+                  <div class="recon-node-chip" data-node="MACBOOK-TARAS" data-state="off" onclick="cycleReconNode(this)"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>MACBOOK-TARAS</div>
+                  <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>SARAH-LAPTOP-01</div>
+                  <span id="recon-node-clear" onclick="clearReconNodes()" style="display:none;font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;">Clear</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:7px;">Click a node to <b style="color:var(--text-sec);">include</b>, click again to <b style="color:var(--text-sec);">exclude</b></div>
               </div>
             </div>
           </div>
@@ -11815,9 +11818,12 @@ function applyDriftFilters() {
   // Pagination footer range (single-page demo)
   const pageRange = document.getElementById('drift-page-range');
   if (pageRange) pageRange.textContent = visible === 0 ? '0 of 0' : ('1–' + visible + ' of ' + visible);
-  // Reconcile compound-search live count
-  const reconCount = document.getElementById('recon-search-count');
-  if (reconCount) reconCount.textContent = (driftSearch.include.length || driftSearch.exclude.length) ? (visible + ' of 3 match') : '';
+  // Reconcile working-set count — persistent in the panel header
+  const reconSet = document.getElementById('recon-set-count');
+  if (reconSet) {
+    const total = document.querySelectorAll('#drift-cards .check-card').length;
+    reconSet.textContent = visible + ' of ' + total + ' event' + (total === 1 ? '' : 's') + ' in set';
+  }
   updateSaveViewBtn();
   // Arrange the visible cards into groups (None / Node / Change Request)
   applyDriftGrouping();
