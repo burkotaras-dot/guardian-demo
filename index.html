@@ -7510,7 +7510,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="font-size:12px;font-weight:600;color:var(--text-default);">CHG0012345 — AV Software Migration</div>
               <div style="font-size:11px;color:var(--text-sec);">Approved · 2 days ago · John Smith</div>
             </div>
-            <span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+              <span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span>
+              <span onclick="showView('cr-audit')" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View audit &#8594;</span>
+            </div>
           </div>
 
           <!-- Notes — audit trail, separate from the approve/reject decision reason -->
@@ -7559,6 +7562,96 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
       </div>
 
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         CHANGE REQUEST AUDIT (#4) — static, read-only contextual view
+    ═══════════════════════════════════════ -->
+    <div class="view" id="v-cr-audit">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Change Request Audit</div>
+          <div class="page-sub">Static audit trail · read-only</div>
+        </div>
+      </div>
+      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;">
+        <div style="width:100%;max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
+          <!-- Back to change detail -->
+          <div onclick="showView('change-detail')" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;width:fit-content;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-sec)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to change detail
+          </div>
+
+          <!-- CR metadata header -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+              <span style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">CHG0012345</span>
+              <span class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);">Approved</span>
+              <span style="font-size:11px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 10px;">ServiceNow</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px 24px;">
+              <div><div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Title</div><div style="font-size:13px;font-weight:600;color:var(--text-default);">AV Software Migration</div></div>
+              <div><div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Approved by</div><div style="font-size:13px;font-weight:600;color:var(--text-default);">John Smith</div></div>
+              <div><div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Approved date</div><div style="font-size:13px;font-weight:600;color:var(--text-default);">2 days ago</div></div>
+              <div><div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Linked drift events</div><div style="font-size:13px;font-weight:600;color:var(--text-default);">3</div></div>
+            </div>
+          </div>
+
+          <!-- Activity timeline (static) -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:16px;">Activity timeline</div>
+            <div style="display:flex;flex-direction:column;">
+              <!-- 1 Detected drift -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;margin-top:3px;flex-shrink:0;"></span>
+                  <span style="flex:1;width:2px;background:var(--border);margin:4px 0;"></span>
+                </div>
+                <div style="padding-bottom:18px;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Detected drift</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Windows Defender real-time protection disabled on MACBOOK-TARAS</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">2 hours ago · Guardian</div>
+                </div>
+              </div>
+              <!-- 2 Note added -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#94A3B8;margin-top:3px;flex-shrink:0;"></span>
+                  <span style="flex:1;width:2px;background:var(--border);margin:4px 0;"></span>
+                </div>
+                <div style="padding-bottom:18px;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Note added</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Confirmed with endpoint team — Defender disabled during AV migration</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Just now · bambuk@cloudhouse.io</div>
+                </div>
+              </div>
+              <!-- 3 Reconciled -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#10B981;margin-top:3px;flex-shrink:0;"></span>
+                  <span style="flex:1;width:2px;background:var(--border);margin:4px 0;"></span>
+                </div>
+                <div style="padding-bottom:18px;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Reconciled</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Screen lock timeout matched to this CR</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Just now · bambuk@cloudhouse.io</div>
+                </div>
+              </div>
+              <!-- 4 Incident created (last — no connector) -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;margin-top:3px;flex-shrink:0;"></span>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Incident created</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">INC-0001 opened for unreconciled drift</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Just now · bambuk@cloudhouse.io</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════════
@@ -10246,7 +10339,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 <div class="screen-lbl" id="lbl">s01 · Landing</div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
+const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Device',
   s05:'s05 · Install Agent',
@@ -10257,6 +10350,7 @@ const LABELS = {
   'change-detail':'s13 · Change Detail',
   'change-approve':'s14 · Approve Change',
   'change-unapprove':'s15 · Unapprove Change',
+  'cr-audit':'Change Request Audit',
   'changes-done':'s16 · All Reconciled',
   'all-devices':'s10 · All Nodes',
   'node-detail':'Node · MACBOOK-TARAS',
@@ -10375,7 +10469,7 @@ function go(key) {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
     const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
       changes:'sb-changes','change-detail':'sb-changes','change-approve':'sb-changes',
-      'change-unapprove':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
+      'change-unapprove':'sb-changes','cr-audit':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
       'node-detail':'sb-all-devices','j3-connect-failed':'sb-all-devices',
       'policies':'sb-policies','policy-create':'sb-policies','policy-detail':'sb-policies','policy-edit':'sb-policies',
       'policy-assign':'sb-policies','add-check':'sb-policies','edit-check':'sb-policies' };
@@ -10409,13 +10503,14 @@ function showView(name) {
     'edit-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Edit Check</span>`,
     'change-detail': `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">Windows Defender — Real-time protection</span>`,
     'change-approve': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Approve Change</span>`,
+    'cr-audit': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">CHG0012345 Audit</span>`,
   };
   const _nb = document.getElementById('nav-breadcrumb');
   if (_nb) { const _bc = _BC[name]; if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; } }
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
     changes:'sb-changes', 'change-detail':'sb-changes', 'change-approve':'sb-changes',
-    'change-unapprove':'sb-changes', 'changes-done':'sb-changes', 'all-devices':'sb-all-devices',
+    'change-unapprove':'sb-changes', 'cr-audit':'sb-changes', 'changes-done':'sb-changes', 'all-devices':'sb-all-devices',
     'j3-no-resources':'sb-all-devices', 'j3-manual-match':'sb-all-devices', 'j3-scan-failed':'sb-all-devices',
     'policies':'sb-policies', 'policy-create':'sb-policies', 'policy-detail':'sb-policies', 'policy-edit':'sb-policies',
     'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies',
