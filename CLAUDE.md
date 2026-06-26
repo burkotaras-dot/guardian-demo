@@ -10,10 +10,25 @@ This is a **single-file HTML prototype** for Guardian — a security compliance/
 
 **Local preview:** Claude Code has a built-in preview server. Use `preview_list` to find the active port (typically 8080, name `guardian-demo`).
 
-**Deploy chain:**
+### ⛔ CRITICAL: `dev` is NOT a deploy source — it holds work the client must NOT see
+
+`dev` contains **Detected Drift / Reconciliation** work that is explicitly **NOT approved for production**. Only **dashboard** work is approved for prod. `dev` and `main` therefore **intentionally diverge**, and `main` is **not** a fast-forward of `dev`.
+
+- ❌ **NEVER** run `git merge dev` / `git merge dev --ff-only` into `main` or `public`. It drags every un-deployed `dev` commit (all the Detected Drift work) onto prod, where the client will see it. (This bug happened 2026-06-26 and required a force-push recovery.)
+- ✅ Deploy a dashboard change by **cherry-picking only that commit** onto `main`.
+
+**Deploy chain (cherry-pick, per-commit):**
 ```
-dev → merge to main → merge to public → push origin public && push origin main && push origin dev
+# on dev: commit the dashboard change as usual, then deploy ONLY that commit:
+git checkout main   && git cherry-pick -x <dashboard-sha>
+git checkout public && git reset --hard main          # public mirrors main's tree
+git push origin main && git push --force-with-lease origin public
+git checkout dev
 ```
+
+- `main` push triggers the GitHub Actions (`deploy.yml`) Pages deploy; **`public` is the served branch**.
+- `public` diverged from history, so it needs `--force-with-lease`. `main` is normally a clean fast-forward of itself (no force) once it only carries cherry-picked dashboard commits.
+- Last drift-free prod baseline = commit `d08d0e2`; its Detected Drift view is the "old" version the client is allowed to see.
 
 GitHub Pages serves the `public` branch at https://burkotaras-dot.github.io/guardian-demo/
 
