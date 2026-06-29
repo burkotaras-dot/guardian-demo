@@ -7141,6 +7141,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="page-sub" id="changes-sub">Detected since last scan · 1 unreconciled · 1 flagged · across 2 nodes</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
+          <div id="drift-reconcile-btn" onclick="enterReconcileMode()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--green1);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;font-weight:600;cursor:pointer;color:var(--green1);white-space:nowrap;user-select:none;flex-shrink:0;" onmouseover="this.style.background='rgba(0,175,115,0.06)'" onmouseout="this.style.background='var(--bg-surface)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Reconcile drift events &#8594;
+          </div>
           <div style="font-size:11px;color:var(--text-sec);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 12px;">
             Last scan: 2 hours ago
           </div>
@@ -7166,17 +7170,17 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <button onclick="document.getElementById('sn-reconcile-banner').style.display='none'" aria-label="Dismiss" style="flex-shrink:0;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;display:flex;align-items:center;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
 
-        <!-- Pills + Search / Filter / Sort — pills left, controls right -->
-        <div id="drift-summary-toolbar" style="display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-bottom:16px;">
-          <!-- Pills row -->
+        <!-- Filters left, controls right — single row -->
+        <div id="drift-summary-toolbar" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <!-- Filters group: scope chip (scoped only) + pills -->
           <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
             <!-- Scope chip — node context (All nodes ↔ specific node) -->
-            <div id="drift-scope-chip" style="display:inline-flex;align-items:center;gap:6px;padding:5px 2px;font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;flex-shrink:0;">
+            <div id="drift-scope-chip" style="display:none;align-items:center;gap:6px;padding:5px 2px;font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;flex-shrink:0;">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-              <span id="drift-scope-label">All nodes · 4 monitored</span>
+              <span id="drift-scope-label"></span>
               <span id="drift-scope-clear" onclick="clearDriftScope()" title="Clear scope" style="display:none;cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;padding-left:1px;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
             </div>
-            <div style="width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0;"></div>
+            <div id="drift-scope-divider" style="display:none;width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0;"></div>
             <div class="pill" id="filter-all" style="cursor:pointer;background:rgba(63,200,120,0.1);border-color:var(--p-green-400);color:#15803d;font-weight:600;" onclick="filterChanges('all')">All (3)</div>
             <div class="pill" id="filter-unreconciled" style="cursor:pointer;" onclick="filterChanges('unreconciled')">Unreconciled (1)</div>
             <div class="pill" id="filter-reconciled" style="cursor:pointer;" onclick="filterChanges('reconciled')">Reconciled (1)</div>
@@ -7189,11 +7193,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="changes-search" placeholder="Search drift items…" oninput="searchChanges(this.value)" style="width:100%;box-sizing:border-box;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
           </div>
-          <!-- Reconcile entry — switches the page into Reconciliation mode (F5) -->
-          <div id="drift-reconcile-btn" onclick="enterReconcileMode()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--green1);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;font-weight:600;cursor:pointer;color:var(--green1);white-space:nowrap;user-select:none;flex-shrink:0;" onmouseover="this.style.background='rgba(0,175,115,0.06)'" onmouseout="this.style.background='var(--bg-surface)'">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-            Reconcile drift events &#8594;
-          </div>
           <!-- Sort custom dropdown -->
           <div style="position:relative;flex-shrink:0;">
             <div id="changes-sort-btn" onclick="toggleChangesSort(this)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
@@ -7205,18 +7204,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="sort-opt" data-val="oldest" onclick="pickSort(this,'Oldest first')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('sort-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Oldest first</div>
               <div class="sort-opt" data-val="severity" onclick="pickSort(this,'By severity')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('sort-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>By severity</div>
               <div class="sort-opt" data-val="node" onclick="pickSort(this,'By node')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('sort-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>By node</div>
-            </div>
-          </div>
-          <!-- Group by custom dropdown -->
-          <div style="position:relative;flex-shrink:0;">
-            <div id="changes-group-btn" onclick="toggleChangesGroup(this)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-              <span id="changes-group-label">Group: None</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div id="changes-group-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:180px;z-index:100;">
-              <div class="group-opt group-opt-active" data-val="none" onclick="pickGroup(this,'None')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>None</div>
-              <div class="group-opt" data-val="node" onclick="pickGroup(this,'Node')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Node</div>
-              <div class="group-opt" data-val="cr" onclick="pickGroup(this,'Change Request')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Change Request</div>
             </div>
           </div>
           <!-- Hide handled toggle (#2) — drops reconciled events from the active list, ON by default -->
@@ -7288,7 +7275,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <!-- Drift items — neutral cards, color only in diff blocks -->
         <div id="drift-cards">
-        <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(0)">
+        <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" data-ts="7200" onclick="openChange(0)">
           <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection</div>
@@ -7306,7 +7293,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="SARAH-LAPTOP-01" onclick="openChange(1)">
+        <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="SARAH-LAPTOP-01" data-ts="14400" onclick="openChange(1)">
           <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Screen lock timeout</div>
@@ -7321,7 +7308,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" onclick="openChange(2)">
+        <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" data-ts="5400" onclick="openChange(2)">
           <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','added')" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;justify-self:start;">Added</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">New local user account created</div>
@@ -11335,10 +11322,14 @@ function flagChange() {
 }
 
 function searchChanges(query) {
-  const q = query.toLowerCase().trim();
-  document.querySelectorAll('.check-card[id^="change-card-"]').forEach(card => {
-    card.style.display = (!q || card.textContent.toLowerCase().includes(q)) ? '' : 'none';
-  });
+  const q = (query || '').trim();
+  if (q) {
+    const esc = q.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+    driftSearch = { include: [new RegExp(esc, 'i')], exclude: [] };
+  } else {
+    driftSearch = { include: [], exclude: [] };
+  }
+  applyDriftFilters();
 }
 
 function toggleChangesSort(btn) {
@@ -11447,7 +11438,11 @@ function selectDriftNode(el) {
   var lbl = document.getElementById('drift-filter-active-label');
   if (lbl) { lbl.textContent = isAll ? '' : ' · Node'; lbl.style.color = 'var(--green1)'; }
   var scope = document.getElementById('drift-scope-label');
-  if (scope) scope.textContent = isAll ? 'All nodes · 4 monitored' : el.getAttribute('data-val');
+  if (scope) scope.textContent = isAll ? '' : 'Showing drift for ' + el.getAttribute('data-val');
+  var scopeChip = document.getElementById('drift-scope-chip');
+  if (scopeChip) scopeChip.style.display = isAll ? 'none' : 'inline-flex';
+  var scopeDivider = document.getElementById('drift-scope-divider');
+  if (scopeDivider) scopeDivider.style.display = isAll ? 'none' : 'block';
   var scopeClear = document.getElementById('drift-scope-clear');
   if (scopeClear) scopeClear.style.display = isAll ? 'none' : 'inline';
 }
@@ -11705,9 +11700,12 @@ function matchesDriftSearch(card) {
 }
 
 function sortChanges(value) {
-  // Visual only for prototype — in real app would reorder cards
+  driftSortBy = value;
+  applyDriftFilters();
 }
 
+// Sort state — persists across filter changes
+let driftSortBy = 'newest';
 // Multi-dimension drift filter state — Status + CR + Node + Type combine via AND
 let driftFilters = { status: null, cr: null, node: null, type: null };
 // Hide handled (#2) — when on, reconciled/handled events drop out of the active list (ON by default)
@@ -11846,7 +11844,14 @@ function applyDriftGrouping() {
   const cards = [0, 1, 2].map(i => document.getElementById('change-card-' + i)).filter(Boolean);
   const emptyMsg = document.getElementById('changes-empty');
   if (driftGroupBy === 'none') {
-    cards.forEach(c => container.appendChild(c));
+    const RECON_RANK = { flagged: 3, unreconciled: 2, pending: 1, reconciled: 0, approved: 0 };
+    const sorted = cards.slice().sort(function(a, b) {
+      if (driftSortBy === 'oldest')   return parseInt(b.dataset.ts||0) - parseInt(a.dataset.ts||0);
+      if (driftSortBy === 'severity') return (RECON_RANK[b.dataset.recon]||0) - (RECON_RANK[a.dataset.recon]||0);
+      if (driftSortBy === 'node')     return (a.dataset.node||'').localeCompare(b.dataset.node||'');
+      return parseInt(a.dataset.ts||0) - parseInt(b.dataset.ts||0); // newest (smallest ts = most recent)
+    });
+    sorted.forEach(c => container.appendChild(c));
     if (emptyMsg) container.appendChild(emptyMsg);
     return;
   }
