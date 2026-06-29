@@ -1219,6 +1219,8 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 
 /* Reconcile node tri-state chips (F5c) — include=green, exclude=red */
 .recon-node-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; transition:all 0.12s; }
+.recon-node-ico { display:inline-flex; align-items:center; }
+.recon-node-chip[data-state="off"] .recon-node-ico { display:none; }
 .recon-node-chip[data-state="off"]:hover { border-color:var(--text-muted); background:var(--bg-subtle); color:var(--text-default); }
 .recon-node-chip[data-state="include"] { border-color:#3FC878; background:rgba(0,175,115,0.08); color:#15803d; }
 .recon-node-chip[data-state="include"] .recon-node-ico { color:#15803d; }
@@ -7236,21 +7238,23 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <span style="font-size:11px;color:var(--text-muted);"><span id="recon-filter-count">0 filters active</span><span id="recon-clear-all" onclick="clearAllReconFilters()" style="display:none;color:var(--green1);font-weight:600;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"> · Clear all</span></span>
               </div>
             </div>
-            <!-- Controls: compact filter bar — two horizontal toolbar rows, groups flow left→right -->
+            <!-- Controls: search row (own zone) then a labelled filter zone of two chip rows -->
             <div style="padding:12px 16px;">
-              <!-- Row 1: search (part of the row) + CR + Status -->
-              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;">
-                <div style="position:relative;width:300px;flex-shrink:0;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:8px 30px 8px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
-                  <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
-                </div>
+              <!-- Search — own row, capped width so it reads as event search, not a filter -->
+              <div style="position:relative;width:340px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:8px 30px 8px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+                <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+              </div>
+              <!-- Filter groups — single left-to-right stream with dividers, wraps only when out of room -->
+              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;margin-top:14px;">
                 <div id="recon-cr-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">CR:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-cr-chips','cr',null)">All CRs</div>
                   <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-cr-chips','cr','nocr')">No CR</div>
                   <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-cr-chips','cr','CHG0012345')">CHG0012345</div>
                 </div>
+                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
                 <div id="recon-status-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Status:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-status-chips','status',null)">All statuses</div>
@@ -7258,15 +7262,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','flagged')">Flagged</div>
                   <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','reconciled')">Reconciled</div>
                 </div>
-              </div>
-              <!-- Row 2: Node (workshop-priority) + Type -->
-              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;margin-top:10px;">
+                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
                 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Node:</span>
                   <div class="recon-node-chip recon-all" data-active="true" onclick="clearReconNodes()" title="Show all nodes">All nodes</div>
-                  <div class="recon-node-chip" data-node="MACBOOK-TARAS" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>MACBOOK-TARAS</div>
-                  <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico" style="width:12px;display:inline-flex;justify-content:center;"></span>SARAH-LAPTOP-01</div>
+                  <div class="recon-node-chip" data-node="MACBOOK-TARAS" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico"></span>MACBOOK-TARAS</div>
+                  <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico"></span>SARAH-LAPTOP-01</div>
                 </div>
+                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
                 <div id="recon-type-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Type:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-type-chips','type',null)">All types</div>
