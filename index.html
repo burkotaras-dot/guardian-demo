@@ -11527,6 +11527,7 @@ function driftBulkAction(action) {
   cbs.forEach(function(cb) {
     var idx = cb.getAttribute('data-idx');
     var statusEl = document.getElementById('change-status-' + idx);
+    var card = document.getElementById('change-card-' + idx);
     if (statusEl) {
       if (action === 'approve') {
         statusEl.textContent = 'Approved';
@@ -11540,9 +11541,19 @@ function driftBulkAction(action) {
         statusEl.style.borderColor = 'var(--border)';
       }
     }
+    // Reflect reconciliation state so Hide handled / counts react to the action
+    if (card) {
+      if (action === 'approve') {
+        if (!card.dataset.reconOrig) card.dataset.reconOrig = card.dataset.recon;
+        card.dataset.recon = 'approved';
+      } else if (card.dataset.reconOrig) {
+        card.dataset.recon = card.dataset.reconOrig;
+        delete card.dataset.reconOrig;
+      }
+    }
     cb.checked = false;
   });
-  updateDriftBulkBar();
+  applyDriftFilters();
 }
 function driftClearSelection() {
   document.querySelectorAll('.drift-select-cb').forEach(function(cb){ cb.checked = false; });
