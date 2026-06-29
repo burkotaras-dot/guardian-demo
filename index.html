@@ -7290,18 +7290,17 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
 
         <!-- Bulk action bar — shown when 1+ drift items selected -->
-        <div id="drift-bulk-bar" style="display:none;align-items:center;gap:12px;padding:10px 16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:12px;">
-          <span id="drift-bulk-count" style="font-size:12px;font-weight:600;color:var(--text-default);">0 selected</span>
-          <div style="width:1px;height:16px;background:var(--border);"></div>
-          <button onclick="driftBulkAction('approve')" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;">Approve</button>
-          <button onclick="driftBulkAction('unapprove')" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;">Unapprove</button>
-          <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;margin-left:auto;">Clear selection</button>
-        </div>
-
-        <!-- Master select-all for currently filtered drift events -->
+        <!-- Combined select-all + bulk actions — single row, no layout jump -->
         <div id="drift-select-all-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-left:17px;">
           <input type="checkbox" id="drift-select-all-cb" onclick="toggleSelectAllVisible(this)" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
           <label for="drift-select-all-cb" style="font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;">Select all · <span id="drift-select-all-count">3</span> in view</label>
+          <div id="drift-bulk-bar" style="display:none;align-items:center;gap:12px;margin-left:auto;padding-right:4px;">
+            <span id="drift-bulk-count" style="font-size:12px;font-weight:600;color:var(--text-default);">0 selected</span>
+            <div style="width:1px;height:16px;background:var(--border);"></div>
+            <button onclick="driftBulkAction('approve')" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;">Approve</button>
+            <button onclick="driftBulkAction('unapprove')" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;">Unapprove</button>
+            <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;">Clear selection</button>
+          </div>
         </div>
 
         <!-- Drift items — neutral cards, color only in diff blocks -->
@@ -7355,8 +7354,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
         </div><!-- /drift-cards -->
 
-        <!-- Pagination footer -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+        <!-- Pagination footer — hidden when all items fit on one page -->
+        <div id="drift-pagination-footer" style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:12px;color:var(--text-sec);">Rows per page</span>
             <div style="position:relative;">
@@ -11895,9 +11894,14 @@ function applyDriftFilters() {
   const allCount = document.getElementById('drift-select-all-count');
   if (allCount) allCount.textContent = visible;
   if (allRow) allRow.style.display = visible === 0 ? 'none' : 'flex';
-  // Pagination footer range (single-page demo)
+  // Pagination footer — show only when items exceed rows-per-page
   const pageRange = document.getElementById('drift-page-range');
   if (pageRange) pageRange.textContent = visible === 0 ? '0 of 0' : ('1–' + visible + ' of ' + visible);
+  const paginationFooter = document.getElementById('drift-pagination-footer');
+  if (paginationFooter) {
+    const rpp = parseInt(document.getElementById('drift-rpp-label')?.textContent || '10', 10);
+    paginationFooter.style.display = visible > rpp ? 'flex' : 'none';
+  }
   // Reconcile working-set count — persistent result context in the panel header
   const reconSet = document.getElementById('recon-set-count');
   if (reconSet) reconSet.textContent = visible + ' event' + (visible === 1 ? '' : 's') + ' in view';
