@@ -7251,16 +7251,16 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div id="recon-cr-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">CR:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-cr-chips','cr',null)">All CRs</div>
-                  <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-cr-chips','cr','nocr')">No CR</div>
-                  <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-cr-chips','cr','CHG0012345')">CHG0012345</div>
+                  <div class="recon-node-chip" data-val="none" data-active="false" onclick="pickReconChip(this,'recon-cr-chips','cr','none')">No CR</div>
+                  <div class="recon-node-chip" data-val="CHG0012345" data-active="false" onclick="pickReconChip(this,'recon-cr-chips','cr','CHG0012345')">CHG0012345</div>
                 </div>
                 <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
                 <div id="recon-status-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Status:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-status-chips','status',null)">All statuses</div>
-                  <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','unreconciled')">Unreconciled</div>
-                  <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','flagged')">Flagged</div>
-                  <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','reconciled')">Reconciled</div>
+                  <div class="recon-node-chip" data-val="unreconciled" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','unreconciled')">Unreconciled</div>
+                  <div class="recon-node-chip" data-val="flagged" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','flagged')">Flagged</div>
+                  <div class="recon-node-chip" data-val="reconciled" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','reconciled')">Reconciled</div>
                 </div>
                 <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
                 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
@@ -7273,9 +7273,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div id="recon-type-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Type:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-type-chips','type',null)">All types</div>
-                  <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','modified')">Modified</div>
-                  <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','added')">Added</div>
-                  <div class="recon-node-chip" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','removed')">Removed</div>
+                  <div class="recon-node-chip" data-val="modified" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','modified')">Modified</div>
+                  <div class="recon-node-chip" data-val="added" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','added')">Added</div>
+                  <div class="recon-node-chip" data-val="removed" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','removed')">Removed</div>
                 </div>
               </div>
             </div>
@@ -7309,7 +7309,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection</div>
-          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode('MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
           </span>
           <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
@@ -7327,7 +7327,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Screen lock timeout</div>
-          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','SARAH-LAPTOP-01')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode('SARAH-LAPTOP-01')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>SARAH-LAPTOP-01
           </span>
           <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','CHG0012345')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">CHG0012345</span>
@@ -7342,7 +7342,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','added')" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;justify-self:start;">Added</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">New local user account created</div>
-          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('node','MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode('MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
           </span>
           <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
@@ -11644,6 +11644,32 @@ function clearReconNodes() {
   _syncReconAllChip();
   applyDriftFilters();
 }
+// Embedded node pills route here so the top node chip lights up via the same driftNode state
+function selectReconNode(node) {
+  driftNode = { include: [node], exclude: [] };
+  document.querySelectorAll('.recon-node-chip[data-node]').forEach(function(chip) {
+    const on = chip.dataset.node === node;
+    chip.dataset.state = on ? 'include' : 'off';
+    const ico = chip.querySelector('.recon-node-ico');
+    if (ico) ico.textContent = on ? '\u2713' : '';
+  });
+  const clr = document.getElementById('recon-node-clear');
+  if (clr) clr.style.display = 'inline';
+  _syncReconAllChip();
+  applyDriftFilters();
+}
+// Keep the top CR / Status / Type chip groups' active state in sync with driftFilters,
+// so embedded-pill clicks (setDriftFilter) light the matching top chip too
+function _syncReconTopChips() {
+  [['recon-cr-chips','cr'],['recon-status-chips','status'],['recon-type-chips','type']].forEach(function(p) {
+    const group = document.getElementById(p[0]);
+    if (!group) return;
+    const active = driftFilters[p[1]] || null;
+    group.querySelectorAll('.recon-node-chip').forEach(function(c) {
+      c.dataset.active = ((c.dataset.val || null) === active) ? 'true' : 'false';
+    });
+  });
+}
 
 // Advanced filter chip groups (CR / Type / Status)
 function pickReconChip(el, groupId, dim, val) {
@@ -11846,6 +11872,8 @@ function applyDriftFilters() {
       pill.style.background = ''; pill.style.borderColor = ''; pill.style.color = ''; pill.style.fontWeight = '';
     }
   });
+  // Mirror the active CR/Status/Type filter onto the top reconciliation chip groups
+  _syncReconTopChips();
   // Card visibility — AND across every active dimension
   let visible = 0;
   for (let i = 0; i < 3; i++) {
