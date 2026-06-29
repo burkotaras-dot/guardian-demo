@@ -7238,18 +7238,16 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
             <!-- Controls: search (primary) + advanced filter chips -->
             <div style="padding:12px 16px;">
-              <!-- Search row — primary control -->
-              <div style="position:relative;">
+              <!-- Search row — primary control, capped width (short queries don't need full bleed) -->
+              <div style="position:relative;max-width:380px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:9px 30px 9px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+                <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:9px 30px 9px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
                 <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
               </div>
-              <!-- Search syntax helper — directly under the search -->
-              <div style="font-size:10.5px;color:var(--text-muted);margin-top:6px;">Use <b style="color:var(--text-sec);">-word</b> to exclude, <b style="color:var(--text-sec);">word*</b> for wildcard.</div>
               <!-- Subtle separation between search and advanced filters -->
-              <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
-              <!-- Advanced filter rows — fixed label column, every chip group shares one x-position -->
-              <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="border-top:1px solid var(--border);margin:10px 0;"></div>
+              <!-- Advanced filters — 2-column grid uses the panel width and halves the vertical footprint -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;">
                 <div id="recon-cr-chips" style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);width:150px;flex-shrink:0;padding-top:6px;white-space:nowrap;">Change request</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-cr-chips','cr',null)">All CRs</div>
