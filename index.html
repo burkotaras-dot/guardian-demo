@@ -7231,7 +7231,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:700;color:var(--text-default);line-height:1.2;">Reconciliation mode</div>
                 <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">Advanced filters for manual reconciliation.</div>
               </div>
-              <span id="recon-set-count" style="flex-shrink:0;font-size:11.5px;font-weight:600;color:var(--text-sec);white-space:nowrap;margin-top:1px;">2 events in view</span>
+              <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-top:1px;white-space:nowrap;">
+                <span id="recon-set-count" style="font-size:11.5px;font-weight:600;color:var(--text-sec);">2 events in view</span>
+                <span style="font-size:11px;color:var(--text-muted);"><span id="recon-filter-count">0 filters active</span><span id="recon-clear-all" onclick="clearAllReconFilters()" style="display:none;color:var(--green1);font-weight:600;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"> · Clear all</span></span>
+              </div>
             </div>
             <!-- Controls: search (primary) + advanced filter chips -->
             <div style="padding:12px 16px;">
@@ -11555,6 +11558,7 @@ function enterReconcileMode() {
   if (tb) tb.style.display = 'none';
   if (panel) panel.style.display = 'block';
   if (banner) banner.style.display = 'none';
+  updateReconFilterCount();
 }
 function exitReconcileMode() {
   driftReconcileMode = false;
@@ -11649,6 +11653,25 @@ function clearReconChips() {
     var chips = group.querySelectorAll('.recon-node-chip');
     chips.forEach(function(c, i) { c.dataset.active = i === 0 ? 'true' : 'false'; });
   });
+}
+// Active-filter count + global reset for the reconciliation panel header
+function updateReconFilterCount() {
+  const countEl = document.getElementById('recon-filter-count');
+  if (!countEl) return;
+  let n = 0;
+  if (driftSearch.include.length || driftSearch.exclude.length) n++;
+  if (driftFilters.cr) n++;
+  if (driftFilters.type) n++;
+  if (driftFilters.status) n++;
+  if (driftNode.include.length || driftNode.exclude.length) n++;
+  countEl.textContent = n + (n === 1 ? ' filter active' : ' filters active');
+  const clearEl = document.getElementById('recon-clear-all');
+  if (clearEl) clearEl.style.display = n > 0 ? 'inline' : 'none';
+}
+function clearAllReconFilters() {
+  clearReconSearch();
+  clearReconChips();
+  clearReconNodes();
 }
 
 // Save view (F5d) — capture current search + node filters as a named, re-applicable chip (in-memory)
@@ -11877,6 +11900,7 @@ function applyDriftFilters() {
   // Reconcile working-set count — persistent result context in the panel header
   const reconSet = document.getElementById('recon-set-count');
   if (reconSet) reconSet.textContent = visible + ' event' + (visible === 1 ? '' : 's') + ' in view';
+  updateReconFilterCount();
   updateSaveViewBtn();
   // Arrange the visible cards into groups (None / Node / Change Request)
   applyDriftGrouping();
