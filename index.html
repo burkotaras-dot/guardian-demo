@@ -10658,7 +10658,10 @@ var CHANGE_DATA = [
     score: { from:'78', to:'74', delta:'−4 pts' },
     detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
     impact: 'Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.',
-    cr: 'nocr'
+    cr: 'nocr',
+    notes: [
+      { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration, CR pending.' }
+    ]
   },
   { // 1 — Windows Defender reconciled via CHG0012345
     title: 'Windows Defender — Real-time protection reconciled',
@@ -10671,7 +10674,11 @@ var CHANGE_DATA = [
     score: { from:'78', to:'74', delta:'−4 pts' },
     detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
     impact: 'Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.',
-    cr: 'matched'
+    cr: 'matched',
+    notes: [
+      { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration.' },
+      { author:'bambuk@cloudhouse.io', time:'1 day ago', text:'Reconciled against CHG0012345 — AV Software Migration. Closing as expected.' }
+    ]
   },
   { // 2 — New local user account
     title: 'New local user account created',
@@ -10684,7 +10691,10 @@ var CHANGE_DATA = [
     score: { from:'74', to:'70', delta:'−4 pts' },
     detby: { method:'Scheduled scan', detail:'Today 13:40 · Process: lusrmgr' },
     impact: 'An unexpected local account — particularly with elevated rights — can serve as a backdoor for persistent access.',
-    cr: 'nocr'
+    cr: 'nocr',
+    notes: [
+      { author:'John Smith', time:'1 day ago', text:'Account "svc-helpdesk" not recognised by IT — flagged for review with the service-desk owner.' }
+    ]
   }
 ];
 var CD_TYPE = {
@@ -10719,6 +10729,8 @@ function renderChangeDetail(idx) {
   const nb = document.getElementById('nav-breadcrumb');
   if (nb) nb.innerHTML = `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">${d.title}</span>`;
   setCrState(d.cr);
+  changeNotes = (d.notes || []).map(function(n) { return { author:n.author, time:n.time, text:n.text }; });
+  renderChangeNotes();
 }
 function openChange(idx) {
   currentChangeIdx = idx;
