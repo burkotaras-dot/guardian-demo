@@ -7416,14 +7416,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="display:flex;align-items:center;gap:12px;">
           <button class="btn-outline" onclick="showView('changes')" style="padding:5px 12px;font-size:12px;">← Back to Detected Drift</button>
           <div>
-            <div style="font-size:14px;font-weight:700;color:var(--text-default);">Windows Defender — Real-time protection</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:1px;"><span onclick="showView('node-detail')" style="color:var(--text-default);font-weight:600;cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">MACBOOK-TARAS</span> · Detected today at 14:23 · Scheduled scan</div>
+            <div id="cd-title" style="font-size:14px;font-weight:700;color:var(--text-default);">Windows Defender — Real-time protection</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:1px;"><span id="cd-node" onclick="showView('node-detail')" style="color:var(--text-default);font-weight:600;cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">MACBOOK-TARAS</span> <span id="cd-detected">· Detected today at 14:23 · Scheduled scan</span></div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span id="cd-recon-status" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Unreconciled</span>
-          <span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
-          <span style="font-size:11px;color:var(--text-sec);">Control 8.1 · Malware Defenses · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span></span>
+          <span id="cd-type-badge" class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
+          <span id="cd-control" style="font-size:11px;color:var(--text-sec);">Control 8.1 · Malware Defenses · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span></span>
         </div>
       </div>
 
@@ -7438,16 +7438,16 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:16px;">
               <div class="diff-card diff-before">
                 <div class="diff-label">BEFORE</div>
-                <div class="diff-value">Enabled</div>
-                <div class="diff-status">✓ CIS Pass</div>
-                <div class="diff-sub">Real-time scanning active</div>
+                <div id="cd-before-val" class="diff-value">Enabled</div>
+                <div id="cd-before-status" class="diff-status">✓ CIS Pass</div>
+                <div id="cd-before-sub" class="diff-sub">Real-time scanning active</div>
               </div>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               <div class="diff-card diff-after">
                 <div class="diff-label">AFTER</div>
-                <div class="diff-value">Disabled</div>
-                <div class="diff-status">✗ CIS Fail</div>
-                <div class="diff-sub">Real-time scanning off</div>
+                <div id="cd-after-val" class="diff-value">Disabled</div>
+                <div id="cd-after-status" class="diff-status">✗ CIS Fail</div>
+                <div id="cd-after-sub" class="diff-sub">Real-time scanning off</div>
               </div>
             </div>
 
@@ -7456,23 +7456,23 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
                 <div style="font-size:9px;font-weight:700;color:var(--text-sec);letter-spacing:0.8px;margin-bottom:6px;">SCORE IMPACT</div>
                 <div style="display:flex;align-items:baseline;gap:6px;">
-                  <span style="font-size:18px;font-weight:800;color:var(--text-default);">78</span>
+                  <span id="cd-score-from" style="font-size:18px;font-weight:800;color:var(--text-default);">78</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  <span style="font-size:18px;font-weight:800;color:#FB3C44;">74</span>
-                  <span style="font-size:11px;color:#FB3C44;font-weight:600;">−4 pts</span>
+                  <span id="cd-score-to" style="font-size:18px;font-weight:800;color:#FB3C44;">74</span>
+                  <span id="cd-score-delta" style="font-size:11px;color:#FB3C44;font-weight:600;">−4 pts</span>
                 </div>
               </div>
               <div style="background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
                 <div style="font-size:9px;font-weight:700;color:var(--text-sec);letter-spacing:0.8px;margin-bottom:6px;">DETECTED BY</div>
-                <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:2px;">Scheduled scan</div>
-                <div style="font-size:11px;color:var(--text-sec);">Today 14:23 · Process: MsMpSvc</div>
+                <div id="cd-detby-method" style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:2px;">Scheduled scan</div>
+                <div id="cd-detby-detail" style="font-size:11px;color:var(--text-sec);">Today 14:23 · Process: MsMpSvc</div>
               </div>
             </div>
 
             <!-- Security impact -->
             <div style="display:flex;align-items:flex-start;gap:8px;padding:12px 14px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span style="font-size:11px;color:var(--text-sec);line-height:1.5;">Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.</span>
+              <span id="cd-impact" style="font-size:11px;color:var(--text-sec);line-height:1.5;">Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.</span>
             </div>
           </div>
 
@@ -10632,11 +10632,86 @@ let currentChangeIdx = 0;
 let approvedCount = 0;
 let flaggedCount = 0;
 
+// Per-event detail data — change-detail is populated from the clicked drift item
+var CHANGE_DATA = [
+  { // 0 — Windows Defender real-time protection
+    title: 'Windows Defender — Real-time protection',
+    node: 'MACBOOK-TARAS',
+    detected: '· Detected today at 14:23 · Scheduled scan',
+    recon: 'unreconciled', type: 'modified',
+    control: 'Control 8.1 · Malware Defenses · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span>',
+    before: { val:'Enabled', status:'✓ CIS Pass', sub:'Real-time scanning active' },
+    after:  { val:'Disabled', status:'✗ CIS Fail', sub:'Real-time scanning off' },
+    score: { from:'78', to:'74', delta:'−4 pts' },
+    detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
+    impact: 'Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.',
+    cr: 'nocr'
+  },
+  { // 1 — Screen lock timeout
+    title: 'Screen lock timeout',
+    node: 'SARAH-LAPTOP-01',
+    detected: '· Detected today at 11:05 · Scheduled scan',
+    recon: 'reconciled', type: 'modified',
+    control: 'Control 4.3 · Session Lock · <span style="color:#15803d;font-weight:600;">Reconciled</span>',
+    before: { val:'10 min', status:'✓ CIS Pass', sub:'Locks after 10 min idle' },
+    after:  { val:'30 min', status:'✗ CIS Fail', sub:'Locks after 30 min idle' },
+    score: { from:'82', to:'80', delta:'−2 pts' },
+    detby: { method:'Scheduled scan', detail:'Today 11:05 · Policy: ScreenLock' },
+    impact: 'A longer lock timeout widens the window for unauthorized access on an unattended device.',
+    cr: 'matched'
+  },
+  { // 2 — New local user account
+    title: 'New local user account created',
+    node: 'MACBOOK-TARAS',
+    detected: '· Detected today at 13:40 · Scheduled scan',
+    recon: 'flagged', type: 'added',
+    control: 'Control 5.1 · Account Management · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span>',
+    before: { val:'Not present', status:'✓ Baseline', sub:'Account did not exist' },
+    after:  { val:'svc-helpdesk', status:'✗ Unauthorized', sub:'Local account added' },
+    score: { from:'74', to:'70', delta:'−4 pts' },
+    detby: { method:'Scheduled scan', detail:'Today 13:40 · Process: lusrmgr' },
+    impact: 'An unexpected local account — particularly with elevated rights — can serve as a backdoor for persistent access.',
+    cr: 'nocr'
+  }
+];
+var CD_TYPE = {
+  modified: { label:'Modified', bg:'#fff7ed', color:'#c2410c', border:'#fed7aa' },
+  added:    { label:'Added',    bg:'#eff6ff', color:'#2563eb', border:'#bfdbfe' },
+  removed:  { label:'Removed',  bg:'#fef2f2', color:'#dc2626', border:'#fecaca' }
+};
+var CD_RECON = {
+  unreconciled: { label:'Unreconciled', bg:'var(--bg-canvas)', color:'var(--text-sec)', border:'var(--border)' },
+  reconciled:   { label:'Reconciled', bg:'rgba(37,167,96,0.1)', color:'#15803d', border:'rgba(37,167,96,0.2)' },
+  flagged:      { label:'Flagged', bg:'rgba(251,60,68,0.1)', color:'#FB3C44', border:'rgba(251,60,68,0.2)' }
+};
+function renderChangeDetail(idx) {
+  const d = CHANGE_DATA[idx];
+  if (!d) return;
+  const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  set('cd-title', d.title);
+  set('cd-node', d.node);
+  set('cd-detected', d.detected);
+  set('cd-control', d.control);
+  set('cd-before-val', d.before.val); set('cd-before-status', d.before.status); set('cd-before-sub', d.before.sub);
+  set('cd-after-val', d.after.val); set('cd-after-status', d.after.status); set('cd-after-sub', d.after.sub);
+  set('cd-score-from', d.score.from); set('cd-score-to', d.score.to); set('cd-score-delta', d.score.delta);
+  set('cd-detby-method', d.detby.method); set('cd-detby-detail', d.detby.detail);
+  set('cd-impact', d.impact);
+  const t = CD_TYPE[d.type] || CD_TYPE.modified;
+  const tb = document.getElementById('cd-type-badge');
+  if (tb) { tb.textContent = t.label; tb.style.background = t.bg; tb.style.color = t.color; tb.style.border = '1px solid ' + t.border; }
+  const r = CD_RECON[d.recon] || CD_RECON.unreconciled;
+  const rb = document.getElementById('cd-recon-status');
+  if (rb) { rb.textContent = r.label; rb.style.background = r.bg; rb.style.color = r.color; rb.style.border = '1px solid ' + r.border; }
+  const nb = document.getElementById('nav-breadcrumb');
+  if (nb) nb.innerHTML = `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">${d.title}</span>`;
+  setCrState(d.cr);
+}
 function openChange(idx) {
   currentChangeIdx = idx;
-  const pending = changeStatuses.filter(s => s === 'pending').length;
   document.getElementById('change-progress').textContent = 'Change ' + (idx + 1) + ' of 3';
   showView('change-detail');
+  renderChangeDetail(idx);
 }
 
 // ── Remediation rescan flow ──
