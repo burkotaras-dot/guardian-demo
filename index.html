@@ -1130,6 +1130,9 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .dash-seg-btn { font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:var(--text-sec); background:transparent; border:none; padding:6px 13px; border-radius:6px; cursor:pointer; white-space:nowrap; transition:all .12s; }
 .dash-seg-btn.active { background:var(--bg-surface); color:var(--text-default); box-shadow:var(--shadow-sm); }
 .dash-seg-btn:hover:not(.active) { color:var(--text-default); }
+.cr-demo-btn { font-family:inherit; font-size:10px; font-weight:600; color:var(--text-muted); background:transparent; border:1px solid transparent; padding:3px 8px; border-radius:5px; cursor:pointer; white-space:nowrap; transition:all .12s; }
+.cr-demo-btn:hover:not(.active) { color:var(--text-sec); }
+.cr-demo-btn.active { background:var(--bg-canvas); color:var(--text-default); border-color:var(--border); }
 .action-row { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 16px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:10px; cursor:pointer; transition:border-color .12s; }
 .action-row:hover { border-color:var(--green1); }
 .action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
@@ -7472,19 +7475,18 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
           </div>
 
-          <!-- ServiceNow match -->
-          <div style="display:flex;align-items:center;gap:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.5" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-            <div style="flex:1;">
-              <div style="font-size:11px;color:var(--text-sec);margin-bottom:2px;">ServiceNow CR matched</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">CHG0012345 — AV Software Migration</div>
-              <div style="font-size:11px;color:var(--text-sec);">Approved · 2 days ago · John Smith</div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
-              <span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span>
-              <span onclick="showView('cr-audit')" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View audit &#8594;</span>
-            </div>
+          <!-- Demo-only state switcher for the CR block (not part of the product UI) -->
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Demo state</span>
+            <button class="cr-demo-btn" data-cr="matched" onclick="setCrState('matched')">Matched</button>
+            <button class="cr-demo-btn" data-cr="pending" onclick="setCrState('pending')">Pending</button>
+            <button class="cr-demo-btn" data-cr="multiple" onclick="setCrState('multiple')">Multiple</button>
+            <button class="cr-demo-btn" data-cr="nocr" onclick="setCrState('nocr')">No CR</button>
+            <button class="cr-demo-btn" data-cr="notconfigured" onclick="setCrState('notconfigured')">Not configured</button>
           </div>
+
+          <!-- ServiceNow match (state-driven by setCrState) -->
+          <div id="cd-cr-block"></div>
 
           <!-- Notes — audit trail, separate from the approve/reject decision reason -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
@@ -11349,6 +11351,61 @@ function addChangeNote() {
   renderChangeNotes();
 }
 renderChangeNotes();
+
+// CR-match block — demo-only state machine (matched / pending / multiple / nocr / notconfigured)
+const CR_STATES = {
+  matched: {
+    border:'var(--border)', iconColor:'var(--text-sec)',
+    icon:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+    title:'ServiceNow CR matched', main:'CHG0012345 — AV Software Migration', sub:'Approved · 2 days ago · John Smith',
+    right:'<span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span>'
+      + '<span onclick="showView(\'cr-audit\')" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">View audit &#8594;</span>'
+  },
+  pending: {
+    border:'rgba(217,119,6,0.45)', iconColor:'#d97706',
+    icon:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    title:'Possible CR match found', main:'CHG0012345 — AV Software Migration', sub:'Awaiting confirmation',
+    right:'<span style="font-size:11px;font-weight:600;color:#d97706;white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Confirm match &#8594;</span>'
+  },
+  multiple: {
+    border:'rgba(217,119,6,0.45)', iconColor:'#d97706',
+    icon:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+    title:'', main:'3 possible CR matches', sub:'Select the approved Change Request that explains this drift.',
+    right:'<span style="font-size:11px;font-weight:600;color:#d97706;white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Review matches &#8594;</span>'
+  },
+  nocr: {
+    border:'rgba(251,60,68,0.35)', iconColor:'#FB3C44',
+    icon:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    title:'', main:'No matching Change Request found', sub:'This drift has not been matched to an approved change.',
+    right:'<span style="font-size:11px;font-weight:600;color:var(--text-default);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Match manually &#8594;</span>'
+  },
+  notconfigured: {
+    border:'var(--border)', iconColor:'var(--text-muted)',
+    icon:'<path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>',
+    title:'', main:'ServiceNow is not configured', sub:'Connect a service management tool to auto-match drift events with approved Change Requests.',
+    right:'<span onclick="go(\'j4-connect\')" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Configure service management &#8594;</span>'
+  }
+};
+function setCrState(state) {
+  const s = CR_STATES[state] || CR_STATES.matched;
+  const block = document.getElementById('cd-cr-block');
+  if (block) {
+    block.innerHTML =
+      '<div style="display:flex;align-items:center;gap:12px;background:var(--bg-surface);border:1px solid ' + s.border + ';border-radius:10px;padding:14px 16px;">'
+      + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="' + s.iconColor + '" stroke-width="1.5" style="flex-shrink:0;">' + s.icon + '</svg>'
+      + '<div style="flex:1;">'
+        + (s.title ? '<div style="font-size:11px;color:var(--text-sec);margin-bottom:2px;">' + s.title + '</div>' : '')
+        + '<div style="font-size:12px;font-weight:600;color:var(--text-default);">' + s.main + '</div>'
+        + (s.sub ? '<div style="font-size:11px;color:var(--text-sec);line-height:1.45;">' + s.sub + '</div>' : '')
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">' + s.right + '</div>'
+      + '</div>';
+  }
+  document.querySelectorAll('.cr-demo-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.cr === state);
+  });
+}
+setCrState('matched');
 
 function approveChange() {
   changeStatuses[currentChangeIdx] = 'approved';
