@@ -7493,13 +7493,18 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.8" style="flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span style="font-size:13px;font-weight:700;color:var(--text-default);">Notes</span>
+              <span id="change-notes-count" style="font-size:11px;color:var(--text-muted);"></span>
             </div>
-            <div style="font-size:11px;color:var(--text-sec);line-height:1.5;margin-bottom:12px;">Audit notes about this change — separate from the approve / reject decision reason.</div>
-            <textarea id="change-note-input" class="form-input" rows="2" placeholder="Add a note about this change..." style="resize:vertical;margin-bottom:8px;"></textarea>
-            <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
-              <button onclick="addChangeNote()" class="btn-primary" style="padding:7px 16px;font-size:12px;width:auto;">Add note</button>
-            </div>
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:10px;">Audit notes, separate from approve / reject reason.</div>
             <div id="change-notes-list" style="display:flex;flex-direction:column;gap:0;"></div>
+            <button id="change-note-add" onclick="openNoteComposer()" style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--green1);" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Add note &#8594;</button>
+            <div id="change-note-composer" style="display:none;margin-top:10px;">
+              <textarea id="change-note-input" class="form-input" rows="2" placeholder="Add a note about this change..." style="resize:vertical;margin-bottom:8px;"></textarea>
+              <div style="display:flex;justify-content:flex-end;gap:8px;">
+                <button onclick="cancelNote()" style="padding:7px 16px;font-size:12px;width:auto;border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;cursor:pointer;font-weight:600;color:var(--text-default);font-family:inherit;">Cancel</button>
+                <button onclick="addChangeNote()" class="btn-primary" style="padding:7px 16px;font-size:12px;width:auto;">Add note</button>
+              </div>
+            </div>
           </div>
 
           <!-- Incident — raise an incident for this unreconciled drift event (org-level capability) -->
@@ -11326,13 +11331,15 @@ function _escNote(s) {
 }
 function renderChangeNotes() {
   const list = document.getElementById('change-notes-list');
+  const count = document.getElementById('change-notes-count');
+  if (count) count.textContent = changeNotes.length === 0 ? '' : (changeNotes.length === 1 ? '1 note' : changeNotes.length + ' notes');
   if (!list) return;
   if (changeNotes.length === 0) {
-    list.innerHTML = '<div style="font-size:12px;color:var(--text-muted);font-style:italic;border-top:1px solid var(--border);padding-top:12px;">No notes yet.</div>';
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-muted);font-style:italic;">No notes yet.</div>';
     return;
   }
-  list.innerHTML = changeNotes.map(function(n) {
-    return '<div style="border-top:1px solid var(--border);padding:12px 0;">' +
+  list.innerHTML = changeNotes.map(function(n, i) {
+    return '<div style="' + (i === 0 ? '' : 'border-top:1px solid var(--border);') + 'padding:' + (i === 0 ? '0 0 6px' : '12px 0 6px') + ';">' +
       '<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">' +
         '<span style="font-size:12px;font-weight:600;color:var(--text-default);">' + _escNote(n.author) + '</span>' +
         '<span style="font-size:11px;color:var(--text-muted);">· ' + _escNote(n.time) + '</span>' +
@@ -11340,6 +11347,22 @@ function renderChangeNotes() {
       '<div style="font-size:12px;color:var(--text-sec);line-height:1.55;">' + _escNote(n.text) + '</div>' +
     '</div>';
   }).join('');
+}
+function openNoteComposer() {
+  const add = document.getElementById('change-note-add');
+  const composer = document.getElementById('change-note-composer');
+  if (add) add.style.display = 'none';
+  if (composer) composer.style.display = 'block';
+  const inp = document.getElementById('change-note-input');
+  if (inp) inp.focus();
+}
+function cancelNote() {
+  const add = document.getElementById('change-note-add');
+  const composer = document.getElementById('change-note-composer');
+  const inp = document.getElementById('change-note-input');
+  if (inp) inp.value = '';
+  if (composer) composer.style.display = 'none';
+  if (add) add.style.display = 'inline-flex';
 }
 function addChangeNote() {
   const inp = document.getElementById('change-note-input');
@@ -11349,6 +11372,7 @@ function addChangeNote() {
   changeNotes.push({ author:'bambuk@cloudhouse.io', time:'Just now', text:val });
   inp.value = '';
   renderChangeNotes();
+  cancelNote();
 }
 renderChangeNotes();
 
