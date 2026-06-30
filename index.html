@@ -315,10 +315,12 @@ body.dark .usedby-tag.is-upcoming {
 }
 
 /* Diff before/after cards */
-.diff-card { padding:18px 20px; border-radius:10px; }
-.diff-label { font-size:9px; font-weight:700; letter-spacing:1px; margin-bottom:10px; }
-.diff-value { font-size:24px; font-weight:800; color:var(--text-default); letter-spacing:-0.5px; margin-bottom:8px; }
-.diff-status { font-size:11px; font-weight:600; margin-bottom:4px; }
+.diff-card { padding:14px 16px; border-radius:10px; }
+.diff-label { font-size:9px; font-weight:700; letter-spacing:1px; margin-bottom:7px; }
+.diff-value { font-size:20px; font-weight:800; color:var(--text-default); letter-spacing:-0.5px; margin-bottom:6px; }
+.diff-meta { display:flex; align-items:baseline; gap:5px; flex-wrap:wrap; }
+.diff-status { font-size:11px; font-weight:600; }
+.diff-dot { font-size:11px; color:var(--text-muted); }
 .diff-sub { font-size:11px; color:var(--text-sec); }
 
 .diff-before { background:var(--status-success-bg); border:1px solid rgba(16,185,129,0.35); }
@@ -1130,6 +1132,10 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .dash-seg-btn { font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:var(--text-sec); background:transparent; border:none; padding:6px 13px; border-radius:6px; cursor:pointer; white-space:nowrap; transition:all .12s; }
 .dash-seg-btn.active { background:var(--bg-surface); color:var(--text-default); box-shadow:var(--shadow-sm); }
 .dash-seg-btn:hover:not(.active) { color:var(--text-default); }
+.cr-demo-btn { font-family:inherit; font-size:9px; font-weight:600; color:var(--text-muted); background:transparent; border:none; padding:1px 2px; cursor:pointer; white-space:nowrap; transition:color .12s; }
+.cr-demo-btn:hover:not(.active) { color:var(--text-sec); }
+.cr-demo-btn.active { color:var(--text-sec); font-weight:700; }
+.cr-demo-sep { font-size:9px; color:var(--text-muted); opacity:.45; user-select:none; }
 .action-row { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 16px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:10px; cursor:pointer; transition:border-color .12s; }
 .action-row:hover { border-color:var(--green1); }
 .action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
@@ -1213,6 +1219,43 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .pill.active-med  { background:rgba(217,119,6,0.07); border-color:rgba(217,119,6,0.25); color:var(--sev-medium-txt); }
 .pill.active-low  { background:rgba(37,99,235,0.07); border-color:rgba(37,99,235,0.25); color:var(--sev-low-txt); }
 .pill.active-pass { background:rgba(37,167,96,0.07); border-color:rgba(37,167,96,0.2); color:var(--brand-hover); }
+/* Embedded filter pills inside drift cards (click node/CR/type → filter) */
+.drift-meta-pill {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600;
+  border:1px solid var(--border); background:var(--bg-surface);
+  color:var(--text-sec); cursor:pointer; white-space:nowrap; transition:all 0.12s;
+}
+.drift-meta-pill:hover { border-color:var(--green2); color:var(--green1); background:rgba(0,175,115,0.06); }
+
+/* Reconcile node tri-state chips (F5c) — include=green, exclude=red */
+.recon-node-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; transition:all 0.12s; }
+.recon-node-ico { display:inline-flex; align-items:center; }
+.recon-node-chip[data-state="off"] .recon-node-ico { display:none; }
+.recon-node-chip[data-state="off"]:hover { border-color:var(--text-muted); background:var(--bg-subtle); color:var(--text-default); }
+.recon-node-chip[data-state="include"] { border-color:#3FC878; background:rgba(0,175,115,0.08); color:#15803d; }
+.recon-node-chip[data-state="include"] .recon-node-ico { color:#15803d; }
+.recon-node-chip[data-state="exclude"] { border-color:#fca5a5; background:rgba(251,60,68,0.07); color:#dc2626; }
+.recon-node-chip[data-state="exclude"] .recon-node-ico { color:#dc2626; }
+body.dark .recon-node-chip[data-state="include"] { border-color:rgba(16,185,129,0.55) !important; background:rgba(16,185,129,0.18) !important; color:#fff !important; }
+body.dark .recon-node-chip[data-state="include"] .recon-node-ico { color:#10B981 !important; }
+body.dark .recon-node-chip[data-state="exclude"] { border-color:rgba(251,60,68,0.55) !important; background:rgba(251,60,68,0.18) !important; color:#fff !important; }
+body.dark .recon-node-chip[data-state="exclude"] .recon-node-ico { color:#FF4646 !important; }
+.recon-node-chip.recon-all[data-active="true"] { border-color:#3FC878; background:rgba(0,175,115,0.08); color:#15803d; }
+.recon-node-chip.recon-all[data-active="false"]:hover { border-color:var(--text-muted); background:var(--bg-subtle); color:var(--text-default); }
+body.dark .recon-node-chip.recon-all[data-active="true"] { border-color:rgba(16,185,129,0.55) !important; background:rgba(16,185,129,0.18) !important; color:#fff !important; }
+.recon-node-chip[data-active="true"] { border-color:#3FC878; background:rgba(0,175,115,0.08); color:#15803d; }
+body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.55) !important; background:rgba(16,185,129,0.18) !important; color:#fff !important; }
+
+.hh-toggle { display:flex; align-items:center; gap:6px; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); font-size:12px; font-weight:600; color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; flex-shrink:0; transition:all 0.12s; }
+.hh-toggle .hh-check { visibility:hidden; }
+.hh-toggle.active { background:rgba(0,175,115,0.08); border-color:var(--green1); color:var(--green1); }
+.hh-toggle.active .hh-check { visibility:visible; }
+body.dark .hh-toggle.active { background:rgba(16,185,129,0.18) !important; border-color:#34D399 !important; color:#5BE3B3 !important; }
+.check-card.drift-handled { opacity:0.62; background:var(--bg-subtle); }
+.check-card.drift-handled:hover { opacity:0.85; }
+/* Compact single-line drift row — operational list (replaces tall diff cards) */
+.check-card.drift-row { display:grid; grid-template-columns:18px 86px minmax(140px,1fr) 168px 120px 124px 124px 18px; align-items:center; gap:12px; padding:11px 16px; }
 
 /* CATEGORY TAG HIERARCHY
    Top "type" tag (Compliance Policy / Custom / etc) stays as solid colored pill (font-size:10px, font-weight:700).
@@ -1747,6 +1790,7 @@ body.dark #v-policies input[type="text"] { color: #698787 !important; }
 body.dark #v-policies input[type="text"]::placeholder { color: #698787; }
 body.dark #changes-sort-btn { background: var(--bg-card) !important; color: var(--p-neutral-50) !important; }
 body.dark #changes-sort-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
+body.dark #changes-group-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
 body.dark .sort-opt { color: #C0C0C0 !important; }
 body.dark #changes-search { color: #698787 !important; }
 body.dark #changes-search::placeholder { color: #698787; }
@@ -4242,7 +4286,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <div class="view" id="v-node-detail">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <button class="btn-outline" onclick="nodeDetailBack()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">MACBOOK-TARAS</div>
             <div class="page-sub">Windows 11 · This device · <span style="color:#00AF73;font-weight:600;">● Online</span> · Last scanned 2 min ago</div>
@@ -4424,6 +4469,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span id="nd-detail-after" style="font-size:12px;border-radius:5px;padding:4px 10px;font-weight:600;"></span>
                 </div>
                 <div id="nd-detail-desc" style="font-size:11px;color:var(--text-sec);line-height:1.5;"></div>
+                <div id="nd-detail-viewchange" style="display:none;margin-top:12px;">
+                  <span onclick="goToDriftDetail('node-attributes')" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View change &#8594;</span>
+                </div>
               </div>
             </div>
 
@@ -4854,6 +4902,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       const a = document.getElementById('nd-detail-after');
       a.textContent = d.after; a.style.cssText = d.afterStyle;
       document.getElementById('nd-detail-desc').textContent = d.desc;
+      document.getElementById('nd-detail-viewchange').style.display = (key === 'defender') ? 'block' : 'none';
       document.getElementById('nd-detail-card').style.display = 'block';
     }
     </script>
@@ -7101,88 +7150,63 @@ body.dark .theme-toggle .icon-moon { display: none; }
          S12: CHANGE SUMMARY VIEW
     ═══════════════════════════════════════ -->
     <div class="view" id="v-changes">
-      <div class="page-header">
+      <div class="page-header" style="border-bottom:none;">
         <div>
           <div class="page-title">Detected Drift Summary</div>
-          <div class="page-sub" id="changes-sub">Detected since last scan · 3 unreconciled · 1 flagged · across 2 nodes</div>
+          <div class="page-sub" id="changes-sub">Detected since last scan · 1 unreconciled · 1 flagged · across 2 nodes</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
+          <div id="drift-reconcile-btn" onclick="enterReconcileMode()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--green1);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;font-weight:600;cursor:pointer;color:var(--green1);white-space:nowrap;user-select:none;flex-shrink:0;" onmouseover="this.style.background='rgba(0,175,115,0.06)'" onmouseout="this.style.background='var(--bg-surface)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Reconcile drift events &#8594;
+          </div>
           <div style="font-size:11px;color:var(--text-sec);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 12px;">
             Last scan: 2 hours ago
           </div>
         </div>
       </div>
-      <!-- Scope bar — neutral -->
-      <div style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <span id="drift-scope-label" style="font-size:12px;font-weight:600;color:var(--text-default);">All nodes · 14 monitored</span>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;">
+      <div style="flex:1;background:var(--bg-page);padding:4px 24px 24px;overflow-y:auto;min-width:0;">
 
-        <!-- ServiceNow banner — not connected by default, replaced after J4 -->
-        <div id="sn-reconcile-banner" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:20px;">
-          <!-- Left: title + subtitle -->
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
-              <img src="ServiceNow_logo.svg" class="sn-logo" style="height:14px;width:auto;max-width:100px;display:block;flex-shrink:0;" alt="ServiceNow"/>
-              <span style="font-size:13px;font-weight:600;color:var(--text-default);">· Connect to reconcile drift</span>
-            </div>
-            <div style="font-size:11px;color:var(--text-sec);">Match detected drift against approved Change Requests to filter out expected changes</div>
+        <!-- Change reconciliation — compact ACTIVE status strip -->
+        <div id="sn-reconcile-banner" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:9px 14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <!-- Title + ACTIVE badge -->
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+            <span style="font-size:13px;font-weight:700;color:var(--intg-title);">Change reconciliation</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#15803d;background:rgba(37,167,96,0.12);border:1px solid rgba(37,167,96,0.3);border-radius:999px;padding:2px 8px;"><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;"></span>Active</span>
           </div>
-          <!-- Right: button -->
-          <button style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;background:#8B5CF6;color:white;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:600;" onclick="go('j4-connect')">Connect ServiceNow →</button>
+          <!-- Metric -->
+          <div style="font-size:12px;color:var(--text-sec);white-space:nowrap;"><span style="color:var(--text-default);font-weight:600;">6</span> upcoming CRs · 8 drift events without CR</div>
+          <!-- Pills -->
+          <div style="display:flex;align-items:center;gap:7px;margin-left:auto;flex-shrink:0;">
+            <span class="logo-pill" style="height:24px;padding:0 9px;border-radius:6px;"><svg height="9" viewBox="0 0 401 59" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M97.5572 18.0117C93.2487 18.0117 89.5557 19.5383 86.4782 21.9808V18.6224H76.0146V58.0083H86.7859V32.9723C88.3247 30.835 92.0177 28.0872 96.634 28.0872C98.1727 28.0872 99.7115 28.3925 100.943 28.6978V18.6224C99.7115 18.317 98.4805 18.0117 97.5572 18.0117Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.92402 45.7884C7.69378 48.231 12.0023 49.7575 15.6953 49.7575C18.4651 49.7575 20.9271 48.231 20.9271 46.3991C20.9271 40.2927 1.53876 42.4299 1.53876 29.9119C1.53876 22.279 8.92479 17.6992 16.6186 17.6992C21.8503 17.6992 27.3899 19.5311 30.1596 21.6683L25.2356 29.3013C23.0814 28.08 20.6193 26.5534 17.5418 26.5534C14.4643 26.5534 12.3101 27.7747 12.3101 29.9119C12.3101 35.1023 31.6984 32.9651 31.6984 46.7044C31.6984 54.3373 24.3124 58.9171 16.0031 58.9171C10.4635 58.9171 4.61627 57.0852 0 53.7267L4.92402 45.7884Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M71.3985 37.8502C71.3985 26.8587 63.7047 17.6992 52.6256 17.6992C40.9311 17.6992 33.2373 27.4694 33.2373 38.1555C33.2373 50.6735 42.1621 58.6118 53.8566 58.6118C60.0117 58.6118 66.1667 56.1692 70.1675 51.5895L64.0124 45.4831C62.1659 47.6203 58.4729 50.0629 54.1644 50.0629C48.6249 50.0629 44.0086 46.0937 43.3931 40.598H70.783C71.3985 39.9874 71.3985 39.0714 71.3985 37.8502ZM44.3164 33.2704C44.9319 29.6066 48.6249 26.2481 52.9334 26.2481C57.2419 26.2481 60.3194 29.6066 60.9349 33.2704H44.3164Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M147.721 18.623L129.563 58.009H122.177L104.02 18.623H114.791L125.87 42.7431L136.642 18.623H147.721Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M156.646 -0.00195312C160.646 -0.00195312 163.724 3.05122 163.724 6.71503C163.724 10.6842 160.646 13.432 156.646 13.432C152.645 13.432 149.875 10.3788 149.875 6.71503C149.875 2.7459 152.645 -0.00195312 156.646 -0.00195312Z" fill="black"/><path d="M162.185 18.6211H151.414V58.007H162.185V18.6211Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M205.886 49.7575C201.269 55.8639 195.422 58.6118 188.036 58.6118C175.726 58.6118 166.801 49.4522 166.801 38.1555C166.801 26.5534 176.034 17.6992 188.036 17.6992C195.114 17.6992 200.962 21.0577 204.655 25.6375L197.576 32.0491C195.422 29.3013 192.345 27.4694 188.652 27.4694C182.497 27.4694 177.88 32.3545 177.88 38.1555C177.88 44.2618 182.189 48.8416 188.652 48.8416C192.96 48.8416 196.345 46.3991 198.192 43.6512L205.886 49.7575Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M244.354 51.5895C240.354 56.1692 234.199 58.6118 228.044 58.6118C216.349 58.6118 207.424 50.6735 207.424 38.1555C207.424 27.1641 214.81 17.6992 226.813 17.6992C237.584 17.6992 245.585 26.8587 245.585 37.8502C245.585 39.0714 245.585 39.9874 245.278 40.9033H217.58C218.196 46.3991 222.812 50.3682 228.351 50.3682C232.66 50.3682 236.353 47.9256 238.199 45.7884L244.354 51.5895ZM234.506 33.2704C234.199 29.9119 231.121 26.2481 226.505 26.2481C222.196 26.2481 218.503 29.6066 217.888 33.2704H234.506Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M249.586 58.0024V18.6165H259.742V21.975C262.82 19.5324 266.513 18.0059 270.821 18.0059C276.361 18.0059 281.285 20.4484 284.67 24.4175C287.132 27.4707 288.979 31.4398 288.979 38.1568V58.3077H278.207V37.2409C278.207 33.2717 277.284 31.1345 275.745 29.9132C274.207 28.3867 272.36 27.4707 269.59 27.4707C265.282 27.4707 261.589 30.2186 259.742 32.3558V58.0024H249.586Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M316.368 17.7051C303.443 17.7051 293.287 27.7806 293.287 40.6039C293.287 47.3209 296.057 53.4272 300.365 57.7017C301.904 59.2282 304.674 59.2282 306.52 58.007C308.982 55.8698 312.675 54.6485 316.368 54.6485C320.369 54.6485 323.447 55.8698 326.216 58.007C328.063 59.5336 330.525 59.2282 332.372 57.3963C336.68 53.1219 339.45 47.3209 339.45 40.6039C339.142 28.0859 328.986 17.7051 316.368 17.7051ZM316.061 52.5113C308.982 52.5113 304.366 47.3209 304.366 40.9092C304.366 34.4975 308.982 29.3071 316.061 29.3071C323.139 29.3071 327.755 34.4975 327.755 40.9092C327.755 47.3209 323.139 52.5113 316.061 52.5113Z" fill="#62D84E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M336.68 18.623H347.143L355.76 41.2165L364.377 18.623H373.302L381.611 41.2165L390.228 18.623H401L385.304 58.009H377.303L368.686 35.7208L360.377 58.009H352.375L336.68 18.623Z" fill="black"/></svg></span>
+            <span style="display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 9px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;">Manual review</span>
+          </div>
+          <!-- CTA -->
+          <button class="stat-link" style="padding-top:0;margin-top:0;flex-shrink:0;font-weight:600;align-self:center;" onclick="go('j4-active')"><span class="stat-link-txt">Manage reconciliation</span> <span class="arr">&#8594;</span></button>
         </div>
 
-        <!-- Pills + Search / Filter / Sort — pills left, controls right -->
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px;flex-wrap:nowrap;">
-          <!-- Pills left -->
-          <div style="display:flex;gap:6px;flex-shrink:0;">
+        <!-- Filters left, controls right — single row -->
+        <div id="drift-summary-toolbar" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <!-- Filters group: scope chip (scoped only) + pills -->
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+            <!-- Scope chip — node context (All nodes ↔ specific node) -->
+            <div id="drift-scope-chip" style="display:none;align-items:center;gap:6px;padding:5px 2px;font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;flex-shrink:0;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <span id="drift-scope-label"></span>
+              <span id="drift-scope-clear" onclick="clearDriftScope()" title="Clear scope" style="display:none;cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;padding-left:1px;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+            </div>
+            <div id="drift-scope-divider" style="display:none;width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0;"></div>
             <div class="pill" id="filter-all" style="cursor:pointer;background:rgba(63,200,120,0.1);border-color:var(--p-green-400);color:#15803d;font-weight:600;" onclick="filterChanges('all')">All (3)</div>
-            <div class="pill" id="filter-modified" style="cursor:pointer;" onclick="filterChanges('modified')">Modified (2)</div>
-            <div class="pill" id="filter-added" style="cursor:pointer;" onclick="filterChanges('added')">Added (1)</div>
-            <div class="pill" id="filter-removed" style="cursor:pointer;" onclick="filterChanges('removed')">Removed (0)</div>
+            <div class="pill" id="filter-unreconciled" style="cursor:pointer;" onclick="filterChanges('unreconciled')">Unreconciled (1)</div>
+            <div class="pill" id="filter-reconciled" style="cursor:pointer;" onclick="filterChanges('reconciled')">Reconciled (1)</div>
+            <div class="pill" id="filter-flagged" style="cursor:pointer;" onclick="filterChanges('flagged')">Flagged (1)</div>
+            <div class="pill" id="filter-nocr" style="cursor:pointer;" onclick="filterChanges('nocr')">No CR (2)</div>
           </div>
-          <!-- Search + Filters + Sort right -->
-          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <!-- Search + Filters + Sort row -->
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <div style="position:relative;width:240px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="changes-search" placeholder="Search drift items…" oninput="searchChanges(this.value)" style="width:100%;box-sizing:border-box;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
-          </div>
-          <!-- Filters -->
-          <div id="changes-filter-wrap" style="position:relative;flex-shrink:0;">
-            <div id="changes-filter-btn" onclick="toggleChangesFilter()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-              Filters<span id="drift-filter-active-label"></span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div id="changes-filter-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:16px;min-width:220px;z-index:100;">
-              <div style="font-size:11px;font-weight:700;color:var(--text-default);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;">Status</div>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:6px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green2);"> Pending</label>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:6px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green2);"> Approved</label>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:14px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green2);"> Flagged</label>
-              <div style="font-size:11px;font-weight:700;color:var(--text-default);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;">CIS Impact</div>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:6px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green2);"> CIS Fail</label>
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-default);margin-bottom:14px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--green2);"> CIS Pass</label>
-              <div style="font-size:11px;font-weight:700;color:var(--text-default);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Node</div>
-              <div style="position:relative;margin-bottom:8px;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" id="drift-node-search" placeholder="Search nodes…" oninput="filterDriftNodes(this.value)" style="width:100%;box-sizing:border-box;padding:6px 8px 6px 26px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg-canvas);color:var(--text-default);outline:none;">
-              </div>
-              <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:14px;">
-                <!-- Default state: All nodes + hint -->
-                <div id="drift-node-default">
-                  <div class="drift-node-opt" data-val="all" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--green1);font-weight:600;background:rgba(0,175,115,0.08);">All nodes</div>
-                  <div id="drift-node-hint" style="padding:4px 10px;font-size:11px;color:var(--text-muted);font-style:italic;">Start typing to find a node</div>
-                </div>
-                <!-- Search results (shown when typing) -->
-                <div id="drift-node-results" style="display:none;flex-direction:column;gap:2px;">
-                  <div class="drift-node-opt drift-node-specific" data-val="MACBOOK-TARAS" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">MACBOOK-TARAS</div>
-                  <div class="drift-node-opt drift-node-specific" data-val="SARAH-LAPTOP-01" onclick="selectDriftNode(this)" style="padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-default);">SARAH-LAPTOP-01</div>
-                  <div id="drift-node-empty" style="display:none;padding:6px 10px;font-size:12px;color:var(--text-muted);font-style:italic;">No nodes found</div>
-                </div>
-              </div>
-                            <button onclick="toggleChangesFilter()" style="width:100%;padding:8px;border:none;border-radius:var(--radius-md);background:var(--green1);color:white;font-size:12px;font-weight:600;cursor:pointer;">Apply</button>
-            </div>
           </div>
           <!-- Sort custom dropdown -->
           <div style="position:relative;flex-shrink:0;">
@@ -7197,101 +7221,188 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="sort-opt" data-val="node" onclick="pickSort(this,'By node')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('sort-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>By node</div>
             </div>
           </div>
+          <!-- Group custom dropdown — re-applies the grouping engine (node / change request) -->
+          <div style="position:relative;flex-shrink:0;">
+            <div id="changes-group-btn" onclick="toggleChangesGroup(this)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+              <span id="changes-group-label">Group: None</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div id="changes-group-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:170px;z-index:100;">
+              <div class="group-opt group-opt-active" data-val="none" onclick="pickGroup(this,'None')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>None</div>
+              <div class="group-opt" data-val="node" onclick="pickGroup(this,'Node')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Node</div>
+              <div class="group-opt" data-val="cr" onclick="pickGroup(this,'Change Request')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Change Request</div>
+            </div>
+          </div>
+          <!-- Hide handled toggle (#2) — drops reconciled events from the active list, ON by default -->
+          <div id="drift-hide-handled" class="hh-toggle active" onclick="toggleHideHandled()" title="Hide events that are already reconciled or handled">
+            <svg class="hh-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Hide handled
+          </div>
           </div><!-- end right group -->
         </div>
 
+        <!-- Reconciliation mode panel (F5) — focused workspace, replaces the summary toolbar when active -->
+        <div id="drift-reconcile-panel" style="display:none;margin-bottom:16px;">
+          <div onclick="exitReconcileMode()" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;margin-bottom:10px;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-sec)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to summary
+          </div>
+          <!-- Compact workspace toolbar-card -->
+          <div style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg-surface);overflow:hidden;">
+            <!-- Header: title + subtitle (left), result status (right) -->
+            <div style="display:flex;align-items:flex-start;gap:9px;padding:11px 16px;border-bottom:1px solid var(--border);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:13px;font-weight:700;color:var(--text-default);line-height:1.2;">Reconciliation mode</div>
+                <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">Advanced filters for manual reconciliation.</div>
+              </div>
+              <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-top:1px;white-space:nowrap;">
+                <span id="recon-set-count" style="font-size:11.5px;font-weight:600;color:var(--text-sec);">2 events in view</span>
+                <span style="font-size:11px;color:var(--text-muted);"><span id="recon-filter-count">0 filters active</span><span id="recon-clear-all" onclick="clearAllReconFilters()" style="display:none;color:var(--green1);font-weight:600;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"> · Clear all</span></span>
+              </div>
+            </div>
+            <!-- Controls: search row (own zone) then a labelled filter zone of two chip rows -->
+            <div style="padding:12px 16px;">
+              <!-- Search — own row, capped width so it reads as event search, not a filter -->
+              <div style="position:relative;width:340px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:8px 30px 8px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+                <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+              </div>
+              <!-- Filter groups — single left-to-right stream with dividers, wraps only when out of room -->
+              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;margin-top:14px;">
+                <div id="recon-cr-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                  <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">CR:</span>
+                  <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-cr-chips','cr',null)">All CRs</div>
+                  <div class="recon-node-chip" data-val="none" data-active="false" onclick="pickReconChip(this,'recon-cr-chips','cr','none')">No CR</div>
+                  <div class="recon-node-chip" data-val="CHG0012345" data-active="false" onclick="pickReconChip(this,'recon-cr-chips','cr','CHG0012345')">CHG0012345</div>
+                </div>
+                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
+                <div id="recon-status-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                  <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Status:</span>
+                  <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-status-chips','status',null)">All statuses</div>
+                  <div class="recon-node-chip" data-val="unreconciled" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','unreconciled')">Unreconciled</div>
+                  <div class="recon-node-chip" data-val="flagged" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','flagged')">Flagged</div>
+                  <div class="recon-node-chip" data-val="reconciled" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','reconciled')">Reconciled</div>
+                </div>
+                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                  <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Node:</span>
+                  <div class="recon-node-chip recon-all" data-active="true" onclick="clearReconNodes()" title="Show all nodes">All nodes</div>
+                  <div class="recon-node-chip" data-node="MACBOOK-TARAS" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico"></span>MACBOOK-TARAS</div>
+                  <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico"></span>SARAH-LAPTOP-01</div>
+                </div>
+                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
+                <div id="recon-type-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                  <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Type:</span>
+                  <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-type-chips','type',null)">All types</div>
+                  <div class="recon-node-chip" data-val="modified" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','modified')">Modified</div>
+                  <div class="recon-node-chip" data-val="added" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','added')">Added</div>
+                  <div class="recon-node-chip" data-val="removed" data-active="false" onclick="pickReconChip(this,'recon-type-chips','type','removed')">Removed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active filters row — removable chips reflecting the current filter -->
+        <div id="changes-active-filters" style="display:none;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+          <span style="font-size:12px;color:var(--text-muted);flex-shrink:0;">Active filters</span>
+          <div id="changes-active-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"></div>
+          <span id="changes-clear-all" onclick="filterChanges('all')" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;flex-shrink:0;">Clear all</span>
+        </div>
+
         <!-- Bulk action bar — shown when 1+ drift items selected -->
-        <div id="drift-bulk-bar" style="display:none;align-items:center;gap:12px;padding:10px 16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:12px;">
-          <span id="drift-bulk-count" style="font-size:12px;font-weight:600;color:var(--text-default);">0 selected</span>
-          <div style="width:1px;height:16px;background:var(--border);"></div>
-          <button onclick="driftBulkAction('approve')" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;">Approve</button>
-          <button onclick="driftBulkAction('unapprove')" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;">Unapprove</button>
-          <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;margin-left:auto;">Clear selection</button>
+        <!-- Combined select-all + bulk actions — single row, no layout jump -->
+        <div id="drift-select-all-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-left:17px;">
+          <input type="checkbox" id="drift-select-all-cb" onclick="toggleSelectAllVisible(this)" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
+          <label for="drift-select-all-cb" style="font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;">Select all · <span id="drift-select-all-count">3</span> in view</label>
+          <div id="drift-bulk-bar" style="display:none;align-items:center;gap:12px;margin-left:auto;padding-right:4px;">
+            <span id="drift-bulk-count" style="font-size:12px;font-weight:600;color:var(--text-default);">0 selected</span>
+            <div style="width:1px;height:16px;background:var(--border);"></div>
+            <button onclick="driftBulkAction('approve')" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;">Approve</button>
+            <button onclick="driftBulkAction('unapprove')" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;">Unapprove</button>
+            <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;">Clear selection</button>
+          </div>
         </div>
 
         <!-- Drift items — neutral cards, color only in diff blocks -->
-        <div class="check-card" id="change-card-0" data-change-type="modified" onclick="openChange(0)">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
-              <div class="check-title">Windows Defender — Real-time protection</div>
-            </div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <div id="drift-cards">
+        <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" data-ts="7200" onclick="openChange(0)">
+          <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
+          <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
+          <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection disabled</div>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode('MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
+          </span>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
+          <span id="change-status-0" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);justify-self:start;white-space:nowrap;">Unreconciled</span>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
+            <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 7px;" title="This change has notes">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1
+            </span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-bottom:10px;">
-            <div style="flex:1;padding:8px 10px;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.5px;margin-bottom:3px;">BEFORE</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">Enabled</div>
-              <div style="font-size:10px;color:#15803d;">✓ CIS Pass</div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--p-neutral-400);">→</div>
-            <div style="flex:1;padding:8px 10px;background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#FB3C44;letter-spacing:0.5px;margin-bottom:3px;">AFTER</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">Disabled</div>
-              <div style="font-size:10px;color:#FB3C44;">✗ CIS Fail</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:11px;color:var(--text-sec);">Control 8.1 · Detected 2 hours ago</div>
-            <span id="change-status-0" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
-          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card" id="change-card-1" data-change-type="modified" onclick="openChange(1)">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
-              <div class="check-title">Screen lock timeout</div>
-            </div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="MACBOOK-TARAS" data-ts="14400" onclick="openChange(1)">
+          <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
+          <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
+          <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection reconciled</div>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode('MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
+          </span>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','CHG0012345')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">CHG0012345</span>
+          <span id="change-status-1" class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);justify-self:start;white-space:nowrap;">Reconciled</span>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
+            <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-bottom:10px;">
-            <div style="flex:1;padding:8px 10px;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.5px;margin-bottom:3px;">BEFORE</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">10 minutes</div>
-              <div style="font-size:10px;color:#15803d;">✓ CIS Pass</div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--p-neutral-400);">→</div>
-            <div style="flex:1;padding:8px 10px;background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#FB3C44;letter-spacing:0.5px;margin-bottom:3px;">AFTER</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">30 minutes</div>
-              <div style="font-size:10px;color:#FB3C44;">✗ CIS Fail</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:11px;color:var(--text-sec);">Control 1.2 · Detected 2 hours ago</div>
-            <span id="change-status-1" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
-          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card" id="change-card-2" data-change-type="added" onclick="openChange(2)">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-              <span class="badge" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;">Added</span>
-              <div class="check-title">New local user account created</div>
-              <span style="font-size:10px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 8px;white-space:nowrap;">Latest detected</span>
-            </div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" data-ts="5400" onclick="openChange(2)">
+          <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
+          <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','added')" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;justify-self:start;">Added</span>
+          <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">New local user account created</div>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode('MACBOOK-TARAS')" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>MACBOOK-TARAS
+          </span>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter('cr','none')" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
+          <span id="change-status-2" class="badge" style="background:rgba(251,60,68,0.1);color:#FB3C44;border:1px solid rgba(251,60,68,0.2);justify-self:start;white-space:nowrap;">Flagged</span>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
+            <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-bottom:10px;">
-            <div class="ch-before-empty" style="flex:1;padding:8px 10px;background:var(--bg-subtle);border:1px solid var(--border-default);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;margin-bottom:3px;">BEFORE</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">Not present</div>
-              <div style="font-size:10px;color:var(--text-sec);">—</div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--p-neutral-400);">→</div>
-            <div style="flex:1;padding:8px 10px;background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:6px;">
-              <div style="font-size:9px;font-weight:700;color:#FB3C44;letter-spacing:0.5px;margin-bottom:3px;">AFTER</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">user_temp</div>
-              <div style="font-size:10px;color:#FB3C44;">Admin privileges</div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        </div><!-- /drift-cards -->
+
+        <!-- Pagination footer — hidden when all items fit on one page -->
+        <div id="drift-pagination-footer" style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:var(--text-sec);">Rows per page</span>
+            <div style="position:relative;">
+              <div id="drift-rpp-btn" onclick="toggleDriftRpp(event)" style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;user-select:none;white-space:nowrap;">
+                <span id="drift-rpp-label">10</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div id="drift-rpp-dropdown" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;min-width:70px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 6px 20px rgba(0,0,0,0.12);overflow:hidden;z-index:30;">
+                <div onclick="pickRpp('10')" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='transparent'">10</div>
+                <div onclick="pickRpp('25')" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='transparent'">25</div>
+                <div onclick="pickRpp('50')" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='transparent'">50</div>
+              </div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:11px;color:var(--text-sec);">Control 5.4 · Detected 2 hours ago</div>
-            <span id="change-status-2" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Pending</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span id="drift-page-range" style="font-size:12px;color:var(--text-sec);">1–3 of 3</span>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);color:var(--p-neutral-400);cursor:not-allowed;opacity:0.55;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);color:var(--p-neutral-400);cursor:not-allowed;opacity:0.55;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -10033,10 +10144,55 @@ body.dark .theme-toggle .icon-moon { display: none; }
   </div>
 </div>
 
+<!-- Create incident modal (#3 — drift detail) -->
+<div id="incident-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeIncidentModal()">
+  <div style="background:var(--bg-surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:480px;max-width:calc(100vw - 40px);padding:28px;animation:fadeUp 0.2s ease;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+      <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Create incident</div>
+      <button onclick="closeIncidentModal()" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text-sec);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="font-size:12px;color:var(--text-sec);margin-bottom:20px;">Create an incident for this unreconciled drift event.</div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Title</div>
+      <input id="incident-title" class="form-input" type="text" value="Windows Defender real-time protection disabled on MACBOOK-TARAS">
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Description</div>
+      <textarea id="incident-desc" class="form-input" rows="3" style="resize:vertical;">Real-time protection was disabled on MACBOOK-TARAS, breaking CIS control 8.1. Detected in the latest scan with no matching change request.</textarea>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Linked drift event</div>
+      <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">Windows Defender — Real-time protection · Control 8.1</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Node</div>
+        <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">MACBOOK-TARAS</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Severity</div>
+        <select id="incident-severity" class="form-input" style="cursor:pointer;">
+          <option>Critical</option>
+          <option selected>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;">
+      <button onclick="closeIncidentModal()" style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:8px 16px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-sec);font-family:inherit;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='var(--bg-surface)'">Cancel</button>
+      <button onclick="createIncident()" class="btn-primary" style="padding:8px 18px;font-size:12px;width:auto;">Create incident</button>
+    </div>
+  </div>
+</div>
+
 <div class="screen-lbl" id="lbl">s01 · Landing</div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
+const ALL = ['s01','s02','s05','s07','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','settings-integrations','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-importing','cmdb-complete'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Device',
   s05:'s05 · Install Agent',
@@ -10047,6 +10203,7 @@ const LABELS = {
   'change-detail':'s13 · Change Detail',
   'change-approve':'s14 · Approve Change',
   'change-unapprove':'s15 · Unapprove Change',
+  'cr-audit':'Change Request Audit',
   'changes-done':'s16 · All Reconciled',
   'all-devices':'s10 · All Nodes',
   'node-detail':'Node · MACBOOK-TARAS',
@@ -10165,16 +10322,34 @@ function go(key) {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
     const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
       changes:'sb-changes','change-detail':'sb-changes','change-approve':'sb-changes',
-      'change-unapprove':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
+      'change-unapprove':'sb-changes','cr-audit':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
       'node-detail':'sb-all-devices','j3-connect-failed':'sb-all-devices',
       'policies':'sb-policies','policy-create':'sb-policies','policy-detail':'sb-policies','policy-edit':'sb-policies',
       'policy-assign':'sb-policies','add-check':'sb-policies','edit-check':'sb-policies' };
     const sb = document.getElementById(map[key]);
     if (sb) sb.classList.add('active');
   }
+  _currentView = key;
+}
+
+// Referrer tracking — node-detail Back returns to wherever the user came from
+var _currentView = 'dashboard';
+var _nodeRef = 'all-devices';
+var NODE_REF = {
+  'all-devices':  { label: 'All Nodes',      view: 'all-devices' },
+  'changes':      { label: 'Detected Drift', view: 'changes' },
+  'change-detail':{ label: 'Change Detail',  view: 'change-detail' }
+};
+function nodeDetailBack() {
+  var ref = NODE_REF[_nodeRef] ? _nodeRef : 'all-devices';
+  showView(ref);
 }
 
 function showView(name) {
+  // Capture the view we're leaving as the node-detail referrer (fallback: All Devices)
+  if (name === 'node-detail' && _currentView && _currentView !== 'node-detail') {
+    _nodeRef = NODE_REF[_currentView] ? _currentView : 'all-devices';
+  }
   const isJ3Nav = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(name);
   const isJ4Nav = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(name);
   const isJ3Sidebar = ['j3-no-resources','j3-manual-match','j3-scan-failed'].includes(name);
@@ -10199,13 +10374,21 @@ function showView(name) {
     'edit-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Edit Check</span>`,
     'change-detail': `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">Windows Defender — Real-time protection</span>`,
     'change-approve': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Approve Change</span>`,
+    'cr-audit': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">CHG0012345 Audit</span>`,
   };
   const _nb = document.getElementById('nav-breadcrumb');
-  if (_nb) { const _bc = _BC[name]; if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; } }
+  if (_nb) {
+    let _bc = _BC[name];
+    if (name === 'node-detail') {
+      const _r = NODE_REF[_nodeRef] || NODE_REF['all-devices'];
+      _bc = `<span class="bc-link" onclick="showView('${_r.view}')">${_r.label}</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>`;
+    }
+    if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
+  }
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
     changes:'sb-changes', 'change-detail':'sb-changes', 'change-approve':'sb-changes',
-    'change-unapprove':'sb-changes', 'changes-done':'sb-changes', 'all-devices':'sb-all-devices',
+    'change-unapprove':'sb-changes', 'cr-audit':'sb-changes', 'changes-done':'sb-changes', 'all-devices':'sb-all-devices',
     'j3-no-resources':'sb-all-devices', 'j3-manual-match':'sb-all-devices', 'j3-scan-failed':'sb-all-devices',
     'policies':'sb-policies', 'policy-create':'sb-policies', 'policy-detail':'sb-policies', 'policy-edit':'sb-policies',
     'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies',
@@ -10216,6 +10399,7 @@ function showView(name) {
   if (isJ4Nav) updateJ4Nav(name);
   document.getElementById('lbl').textContent = LABELS[name] || name;
   if (name === 'changes') {
+    applyDriftFilters();
     setTimeout(() => {
       const latest = document.getElementById('change-card-2');
       if (latest) latest.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -10227,6 +10411,7 @@ function showView(name) {
   if (name === 'policy-create') {
     setTimeout(() => pcGoStep(1), 10);
   }
+  _currentView = name;
 }
 
 var remedChecks = [
@@ -10326,11 +10511,98 @@ let currentChangeIdx = 0;
 let approvedCount = 0;
 let flaggedCount = 0;
 
+// Per-event detail data — change-detail is populated from the clicked drift item
+var CHANGE_DATA = [
+  { // 0 — Windows Defender real-time protection
+    title: 'Windows Defender — Real-time protection disabled',
+    node: 'MACBOOK-TARAS',
+    detected: '· Detected today at 14:23 · Scheduled scan',
+    recon: 'unreconciled', type: 'modified',
+    control: 'Control 8.1 · Malware Defenses · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span>',
+    before: { val:'Enabled', status:'✓ CIS Pass', sub:'Real-time scanning active' },
+    after:  { val:'Disabled', status:'✗ CIS Fail', sub:'Real-time scanning off' },
+    score: { from:'78', to:'74', delta:'−4 pts' },
+    detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
+    impact: 'Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.',
+    cr: 'nocr',
+    notes: [
+      { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration, CR pending.' }
+    ]
+  },
+  { // 1 — Windows Defender reconciled via CHG0012345
+    title: 'Windows Defender — Real-time protection reconciled',
+    node: 'MACBOOK-TARAS',
+    detected: '· Detected today at 14:23 · Scheduled scan',
+    recon: 'reconciled', type: 'modified',
+    control: 'Control 8.1 · Malware Defenses · <span style="color:#15803d;font-weight:600;">Reconciled</span>',
+    before: { val:'Enabled', status:'✓ CIS Pass', sub:'Real-time scanning active' },
+    after:  { val:'Disabled', status:'✗ CIS Fail', sub:'Real-time scanning off' },
+    score: { from:'78', to:'74', delta:'−4 pts' },
+    detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
+    impact: 'Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.',
+    cr: 'matched',
+    notes: [
+      { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration.' },
+      { author:'bambuk@cloudhouse.io', time:'1 day ago', text:'Reconciled against CHG0012345 — AV Software Migration. Closing as expected.' }
+    ]
+  },
+  { // 2 — New local user account
+    title: 'New local user account created',
+    node: 'MACBOOK-TARAS',
+    detected: '· Detected today at 13:40 · Scheduled scan',
+    recon: 'flagged', type: 'added',
+    control: 'Control 5.1 · Account Management · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span>',
+    before: { val:'Not present', status:'✓ Baseline', sub:'Account did not exist' },
+    after:  { val:'svc-helpdesk', status:'✗ Unauthorized', sub:'Local account added' },
+    score: { from:'74', to:'70', delta:'−4 pts' },
+    detby: { method:'Scheduled scan', detail:'Today 13:40 · Process: lusrmgr' },
+    impact: 'An unexpected local account — particularly with elevated rights — can serve as a backdoor for persistent access.',
+    cr: 'nocr',
+    notes: [
+      { author:'John Smith', time:'1 day ago', text:'Account "svc-helpdesk" not recognised by IT — flagged for review with the service-desk owner.' }
+    ]
+  }
+];
+var CD_TYPE = {
+  modified: { label:'Modified', bg:'#fff7ed', color:'#c2410c', border:'#fed7aa' },
+  added:    { label:'Added',    bg:'#eff6ff', color:'#2563eb', border:'#bfdbfe' },
+  removed:  { label:'Removed',  bg:'#fef2f2', color:'#dc2626', border:'#fecaca' }
+};
+var CD_RECON = {
+  unreconciled: { label:'Unreconciled', bg:'var(--bg-canvas)', color:'var(--text-sec)', border:'var(--border)' },
+  reconciled:   { label:'Reconciled', bg:'rgba(37,167,96,0.1)', color:'#15803d', border:'rgba(37,167,96,0.2)' },
+  flagged:      { label:'Flagged', bg:'rgba(251,60,68,0.1)', color:'#FB3C44', border:'rgba(251,60,68,0.2)' }
+};
+function renderChangeDetail(idx) {
+  const d = CHANGE_DATA[idx];
+  if (!d) return;
+  const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  set('cd-title', d.title);
+  set('cd-node', d.node);
+  set('cd-detected', d.detected);
+  set('cd-control', d.control);
+  set('cd-before-val', d.before.val); set('cd-before-status', d.before.status); set('cd-before-sub', d.before.sub);
+  set('cd-after-val', d.after.val); set('cd-after-status', d.after.status); set('cd-after-sub', d.after.sub);
+  set('cd-score-from', d.score.from); set('cd-score-to', d.score.to); set('cd-score-delta', d.score.delta);
+  set('cd-detby-method', d.detby.method); set('cd-detby-detail', d.detby.detail);
+  set('cd-impact', d.impact);
+  const t = CD_TYPE[d.type] || CD_TYPE.modified;
+  const tb = document.getElementById('cd-type-badge');
+  if (tb) { tb.textContent = t.label; tb.style.background = t.bg; tb.style.color = t.color; tb.style.border = '1px solid ' + t.border; }
+  const r = CD_RECON[d.recon] || CD_RECON.unreconciled;
+  const rb = document.getElementById('cd-recon-status');
+  if (rb) { rb.textContent = r.label; rb.style.background = r.bg; rb.style.color = r.color; rb.style.border = '1px solid ' + r.border; }
+  const nb = document.getElementById('nav-breadcrumb');
+  if (nb) nb.innerHTML = `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">${d.title}</span>`;
+  setCrState(d.cr);
+  changeNotes = (d.notes || []).map(function(n) { return { author:n.author, time:n.time, text:n.text }; });
+  renderChangeNotes();
+}
 function openChange(idx) {
   currentChangeIdx = idx;
-  const pending = changeStatuses.filter(s => s === 'pending').length;
   document.getElementById('change-progress').textContent = 'Change ' + (idx + 1) + ' of 3';
   showView('change-detail');
+  renderChangeDetail(idx);
 }
 
 // ── Remediation rescan flow ──
@@ -11020,6 +11292,134 @@ function skipChange() {
   showView('changes');
 }
 
+// Incident creation (#3) — manual incident from an unreconciled drift event (change-detail)
+function openIncidentModal() {
+  const m = document.getElementById('incident-modal');
+  if (m) m.style.display = 'flex';
+}
+function closeIncidentModal() {
+  const m = document.getElementById('incident-modal');
+  if (m) m.style.display = 'none';
+}
+function createIncident() {
+  closeIncidentModal();
+  // Replace the action with a linked-incident status chip
+  const wrap = document.getElementById('incident-action-wrap');
+  if (wrap) {
+    wrap.innerHTML = '<span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--text-default);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:5px 12px;"><span style="width:7px;height:7px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></span>INC-0001 · Open</span>';
+  }
+  showToast('Incident created · INC-0001');
+}
+
+// Change Notes — audit trail on the change-detail view (separate from approve/reject reason)
+let changeNotes = [
+  { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration, CR pending.' }
+];
+function _escNote(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function renderChangeNotes() {
+  const list = document.getElementById('change-notes-list');
+  const count = document.getElementById('change-notes-count');
+  if (count) count.textContent = changeNotes.length === 0 ? '' : (changeNotes.length === 1 ? '1 note' : changeNotes.length + ' notes');
+  if (!list) return;
+  if (changeNotes.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-muted);font-style:italic;">No notes yet.</div>';
+    return;
+  }
+  list.innerHTML = changeNotes.map(function(n, i) {
+    return '<div style="' + (i === 0 ? '' : 'border-top:1px solid var(--border);') + 'padding:' + (i === 0 ? '0 0 6px' : '12px 0 6px') + ';">' +
+      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">' +
+        '<span style="font-size:12px;font-weight:600;color:var(--text-default);">' + _escNote(n.author) + '</span>' +
+        '<span style="font-size:11px;color:var(--text-muted);">· ' + _escNote(n.time) + '</span>' +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text-sec);line-height:1.55;">' + _escNote(n.text) + '</div>' +
+    '</div>';
+  }).join('');
+}
+function openNoteComposer() {
+  const add = document.getElementById('change-note-add');
+  const composer = document.getElementById('change-note-composer');
+  if (add) add.style.display = 'none';
+  if (composer) composer.style.display = 'block';
+  const inp = document.getElementById('change-note-input');
+  if (inp) inp.focus();
+}
+function cancelNote() {
+  const add = document.getElementById('change-note-add');
+  const composer = document.getElementById('change-note-composer');
+  const inp = document.getElementById('change-note-input');
+  if (inp) inp.value = '';
+  if (composer) composer.style.display = 'none';
+  if (add) add.style.display = 'inline-flex';
+}
+function addChangeNote() {
+  const inp = document.getElementById('change-note-input');
+  if (!inp) return;
+  const val = inp.value.trim();
+  if (!val) return;
+  changeNotes.push({ author:'bambuk@cloudhouse.io', time:'Just now', text:val });
+  inp.value = '';
+  renderChangeNotes();
+  cancelNote();
+}
+renderChangeNotes();
+
+// CR-match block — demo-only state machine (matched / pending / multiple / nocr / notconfigured)
+const CR_STATES = {
+  matched: {
+    border:'var(--border)', iconColor:'var(--text-sec)',
+    icon:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+    title:'ServiceNow CR matched', main:'CHG0012345 — AV Software Migration', sub:'Approved · 2 days ago · John Smith',
+    right:'<span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span>'
+      + '<span onclick="showView(\'cr-audit\')" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">View audit &#8594;</span>'
+  },
+  pending: {
+    border:'rgba(217,119,6,0.45)', iconColor:'#d97706',
+    icon:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    title:'Possible CR match found', main:'CHG0012345 — AV Software Migration', sub:'Awaiting confirmation',
+    right:'<span style="font-size:11px;font-weight:600;color:#d97706;white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Confirm match &#8594;</span>'
+  },
+  multiple: {
+    border:'rgba(217,119,6,0.45)', iconColor:'#d97706',
+    icon:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+    title:'', main:'3 possible CR matches', sub:'Select the approved Change Request that explains this drift.',
+    right:'<span style="font-size:11px;font-weight:600;color:#d97706;white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Review matches &#8594;</span>'
+  },
+  nocr: {
+    border:'rgba(217,119,6,0.4)', iconColor:'#d97706',
+    icon:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    title:'', main:'No matching Change Request found', sub:'This drift has not been matched to an approved change.',
+    right:'<span style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Match manually &#8594;</span>'
+  },
+  notconfigured: {
+    border:'var(--border)', iconColor:'var(--text-muted)',
+    icon:'<path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>',
+    title:'', main:'ServiceNow is not configured', sub:'Connect a service management tool to auto-match drift events with approved Change Requests.',
+    right:'<span onclick="go(\'j4-connect\')" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Configure service management &#8594;</span>'
+  }
+};
+function setCrState(state) {
+  const s = CR_STATES[state] || CR_STATES.matched;
+  const block = document.getElementById('cd-cr-block');
+  if (block) {
+    block.innerHTML =
+      '<div style="display:flex;align-items:center;gap:12px;background:var(--bg-surface);border:1px solid ' + s.border + ';border-radius:10px;padding:14px 16px;">'
+      + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="' + s.iconColor + '" stroke-width="1.5" style="flex-shrink:0;">' + s.icon + '</svg>'
+      + '<div style="flex:1;">'
+        + (s.title ? '<div style="font-size:11px;color:var(--text-sec);margin-bottom:2px;">' + s.title + '</div>' : '')
+        + '<div style="font-size:12px;font-weight:600;color:var(--text-default);">' + s.main + '</div>'
+        + (s.sub ? '<div style="font-size:11px;color:var(--text-sec);line-height:1.45;">' + s.sub + '</div>' : '')
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">' + s.right + '</div>'
+      + '</div>';
+  }
+  document.querySelectorAll('.cr-demo-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.cr === state);
+  });
+}
+setCrState('matched');
+
 function approveChange() {
   changeStatuses[currentChangeIdx] = 'approved';
   approvedCount++;
@@ -11039,10 +11439,14 @@ function flagChange() {
 }
 
 function searchChanges(query) {
-  const q = query.toLowerCase().trim();
-  document.querySelectorAll('.check-card[id^="change-card-"]').forEach(card => {
-    card.style.display = (!q || card.textContent.toLowerCase().includes(q)) ? '' : 'none';
-  });
+  const q = (query || '').trim();
+  if (q) {
+    const esc = q.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+    driftSearch = { include: [new RegExp(esc, 'i')], exclude: [] };
+  } else {
+    driftSearch = { include: [], exclude: [] };
+  }
+  applyDriftFilters();
 }
 
 function toggleChangesSort(btn) {
@@ -11069,6 +11473,53 @@ function pickSort(el, label) {
   document.getElementById('changes-sort-label').textContent = label;
   document.getElementById('changes-sort-dropdown').style.display = 'none';
   sortChanges(el.dataset.val);
+}
+
+let driftGroupBy = 'none';
+function toggleChangesGroup(btn) {
+  var dd = document.getElementById('changes-group-dropdown');
+  var open = dd.style.display !== 'none';
+  dd.style.display = open ? 'none' : 'block';
+  if (!open) {
+    setTimeout(function() {
+      document.addEventListener('click', function h(e) {
+        if (!dd.contains(e.target) && e.target !== btn) { dd.style.display = 'none'; document.removeEventListener('click', h); }
+      });
+    }, 10);
+  }
+}
+function pickGroup(el, label) {
+  document.querySelectorAll('.group-opt').forEach(function(o) {
+    o.classList.remove('group-opt-active');
+    o.querySelector('.group-check').style.visibility = 'hidden';
+    o.style.background = '';
+  });
+  el.classList.add('group-opt-active');
+  el.querySelector('.group-check').style.visibility = 'visible';
+  el.style.background = 'rgba(0,175,115,0.08)';
+  document.getElementById('changes-group-label').textContent = 'Group: ' + label;
+  document.getElementById('changes-group-dropdown').style.display = 'none';
+  driftGroupBy = el.dataset.val;
+  applyDriftFilters();
+}
+
+function toggleDriftRpp(e) {
+  if (e) e.stopPropagation();
+  var dd = document.getElementById('drift-rpp-dropdown');
+  var btn = document.getElementById('drift-rpp-btn');
+  var open = dd.style.display !== 'none';
+  dd.style.display = open ? 'none' : 'block';
+  if (!open) {
+    setTimeout(function() {
+      document.addEventListener('click', function h(ev) {
+        if (!dd.contains(ev.target) && !btn.contains(ev.target)) { dd.style.display = 'none'; document.removeEventListener('click', h); }
+      });
+    }, 10);
+  }
+}
+function pickRpp(val) {
+  document.getElementById('drift-rpp-label').textContent = val;
+  document.getElementById('drift-rpp-dropdown').style.display = 'none';
 }
 
 function filterDriftNodes(q) {
@@ -11104,22 +11555,66 @@ function selectDriftNode(el) {
   var lbl = document.getElementById('drift-filter-active-label');
   if (lbl) { lbl.textContent = isAll ? '' : ' · Node'; lbl.style.color = 'var(--green1)'; }
   var scope = document.getElementById('drift-scope-label');
-  if (scope) scope.textContent = isAll ? 'All nodes · 14 monitored' : 'Showing drift for ' + el.getAttribute('data-val');
+  if (scope) scope.textContent = isAll ? '' : 'Showing drift for ' + el.getAttribute('data-val');
+  var scopeChip = document.getElementById('drift-scope-chip');
+  if (scopeChip) scopeChip.style.display = isAll ? 'none' : 'inline-flex';
+  var scopeDivider = document.getElementById('drift-scope-divider');
+  if (scopeDivider) scopeDivider.style.display = isAll ? 'none' : 'block';
+  var scopeClear = document.getElementById('drift-scope-clear');
+  if (scopeClear) scopeClear.style.display = isAll ? 'none' : 'inline';
+}
+function clearDriftScope() {
+  var allOpt = document.querySelector('.drift-node-opt[data-val="all"]');
+  if (allOpt) selectDriftNode(allOpt);
 }
 function updateDriftFilterLabel() {}
 function updateDriftBulkBar() {
-  var cbs = document.querySelectorAll('.drift-select-cb:checked');
   var bar = document.getElementById('drift-bulk-bar');
-  var cnt = document.getElementById('drift-bulk-count');
   if (!bar) return;
-  bar.style.display = cbs.length > 0 ? 'flex' : 'none';
-  if (cnt) cnt.textContent = cbs.length + ' selected';
+  var visible = [], checked = [];
+  for (var i = 0; i < 3; i++) {
+    var card = document.getElementById('change-card-' + i);
+    if (!card || card.style.display === 'none') continue;
+    visible.push(i);
+    var sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]');
+    if (sel && sel.checked) checked.push(i);
+  }
+  bar.style.display = checked.length > 0 ? 'flex' : 'none';
+  var cnt = document.getElementById('drift-bulk-count');
+  if (cnt) cnt.textContent = checked.length + ' selected';
+  // Master "select all" — checked / indeterminate / unchecked
+  var master = document.getElementById('drift-select-all-cb');
+  if (master) {
+    master.checked = visible.length > 0 && checked.length === visible.length;
+    master.indeterminate = checked.length > 0 && checked.length < visible.length;
+  }
+  // Keep group-header checkboxes in sync with their cards
+  document.querySelectorAll('.drift-group-cb').forEach(function(g) {
+    var idxs = (g.dataset.idxs || '').split(',').filter(Boolean);
+    var on = idxs.filter(function(ix) {
+      var s = document.querySelector('.drift-select-cb[data-idx="' + ix + '"]');
+      return s && s.checked;
+    });
+    g.checked = idxs.length > 0 && on.length === idxs.length;
+    g.indeterminate = on.length > 0 && on.length < idxs.length;
+  });
+}
+// Master select-all — selects every currently filtered (visible) drift event
+function toggleSelectAllVisible(cb) {
+  for (var i = 0; i < 3; i++) {
+    var card = document.getElementById('change-card-' + i);
+    if (!card || card.style.display === 'none') continue;
+    var sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]');
+    if (sel) sel.checked = cb.checked;
+  }
+  updateDriftBulkBar();
 }
 function driftBulkAction(action) {
   var cbs = document.querySelectorAll('.drift-select-cb:checked');
   cbs.forEach(function(cb) {
     var idx = cb.getAttribute('data-idx');
     var statusEl = document.getElementById('change-status-' + idx);
+    var card = document.getElementById('change-card-' + idx);
     if (statusEl) {
       if (action === 'approve') {
         statusEl.textContent = 'Approved';
@@ -11127,87 +11622,483 @@ function driftBulkAction(action) {
         statusEl.style.color = '#00AF73';
         statusEl.style.borderColor = 'rgba(0,175,115,0.3)';
       } else {
-        statusEl.textContent = 'Pending';
+        statusEl.textContent = 'Unreconciled';
         statusEl.style.background = 'var(--bg-canvas)';
         statusEl.style.color = 'var(--text-sec)';
         statusEl.style.borderColor = 'var(--border)';
       }
     }
+    // Reflect reconciliation state so Hide handled / counts react to the action
+    if (card) {
+      if (action === 'approve') {
+        if (!card.dataset.reconOrig) card.dataset.reconOrig = card.dataset.recon;
+        card.dataset.recon = 'approved';
+      } else if (card.dataset.reconOrig) {
+        card.dataset.recon = card.dataset.reconOrig;
+        delete card.dataset.reconOrig;
+      }
+    }
     cb.checked = false;
   });
-  updateDriftBulkBar();
+  applyDriftFilters();
 }
 function driftClearSelection() {
   document.querySelectorAll('.drift-select-cb').forEach(function(cb){ cb.checked = false; });
   updateDriftBulkBar();
 }
-function toggleChangesFilter() {
-  const dd = document.getElementById('changes-filter-dropdown');
-  if (dd) dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+// Reconciliation mode (F5) — same-page switch: hide summary toolbar, show reconcile panel
+let driftReconcileMode = false;
+function enterReconcileMode() {
+  driftReconcileMode = true;
+  const tb = document.getElementById('drift-summary-toolbar');
+  const panel = document.getElementById('drift-reconcile-panel');
+  const banner = document.getElementById('sn-reconcile-banner');
+  if (tb) tb.style.display = 'none';
+  if (panel) panel.style.display = 'block';
+  if (banner) banner.style.display = 'none';
+  updateReconFilterCount();
+}
+function exitReconcileMode() {
+  driftReconcileMode = false;
+  const tb = document.getElementById('drift-summary-toolbar');
+  const panel = document.getElementById('drift-reconcile-panel');
+  const banner = document.getElementById('sn-reconcile-banner');
+  if (tb) tb.style.display = 'flex';
+  if (panel) panel.style.display = 'none';
+  if (banner) banner.style.display = 'flex';
+  clearReconSearch();
+  clearReconNodes();
+  clearReconChips();
+}
+
+// Compound search (F5b) — include / -exclude / wildcard*
+let driftSearch = { include: [], exclude: [] };
+function _reconTermToRegex(t) {
+  const esc = t.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
+  return new RegExp(esc, 'i');
+}
+function applyReconSearch(raw) {
+  const inc = [], exc = [];
+  (raw || '').trim().split(/\s+/).filter(Boolean).forEach(function(tok) {
+    if (tok.length > 1 && tok[0] === '-') exc.push(_reconTermToRegex(tok.slice(1)));
+    else inc.push(_reconTermToRegex(tok));
+  });
+  driftSearch = { include: inc, exclude: exc };
+  const clr = document.getElementById('recon-search-clear');
+  if (clr) clr.style.display = (raw && raw.length) ? 'inline' : 'none';
+  applyDriftFilters();
+}
+function clearReconSearch() {
+  const inp = document.getElementById('recon-search');
+  if (inp) inp.value = '';
+  driftSearch = { include: [], exclude: [] };
+  const clr = document.getElementById('recon-search-clear');
+  if (clr) clr.style.display = 'none';
+  applyDriftFilters();
+}
+// Node include / exclude (F5c) — tri-state chips: off → include → exclude → off
+let driftNode = { include: [], exclude: [] };
+function cycleReconNode(chip) {
+  const node = chip.dataset.node;
+  const next = chip.dataset.state === 'off' ? 'include' : (chip.dataset.state === 'include' ? 'exclude' : 'off');
+  chip.dataset.state = next;
+  const ico = chip.querySelector('.recon-node-ico');
+  if (ico) ico.textContent = next === 'include' ? '\u2713' : (next === 'exclude' ? '\u2715' : '');
+  driftNode.include = driftNode.include.filter(n => n !== node);
+  driftNode.exclude = driftNode.exclude.filter(n => n !== node);
+  if (next === 'include') driftNode.include.push(node);
+  else if (next === 'exclude') driftNode.exclude.push(node);
+  const clr = document.getElementById('recon-node-clear');
+  if (clr) clr.style.display = (driftNode.include.length || driftNode.exclude.length) ? 'inline' : 'none';
+  _syncReconAllChip();
+  applyDriftFilters();
+}
+// "All nodes" chip = active (default) when no specific node include/exclude is set
+function _syncReconAllChip() {
+  const all = document.querySelector('.recon-node-chip.recon-all');
+  if (all) all.dataset.active = (driftNode.include.length || driftNode.exclude.length) ? 'false' : 'true';
+}
+function clearReconNodes() {
+  driftNode = { include: [], exclude: [] };
+  document.querySelectorAll('.recon-node-chip').forEach(function(chip) {
+    if (chip.classList.contains('recon-all')) return;
+    chip.dataset.state = 'off';
+    const ico = chip.querySelector('.recon-node-ico');
+    if (ico) ico.textContent = '';
+  });
+  const clr = document.getElementById('recon-node-clear');
+  if (clr) clr.style.display = 'none';
+  _syncReconAllChip();
+  applyDriftFilters();
+}
+// Embedded node pills route here so the top node chip lights up via the same driftNode state
+function selectReconNode(node) {
+  driftNode = { include: [node], exclude: [] };
+  document.querySelectorAll('.recon-node-chip[data-node]').forEach(function(chip) {
+    const on = chip.dataset.node === node;
+    chip.dataset.state = on ? 'include' : 'off';
+    const ico = chip.querySelector('.recon-node-ico');
+    if (ico) ico.textContent = on ? '\u2713' : '';
+  });
+  const clr = document.getElementById('recon-node-clear');
+  if (clr) clr.style.display = 'inline';
+  _syncReconAllChip();
+  applyDriftFilters();
+}
+// Keep the top CR / Status / Type chip groups' active state in sync with driftFilters,
+// so embedded-pill clicks (setDriftFilter) light the matching top chip too
+function _syncReconTopChips() {
+  [['recon-cr-chips','cr'],['recon-status-chips','status'],['recon-type-chips','type']].forEach(function(p) {
+    const group = document.getElementById(p[0]);
+    if (!group) return;
+    const active = driftFilters[p[1]] || null;
+    group.querySelectorAll('.recon-node-chip').forEach(function(c) {
+      c.dataset.active = ((c.dataset.val || null) === active) ? 'true' : 'false';
+    });
+  });
+}
+
+// Advanced filter chip groups (CR / Type / Status)
+function pickReconChip(el, groupId, dim, val) {
+  const group = document.getElementById(groupId);
+  if (group) {
+    group.querySelectorAll('.recon-node-chip').forEach(function(c) { c.dataset.active = 'false'; });
+  }
+  el.dataset.active = 'true';
+  driftFilters[dim] = val;
+  applyDriftFilters();
+}
+function clearReconChips() {
+  ['recon-cr-chips','recon-type-chips','recon-status-chips'].forEach(function(groupId) {
+    var dim = groupId === 'recon-cr-chips' ? 'cr' : groupId === 'recon-type-chips' ? 'type' : 'status';
+    driftFilters[dim] = null;
+    var group = document.getElementById(groupId);
+    if (!group) return;
+    var chips = group.querySelectorAll('.recon-node-chip');
+    chips.forEach(function(c, i) { c.dataset.active = i === 0 ? 'true' : 'false'; });
+  });
+}
+// Active-filter count + global reset for the reconciliation panel header
+function updateReconFilterCount() {
+  const countEl = document.getElementById('recon-filter-count');
+  if (!countEl) return;
+  let n = 0;
+  if (driftSearch.include.length || driftSearch.exclude.length) n++;
+  if (driftFilters.cr) n++;
+  if (driftFilters.type) n++;
+  if (driftFilters.status) n++;
+  if (driftNode.include.length || driftNode.exclude.length) n++;
+  countEl.textContent = n + (n === 1 ? ' filter active' : ' filters active');
+  const clearEl = document.getElementById('recon-clear-all');
+  if (clearEl) clearEl.style.display = n > 0 ? 'inline' : 'none';
+}
+function clearAllReconFilters() {
+  clearReconSearch();
+  clearReconChips();
+  clearReconNodes();
+}
+
+// Save view (F5d) — capture current search + node filters as a named, re-applicable chip (in-memory)
+let reconSavedViews = [];
+function reconHasActiveFilters() {
+  const q = (document.getElementById('recon-search') || {}).value || '';
+  return !!q.trim() || driftNode.include.length > 0 || driftNode.exclude.length > 0;
+}
+function updateSaveViewBtn() {
+  const btn = document.getElementById('recon-save-btn');
+  if (!btn) return;
+  const on = reconHasActiveFilters();
+  btn.style.opacity = on ? '1' : '0.5';
+  btn.style.pointerEvents = on ? 'auto' : 'none';
+  if (on) { btn.style.borderColor = 'var(--green1)'; btn.style.color = 'var(--green1)'; }
+  else { btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text-sec)'; }
+}
+function _autoViewName() {
+  const parts = [];
+  const q = ((document.getElementById('recon-search') || {}).value || '').trim();
+  if (q) parts.push(q);
+  if (driftNode.include.length) parts.push('+' + driftNode.include.join(','));
+  if (driftNode.exclude.length) parts.push('\u2212' + driftNode.exclude.join(','));
+  return parts.join(' \u00b7 ') || 'Saved view';
+}
+function openSaveView() {
+  if (!reconHasActiveFilters()) return;
+  document.getElementById('recon-save-btn').style.display = 'none';
+  const wrap = document.getElementById('recon-save-input-wrap');
+  wrap.style.display = 'flex';
+  const inp = document.getElementById('recon-save-name');
+  inp.value = _autoViewName();
+  inp.focus();
+  inp.select();
+}
+function cancelSaveView() {
+  document.getElementById('recon-save-input-wrap').style.display = 'none';
+  document.getElementById('recon-save-name').value = '';
+  document.getElementById('recon-save-btn').style.display = 'inline-flex';
+}
+function saveReconView() {
+  const name = (document.getElementById('recon-save-name').value || '').trim() || _autoViewName();
+  reconSavedViews.push({
+    name: name,
+    search: ((document.getElementById('recon-search') || {}).value || ''),
+    include: driftNode.include.slice(),
+    exclude: driftNode.exclude.slice()
+  });
+  renderSavedViews();
+  cancelSaveView();
+}
+function renderSavedViews() {
+  const row = document.getElementById('recon-saved-row');
+  const chips = document.getElementById('recon-saved-chips');
+  if (!row || !chips) return;
+  if (reconSavedViews.length === 0) { row.style.display = 'none'; chips.innerHTML = ''; return; }
+  row.style.display = 'flex';
+  chips.innerHTML = reconSavedViews.map(function(v, i) {
+    return '<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:20px;background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);">' +
+      '<span onclick="applySavedView(' + i + ')" style="cursor:pointer;">' + v.name.replace(/</g, '&lt;') + '</span>' +
+      '<span onclick="deleteSavedView(' + i + ')" title="Delete view" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;" onmouseover="this.style.color=\'var(--text-default)\'" onmouseout="this.style.color=\'var(--text-muted)\'">&times;</span>' +
+      '</span>';
+  }).join('');
+}
+function applySavedView(i) {
+  const v = reconSavedViews[i];
+  if (!v) return;
+  const inp = document.getElementById('recon-search');
+  if (inp) inp.value = v.search;
+  // restore node chip states
+  document.querySelectorAll('.recon-node-chip').forEach(function(chip) {
+    const n = chip.dataset.node;
+    const state = v.include.indexOf(n) !== -1 ? 'include' : (v.exclude.indexOf(n) !== -1 ? 'exclude' : 'off');
+    chip.dataset.state = state;
+    const ico = chip.querySelector('.recon-node-ico');
+    if (ico) ico.textContent = state === 'include' ? '\u2713' : (state === 'exclude' ? '\u2715' : '');
+  });
+  driftNode = { include: v.include.slice(), exclude: v.exclude.slice() };
+  const ndClr = document.getElementById('recon-node-clear');
+  if (ndClr) ndClr.style.display = (driftNode.include.length || driftNode.exclude.length) ? 'inline' : 'none';
+  applyReconSearch(v.search);
+}
+function deleteSavedView(i) {
+  reconSavedViews.splice(i, 1);
+  renderSavedViews();
+}
+function matchesDriftSearch(card) {
+  if (driftSearch.include.length === 0 && driftSearch.exclude.length === 0) return true;
+  const titleEl = card.querySelector('.check-title');
+  const title = titleEl ? titleEl.textContent : '';
+  const node = card.dataset.node || '';
+  const cr = (card.dataset.cr && card.dataset.cr !== 'none') ? card.dataset.cr : 'No CR';
+  const type = card.dataset.changeType || '';
+  const hay = title + ' ' + node + ' ' + cr + ' ' + type;
+  for (let i = 0; i < driftSearch.include.length; i++) { if (!driftSearch.include[i].test(hay)) return false; }
+  for (let j = 0; j < driftSearch.exclude.length; j++) { if (driftSearch.exclude[j].test(hay)) return false; }
+  return true;
 }
 
 function sortChanges(value) {
-  // Visual only for prototype — in real app would reorder cards
+  driftSortBy = value;
+  applyDriftFilters();
 }
 
-// Close filter dropdown on outside click
-document.addEventListener('click', function(e) {
-  const wrap = document.getElementById('changes-filter-wrap');
-  const dd = document.getElementById('changes-filter-dropdown');
-  if (dd && wrap && !wrap.contains(e.target)) dd.style.display = 'none';
-});
+// Sort state — persists across filter changes
+let driftSortBy = 'newest';
+// Multi-dimension drift filter state — Status + CR + Node + Type combine via AND
+let driftFilters = { status: null, cr: null, node: null, type: null };
+// Hide handled (#2) — when on, reconciled/handled events drop out of the active list (ON by default)
+let driftHideHandled = true;
+const DRIFT_HANDLED_STATUSES = ['reconciled', 'approved'];
+function toggleHideHandled() {
+  driftHideHandled = !driftHideHandled;
+  const el = document.getElementById('drift-hide-handled');
+  if (el) el.classList.toggle('active', driftHideHandled);
+  applyDriftFilters();
+}
 
+// Status-pill entry point (also handles All reset + No CR quick filter)
 function filterChanges(type) {
+  if (type === 'all') driftFilters = { status: null, cr: null, node: null, type: null };
+  else if (type === 'nocr') driftFilters.cr = 'none';
+  else driftFilters.status = type;
+  applyDriftFilters();
+}
+// Embedded-pill entry points (node / cr / type clicked inside a change card)
+function setDriftFilter(dim, val) { driftFilters[dim] = val; applyDriftFilters(); }
+function clearDriftFilter(dim) { driftFilters[dim] = null; applyDriftFilters(); }
+
+
+function applyDriftFilters() {
+  const f = driftFilters;
   const isDark = document.body.classList.contains('dark');
   const styles = {
-    all:      isDark ? { bg:'rgba(16,185,129,0.18)',  border:'#34D399',              color:'#FFFFFF' }
-                     : { bg:'rgba(63,200,120,0.1)',   border:'#3FC878',              color:'#15803d' },
-    modified: isDark ? { bg:'rgba(194,65,12,0.18)',   border:'rgba(253,186,116,0.7)',color:'#FFFFFF' }
-                     : { bg:'rgba(194,65,12,0.07)',   border:'#fed7aa',              color:'#c2410c' },
-    added:    isDark ? { bg:'rgba(37,99,235,0.18)',   border:'rgba(147,197,253,0.7)',color:'#FFFFFF' }
-                     : { bg:'rgba(37,99,235,0.07)',   border:'#bfdbfe',              color:'#2563eb' },
-    removed:  isDark ? { bg:'rgba(251,60,68,0.18)',   border:'rgba(251,60,68,0.5)',  color:'#FFFFFF' }
-                     : { bg:'rgba(251,60,68,0.07)',   border:'#fca5a5',              color:'#dc2626' },
+    all:          isDark ? { bg:'rgba(16,185,129,0.18)', border:'#34D399',              color:'#FFFFFF' }
+                         : { bg:'rgba(63,200,120,0.1)',  border:'#3FC878',              color:'#15803d' },
+    unreconciled: isDark ? { bg:'rgba(217,119,6,0.18)',  border:'rgba(245,158,11,0.7)', color:'#FFFFFF' }
+                         : { bg:'rgba(217,119,6,0.07)',  border:'#fde68a',              color:'#b45309' },
+    pending:      isDark ? { bg:'rgba(37,99,235,0.18)',  border:'rgba(147,197,253,0.7)',color:'#FFFFFF' }
+                         : { bg:'rgba(37,99,235,0.07)',  border:'#bfdbfe',              color:'#2563eb' },
+    reconciled:   isDark ? { bg:'rgba(16,185,129,0.18)', border:'#34D399',              color:'#FFFFFF' }
+                         : { bg:'rgba(63,200,120,0.1)',  border:'#3FC878',              color:'#15803d' },
+    flagged:      isDark ? { bg:'rgba(251,60,68,0.18)',  border:'rgba(251,60,68,0.5)',  color:'#FFFFFF' }
+                         : { bg:'rgba(251,60,68,0.07)',  border:'#fca5a5',              color:'#dc2626' },
+    nocr:         isDark ? { bg:'rgba(148,163,184,0.18)',border:'rgba(148,163,184,0.6)',color:'#FFFFFF' }
+                         : { bg:'rgba(100,116,139,0.07)',border:'#cbd5e1',              color:'#475569' },
   };
-  // Update active pill
-  ['all','modified','added','removed'].forEach(t => {
-    const pill = document.getElementById('filter-' + t);
+  const allNull = !f.status && !f.cr && !f.node && !f.type;
+  // Pill highlights — All when nothing set, status pills for status dim, No CR for cr==='none'
+  ['all','unreconciled','reconciled','flagged','nocr'].forEach(k => {
+    const pill = document.getElementById('filter-' + k);
     if (!pill) return;
-    pill.style.background = '';
-    pill.style.borderColor = '';
-    pill.style.color = '';
+    let on;
+    if (k === 'all') on = allNull;
+    else if (k === 'nocr') on = f.cr === 'none';
+    else on = f.status === k;
+    if (on) {
+      const s = styles[k];
+      pill.style.background = s.bg; pill.style.borderColor = s.border; pill.style.color = s.color; pill.style.fontWeight = '600';
+    } else {
+      pill.style.background = ''; pill.style.borderColor = ''; pill.style.color = ''; pill.style.fontWeight = '';
+    }
   });
-  const active = document.getElementById('filter-' + type);
-  const s = styles[type] || styles.all;
-  if (active) {
-    active.style.background = s.bg;
-    active.style.borderColor = s.border;
-    active.style.color = s.color;
-    active.style.fontWeight = '600';
-  }
-  // Show/hide cards
+  // Mirror the active CR/Status/Type filter onto the top reconciliation chip groups
+  _syncReconTopChips();
+  // Card visibility — AND across every active dimension
+  let visible = 0;
   for (let i = 0; i < 3; i++) {
     const card = document.getElementById('change-card-' + i);
     if (!card) continue;
-    if (type === 'all' || card.dataset.changeType === type) {
-      card.style.display = '';
-    } else {
-      card.style.display = 'none';
+    let ok = true;
+    if (f.status && card.dataset.recon !== f.status) ok = false;
+    if (f.cr) { if (f.cr === 'none') { if (card.dataset.cr !== 'none') ok = false; } else if (card.dataset.cr !== f.cr) ok = false; }
+    if (f.node && card.dataset.node !== f.node) ok = false;
+    if (f.type && card.dataset.changeType !== f.type) ok = false;
+    if (ok && !matchesDriftSearch(card)) ok = false;
+    if (ok && driftNode.include.length && driftNode.include.indexOf(card.dataset.node) === -1) ok = false;
+    if (ok && driftNode.exclude.indexOf(card.dataset.node) !== -1) ok = false;
+    // Hide handled — drop reconciled/handled cards unless the user explicitly filters by that status
+    if (ok && driftHideHandled && DRIFT_HANDLED_STATUSES.indexOf(card.dataset.recon) !== -1 && DRIFT_HANDLED_STATUSES.indexOf(f.status) === -1) ok = false;
+    card.style.display = ok ? '' : 'none';
+    if (ok) visible++;
+    else { const sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]'); if (sel) sel.checked = false; }
+  }
+  // Active-filters chips — one removable chip per active dimension
+  const STATUS_LBL = { unreconciled:'Unreconciled', pending:'Pending', reconciled:'Reconciled', flagged:'Flagged' };
+  const TYPE_LBL = { modified:'Modified', added:'Added', removed:'Removed' };
+  const chipDefs = [];
+  if (f.status) chipDefs.push({ dim:'status', label:'Status: ' + (STATUS_LBL[f.status] || f.status) });
+  if (f.cr)     chipDefs.push({ dim:'cr',     label:'CR: ' + (f.cr === 'none' ? 'No CR' : f.cr) });
+  if (f.node)   chipDefs.push({ dim:'node',   label:'Node: ' + f.node });
+  if (f.type)   chipDefs.push({ dim:'type',   label:'Type: ' + (TYPE_LBL[f.type] || f.type) });
+  const row = document.getElementById('changes-active-filters');
+  const chips = document.getElementById('changes-active-chips');
+  if (row && chips) {
+    if (chipDefs.length === 0) { row.style.display = 'none'; chips.innerHTML = ''; }
+    else {
+      row.style.display = 'flex';
+      chips.innerHTML = chipDefs.map(c =>
+        '<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);">' +
+          c.label +
+          '<span onclick="clearDriftFilter(\'' + c.dim + '\')" title="Remove filter" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;" onmouseover="this.style.color=\'var(--text-default)\'" onmouseout="this.style.color=\'var(--text-muted)\'">&times;</span>' +
+        '</span>'
+      ).join('');
     }
   }
-  // Show empty state for removed (0 items)
+  // Empty state when nothing matches
   const emptyMsg = document.getElementById('changes-empty');
-  if (type === 'removed') {
+  if (visible === 0) {
     if (!emptyMsg) {
       const el = document.createElement('div');
       el.id = 'changes-empty';
-      el.style.cssText = 'text-align:center;padding:32px;font-size:13px;color:var(--text-sec);';
-      el.textContent = 'No removed items detected';
+      el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:40px 24px;';
+      el.innerHTML =
+        '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>' +
+        '<div style="font-size:13px;font-weight:600;color:var(--text-default);">No drift events match the current filters</div>' +
+        '<div onclick="clearAllReconFilters()" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">Clear filters</div>';
       document.getElementById('change-card-2').parentNode.appendChild(el);
     }
   } else {
     if (emptyMsg) emptyMsg.remove();
   }
+  // Master select-all row — count of currently filtered events; hidden when none
+  const allRow = document.getElementById('drift-select-all-row');
+  const allCount = document.getElementById('drift-select-all-count');
+  if (allCount) allCount.textContent = visible;
+  if (allRow) allRow.style.display = visible === 0 ? 'none' : 'flex';
+  // Pagination footer — show only when items exceed rows-per-page
+  const pageRange = document.getElementById('drift-page-range');
+  if (pageRange) pageRange.textContent = visible === 0 ? '0 of 0' : ('1–' + visible + ' of ' + visible);
+  const paginationFooter = document.getElementById('drift-pagination-footer');
+  if (paginationFooter) {
+    const rpp = parseInt(document.getElementById('drift-rpp-label')?.textContent || '10', 10);
+    paginationFooter.style.display = visible > rpp ? 'flex' : 'none';
+  }
+  // Reconcile working-set count — persistent result context in the panel header
+  const reconSet = document.getElementById('recon-set-count');
+  if (reconSet) reconSet.textContent = visible + ' event' + (visible === 1 ? '' : 's') + ' in view';
+  updateReconFilterCount();
+  updateSaveViewBtn();
+  // Arrange the visible cards into groups (None / Node / Change Request)
+  applyDriftGrouping();
+  // Sync master + group checkboxes and bulk bar against current selection
+  updateDriftBulkBar();
+}
+
+// Group visible drift cards under headers; each header has a select-all checkbox
+function applyDriftGrouping() {
+  const first = document.getElementById('change-card-0');
+  if (!first) return;
+  const container = first.parentNode;
+  container.querySelectorAll('.drift-group-head').forEach(h => h.remove());
+  const cards = [0, 1, 2].map(i => document.getElementById('change-card-' + i)).filter(Boolean);
+  const emptyMsg = document.getElementById('changes-empty');
+  if (driftGroupBy === 'none') {
+    const RECON_RANK = { flagged: 3, unreconciled: 2, pending: 1, reconciled: 0, approved: 0 };
+    const sorted = cards.slice().sort(function(a, b) {
+      if (driftSortBy === 'oldest')   return parseInt(b.dataset.ts||0) - parseInt(a.dataset.ts||0);
+      if (driftSortBy === 'severity') return (RECON_RANK[b.dataset.recon]||0) - (RECON_RANK[a.dataset.recon]||0);
+      if (driftSortBy === 'node')     return (a.dataset.node||'').localeCompare(b.dataset.node||'');
+      return parseInt(a.dataset.ts||0) - parseInt(b.dataset.ts||0); // newest (smallest ts = most recent)
+    });
+    sorted.forEach(c => container.appendChild(c));
+    if (emptyMsg) container.appendChild(emptyMsg);
+    return;
+  }
+  const dimLabel = driftGroupBy === 'node' ? 'Node' : 'Change Request';
+  const keyOf = c => driftGroupBy === 'node'
+    ? (c.dataset.node || '—')
+    : (c.dataset.cr && c.dataset.cr !== 'none' ? c.dataset.cr : 'No CR');
+  const visibleCards = cards.filter(c => c.style.display !== 'none');
+  const order = [];
+  const groups = {};
+  visibleCards.forEach(c => {
+    const k = keyOf(c);
+    if (!groups[k]) { groups[k] = []; order.push(k); }
+    groups[k].push(c);
+  });
+  order.forEach(k => {
+    const groupCards = groups[k];
+    const idxs = groupCards.map(c => c.id.replace('change-card-', '')).join(',');
+    const head = document.createElement('div');
+    head.className = 'drift-group-head';
+    head.style.cssText = 'display:flex;align-items:center;gap:10px;margin:16px 0 8px;';
+    head.innerHTML =
+      '<input type="checkbox" class="drift-group-cb" onclick="toggleGroupSelect(this)" data-idxs="' + idxs + '" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">' +
+      '<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-sec);">' + dimLabel + '</span>' +
+      '<span style="font-size:13px;font-weight:700;color:var(--text-default);">' + k + '</span>' +
+      '<span style="font-size:11px;color:var(--text-muted);">' + groupCards.length + (groupCards.length === 1 ? ' event' : ' events') + '</span>';
+    container.appendChild(head);
+    groupCards.forEach(c => container.appendChild(c));
+  });
+  cards.filter(c => c.style.display === 'none').forEach(c => container.appendChild(c));
+  if (emptyMsg) container.appendChild(emptyMsg);
+}
+
+// Select-all-in-group — checks every card checkbox in the group, drives the bulk bar
+function toggleGroupSelect(cb) {
+  (cb.dataset.idxs || '').split(',').filter(Boolean).forEach(idx => {
+    const sel = document.querySelector('.drift-select-cb[data-idx="' + idx + '"]');
+    if (sel) sel.checked = cb.checked;
+  });
+  updateDriftBulkBar();
 }
 
 function updateChangeList() {
@@ -11291,36 +12182,6 @@ go = function(key) {
     const dashSummary = document.getElementById('dash-sn-summary');
     if (dashConnect) dashConnect.style.display = 'none';
     if (dashSummary) dashSummary.style.display = 'flex';
-    const snBanner = document.getElementById('sn-reconcile-banner');
-    if (snBanner) {
-      snBanner.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-          <img src="ServiceNow_logo.svg" class="sn-logo" style="height:18px;width:auto;display:block;flex-shrink:0;" alt="ServiceNow"/>
-          <div>
-            <div style="font-size:13px;font-weight:600;color:var(--text-default);margin-bottom:2px;">Reconcile drift</div>
-            <div style="font-size:11px;color:var(--text-sec);">Match drift to approved Change Requests · via company.service-now.com</div>
-          </div>
-        </div>
-        <div style="width:1px;height:40px;background:var(--border);flex-shrink:0;"></div>
-        <div style="display:flex;align-items:center;gap:24px;flex-shrink:0;">
-          <div>
-            <div style="font-size:10px;color:var(--text-sec);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">Previous Score</div>
-            <div style="font-size:22px;font-weight:700;color:var(--text-default);">82<span style="font-size:13px;color:var(--text-sec)">/100</span></div>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          <div>
-            <div style="font-size:10px;color:var(--text-sec);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">Current Score</div>
-            <div style="font-size:22px;font-weight:700;color:#FB3C44;">78<span style="font-size:13px;color:var(--text-sec)">/100</span></div>
-          </div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;">
-          <div style="font-size:13px;font-weight:600;color:#FB3C44;">−4 points</div>
-          <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">3 unreconciled drift items</div>
-        </div>
-        <div style="width:1px;height:40px;background:var(--border);flex-shrink:0;"></div>
-        <button class="btn-primary" style="white-space:nowrap;padding:7px 16px;font-size:12px;flex-shrink:0;width:auto;" onclick="go('j4-match')">Run Reconciliation →</button>
-      `;
-    }
   }
 };
 
@@ -11776,25 +12637,6 @@ function goToDashboardFromJ4() {
   // Update filter pill counts
   const filterAll = document.getElementById('filter-all');
   if (filterAll) filterAll.textContent = '● All (3)';
-
-  // ── 6. Replace "Connect ServiceNow" banner in Changes tab with "Connected" state ──
-  const snBanner = document.getElementById('sn-reconcile-banner');
-  if (snBanner) {
-    snBanner.style.background = 'var(--intg-sn-bg)';
-    snBanner.style.borderColor = 'var(--intg-sn-bd)';
-    snBanner.innerHTML = `
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div>
-          <div style="font-size:13px;font-weight:700;color:var(--intg-title);margin-bottom:2px;">Connected ✓ · 2 CRs reconciled</div>
-          <div style="font-size:11px;color:var(--intg-sn-sub);">1 change requires manual review · company.service-now.com</div>
-        </div>
-      </div>
-      <button style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;background:transparent;color:var(--intg-sn-sub);border:1px solid var(--intg-sn-bd);border-radius:var(--radius-md);cursor:pointer;font-weight:600;" onclick="go('j4-summary')">View Summary →</button>
-    `;
-  }
 
   // ── 7. Navigate to Changes tab ──
   showView('changes');
