@@ -4283,7 +4283,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <div class="view" id="v-node-detail">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <button class="btn-outline" onclick="nodeDetailBack()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">MACBOOK-TARAS</div>
             <div class="page-sub">Windows 11 · This device · <span style="color:#00AF73;font-weight:600;">● Online</span> · Last scanned 2 min ago</div>
@@ -10449,9 +10450,27 @@ function go(key) {
     const sb = document.getElementById(map[key]);
     if (sb) sb.classList.add('active');
   }
+  _currentView = key;
+}
+
+// Referrer tracking — node-detail Back returns to wherever the user came from
+var _currentView = 'dashboard';
+var _nodeRef = 'all-devices';
+var NODE_REF = {
+  'all-devices':  { label: 'All Nodes',      view: 'all-devices' },
+  'changes':      { label: 'Detected Drift', view: 'changes' },
+  'change-detail':{ label: 'Change Detail',  view: 'change-detail' }
+};
+function nodeDetailBack() {
+  var ref = NODE_REF[_nodeRef] ? _nodeRef : 'all-devices';
+  showView(ref);
 }
 
 function showView(name) {
+  // Capture the view we're leaving as the node-detail referrer (fallback: All Devices)
+  if (name === 'node-detail' && _currentView && _currentView !== 'node-detail') {
+    _nodeRef = NODE_REF[_currentView] ? _currentView : 'all-devices';
+  }
   const isJ3Nav = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(name);
   const isJ4Nav = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(name);
   const isJ3Sidebar = ['j3-no-resources','j3-manual-match','j3-scan-failed'].includes(name);
@@ -10479,7 +10498,14 @@ function showView(name) {
     'cr-audit': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">CHG0012345 Audit</span>`,
   };
   const _nb = document.getElementById('nav-breadcrumb');
-  if (_nb) { const _bc = _BC[name]; if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; } }
+  if (_nb) {
+    let _bc = _BC[name];
+    if (name === 'node-detail') {
+      const _r = NODE_REF[_nodeRef] || NODE_REF['all-devices'];
+      _bc = `<span class="bc-link" onclick="showView('${_r.view}')">${_r.label}</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>`;
+    }
+    if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
+  }
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
     changes:'sb-changes', 'change-detail':'sb-changes', 'change-approve':'sb-changes',
@@ -10506,6 +10532,7 @@ function showView(name) {
   if (name === 'policy-create') {
     setTimeout(() => pcGoStep(1), 10);
   }
+  _currentView = name;
 }
 
 var remedChecks = [
