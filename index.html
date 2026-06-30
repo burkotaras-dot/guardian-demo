@@ -315,10 +315,12 @@ body.dark .usedby-tag.is-upcoming {
 }
 
 /* Diff before/after cards */
-.diff-card { padding:18px 20px; border-radius:10px; }
-.diff-label { font-size:9px; font-weight:700; letter-spacing:1px; margin-bottom:10px; }
-.diff-value { font-size:24px; font-weight:800; color:var(--text-default); letter-spacing:-0.5px; margin-bottom:8px; }
-.diff-status { font-size:11px; font-weight:600; margin-bottom:4px; }
+.diff-card { padding:14px 16px; border-radius:10px; }
+.diff-label { font-size:9px; font-weight:700; letter-spacing:1px; margin-bottom:7px; }
+.diff-value { font-size:20px; font-weight:800; color:var(--text-default); letter-spacing:-0.5px; margin-bottom:6px; }
+.diff-meta { display:flex; align-items:baseline; gap:5px; flex-wrap:wrap; }
+.diff-status { font-size:11px; font-weight:600; }
+.diff-dot { font-size:11px; color:var(--text-muted); }
 .diff-sub { font-size:11px; color:var(--text-sec); }
 
 .diff-before { background:var(--status-success-bg); border:1px solid rgba(16,185,129,0.35); }
@@ -7439,34 +7441,32 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="diff-card diff-before">
                 <div class="diff-label">BEFORE</div>
                 <div id="cd-before-val" class="diff-value">Enabled</div>
-                <div id="cd-before-status" class="diff-status">✓ CIS Pass</div>
-                <div id="cd-before-sub" class="diff-sub">Real-time scanning active</div>
+                <div class="diff-meta"><span id="cd-before-status" class="diff-status">✓ CIS Pass</span><span class="diff-dot">·</span><span id="cd-before-sub" class="diff-sub">Real-time scanning active</span></div>
               </div>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               <div class="diff-card diff-after">
                 <div class="diff-label">AFTER</div>
                 <div id="cd-after-val" class="diff-value">Disabled</div>
-                <div id="cd-after-status" class="diff-status">✗ CIS Fail</div>
-                <div id="cd-after-sub" class="diff-sub">Real-time scanning off</div>
+                <div class="diff-meta"><span id="cd-after-status" class="diff-status">✗ CIS Fail</span><span class="diff-dot">·</span><span id="cd-after-sub" class="diff-sub">Real-time scanning off</span></div>
               </div>
             </div>
 
-            <!-- Score + attribution -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-              <div style="background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
-                <div style="font-size:9px;font-weight:700;color:var(--text-sec);letter-spacing:0.8px;margin-bottom:6px;">SCORE IMPACT</div>
-                <div style="display:flex;align-items:baseline;gap:6px;">
-                  <span id="cd-score-from" style="font-size:18px;font-weight:800;color:var(--text-default);">78</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  <span id="cd-score-to" style="font-size:18px;font-weight:800;color:#FB3C44;">74</span>
-                  <span id="cd-score-delta" style="font-size:11px;color:#FB3C44;font-weight:600;">−4 pts</span>
-                </div>
-              </div>
-              <div style="background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
-                <div style="font-size:9px;font-weight:700;color:var(--text-sec);letter-spacing:0.8px;margin-bottom:6px;">DETECTED BY</div>
-                <div id="cd-detby-method" style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:2px;">Scheduled scan</div>
-                <div id="cd-detby-detail" style="font-size:11px;color:var(--text-sec);">Today 14:23 · Process: MsMpSvc</div>
-              </div>
+            <!-- Score + attribution — compact metadata row -->
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;padding:9px 14px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;font-size:11px;color:var(--text-sec);">
+              <span style="display:inline-flex;align-items:baseline;gap:5px;">
+                <span style="font-weight:700;color:var(--text-sec);letter-spacing:0.4px;">Score impact</span>
+                <span id="cd-score-from" style="font-weight:700;color:var(--text-default);">78</span>
+                <span style="color:#94a3b8;">→</span>
+                <span id="cd-score-to" style="font-weight:700;color:#FB3C44;">74</span>
+                <span style="color:var(--text-muted);">·</span>
+                <span id="cd-score-delta" style="color:#FB3C44;font-weight:600;">−4 pts</span>
+              </span>
+              <span style="display:inline-flex;align-items:baseline;gap:5px;">
+                <span style="font-weight:700;color:var(--text-sec);letter-spacing:0.4px;">Detected by</span>
+                <span id="cd-detby-method" style="font-weight:600;color:var(--text-default);">Scheduled scan</span>
+                <span style="color:var(--text-muted);">·</span>
+                <span id="cd-detby-detail">Today 14:23 · Process: MsMpSvc</span>
+              </span>
             </div>
 
             <!-- Security impact -->
