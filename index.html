@@ -7417,14 +7417,16 @@ body.dark .theme-toggle .icon-moon { display: none; }
       <!-- Header: back + title + badge -->
       <div class="page-header" style="padding:14px 24px;">
         <div style="display:flex;align-items:center;gap:12px;">
+          <button class="btn-outline" onclick="showView('changes')" style="padding:5px 12px;font-size:12px;">← Back to Detected Drift</button>
           <div>
-            <div style="font-size:14px;font-weight:700;color:var(--text-default);">Windows Defender — Real-time protection</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:1px;">MACBOOK-TARAS · Detected today at 14:23 · Scheduled scan</div>
+            <div id="cd-title" style="font-size:14px;font-weight:700;color:var(--text-default);">Windows Defender — Real-time protection</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:1px;"><span id="cd-node" onclick="showView('node-detail')" style="color:var(--text-default);font-weight:600;cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">MACBOOK-TARAS</span> <span id="cd-detected">· Detected today at 14:23 · Scheduled scan</span></div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
-          <span style="font-size:11px;color:var(--text-sec);">Control 8.1 · Malware Defenses · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span></span>
+          <span id="cd-type-badge" class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
+          <span id="cd-recon-status" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Unreconciled</span>
+          <span id="cd-control" style="font-size:11px;color:var(--text-sec);">Control 8.1 · Malware Defenses · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span></span>
         </div>
       </div>
 
@@ -7433,59 +7435,94 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
 
           <!-- Main diff card -->
-          <div class="card" style="margin-bottom:0;">
+          <div class="card" style="margin-bottom:0;padding:18px;border-color:var(--border);box-shadow:none;">
 
             <!-- Before → After diff -->
             <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:16px;">
               <div class="diff-card diff-before">
                 <div class="diff-label">BEFORE</div>
-                <div class="diff-value">Enabled</div>
-                <div class="diff-status">✓ CIS Pass</div>
-                <div class="diff-sub">Real-time scanning active</div>
+                <div id="cd-before-val" class="diff-value">Enabled</div>
+                <div class="diff-meta"><span id="cd-before-status" class="diff-status">✓ CIS Pass</span><span class="diff-dot">·</span><span id="cd-before-sub" class="diff-sub">Real-time scanning active</span></div>
               </div>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               <div class="diff-card diff-after">
                 <div class="diff-label">AFTER</div>
-                <div class="diff-value">Disabled</div>
-                <div class="diff-status">✗ CIS Fail</div>
-                <div class="diff-sub">Real-time scanning off</div>
+                <div id="cd-after-val" class="diff-value">Disabled</div>
+                <div class="diff-meta"><span id="cd-after-status" class="diff-status">✗ CIS Fail</span><span class="diff-dot">·</span><span id="cd-after-sub" class="diff-sub">Real-time scanning off</span></div>
               </div>
             </div>
 
-            <!-- Score + attribution -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-              <div style="background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
-                <div style="font-size:9px;font-weight:700;color:var(--text-sec);letter-spacing:0.8px;margin-bottom:6px;">SCORE IMPACT</div>
-                <div style="display:flex;align-items:baseline;gap:6px;">
-                  <span style="font-size:18px;font-weight:800;color:var(--text-default);">78</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  <span style="font-size:18px;font-weight:800;color:#FB3C44;">74</span>
-                  <span style="font-size:11px;color:#FB3C44;font-weight:600;">−4 pts</span>
-                </div>
-              </div>
-              <div style="background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
-                <div style="font-size:9px;font-weight:700;color:var(--text-sec);letter-spacing:0.8px;margin-bottom:6px;">DETECTED BY</div>
-                <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:2px;">Scheduled scan</div>
-                <div style="font-size:11px;color:var(--text-sec);">Today 14:23 · Process: MsMpSvc</div>
-              </div>
+            <!-- Score + attribution — compact metadata row -->
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;padding:9px 14px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;font-size:11px;color:var(--text-sec);">
+              <span style="display:inline-flex;align-items:baseline;gap:5px;">
+                <span style="font-weight:700;color:var(--text-sec);letter-spacing:0.4px;">Score impact</span>
+                <span id="cd-score-from" style="font-weight:700;color:var(--text-default);">78</span>
+                <span style="color:#94a3b8;">→</span>
+                <span id="cd-score-to" style="font-weight:700;color:#FB3C44;">74</span>
+                <span style="color:var(--text-muted);">·</span>
+                <span id="cd-score-delta" style="color:#FB3C44;font-weight:600;">−4 pts</span>
+              </span>
+              <span style="display:inline-flex;align-items:baseline;gap:5px;">
+                <span style="font-weight:700;color:var(--text-sec);letter-spacing:0.4px;">Detected by</span>
+                <span id="cd-detby-method" style="font-weight:600;color:var(--text-default);">Scheduled scan</span>
+                <span style="color:var(--text-muted);">·</span>
+                <span id="cd-detby-detail">Today 14:23 · Process: MsMpSvc</span>
+              </span>
             </div>
 
-            <!-- Security impact -->
-            <div style="display:flex;align-items:flex-start;gap:8px;padding:12px 14px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span style="font-size:11px;color:var(--text-sec);line-height:1.5;">Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.</span>
+            <!-- Security impact — compact risk row -->
+            <div style="display:flex;align-items:center;gap:7px;padding:8px 12px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span style="font-size:11px;font-weight:700;color:#FB3C44;flex-shrink:0;">Risk</span>
+              <span id="cd-impact" style="font-size:11px;color:var(--text-sec);line-height:1.4;">Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.</span>
             </div>
           </div>
 
-          <!-- ServiceNow match -->
-          <div style="display:flex;align-items:center;gap:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.5" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-            <div style="flex:1;">
-              <div style="font-size:11px;color:var(--text-sec);margin-bottom:2px;">ServiceNow CR matched</div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);">CHG0012345 — AV Software Migration</div>
-              <div style="font-size:11px;color:var(--text-sec);">Approved · 2 days ago · John Smith</div>
+          <!-- Demo-only state switcher for the CR block (not part of the product UI) -->
+          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+            <span style="font-size:9px;font-weight:600;color:var(--text-muted);opacity:.7;">Prototype state:</span>
+            <button class="cr-demo-btn" data-cr="matched" onclick="setCrState('matched')">Matched</button>
+            <span class="cr-demo-sep">·</span>
+            <button class="cr-demo-btn" data-cr="pending" onclick="setCrState('pending')">Pending</button>
+            <span class="cr-demo-sep">·</span>
+            <button class="cr-demo-btn" data-cr="multiple" onclick="setCrState('multiple')">Multiple</button>
+            <span class="cr-demo-sep">·</span>
+            <button class="cr-demo-btn" data-cr="nocr" onclick="setCrState('nocr')">No CR</button>
+            <span class="cr-demo-sep">·</span>
+            <button class="cr-demo-btn" data-cr="notconfigured" onclick="setCrState('notconfigured')">Not configured</button>
+          </div>
+
+          <!-- ServiceNow match (state-driven by setCrState) -->
+          <div id="cd-cr-block"></div>
+
+          <!-- Notes — audit trail, separate from the approve/reject decision reason -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.8" style="flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span style="font-size:13px;font-weight:700;color:var(--text-default);">Notes</span>
+              <span id="change-notes-count" style="font-size:11px;color:var(--text-muted);"></span>
             </div>
-            <span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span>
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:10px;">Audit notes, separate from approve / reject reason.</div>
+            <div id="change-notes-list" style="display:flex;flex-direction:column;gap:0;"></div>
+            <button id="change-note-add" onclick="openNoteComposer()" style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--green1);" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Add note &#8594;</button>
+            <div id="change-note-composer" style="display:none;margin-top:10px;">
+              <textarea id="change-note-input" class="form-input" rows="2" placeholder="Add a note about this change..." style="resize:vertical;margin-bottom:8px;"></textarea>
+              <div style="display:flex;justify-content:flex-end;gap:8px;">
+                <button onclick="cancelNote()" style="padding:7px 16px;font-size:12px;width:auto;border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;cursor:pointer;font-weight:600;color:var(--text-default);font-family:inherit;">Cancel</button>
+                <button onclick="addChangeNote()" class="btn-primary" style="padding:7px 16px;font-size:12px;width:auto;">Add note</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Incident — compact secondary action (org-level capability) -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;">
+            <div id="incident-action-wrap" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.8" style="flex-shrink:0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span style="font-size:12px;color:var(--text-sec);">No incident linked</span>
+              <span style="font-size:12px;color:var(--text-muted);">·</span>
+              <button onclick="openIncidentModal()" style="background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--green1);" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Create incident &#8594;</button>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px;">Incident creation is controlled at organisation level and may be disabled by default.</div>
           </div>
 
         </div>
@@ -7505,6 +7542,108 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
       </div>
 
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         CHANGE REQUEST AUDIT (#4) — static, read-only contextual view
+    ═══════════════════════════════════════ -->
+    <div class="view" id="v-cr-audit">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Change Request Audit</div>
+          <div class="page-sub">Static audit trail · read-only</div>
+        </div>
+      </div>
+      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;">
+        <div style="width:100%;max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
+          <!-- Back to change detail -->
+          <div onclick="showView('change-detail')" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;width:fit-content;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-sec)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to change detail
+          </div>
+
+          <!-- CR metadata header -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+              <span style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">CHG0012345</span>
+              <span class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);">Approved</span>
+              <span style="font-size:11px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 10px;">ServiceNow</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px 24px;">
+              <div><div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Title</div><div style="font-size:13px;font-weight:600;color:var(--text-default);">AV Software Migration</div></div>
+              <div><div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Approved by</div><div style="font-size:13px;font-weight:600;color:var(--text-default);">John Smith</div></div>
+              <div><div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Approved date</div><div style="font-size:13px;font-weight:600;color:var(--text-default);">2 days ago</div></div>
+              <div><div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Linked drift events</div><div style="font-size:13px;font-weight:600;color:var(--text-default);">3</div></div>
+            </div>
+          </div>
+
+          <!-- Activity timeline (static) -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:16px;">Activity timeline</div>
+            <div style="display:flex;flex-direction:column;">
+              <!-- 1 Detected drift -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;margin-top:3px;flex-shrink:0;"></span>
+                  <span style="flex:1;width:2px;background:var(--border);margin:4px 0;"></span>
+                </div>
+                <div style="padding-bottom:18px;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Detected drift</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Windows Defender real-time protection disabled on MACBOOK-TARAS</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">2 hours ago · Guardian</div>
+                </div>
+              </div>
+              <!-- 2 Note added -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#94A3B8;margin-top:3px;flex-shrink:0;"></span>
+                  <span style="flex:1;width:2px;background:var(--border);margin:4px 0;"></span>
+                </div>
+                <div style="padding-bottom:18px;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Note added</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Confirmed with endpoint team — Defender was disabled during the AV migration.</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Just now · bambuk@cloudhouse.io</div>
+                </div>
+              </div>
+              <!-- 3 CR matched -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#3B82F6;margin-top:3px;flex-shrink:0;"></span>
+                  <span style="flex:1;width:2px;background:var(--border);margin:4px 0;"></span>
+                </div>
+                <div style="padding-bottom:18px;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">CR matched</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Matched to CHG0012345 — AV Software Migration.</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Just now · ServiceNow</div>
+                </div>
+              </div>
+              <!-- 4 Reconciled -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#10B981;margin-top:3px;flex-shrink:0;"></span>
+                  <span style="flex:1;width:2px;background:var(--border);margin:4px 0;"></span>
+                </div>
+                <div style="padding-bottom:18px;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Reconciled</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Windows Defender drift reconciled via approved Change Request.</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Just now · bambuk@cloudhouse.io</div>
+                </div>
+              </div>
+              <!-- 5 Incident created (last — no connector) -->
+              <div style="display:flex;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;margin-top:3px;flex-shrink:0;"></span>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Incident created</div>
+                  <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">INC-0001 opened for review</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Just now · bambuk@cloudhouse.io</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════════
