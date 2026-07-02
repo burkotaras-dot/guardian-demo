@@ -4316,7 +4316,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div>
               <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Compliance Score</div>
               <div style="font-size:12px;color:#00AF73;font-weight:600;margin-top:2px;">Good</div>
-              <a class="stat-link" style="font-size:11px;margin-top:4px;display:inline-block;" onclick="showView('results')">View history →</a>
+              <a class="stat-link" style="font-size:11px;margin-top:4px;display:inline-block;" onclick="ndTab('history')">View history →</a>
             </div>
           </div>
 
@@ -4352,7 +4352,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
             <div style="font-size:12px;color:var(--text-sec);"><span style="color:var(--green2);font-weight:700;">12</span> attributes monitored</div>
             <div style="font-size:12px;color:var(--text-sec);"><span style="color:var(--green2);font-weight:700;">4</span> compliance policies</div>
-            <a class="stat-link" style="font-size:11px;margin-top:2px;align-self:flex-end;" onclick="showView('changes')">View scan history →</a>
+            <a class="stat-link" style="font-size:11px;margin-top:2px;align-self:flex-end;" onclick="ndTab('history')">View scan history →</a>
           </div>
         </div>
 
@@ -4380,6 +4380,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <button id="nd-tab-btn-overview" onclick="ndTab('overview')" style="padding:12px 20px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid var(--green2);margin-bottom:-2px;cursor:pointer;background:none;color:var(--green2);transition:all 0.15s;white-space:nowrap;">Overview</button>
           <button id="nd-tab-btn-attributes" onclick="ndTab('attributes')" style="padding:12px 20px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;background:none;color:var(--text-sec);transition:all 0.15s;white-space:nowrap;">Monitored Attributes <span style="font-size:10px;background:#e2e8f0;color:var(--p-neutral-500);border-radius:10px;padding:1px 6px;margin-left:4px;">12</span></button>
           <button id="nd-tab-btn-policies" onclick="ndTab('policies')" style="padding:12px 20px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;background:none;color:var(--text-sec);transition:all 0.15s;white-space:nowrap;">Policies <span style="font-size:10px;background:#e2e8f0;color:var(--p-neutral-500);border-radius:10px;padding:1px 6px;margin-left:4px;">4</span></button>
+          <button id="nd-tab-btn-history" onclick="ndTab('history')" style="padding:12px 20px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;background:none;color:var(--text-sec);transition:all 0.15s;white-space:nowrap;">History</button>
         </div>
 
         <!-- Tab: Overview -->
@@ -4479,7 +4480,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
             <div style="padding:12px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;">
               <button class="btn-secondary" style="flex:1;font-size:12px;" onclick="showView('changes')">View full Detected Drift Summary →</button>
-              <a class="stat-link" style="font-size:11px;white-space:nowrap;flex-shrink:0;margin-top:0;" onclick="showView('compare-nodes')">Compare with previous scan →</a>
+              <a class="stat-link" style="font-size:11px;white-space:nowrap;flex-shrink:0;margin-top:0;" onclick="ndTab('history')">Compare with previous scan →</a>
             </div>
           </div>
 
@@ -4738,6 +4739,101 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
         </div><!-- end policies tab -->
 
+        <!-- Tab: History -->
+        <div id="nd-tab-history" style="display:none;">
+          <div style="display:flex;flex-direction:column;gap:16px;">
+
+            <!-- Scan history list -->
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
+              <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
+                <div style="font-size:13px;font-weight:700;color:var(--text-default);">Scan history</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">3 scans recorded for this node</div>
+              </div>
+              <!-- Header -->
+              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);">
+                <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Date / Time</div>
+                <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Changes</div>
+                <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Score</div>
+                <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Policies failing</div>
+                <div></div>
+              </div>
+              <!-- Row 1 — latest (current) -->
+              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);">
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">Today 14:23</div>
+                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Latest scan <span style="font-size:9px;font-weight:700;background:rgba(16,185,129,0.1);color:#15803d;border:1px solid rgba(16,185,129,0.25);border-radius:4px;padding:1px 5px;margin-left:4px;">Current</span></div>
+                </div>
+                <div><span style="font-size:12px;font-weight:700;color:#d97706;">3 changes</span></div>
+                <div><span style="font-size:12px;font-weight:700;color:#d97706;">78</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
+                <div><span style="font-size:12px;color:#FB3C44;font-weight:600;">2 failing</span></div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                  <span style="font-size:11px;color:var(--text-sec);cursor:default;">View scan →</span>
+                </div>
+              </div>
+              <!-- Row 2 — previous -->
+              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background='var(--bg-canvas)'" onmouseout="this.style.background='var(--bg-surface)'">
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">Yesterday 14:10</div>
+                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Previous scan</div>
+                </div>
+                <div><span style="font-size:12px;font-weight:700;color:#d97706;">1 change</span></div>
+                <div><span style="font-size:12px;font-weight:700;color:#00AF73;">82</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
+                <div><span style="font-size:12px;color:#FB3C44;font-weight:600;">1 failing</span></div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                  <span style="font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View scan →</span>
+                  <span style="font-size:11px;font-weight:600;color:var(--text-sec);cursor:pointer;" onmouseover="this.style.color='var(--green1)';this.style.textDecoration='underline'" onmouseout="this.style.color='var(--text-sec)';this.style.textDecoration='none'">Compare →</span>
+                </div>
+              </div>
+              <!-- Row 3 — older -->
+              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background='var(--bg-canvas)'" onmouseout="this.style.background='var(--bg-surface)'">
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">2 days ago 09:45</div>
+                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Older scan</div>
+                </div>
+                <div><span style="font-size:12px;color:var(--text-sec);">0 changes</span></div>
+                <div><span style="font-size:12px;font-weight:700;color:#00AF73;">82</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
+                <div><span style="font-size:12px;color:#15803d;font-weight:600;">0 failing</span></div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                  <span style="font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View scan →</span>
+                  <span style="font-size:11px;font-weight:600;color:var(--text-sec);cursor:pointer;" onmouseover="this.style.color='var(--green1)';this.style.textDecoration='underline'" onmouseout="this.style.color='var(--text-sec)';this.style.textDecoration='none'">Compare →</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scan-to-scan comparison -->
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
+              <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
+                <div style="font-size:13px;font-weight:700;color:var(--text-default);">Compare scans</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Select two scans to compare attributes</div>
+              </div>
+              <div style="padding:16px 18px;">
+                <div style="display:grid;grid-template-columns:1fr 24px 1fr;align-items:center;gap:8px;margin-bottom:16px;">
+                  <div style="background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:10px 14px;">
+                    <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">From</div>
+                    <div style="font-size:12px;font-weight:600;color:var(--text-default);">Yesterday 14:10</div>
+                    <div style="font-size:10px;color:var(--text-sec);">Previous scan · Score 82</div>
+                  </div>
+                  <div style="text-align:center;color:var(--text-sec);font-size:14px;">→</div>
+                  <div style="background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:10px 14px;">
+                    <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">To</div>
+                    <div style="font-size:12px;font-weight:600;color:var(--text-default);">Today 14:23</div>
+                    <div style="font-size:10px;color:var(--text-sec);">Latest scan · Score 78</div>
+                  </div>
+                </div>
+                <div style="background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:14px;display:flex;gap:24px;">
+                  <div><span style="font-size:20px;font-weight:800;color:#d97706;">3</span><div style="font-size:11px;color:var(--text-sec);margin-top:1px;">attributes changed</div></div>
+                  <div style="width:1px;background:var(--border);"></div>
+                  <div><span style="font-size:20px;font-weight:800;color:#FB3C44;">82 → 78</span><div style="font-size:11px;color:var(--text-sec);margin-top:1px;">compliance score</div></div>
+                  <div style="width:1px;background:var(--border);"></div>
+                  <div><span style="font-size:20px;font-weight:800;color:#FB3C44;">+1</span><div style="font-size:11px;color:var(--text-sec);margin-top:1px;">policy now failing</div></div>
+                </div>
+                <button class="btn-secondary" style="font-size:12px;width:auto;padding:7px 16px;" onclick="showView('compare-nodes')">Compare selected scans →</button>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- end history tab -->
+
       </div>
     </div>
 
@@ -4785,7 +4881,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }
     }
     function ndTab(tab) {
-      ['overview','attributes','policies'].forEach(function(t) {
+      ['overview','attributes','policies','history'].forEach(function(t) {
         var el = document.getElementById('nd-tab-' + t);
         var btn = document.getElementById('nd-tab-btn-' + t);
         if (el) el.style.display = (t === tab) ? '' : 'none';
