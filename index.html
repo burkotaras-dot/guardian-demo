@@ -2992,18 +2992,32 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <button onclick="setNodeFilter('aws')" id="nf-aws" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);transition:all 0.15s;font-family:inherit;">AWS</button>
           </div>
           <div style="width:1px;height:20px;background:var(--border);margin:0 2px;"></div>
-          <select id="node-group-filter" onchange="filterNodes()" style="padding:7px 12px;font-size:12px;font-weight:500;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;font-family:inherit;outline:none;">
-            <option value="all">All groups</option>
-            <option value="laptops">Laptops</option>
-            <option value="servers">Servers</option>
-            <option value="workstations">Workstations</option>
-          </select>
-          <select id="node-env-filter" onchange="filterNodes()" style="padding:7px 12px;font-size:12px;font-weight:500;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;font-family:inherit;outline:none;">
-            <option value="all">All environments</option>
-            <option value="production">Production</option>
-            <option value="staging">Staging</option>
-            <option value="development">Development</option>
-          </select>
+          <!-- Group custom dropdown -->
+          <div style="position:relative;flex-shrink:0;">
+            <div id="node-group-btn" onclick="toggleNodeGroupDrop(this)" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+              <span id="node-group-label">All groups</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div id="node-group-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:160px;z-index:100;">
+              <div class="ng-opt ng-opt-active" data-val="all" onclick="pickNodeGroup(this,'All groups')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('ng-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>All groups</div>
+              <div class="ng-opt" data-val="laptops" onclick="pickNodeGroup(this,'Laptops')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('ng-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Laptops</div>
+              <div class="ng-opt" data-val="servers" onclick="pickNodeGroup(this,'Servers')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('ng-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Servers</div>
+              <div class="ng-opt" data-val="workstations" onclick="pickNodeGroup(this,'Workstations')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('ng-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Workstations</div>
+            </div>
+          </div>
+          <!-- Environment custom dropdown -->
+          <div style="position:relative;flex-shrink:0;">
+            <div id="node-env-btn" onclick="toggleNodeEnvDrop(this)" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+              <span id="node-env-label">All environments</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div id="node-env-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:180px;z-index:100;">
+              <div class="ne-opt ne-opt-active" data-val="all" onclick="pickNodeEnv(this,'All environments')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('ne-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>All environments</div>
+              <div class="ne-opt" data-val="production" onclick="pickNodeEnv(this,'Production')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('ne-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Production</div>
+              <div class="ne-opt" data-val="staging" onclick="pickNodeEnv(this,'Staging')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('ne-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Staging</div>
+              <div class="ne-opt" data-val="development" onclick="pickNodeEnv(this,'Development')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('ne-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Development</div>
+            </div>
+          </div>
           </div><!-- end left group -->
           <!-- Right: selection actions -->
           <div style="display:flex;align-items:center;gap:8px;">
@@ -10520,10 +10534,51 @@ function setNodeFilter(f) {
   });
   filterNodes();
 }
+function toggleNodeGroupDrop(btn) {
+  var dd = document.getElementById('node-group-dropdown');
+  var open = dd.style.display !== 'none';
+  document.getElementById('node-env-dropdown').style.display = 'none';
+  dd.style.display = open ? 'none' : 'block';
+  if (!open) setTimeout(function() {
+    document.addEventListener('click', function h(e) {
+      if (!dd.contains(e.target) && e.target !== btn) { dd.style.display = 'none'; document.removeEventListener('click', h); }
+    });
+  }, 10);
+}
+function pickNodeGroup(el, label) {
+  document.querySelectorAll('.ng-opt').forEach(function(o) {
+    o.classList.remove('ng-opt-active'); o.querySelector('.ng-check').style.visibility = 'hidden'; o.style.background = '';
+  });
+  el.classList.add('ng-opt-active'); el.querySelector('.ng-check').style.visibility = 'visible'; el.style.background = 'rgba(0,175,115,0.08)';
+  document.getElementById('node-group-label').textContent = label;
+  document.getElementById('node-group-dropdown').style.display = 'none';
+  filterNodes();
+}
+function toggleNodeEnvDrop(btn) {
+  var dd = document.getElementById('node-env-dropdown');
+  var open = dd.style.display !== 'none';
+  document.getElementById('node-group-dropdown').style.display = 'none';
+  dd.style.display = open ? 'none' : 'block';
+  if (!open) setTimeout(function() {
+    document.addEventListener('click', function h(e) {
+      if (!dd.contains(e.target) && e.target !== btn) { dd.style.display = 'none'; document.removeEventListener('click', h); }
+    });
+  }, 10);
+}
+function pickNodeEnv(el, label) {
+  document.querySelectorAll('.ne-opt').forEach(function(o) {
+    o.classList.remove('ne-opt-active'); o.querySelector('.ne-check').style.visibility = 'hidden'; o.style.background = '';
+  });
+  el.classList.add('ne-opt-active'); el.querySelector('.ne-check').style.visibility = 'visible'; el.style.background = 'rgba(0,175,115,0.08)';
+  document.getElementById('node-env-label').textContent = label;
+  document.getElementById('node-env-dropdown').style.display = 'none';
+  filterNodes();
+}
+
 function filterNodes() {
   const q = (document.getElementById('node-search')?.value || '').toLowerCase();
-  const group = document.getElementById('node-group-filter')?.value || 'all';
-  const env = document.getElementById('node-env-filter')?.value || 'all';
+  const group = document.querySelector('.ng-opt-active')?.dataset.val || 'all';
+  const env = document.querySelector('.ne-opt-active')?.dataset.val || 'all';
   const rows = document.querySelectorAll('#v-all-devices .node-row');
   let visible = 0;
   rows.forEach(row => {
