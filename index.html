@@ -3038,21 +3038,21 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
 
         <!-- Device list -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+        <div id="nodes-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
 
           <!-- Table header -->
           <div style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
             <div><input type="checkbox" id="select-all-nodes" onchange="toggleAllNodes(this)" style="cursor:pointer;accent-color:var(--green2);"></div>
-            <div>Device</div>
-            <div>Score</div>
-            <div>Issues</div>
-            <div>Detected Drift</div>
-            <div>Last Scan</div>
+            <div onclick="sortNodes('name')" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color=''">Device <span id="sort-icon-name" style="opacity:0.35;font-size:9px;">↕</span></div>
+            <div onclick="sortNodes('score')" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color=''">Score <span id="sort-icon-score" style="opacity:0.35;font-size:9px;">↕</span></div>
+            <div onclick="sortNodes('issues')" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color=''">Issues <span id="sort-icon-issues" style="opacity:0.35;font-size:9px;">↕</span></div>
+            <div onclick="sortNodes('drift')" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color=''">Detected Drift <span id="sort-icon-drift" style="opacity:0.35;font-size:9px;">↕</span></div>
+            <div onclick="sortNodes('lastscan')" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color=''">Last Scan <span id="sort-icon-lastscan" style="opacity:0.35;font-size:9px;">↕</span></div>
             <div></div>
           </div>
 
           <!-- Device row 1 — current device, good score -->
-          <div class="node-row" data-name="MACBOOK-TARAS Windows 11 This device" data-type="local" data-group="laptops" data-env="production" onclick="showView('node-detail')" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+          <div class="node-row" data-name="MACBOOK-TARAS Windows 11 This device" data-type="local" data-group="laptops" data-env="production" data-sort-score="78" data-sort-issues="9" data-sort-drift="3" data-sort-lastscan="2" onclick="showView('node-detail')" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:8px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3077,7 +3077,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Device row 2 — critical score -->
-          <div class="node-row" data-name="SARAH-LAPTOP-01 Windows 11 Pro" data-type="local" data-group="laptops" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+          <div class="node-row" data-name="SARAH-LAPTOP-01 Windows 11 Pro" data-type="local" data-group="laptops" data-env="production" data-sort-score="54" data-sort-issues="14" data-sort-drift="1" data-sort-lastscan="60" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:8px;background:rgba(251,60,68,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3102,7 +3102,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Device row 3 — healthy -->
-          <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" data-group="workstations" data-env="development" onclick="showView('node-detail')" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+          <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" data-group="workstations" data-env="development" data-sort-score="91" data-sort-issues="2" data-sort-drift="0" data-sort-lastscan="120" onclick="showView('node-detail')" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:8px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3127,7 +3127,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Device row 4 — scan in progress -->
-          <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" data-group="workstations" data-env="staging" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+          <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" data-group="workstations" data-env="staging" data-sort-score="999" data-sort-issues="0" data-sort-drift="1" data-sort-lastscan="0" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -10534,6 +10534,32 @@ function setNodeFilter(f) {
   });
   filterNodes();
 }
+var _nodeSort = {col: null, dir: 1};
+function sortNodes(col) {
+  if (_nodeSort.col === col) { _nodeSort.dir *= -1; } else { _nodeSort.col = col; _nodeSort.dir = 1; }
+  ['name','score','issues','drift','lastscan'].forEach(function(c) {
+    var icon = document.getElementById('sort-icon-' + c);
+    if (!icon) return;
+    if (c === col) { icon.textContent = _nodeSort.dir === 1 ? '↑' : '↓'; icon.style.opacity = '1'; icon.style.color = 'var(--green1)'; }
+    else { icon.textContent = '↕'; icon.style.opacity = '0.35'; icon.style.color = ''; }
+  });
+  var wrap = document.getElementById('nodes-list-wrap');
+  if (!wrap) return;
+  var rows = Array.from(wrap.querySelectorAll(':scope > .node-row'));
+  rows.sort(function(a, b) {
+    var av, bv;
+    if (col === 'name') {
+      av = (a.dataset.name || '').toLowerCase(); bv = (b.dataset.name || '').toLowerCase();
+      return _nodeSort.dir * av.localeCompare(bv);
+    }
+    var key = 'sort' + col.charAt(0).toUpperCase() + col.slice(1);
+    av = parseFloat(a.dataset[key]) || 0; bv = parseFloat(b.dataset[key]) || 0;
+    return _nodeSort.dir * (av - bv);
+  });
+  var awsSection = document.getElementById('aws-device-rows');
+  rows.forEach(function(row) { wrap.insertBefore(row, awsSection || null); });
+}
+
 function toggleNodeGroupDrop(btn) {
   var dd = document.getElementById('node-group-dropdown');
   var open = dd.style.display !== 'none';
