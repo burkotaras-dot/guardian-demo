@@ -2991,6 +2991,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <button onclick="setNodeFilter('local')" id="nf-local" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);transition:all 0.15s;font-family:inherit;">Local</button>
             <button onclick="setNodeFilter('aws')" id="nf-aws" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);transition:all 0.15s;font-family:inherit;">AWS</button>
           </div>
+          <div style="width:1px;height:20px;background:var(--border);margin:0 2px;"></div>
+          <select id="node-group-filter" onchange="filterNodes()" style="padding:7px 12px;font-size:12px;font-weight:500;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;font-family:inherit;outline:none;">
+            <option value="all">All groups</option>
+            <option value="laptops">Laptops</option>
+            <option value="servers">Servers</option>
+            <option value="workstations">Workstations</option>
+          </select>
+          <select id="node-env-filter" onchange="filterNodes()" style="padding:7px 12px;font-size:12px;font-weight:500;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;font-family:inherit;outline:none;">
+            <option value="all">All environments</option>
+            <option value="production">Production</option>
+            <option value="staging">Staging</option>
+            <option value="development">Development</option>
+          </select>
           </div><!-- end left group -->
           <!-- Right: selection actions -->
           <div style="display:flex;align-items:center;gap:8px;">
@@ -3025,7 +3038,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Device row 1 — current device, good score -->
-          <div class="node-row" data-name="MACBOOK-TARAS Windows 11 This device" data-type="local" onclick="showView('node-detail')" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+          <div class="node-row" data-name="MACBOOK-TARAS Windows 11 This device" data-type="local" data-group="laptops" data-env="production" onclick="showView('node-detail')" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:8px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3050,7 +3063,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Device row 2 — critical score -->
-          <div class="node-row" data-name="SARAH-LAPTOP-01 Windows 11 Pro" data-type="local" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+          <div class="node-row" data-name="SARAH-LAPTOP-01 Windows 11 Pro" data-type="local" data-group="laptops" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:8px;background:rgba(251,60,68,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3075,7 +3088,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Device row 3 — healthy -->
-          <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" onclick="showView('node-detail')" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+          <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" data-group="workstations" data-env="development" onclick="showView('node-detail')" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:8px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3100,7 +3113,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
 
           <!-- Device row 4 — scan in progress -->
-          <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+          <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" data-group="workstations" data-env="staging" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3134,7 +3147,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
             </div>
             <!-- EC2: web-prod-01 -->
-            <div class="node-row" data-name="web-prod-01 EC2 Amazon Linux us-east-1" data-type="aws" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+            <div class="node-row" data-name="web-prod-01 EC2 Amazon Linux us-east-1" data-type="aws" data-group="servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3152,7 +3165,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;" onclick="event.stopPropagation();go('j3-results')">Results →</button></div>
             </div>
             <!-- EC2: web-prod-02 -->
-            <div class="node-row" data-name="web-prod-02 EC2 Amazon Linux us-east-1" data-type="aws" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+            <div class="node-row" data-name="web-prod-02 EC2 Amazon Linux us-east-1" data-type="aws" data-group="servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3170,7 +3183,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;" onclick="event.stopPropagation();go('j3-results')">Results →</button></div>
             </div>
             <!-- EC2: api-server-01 -->
-            <div class="node-row" data-name="api-server-01 EC2 Ubuntu eu-west-1" data-type="aws" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+            <div class="node-row" data-name="api-server-01 EC2 Ubuntu eu-west-1" data-type="aws" data-group="servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3188,7 +3201,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;" onclick="event.stopPropagation();go('j3-results')">Fix now</button></div>
             </div>
             <!-- ECS -->
-            <div class="node-row" data-name="ecs-cluster-prod ECS us-east-1" data-type="aws" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+            <div class="node-row" data-name="ecs-cluster-prod ECS us-east-1" data-type="aws" data-group="servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:32px;height:32px;border-radius:8px;background:rgba(124,58,237,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3206,7 +3219,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;" onclick="event.stopPropagation();go('j3-results')">Results →</button></div>
             </div>
             <!-- EKS -->
-            <div class="node-row" data-name="eks-prod-cluster EKS Kubernetes us-east-1" data-type="aws" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
+            <div class="node-row" data-name="eks-prod-cluster EKS Kubernetes us-east-1" data-type="aws" data-group="servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'" onmouseout="this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -10509,14 +10522,20 @@ function setNodeFilter(f) {
 }
 function filterNodes() {
   const q = (document.getElementById('node-search')?.value || '').toLowerCase();
+  const group = document.getElementById('node-group-filter')?.value || 'all';
+  const env = document.getElementById('node-env-filter')?.value || 'all';
   const rows = document.querySelectorAll('#v-all-devices .node-row');
   let visible = 0;
   rows.forEach(row => {
     const name = (row.dataset.name || '').toLowerCase();
     const type = row.dataset.type || 'local';
+    const rowGroup = row.dataset.group || '';
+    const rowEnv = row.dataset.env || '';
     const matchSearch = !q || name.includes(q);
     const matchFilter = _nodeFilter === 'all' || _nodeFilter === type;
-    const show = matchSearch && matchFilter;
+    const matchGroup = group === 'all' || rowGroup === group;
+    const matchEnv = env === 'all' || rowEnv === env;
+    const show = matchSearch && matchFilter && matchGroup && matchEnv;
     row.style.display = show ? 'grid' : 'none';
     if (show) visible++;
   });
@@ -10530,7 +10549,7 @@ function filterNodes() {
     if (table) table.appendChild(empty);
   }
   const q2 = document.getElementById('node-search')?.value || '';
-  empty.innerHTML = visible === 0 ? `No nodes match <strong>"${q2}"</strong>` : '';
+  empty.innerHTML = visible === 0 ? `No nodes match current filters` : '';
   empty.style.display = visible === 0 ? '' : 'none';
 }
 
