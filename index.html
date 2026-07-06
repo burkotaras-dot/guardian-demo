@@ -3019,18 +3019,18 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
           </div>
           </div><!-- end left group -->
-          <!-- Right: selection actions -->
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span id="node-action-count" style="display:none;font-size:12px;font-weight:500;color:var(--text-sec);white-space:nowrap;"></span>
-            <button id="node-action-compare" onclick="showCompare()" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
+          <!-- Right: selection actions (hidden until ≥1 node selected) -->
+          <div id="node-action-bar" style="display:none;align-items:center;gap:8px;">
+            <span id="node-action-count" style="font-size:12px;font-weight:500;color:var(--text-sec);white-space:nowrap;"></span>
+            <button id="node-action-compare" onclick="showCompare()" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
               Compare
             </button>
-            <button id="node-action-scan" onclick="go('s07')" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-scan" onclick="go('s07')" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Scan Selected
             </button>
-            <button id="node-action-consensus" onclick="(function(){var n=Array.from(document.querySelectorAll('.node-checkbox:checked')).map(function(cb){var r=cb.closest('.node-row');return r?(r.dataset.name||'').split(' ')[0]:'';}).filter(Boolean);showView('all-devices');setNodesTab('peer');applySelectionConsensus(n);})()" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-consensus" onclick="(function(){var n=Array.from(document.querySelectorAll('.node-checkbox:checked')).map(function(cb){var r=cb.closest('.node-row');return r?(r.dataset.name||'').split(' ')[0]:'';}).filter(Boolean);showView('all-devices');setNodesTab('peer');applySelectionConsensus(n);})()" disabled style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               Consensus Comparison
             </button>
@@ -11062,14 +11062,13 @@ function updateScanSelected() {
   const checked = document.querySelectorAll('.node-checkbox:checked').length;
   const total = document.querySelectorAll('.node-checkbox').length;
 
-  // Inline action buttons (right of search row)
+  // Inline action bar — show only when ≥1 node selected
+  const actionBar = document.getElementById('node-action-bar');
+  if (actionBar) actionBar.style.display = checked > 0 ? 'flex' : 'none';
   const countEl = document.getElementById('node-action-count');
   const compareBtn = document.getElementById('node-action-compare');
   const scanBtn = document.getElementById('node-action-scan');
-  if (countEl) {
-    countEl.style.display = checked > 0 ? 'inline' : 'none';
-    countEl.textContent = checked + ' node' + (checked === 1 ? '' : 's') + ' selected';
-  }
+  if (countEl) countEl.textContent = checked + ' node' + (checked === 1 ? '' : 's') + ' selected';
   const isDark = document.body.classList.contains('dark');
   const inactiveBorder = isDark ? 'rgba(255,255,255,0.28)' : 'var(--border)';
   const inactiveColor  = isDark ? 'rgba(255,255,255,0.65)' : 'var(--text-sec)';
