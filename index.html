@@ -1791,6 +1791,8 @@ body.dark #v-policies input[type="text"]::placeholder { color: #698787; }
 body.dark #changes-sort-btn { background: var(--bg-card) !important; color: var(--p-neutral-50) !important; }
 body.dark #changes-sort-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
 body.dark #changes-group-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
+body.dark #drift-nodegroup-btn { background: var(--bg-card) !important; color: var(--p-neutral-50) !important; }
+body.dark #drift-nodegroup-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
 body.dark .sort-opt { color: #C0C0C0 !important; }
 body.dark #changes-search { color: #698787 !important; }
 body.dark #changes-search::placeholder { color: #698787; }
@@ -7359,6 +7361,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div class="group-opt" data-val="cr" onclick="pickGroup(this,'Change Request')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('group-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Change Request</div>
             </div>
           </div>
+          <!-- Node group filter dropdown -->
+          <div style="position:relative;flex-shrink:0;">
+            <div id="drift-nodegroup-btn" onclick="toggleDriftNodeGroup(this)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+              <span id="drift-nodegroup-label">All groups</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div id="drift-nodegroup-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:150px;z-index:100;">
+              <div class="dng-opt dng-opt-active" data-val="all" onclick="pickDriftNodeGroup(this,'All groups')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('dng-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="dng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>All groups</div>
+              <div class="dng-opt" data-val="laptops" onclick="pickDriftNodeGroup(this,'Laptops')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('dng-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="dng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Laptops</div>
+              <div class="dng-opt" data-val="servers" onclick="pickDriftNodeGroup(this,'Servers')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('dng-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="dng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Servers</div>
+              <div class="dng-opt" data-val="workstations" onclick="pickDriftNodeGroup(this,'Workstations')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('dng-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="dng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"/></svg>Workstations</div>
+            </div>
+          </div>
           <!-- Hide handled toggle (#2) — drops reconciled events from the active list, ON by default -->
           <div id="drift-hide-handled" class="hh-toggle active" onclick="toggleHideHandled()" title="Hide events that are already reconciled or handled">
             <svg class="hh-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -7454,7 +7469,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <!-- Drift items — neutral cards, color only in diff blocks -->
         <div id="drift-cards">
-        <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" data-ts="7200" onclick="openChange(0)">
+        <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-ts="7200" onclick="openChange(0)">
           <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection disabled</div>
@@ -7472,7 +7487,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="MACBOOK-TARAS" data-ts="14400" onclick="openChange(1)">
+        <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="MACBOOK-TARAS" data-group="laptops" data-ts="14400" onclick="openChange(1)">
           <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection reconciled</div>
@@ -7487,7 +7502,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" data-ts="5400" onclick="openChange(2)">
+        <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-ts="5400" onclick="openChange(2)">
           <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','added')" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;justify-self:start;">Added</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">New local user account created</div>
@@ -11840,6 +11855,34 @@ function pickGroup(el, label) {
   applyDriftFilters();
 }
 
+let driftNodeGroup = 'all';
+function toggleDriftNodeGroup(btn) {
+  var dd = document.getElementById('drift-nodegroup-dropdown');
+  var open = dd.style.display !== 'none';
+  dd.style.display = open ? 'none' : 'block';
+  if (!open) {
+    setTimeout(function() {
+      document.addEventListener('click', function h(e) {
+        if (!dd.contains(e.target) && e.target !== btn) { dd.style.display = 'none'; document.removeEventListener('click', h); }
+      });
+    }, 10);
+  }
+}
+function pickDriftNodeGroup(el, label) {
+  document.querySelectorAll('.dng-opt').forEach(function(o) {
+    o.classList.remove('dng-opt-active');
+    o.querySelector('.dng-check').style.visibility = 'hidden';
+    o.style.background = '';
+  });
+  el.classList.add('dng-opt-active');
+  el.querySelector('.dng-check').style.visibility = 'visible';
+  el.style.background = 'rgba(0,175,115,0.08)';
+  document.getElementById('drift-nodegroup-label').textContent = label;
+  document.getElementById('drift-nodegroup-dropdown').style.display = 'none';
+  driftNodeGroup = el.dataset.val;
+  applyDriftFilters();
+}
+
 function toggleDriftRpp(e) {
   if (e) e.stopPropagation();
   var dd = document.getElementById('drift-rpp-dropdown');
@@ -12311,6 +12354,7 @@ function applyDriftFilters() {
     if (ok && !matchesDriftSearch(card)) ok = false;
     if (ok && driftNode.include.length && driftNode.include.indexOf(card.dataset.node) === -1) ok = false;
     if (ok && driftNode.exclude.indexOf(card.dataset.node) !== -1) ok = false;
+    if (ok && driftNodeGroup !== 'all' && card.dataset.group !== driftNodeGroup) ok = false;
     // Hide handled — drop reconciled/handled cards unless the user explicitly filters by that status
     if (ok && driftHideHandled && DRIFT_HANDLED_STATUSES.indexOf(card.dataset.recon) !== -1 && DRIFT_HANDLED_STATUSES.indexOf(f.status) === -1) ok = false;
     card.style.display = ok ? '' : 'none';
