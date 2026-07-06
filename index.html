@@ -7282,9 +7282,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="page-sub" id="changes-sub">Detected since last scan · 1 unreconciled · 1 flagged · across 2 nodes</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <div id="drift-reconcile-btn" onclick="enterReconcileMode()" title="Open a focused workspace with advanced filters (CR, status, node, type, group, environment)" style="display:flex;align-items:center;gap:7px;padding:8px 16px;border:1px solid var(--green1);border-radius:var(--radius-md);background:var(--green1);font-size:12px;font-weight:600;cursor:pointer;color:#fff;white-space:nowrap;user-select:none;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,0.06);" onmouseover="this.style.background='var(--green2)';this.style.borderColor='var(--green2)'" onmouseout="this.style.background='var(--green1)';this.style.borderColor='var(--green1)'">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-            Reconcile &amp; filter drift events &#8594;
+          <div id="drift-reconcile-btn" onclick="enterReconcileMode()" title="Opens advanced reconciliation filters" style="display:flex;align-items:center;gap:9px;padding:7px 16px;border:1px solid var(--green1);border-radius:var(--radius-md);background:var(--green1);cursor:pointer;color:#fff;white-space:nowrap;user-select:none;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,0.06);" onmouseover="this.style.background='var(--green2)';this.style.borderColor='var(--green2)'" onmouseout="this.style.background='var(--green1)';this.style.borderColor='var(--green1)'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;">
+              <span style="font-size:12px;font-weight:600;">Reconcile drift events</span>
+              <span style="font-size:10px;font-weight:500;opacity:0.85;">Advanced filters &amp; review</span>
+            </span>
           </div>
           <div style="font-size:11px;color:var(--text-sec);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 12px;">
             Last scan: 2 hours ago
@@ -7399,7 +7402,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:8px 30px 8px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
                 <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
               </div>
-              <!-- Filter groups — single left-to-right stream with dividers, wraps only when out of room -->
+              <!-- Pill filters: CR | Status | Type | Group | Environment -->
               <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;margin-top:14px;">
                 <div id="recon-cr-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">CR:</span>
@@ -7414,13 +7417,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <div class="recon-node-chip" data-val="unreconciled" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','unreconciled')">Unreconciled</div>
                   <div class="recon-node-chip" data-val="flagged" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','flagged')">Flagged</div>
                   <div class="recon-node-chip" data-val="reconciled" data-active="false" onclick="pickReconChip(this,'recon-status-chips','status','reconciled')">Reconciled</div>
-                </div>
-                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
-                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
-                  <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Node:</span>
-                  <div class="recon-node-chip recon-all" data-active="true" onclick="clearReconNodes()" title="Show all nodes">All nodes</div>
-                  <div class="recon-node-chip" data-node="MACBOOK-TARAS" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico"></span>MACBOOK-TARAS</div>
-                  <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico"></span>SARAH-LAPTOP-01</div>
                 </div>
                 <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
                 <div id="recon-type-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
@@ -7445,6 +7441,98 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <div class="recon-node-chip" data-val="production" data-active="false" onclick="pickReconChip(this,'recon-env-chips','env','production')">Production</div>
                   <div class="recon-node-chip" data-val="staging" data-active="false" onclick="pickReconChip(this,'recon-env-chips','env','staging')">Staging</div>
                   <div class="recon-node-chip" data-val="development" data-active="false" onclick="pickReconChip(this,'recon-env-chips','env','development')">Development</div>
+                </div>
+              </div>
+              <!-- Richer controls (not pills): Time span dropdown · Node searchable selector · Approval reason searchable select · Approval comment text -->
+              <div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:14px 20px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);">
+                <!-- Time span — dropdown of presets + custom date range -->
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Time span</label>
+                  <div style="position:relative;">
+                    <div id="recon-time-btn" onclick="toggleReconPop('recon-time-dropdown',this)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:150px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12.5px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+                      <span id="recon-time-label">Any time</span>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                    <div id="recon-time-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:180px;z-index:100;">
+                      <div class="recon-time-opt" data-val="" onclick="pickReconTime(this,'Any time',null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=''">Any time</div>
+                      <div class="recon-time-opt" data-val="today" onclick="pickReconTime(this,'Today',null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=''">Today</div>
+                      <div class="recon-time-opt" data-val="3d" onclick="pickReconTime(this,'Last 3 days',null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=''">Last 3 days</div>
+                      <div class="recon-time-opt" data-val="7d" onclick="pickReconTime(this,'Last 7 days',null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=''">Last 7 days</div>
+                      <div class="recon-time-opt" data-val="30d" onclick="pickReconTime(this,'Last 30 days',null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=''">Last 30 days</div>
+                      <div style="height:1px;background:var(--border);margin:5px 4px;"></div>
+                      <div class="recon-time-opt" data-val="custom" onclick="pickReconTime(this,'Custom range',null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=''">Custom range…</div>
+                    </div>
+                  </div>
+                  <div id="recon-date-range" style="display:none;align-items:center;gap:6px;margin-top:2px;">
+                    <input type="date" id="recon-date-from" oninput="applyReconDateRange()" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);color:var(--text-default);outline:none;">
+                    <span style="font-size:12px;color:var(--text-muted);">–</span>
+                    <input type="date" id="recon-date-to" oninput="applyReconDateRange()" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);color:var(--text-default);outline:none;">
+                  </div>
+                </div>
+                <!-- Node scope — searchable include / exclude selector -->
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Node scope</label>
+                  <div style="position:relative;">
+                    <div id="recon-node-btn" onclick="toggleReconPop('recon-node-pop',this)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12.5px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+                      <span id="recon-node-btn-label">All nodes</span>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                    <div id="recon-node-pop" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:10px;min-width:240px;z-index:100;">
+                      <div style="position:relative;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="recon-node-search" oninput="filterReconNodeList(this.value)" placeholder="Search nodes…" style="width:100%;box-sizing:border-box;padding:6px 10px 6px 30px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+                      </div>
+                      <div style="font-size:10.5px;color:var(--text-muted);margin:8px 2px 7px;">Click a node once to include (✓), twice to exclude (✕)</div>
+                      <div id="recon-node-list" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+                        <div class="recon-node-chip recon-all" data-active="true" onclick="clearReconNodes()" title="Show all nodes">All nodes</div>
+                        <div class="recon-node-chip" data-node="MACBOOK-TARAS" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico"></span>MACBOOK-TARAS</div>
+                        <div class="recon-node-chip" data-node="SARAH-LAPTOP-01" data-state="off" onclick="cycleReconNode(this)" title="Click to include · click again to exclude"><span class="recon-node-ico"></span>SARAH-LAPTOP-01</div>
+                        <div id="recon-node-empty" style="display:none;font-size:11.5px;color:var(--text-muted);padding:2px;">No matching nodes</div>
+                      </div>
+                    </div>
+                  </div>
+                  <span style="font-size:10.5px;color:var(--text-muted);">Include or exclude specific nodes</span>
+                </div>
+                <!-- Category — multi-select dropdown -->
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Category</label>
+                  <div style="position:relative;">
+                    <div id="recon-cat-btn" onclick="toggleReconPop('recon-cat-pop',this)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12.5px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+                      <span id="recon-cat-btn-label">All categories</span>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                    <div id="recon-cat-pop" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:10px;min-width:220px;z-index:100;">
+                      <div style="font-size:10.5px;color:var(--text-muted);margin:0 2px 8px;">Select one or more categories</div>
+                      <div id="recon-category-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                        <div class="recon-node-chip recon-cat-all" data-active="true" onclick="clearReconCat()" title="Show all categories">All categories</div>
+                        <div class="recon-node-chip" data-val="services" data-active="false" onclick="toggleReconCat(this,'services')">Services</div>
+                        <div class="recon-node-chip" data-val="users" data-active="false" onclick="toggleReconCat(this,'users')">Users</div>
+                        <div class="recon-node-chip" data-val="registry" data-active="false" onclick="toggleReconCat(this,'registry')">Registry</div>
+                        <div class="recon-node-chip" data-val="files" data-active="false" onclick="toggleReconCat(this,'files')">Files</div>
+                        <div class="recon-node-chip" data-val="drivers" data-active="false" onclick="toggleReconCat(this,'drivers')">Drivers</div>
+                        <div class="recon-node-chip" data-val="envvars" data-active="false" onclick="toggleReconCat(this,'envvars')">EnvVars</div>
+                      </div>
+                    </div>
+                  </div>
+                  <span style="font-size:10.5px;color:var(--text-muted);">Selected show as chips below</span>
+                </div>
+                <!-- Approval reason — searchable select (type to filter known reasons; free text also matches) -->
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Approval reason</label>
+                  <div style="position:relative;width:240px;">
+                    <input type="text" id="recon-approval-reason" autocomplete="off" placeholder="Search or select reason…" oninput="onReconReasonInput(this)" onfocus="openReconReasonList()" style="width:100%;box-sizing:border-box;padding:7px 26px 7px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'">
+                    <span onclick="clearDriftFilter('approvalReason')" title="Clear" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+                    <div id="recon-reason-list" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:6px;z-index:100;max-height:200px;overflow-y:auto;"></div>
+                  </div>
+                </div>
+                <!-- Approval comment — plain free-text -->
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Approval comment</label>
+                  <div style="position:relative;width:270px;">
+                    <input type="text" id="recon-approval-comment" placeholder="e.g. approved per change board" oninput="pickReconText(this,'approvalComment')" style="width:100%;box-sizing:border-box;padding:7px 26px 7px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+                    <span onclick="clearDriftFilter('approvalComment')" title="Clear" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+                    <div style="font-size:10.5px;color:var(--text-muted);margin-top:5px;">Free-text — matches any part of the note</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -7474,7 +7562,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <!-- Drift items — neutral cards, color only in diff blocks -->
         <div id="drift-cards">
-        <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-ts="7200" onclick="openChange(0)">
+        <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-category="services" data-approval-reason="" data-approval-comment="" data-date="2026-07-06" data-ts="7200" onclick="openChange(0)">
           <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection disabled</div>
@@ -7492,7 +7580,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-ts="14400" onclick="openChange(1)">
+        <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-category="services" data-approval-reason="Planned maintenance window" data-approval-comment="Approved per change board — scheduled AV policy update" data-date="2026-07-02" data-ts="345600" onclick="openChange(1)">
           <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','modified')" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection reconciled</div>
@@ -7507,7 +7595,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-ts="5400" onclick="openChange(2)">
+        <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-category="users" data-approval-reason="" data-approval-comment="" data-date="2026-07-05" data-ts="90000" onclick="openChange(2)">
           <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
           <span class="badge" onclick="event.stopPropagation();setDriftFilter('type','added')" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;justify-self:start;">Added</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">New local user account created</div>
@@ -12023,9 +12111,7 @@ function exitReconcileMode() {
   if (tb) tb.style.display = 'flex';
   if (panel) panel.style.display = 'none';
   if (banner) banner.style.display = 'flex';
-  clearReconSearch();
-  clearReconNodes();
-  clearReconChips();
+  clearAllReconFilters();
 }
 
 // Compound search (F5b) — include / -exclude / wildcard*
@@ -12126,9 +12212,9 @@ function pickReconChip(el, groupId, dim, val) {
   applyDriftFilters();
 }
 function clearReconChips() {
-  ['recon-cr-chips','recon-type-chips','recon-status-chips','recon-group-chips','recon-env-chips'].forEach(function(groupId) {
-    var dim = groupId === 'recon-cr-chips' ? 'cr' : groupId === 'recon-type-chips' ? 'type' : groupId === 'recon-status-chips' ? 'status' : groupId === 'recon-group-chips' ? 'group' : 'env';
-    driftFilters[dim] = null;
+  var DIM_BY_GROUP = { 'recon-cr-chips':'cr', 'recon-type-chips':'type', 'recon-status-chips':'status', 'recon-group-chips':'group', 'recon-env-chips':'env' };
+  Object.keys(DIM_BY_GROUP).forEach(function(groupId) {
+    driftFilters[DIM_BY_GROUP[groupId]] = null;
     var group = document.getElementById(groupId);
     if (!group) return;
     var chips = group.querySelectorAll('.recon-node-chip');
@@ -12146,6 +12232,10 @@ function updateReconFilterCount() {
   if (driftFilters.status) n++;
   if (driftFilters.group) n++;
   if (driftFilters.env) n++;
+  if (driftFilters.category.length) n++;
+  if (driftFilters.timeSpan) n++;
+  if (driftFilters.approvalReason) n++;
+  if (driftFilters.approvalComment) n++;
   if (driftNode.include.length || driftNode.exclude.length) n++;
   countEl.textContent = n + (n === 1 ? ' filter active' : ' filters active');
   const clearEl = document.getElementById('recon-clear-all');
@@ -12154,6 +12244,18 @@ function updateReconFilterCount() {
 function clearAllReconFilters() {
   clearReconSearch();
   clearReconChips();
+  driftFilters.category = [];
+  driftFilters.timeSpan = null; driftFilters.dateFrom = null; driftFilters.dateTo = null;
+  driftFilters.approvalReason = null;
+  driftFilters.approvalComment = null;
+  var tl = document.getElementById('recon-time-label'); if (tl) tl.textContent = 'Any time';
+  var range = document.getElementById('recon-date-range'); if (range) range.style.display = 'none';
+  var df = document.getElementById('recon-date-from'); if (df) df.value = '';
+  var dt = document.getElementById('recon-date-to'); if (dt) dt.value = '';
+  var r = document.getElementById('recon-approval-reason'); if (r) r.value = '';
+  var rl = document.getElementById('recon-reason-list'); if (rl) rl.style.display = 'none';
+  var c = document.getElementById('recon-approval-comment'); if (c) c.value = '';
+  var ns = document.getElementById('recon-node-search'); if (ns) { ns.value = ''; filterReconNodeList(''); }
   clearReconNodes();
 }
 
@@ -12261,8 +12363,12 @@ function sortChanges(value) {
 
 // Sort state — persists across filter changes
 let driftSortBy = 'newest';
-// Multi-dimension drift filter state — Status + CR + Node + Type + Group + Environment combine via AND
-let driftFilters = { status: null, cr: null, node: null, type: null, group: null, env: null };
+// Multi-dimension drift filter state — combine via AND. category is a multi-select array (OR within);
+// timeSpan is a preset key or 'custom' (with dateFrom/dateTo); approvalReason / approvalComment are free-text
+function _emptyDriftFilters() { return { status: null, cr: null, node: null, type: null, group: null, env: null, category: [], timeSpan: null, dateFrom: null, dateTo: null, approvalReason: null, approvalComment: null }; }
+let driftFilters = _emptyDriftFilters();
+// Fixed "now" reference for the prototype's relative Time Span presets
+const DRIFT_TIME_REF = '2026-07-06';
 // Hide handled (#2) — when on, reconciled/handled events drop out of the active list (ON by default)
 let driftHideHandled = true;
 const DRIFT_HANDLED_STATUSES = ['reconciled', 'approved'];
@@ -12275,14 +12381,175 @@ function toggleHideHandled() {
 
 // Status-pill entry point (also handles All reset + No CR quick filter)
 function filterChanges(type) {
-  if (type === 'all') driftFilters = { status: null, cr: null, node: null, type: null, group: null, env: null };
+  if (type === 'all') driftFilters = _emptyDriftFilters();
   else if (type === 'nocr') driftFilters.cr = 'none';
   else driftFilters.status = type;
   applyDriftFilters();
 }
 // Embedded-pill entry points (node / cr / type clicked inside a change card)
 function setDriftFilter(dim, val) { driftFilters[dim] = val; applyDriftFilters(); }
-function clearDriftFilter(dim) { driftFilters[dim] = null; applyDriftFilters(); }
+function clearDriftFilter(dim) {
+  if (dim === 'category') { clearReconCat(); return; }
+  if (dim === 'timeSpan') { resetReconTime(); return; }
+  driftFilters[dim] = null;
+  if (dim === 'approvalReason') { var r = document.getElementById('recon-approval-reason'); if (r) r.value = ''; }
+  if (dim === 'approvalComment') { var c = document.getElementById('recon-approval-comment'); if (c) c.value = ''; }
+  applyDriftFilters();
+}
+// Free-text reconciliation filters (approval reason / comment) — not pills, substring match
+function pickReconText(inputEl, dim) { driftFilters[dim] = inputEl.value.trim() || null; applyDriftFilters(); }
+
+// ── Category multi-select ──────────────────────────────────────────────
+function toggleReconCat(chip, val) {
+  var arr = driftFilters.category;
+  var i = arr.indexOf(val);
+  if (i === -1) arr.push(val); else arr.splice(i, 1);
+  applyDriftFilters();
+}
+function clearReconCat() { driftFilters.category = []; applyDriftFilters(); }
+function _syncReconCatChips() {
+  var group = document.getElementById('recon-category-chips');
+  if (!group) return;
+  var any = driftFilters.category.length > 0;
+  group.querySelectorAll('.recon-node-chip').forEach(function(c) {
+    if (c.classList.contains('recon-cat-all')) { c.dataset.active = any ? 'false' : 'true'; return; }
+    c.dataset.active = driftFilters.category.indexOf(c.dataset.val) !== -1 ? 'true' : 'false';
+  });
+}
+function updateReconCatLabel() {
+  var lbl = document.getElementById('recon-cat-btn-label');
+  if (!lbl) return;
+  var LBL = { services:'Services', users:'Users', registry:'Registry', files:'Files', drivers:'Drivers', envvars:'EnvVars' };
+  var arr = driftFilters.category;
+  if (!arr.length) { lbl.textContent = 'All categories'; return; }
+  if (arr.length <= 2) { lbl.textContent = arr.map(function(c){ return LBL[c] || c; }).join(', '); return; }
+  lbl.textContent = arr.length + ' categories';
+}
+
+// ── Time span dropdown + custom date range ─────────────────────────────
+function _daysAgo(n) { var d = new Date(DRIFT_TIME_REF + 'T00:00:00'); d.setDate(d.getDate() - n); var m = ('0' + (d.getMonth() + 1)).slice(-2), day = ('0' + d.getDate()).slice(-2); return d.getFullYear() + '-' + m + '-' + day; }
+function _driftTimeMatch(cardDate) {
+  var f = driftFilters;
+  if (!f.timeSpan) return true;
+  if (!cardDate) return false;
+  if (f.timeSpan === 'today') return cardDate === DRIFT_TIME_REF;
+  if (f.timeSpan === '3d')   return cardDate >= _daysAgo(3);
+  if (f.timeSpan === '7d')   return cardDate >= _daysAgo(7);
+  if (f.timeSpan === '30d')  return cardDate >= _daysAgo(30);
+  if (f.timeSpan === 'custom') {
+    if (f.dateFrom && cardDate < f.dateFrom) return false;
+    if (f.dateTo && cardDate > f.dateTo) return false;
+    return true;
+  }
+  return true;
+}
+function pickReconTime(el, label, _unused) {
+  var val = el.dataset.val || null;
+  document.getElementById('recon-time-label').textContent = label;
+  document.getElementById('recon-time-dropdown').style.display = 'none';
+  var range = document.getElementById('recon-date-range');
+  if (val === 'custom') {
+    driftFilters.timeSpan = 'custom';
+    if (range) range.style.display = 'flex';
+  } else {
+    driftFilters.timeSpan = val;
+    driftFilters.dateFrom = null; driftFilters.dateTo = null;
+    if (range) range.style.display = 'none';
+  }
+  applyDriftFilters();
+}
+function applyReconDateRange() {
+  driftFilters.timeSpan = 'custom';
+  driftFilters.dateFrom = (document.getElementById('recon-date-from') || {}).value || null;
+  driftFilters.dateTo = (document.getElementById('recon-date-to') || {}).value || null;
+  applyDriftFilters();
+}
+function resetReconTime() {
+  driftFilters.timeSpan = null; driftFilters.dateFrom = null; driftFilters.dateTo = null;
+  var lbl = document.getElementById('recon-time-label'); if (lbl) lbl.textContent = 'Any time';
+  var range = document.getElementById('recon-date-range'); if (range) range.style.display = 'none';
+  var from = document.getElementById('recon-date-from'); if (from) from.value = '';
+  var to = document.getElementById('recon-date-to'); if (to) to.value = '';
+  applyDriftFilters();
+}
+
+// ── Node searchable selector ───────────────────────────────────────────
+function filterReconNodeList(q) {
+  var query = (q || '').trim().toLowerCase();
+  var shown = 0;
+  document.querySelectorAll('#recon-node-list .recon-node-chip[data-node]').forEach(function(row) {
+    var match = row.dataset.node.toLowerCase().indexOf(query) !== -1;
+    row.style.display = match ? '' : 'none';
+    if (match) shown++;
+  });
+  var empty = document.getElementById('recon-node-empty');
+  if (empty) empty.style.display = shown === 0 ? 'block' : 'none';
+}
+function updateNodeSelectorLabel() {
+  var lbl = document.getElementById('recon-node-btn-label');
+  if (!lbl) return;
+  var inc = driftNode.include.length, exc = driftNode.exclude.length;
+  if (!inc && !exc) { lbl.textContent = 'All nodes'; return; }
+  var parts = [];
+  if (inc) parts.push(inc + ' included');
+  if (exc) parts.push(exc + ' excluded');
+  lbl.textContent = parts.join(' · ');
+}
+
+// ── Approval reason searchable select ──────────────────────────────────
+var RECON_REASONS = ['Planned maintenance window', 'Emergency change', 'Standard pre-approved change', 'Security patch deployment', 'Configuration baseline update'];
+function _renderReconReasonList() {
+  var box = document.getElementById('recon-reason-list');
+  if (!box) return;
+  var q = ((document.getElementById('recon-approval-reason') || {}).value || '').trim().toLowerCase();
+  var matches = RECON_REASONS.filter(function(r) { return r.toLowerCase().indexOf(q) !== -1; });
+  if (!matches.length) { box.innerHTML = '<div style="padding:7px 10px;font-size:12px;color:var(--text-muted);">No preset reason — filtering on typed text</div>'; return; }
+  box.innerHTML = matches.map(function(r) {
+    return '<div onclick="pickReconReason(' + JSON.stringify(r).replace(/"/g, '&quot;') + ')" style="padding:7px 10px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background=\'rgba(0,175,115,0.08)\'" onmouseout="this.style.background=\'\'">' + r + '</div>';
+  }).join('');
+}
+function openReconReasonList() {
+  var box = document.getElementById('recon-reason-list');
+  if (!box) return;
+  _renderReconReasonList();
+  box.style.display = 'block';
+  setTimeout(function() {
+    document.addEventListener('click', function h(e) {
+      var wrap = box.parentElement;
+      if (wrap && !wrap.contains(e.target)) { box.style.display = 'none'; document.removeEventListener('click', h); }
+    });
+  }, 10);
+}
+function onReconReasonInput(el) {
+  driftFilters.approvalReason = el.value.trim() || null;
+  _renderReconReasonList();
+  var box = document.getElementById('recon-reason-list');
+  if (box) box.style.display = 'block';
+  applyDriftFilters();
+}
+function pickReconReason(text) {
+  var inp = document.getElementById('recon-approval-reason');
+  if (inp) inp.value = text;
+  driftFilters.approvalReason = text;
+  var box = document.getElementById('recon-reason-list');
+  if (box) box.style.display = 'none';
+  applyDriftFilters();
+}
+
+// ── Generic reconciliation popover toggle (time span / node) ───────────
+function toggleReconPop(popId, btn) {
+  var pop = document.getElementById(popId);
+  if (!pop) return;
+  var open = pop.style.display !== 'none';
+  pop.style.display = open ? 'none' : (popId === 'recon-time-dropdown' ? 'block' : 'block');
+  if (!open) {
+    setTimeout(function() {
+      document.addEventListener('click', function h(e) {
+        if (!pop.contains(e.target) && e.target !== btn && !btn.contains(e.target)) { pop.style.display = 'none'; document.removeEventListener('click', h); }
+      });
+    }, 10);
+  }
+}
 
 
 function applyDriftFilters() {
@@ -12320,6 +12587,9 @@ function applyDriftFilters() {
   });
   // Mirror the active CR/Status/Type filter onto the top reconciliation chip groups
   _syncReconTopChips();
+  _syncReconCatChips();
+  updateReconCatLabel();
+  updateNodeSelectorLabel();
   // Card visibility — AND across every active dimension
   let visible = 0;
   for (let i = 0; i < 3; i++) {
@@ -12335,6 +12605,10 @@ function applyDriftFilters() {
     if (ok && driftNode.exclude.indexOf(card.dataset.node) !== -1) ok = false;
     if (ok && f.group && card.dataset.group !== f.group) ok = false;
     if (ok && f.env && card.dataset.env !== f.env) ok = false;
+    if (ok && f.category.length && f.category.indexOf(card.dataset.category) === -1) ok = false;
+    if (ok && !_driftTimeMatch(card.dataset.date)) ok = false;
+    if (ok && f.approvalReason && (card.dataset.approvalReason || '').toLowerCase().indexOf(f.approvalReason.toLowerCase()) === -1) ok = false;
+    if (ok && f.approvalComment && (card.dataset.approvalComment || '').toLowerCase().indexOf(f.approvalComment.toLowerCase()) === -1) ok = false;
     // Hide handled — drop reconciled/handled cards unless the user explicitly filters by that status
     if (ok && driftHideHandled && DRIFT_HANDLED_STATUSES.indexOf(card.dataset.recon) !== -1 && DRIFT_HANDLED_STATUSES.indexOf(f.status) === -1) ok = false;
     card.style.display = ok ? '' : 'none';
@@ -12346,6 +12620,8 @@ function applyDriftFilters() {
   const TYPE_LBL = { modified:'Modified', added:'Added', removed:'Removed' };
   const GROUP_LBL = { laptops:'Laptops', servers:'Servers', workstations:'Workstations' };
   const ENV_LBL = { production:'Production', staging:'Staging', development:'Development' };
+  const CATEGORY_LBL = { services:'Services', users:'Users', registry:'Registry', files:'Files', drivers:'Drivers', envvars:'EnvVars' };
+  const TIME_LBL = { today:'Today', '3d':'Last 3 days', '7d':'Last 7 days', '30d':'Last 30 days' };
   const chipDefs = [];
   if (f.status) chipDefs.push({ dim:'status', label:'Status: ' + (STATUS_LBL[f.status] || f.status) });
   if (f.cr)     chipDefs.push({ dim:'cr',     label:'CR: ' + (f.cr === 'none' ? 'No CR' : f.cr) });
@@ -12353,6 +12629,10 @@ function applyDriftFilters() {
   if (f.type)   chipDefs.push({ dim:'type',   label:'Type: ' + (TYPE_LBL[f.type] || f.type) });
   if (f.group)  chipDefs.push({ dim:'group',  label:'Group: ' + (GROUP_LBL[f.group] || f.group) });
   if (f.env)    chipDefs.push({ dim:'env',    label:'Environment: ' + (ENV_LBL[f.env] || f.env) });
+  if (f.category.length) chipDefs.push({ dim:'category', label:'Category: ' + f.category.map(function(c){ return CATEGORY_LBL[c] || c; }).join(', ') });
+  if (f.timeSpan) chipDefs.push({ dim:'timeSpan', label:'Time: ' + (f.timeSpan === 'custom' ? ((f.dateFrom || '…') + ' – ' + (f.dateTo || '…')) : (TIME_LBL[f.timeSpan] || f.timeSpan)) });
+  if (f.approvalReason)  chipDefs.push({ dim:'approvalReason',  label:'Approval reason: "' + f.approvalReason + '"' });
+  if (f.approvalComment) chipDefs.push({ dim:'approvalComment', label:'Approval comment: "' + f.approvalComment + '"' });
   const row = document.getElementById('changes-active-filters');
   const chips = document.getElementById('changes-active-chips');
   if (row && chips) {
