@@ -7498,23 +7498,32 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:700;color:var(--text-default);line-height:1.2;">Drift review workspace</div>
                 <div style="font-size:11.5px;color:var(--text-sec);margin-top:1px;">Advanced filters for manual reconciliation.</div>
               </div>
-              <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;white-space:nowrap;">
-                <span id="recon-set-count" style="font-size:11.5px;font-weight:600;color:var(--text-sec);">2 events in view</span>
-                <span style="font-size:11px;color:var(--text-muted);"><span id="recon-filter-count">0 filters active</span><span id="recon-clear-all" onclick="clearAllReconFilters()" style="display:none;color:var(--green1);font-weight:600;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"> · Clear all</span></span>
+              <div style="flex-shrink:0;display:flex;align-items:center;gap:12px;white-space:nowrap;">
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+                  <span id="recon-set-count" style="font-size:11.5px;font-weight:600;color:var(--text-sec);">2 events in view</span>
+                  <span style="font-size:11px;color:var(--text-muted);"><span id="recon-filter-count">0 filters active</span><span id="recon-clear-all" onclick="clearAllReconFilters()" style="display:none;color:var(--green1);font-weight:600;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"> · Clear all</span></span>
+                </div>
+                <button id="recon-toggle-btn" onclick="toggleReconFilters()" style="display:flex;align-items:center;gap:5px;background:none;border:1px solid var(--border);border-radius:var(--radius-md);padding:5px 10px;font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;transition:border-color 0.12s,color 0.12s;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green1)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-sec)'">
+                  <span id="recon-toggle-label">Hide filters</span>
+                  <svg id="recon-toggle-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="18 15 12 9 6 15"/></svg>
+                </button>
               </div>
             </div>
-            <!-- Controls: search+counters · pill rows · advanced controls -->
-            <div style="padding:14px 16px 12px;">
-              <!-- Row 1: Search (fixed width) + counters right -->
-              <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px;">
+            <!-- Controls: Query · Quick filters · Advanced filters -->
+            <div id="recon-controls-panel" style="padding:14px 16px 12px;">
+              <!-- Section: Query -->
+              <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Query</div>
+              <div style="display:flex;align-items:center;gap:14px;">
                 <div style="position:relative;width:340px;flex-shrink:0;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                   <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:7px 30px 7px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
                   <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
                 </div>
               </div>
-              <!-- Row 2: CR / Status / Type / Group -->
-              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:10px;">
+              <!-- Section: Quick filters -->
+              <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:14px;margin-bottom:6px;">Quick filters</div>
+              <!-- Row: CR / Status / Type / Group -->
+              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;">
                 <div id="recon-cr-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">CR:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-cr-chips','cr',null)">All CRs</div>
@@ -7578,8 +7587,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   </div>
                 </div>
               </div>
-              <!-- Row 4: Advanced controls — Time span / Node scope / Approval reason / Approval comment -->
-              <div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px 16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+              <!-- Section: Advanced filters -->
+              <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:10px;">
+                <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Advanced filters</div>
+              <div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px 16px;">
                 <!-- Time span -->
                 <div style="display:flex;flex-direction:column;gap:4px;">
                   <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Time span</label>
@@ -7645,6 +7656,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   </div>
                 </div>
               </div>
+              </div><!-- /Advanced filters section -->
             </div>
           </div>
         </div>
@@ -12350,6 +12362,16 @@ function updateReconFilterCount() {
   countEl.textContent = n + (n === 1 ? ' filter active' : ' filters active');
   const clearEl = document.getElementById('recon-clear-all');
   if (clearEl) clearEl.style.display = n > 0 ? 'inline' : 'none';
+}
+function toggleReconFilters() {
+  var panel = document.getElementById('recon-controls-panel');
+  var label = document.getElementById('recon-toggle-label');
+  var arrow = document.getElementById('recon-toggle-arrow');
+  if (!panel) return;
+  var collapsed = panel.style.display === 'none';
+  panel.style.display = collapsed ? '' : 'none';
+  if (label) label.textContent = collapsed ? 'Hide filters' : 'Show filters';
+  if (arrow) arrow.style.transform = collapsed ? '' : 'rotate(180deg)';
 }
 function clearAllReconFilters() {
   clearReconSearch();
