@@ -1237,6 +1237,7 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .recon-node-chip[data-state="include"] .recon-node-ico { color:#15803d; }
 .recon-node-chip[data-state="exclude"] { border-color:#fca5a5; background:rgba(251,60,68,0.07); color:#dc2626; }
 .recon-node-chip[data-state="exclude"] .recon-node-ico { color:#dc2626; }
+body.dark #recon-search,
 body.dark #recon-time-btn,
 body.dark #recon-node-btn,
 body.dark #recon-cat-btn,
@@ -7396,27 +7397,29 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <!-- Compact workspace toolbar-card -->
           <div style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg-surface);">
             <!-- Header: title + subtitle (left), result status (right) -->
-            <div style="display:flex;align-items:flex-start;gap:9px;padding:11px 16px;border-bottom:1px solid var(--border);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <div style="display:flex;align-items:center;gap:9px;padding:9px 16px;border-bottom:1px solid var(--border);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2" style="flex-shrink:0;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
               <div style="flex:1;min-width:0;">
                 <div style="font-size:13px;font-weight:700;color:var(--text-default);line-height:1.2;">Drift review workspace</div>
-                <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">Advanced filters for manual reconciliation.</div>
+                <div style="font-size:11.5px;color:var(--text-sec);margin-top:1px;">Advanced filters for manual reconciliation.</div>
               </div>
-              <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-top:1px;white-space:nowrap;">
+              <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;white-space:nowrap;">
                 <span id="recon-set-count" style="font-size:11.5px;font-weight:600;color:var(--text-sec);">2 events in view</span>
                 <span style="font-size:11px;color:var(--text-muted);"><span id="recon-filter-count">0 filters active</span><span id="recon-clear-all" onclick="clearAllReconFilters()" style="display:none;color:var(--green1);font-weight:600;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"> · Clear all</span></span>
               </div>
             </div>
-            <!-- Controls: search row (own zone) then a labelled filter zone of two chip rows -->
-            <div style="padding:12px 16px;">
-              <!-- Search — own row, capped width so it reads as event search, not a filter -->
-              <div style="position:relative;width:340px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:8px 30px 8px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
-                <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+            <!-- Controls: search+counters · pill rows · advanced controls -->
+            <div style="padding:14px 16px 12px;">
+              <!-- Row 1: Search (fixed width) + counters right -->
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px;">
+                <div style="position:relative;width:340px;flex-shrink:0;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:7px 30px 7px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+                  <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+                </div>
               </div>
-              <!-- Pill filters: CR | Status | Type | Group | Environment -->
-              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;margin-top:14px;">
+              <!-- Row 2: CR / Status / Type / Group -->
+              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:10px;">
                 <div id="recon-cr-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">CR:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-cr-chips','cr',null)">All CRs</div>
@@ -7447,7 +7450,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <div class="recon-node-chip" data-val="servers" data-active="false" onclick="pickReconChip(this,'recon-group-chips','group','servers')">Servers</div>
                   <div class="recon-node-chip" data-val="workstations" data-active="false" onclick="pickReconChip(this,'recon-group-chips','group','workstations')">Workstations</div>
                 </div>
-                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
+              </div>
+              <!-- Row 3: Environment / Category -->
+              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:8px;">
                 <div id="recon-env-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Environment:</span>
                   <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,'recon-env-chips','env',null)">All environments</div>
@@ -7455,14 +7460,36 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <div class="recon-node-chip" data-val="staging" data-active="false" onclick="pickReconChip(this,'recon-env-chips','env','staging')">Staging</div>
                   <div class="recon-node-chip" data-val="development" data-active="false" onclick="pickReconChip(this,'recon-env-chips','env','development')">Development</div>
                 </div>
+                <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
+                <div style="display:inline-flex;align-items:center;gap:6px;">
+                  <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Category:</span>
+                  <div style="position:relative;">
+                    <div id="recon-cat-btn" onclick="toggleReconPop('recon-cat-pop',this)" style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:20px;background:var(--bg-surface);font-size:12px;font-weight:600;cursor:pointer;color:var(--text-sec);white-space:nowrap;user-select:none;">
+                      <span id="recon-cat-btn-label">All categories</span>
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                    <div id="recon-cat-pop" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:10px;min-width:220px;z-index:100;">
+                      <div style="font-size:10.5px;color:var(--text-muted);margin:0 2px 8px;">Select one or more categories</div>
+                      <div id="recon-category-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                        <div class="recon-node-chip recon-cat-all" data-active="true" onclick="clearReconCat()" title="Show all categories">All categories</div>
+                        <div class="recon-node-chip" data-val="services" data-active="false" onclick="toggleReconCat(this,'services')">Services</div>
+                        <div class="recon-node-chip" data-val="users" data-active="false" onclick="toggleReconCat(this,'users')">Users</div>
+                        <div class="recon-node-chip" data-val="registry" data-active="false" onclick="toggleReconCat(this,'registry')">Registry</div>
+                        <div class="recon-node-chip" data-val="files" data-active="false" onclick="toggleReconCat(this,'files')">Files</div>
+                        <div class="recon-node-chip" data-val="drivers" data-active="false" onclick="toggleReconCat(this,'drivers')">Drivers</div>
+                        <div class="recon-node-chip" data-val="envvars" data-active="false" onclick="toggleReconCat(this,'envvars')">EnvVars</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <!-- Richer controls (not pills): Time span dropdown · Node searchable selector · Approval reason searchable select · Approval comment text -->
-              <div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:14px 20px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);">
-                <!-- Time span — dropdown of presets + custom date range -->
-                <div style="display:flex;flex-direction:column;gap:5px;">
+              <!-- Row 4: Advanced controls — Time span / Node scope / Approval reason / Approval comment -->
+              <div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px 16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+                <!-- Time span -->
+                <div style="display:flex;flex-direction:column;gap:4px;">
                   <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Time span</label>
                   <div style="position:relative;">
-                    <div id="recon-time-btn" onclick="toggleReconPop('recon-time-dropdown',this)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:150px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12.5px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+                    <div id="recon-time-btn" onclick="toggleReconPop('recon-time-dropdown',this)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:140px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12.5px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
                       <span id="recon-time-label">Any time</span>
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                     </div>
@@ -7477,16 +7504,16 @@ body.dark .theme-toggle .icon-moon { display: none; }
                     </div>
                   </div>
                   <div id="recon-date-range" style="display:none;align-items:center;gap:6px;margin-top:2px;">
-                    <input type="date" id="recon-date-from" oninput="applyReconDateRange()" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);color:var(--text-default);outline:none;">
+                    <input type="date" id="recon-date-from" oninput="applyReconDateRange()" style="padding:5px 7px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);color:var(--text-default);outline:none;">
                     <span style="font-size:12px;color:var(--text-muted);">–</span>
-                    <input type="date" id="recon-date-to" oninput="applyReconDateRange()" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);color:var(--text-default);outline:none;">
+                    <input type="date" id="recon-date-to" oninput="applyReconDateRange()" style="padding:5px 7px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);color:var(--text-default);outline:none;">
                   </div>
                 </div>
-                <!-- Node scope — searchable include / exclude selector -->
-                <div style="display:flex;flex-direction:column;gap:5px;">
+                <!-- Node scope -->
+                <div style="display:flex;flex-direction:column;gap:4px;">
                   <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Node scope</label>
                   <div style="position:relative;">
-                    <div id="recon-node-btn" onclick="toggleReconPop('recon-node-pop',this)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12.5px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+                    <div id="recon-node-btn" onclick="toggleReconPop('recon-node-pop',this)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:150px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12.5px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
                       <span id="recon-node-btn-label">All nodes</span>
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                     </div>
@@ -7504,48 +7531,23 @@ body.dark .theme-toggle .icon-moon { display: none; }
                       </div>
                     </div>
                   </div>
-                  <span style="font-size:10.5px;color:var(--text-muted);">Include or exclude specific nodes</span>
                 </div>
-                <!-- Category — multi-select dropdown -->
-                <div style="display:flex;flex-direction:column;gap:5px;">
-                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Category</label>
-                  <div style="position:relative;">
-                    <div id="recon-cat-btn" onclick="toggleReconPop('recon-cat-pop',this)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12.5px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-                      <span id="recon-cat-btn-label">All categories</span>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                    </div>
-                    <div id="recon-cat-pop" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:10px;min-width:220px;z-index:100;">
-                      <div style="font-size:10.5px;color:var(--text-muted);margin:0 2px 8px;">Select one or more categories</div>
-                      <div id="recon-category-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
-                        <div class="recon-node-chip recon-cat-all" data-active="true" onclick="clearReconCat()" title="Show all categories">All categories</div>
-                        <div class="recon-node-chip" data-val="services" data-active="false" onclick="toggleReconCat(this,'services')">Services</div>
-                        <div class="recon-node-chip" data-val="users" data-active="false" onclick="toggleReconCat(this,'users')">Users</div>
-                        <div class="recon-node-chip" data-val="registry" data-active="false" onclick="toggleReconCat(this,'registry')">Registry</div>
-                        <div class="recon-node-chip" data-val="files" data-active="false" onclick="toggleReconCat(this,'files')">Files</div>
-                        <div class="recon-node-chip" data-val="drivers" data-active="false" onclick="toggleReconCat(this,'drivers')">Drivers</div>
-                        <div class="recon-node-chip" data-val="envvars" data-active="false" onclick="toggleReconCat(this,'envvars')">EnvVars</div>
-                      </div>
-                    </div>
-                  </div>
-                  <span style="font-size:10.5px;color:var(--text-muted);">Multi-select</span>
-                </div>
-                <!-- Approval reason — searchable select (type to filter known reasons; free text also matches) -->
-                <div style="display:flex;flex-direction:column;gap:5px;">
+                <!-- Approval reason -->
+                <div style="display:flex;flex-direction:column;gap:4px;">
                   <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Approval reason</label>
-                  <div style="position:relative;width:240px;">
-                    <input type="text" id="recon-approval-reason" autocomplete="off" placeholder="Search or select reason…" oninput="onReconReasonInput(this)" onfocus="openReconReasonList()" style="width:100%;box-sizing:border-box;padding:7px 26px 7px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'">
+                  <div style="position:relative;width:220px;">
+                    <input type="text" id="recon-approval-reason" autocomplete="off" placeholder="Search or select reason…" oninput="onReconReasonInput(this)" onfocus="openReconReasonList()" style="width:100%;box-sizing:border-box;padding:6px 26px 6px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);">
                     <span onclick="clearDriftFilter('approvalReason')" title="Clear" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
                     <div id="recon-reason-list" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:6px;z-index:100;max-height:200px;overflow-y:auto;"></div>
                   </div>
                 </div>
-                <!-- Approval comment — plain free-text -->
-                <div style="display:flex;flex-direction:column;gap:5px;">
+                <!-- Approval comment -->
+                <div style="display:flex;flex-direction:column;gap:4px;">
                   <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Approval comment</label>
-                  <div style="position:relative;width:270px;">
-                    <input type="text" id="recon-approval-comment" placeholder="e.g. approved per change board" oninput="pickReconText(this,'approvalComment')" style="width:100%;box-sizing:border-box;padding:7px 26px 7px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+                  <div style="position:relative;width:230px;">
+                    <input type="text" id="recon-approval-comment" placeholder="e.g. approved per change board" oninput="pickReconText(this,'approvalComment')" style="width:100%;box-sizing:border-box;padding:6px 26px 6px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
                     <span onclick="clearDriftFilter('approvalComment')" title="Clear" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
                   </div>
-                  <span style="font-size:10.5px;color:var(--text-muted);">Free-text — matches any part of the note</span>
                 </div>
               </div>
             </div>
