@@ -5080,7 +5080,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="padding:16px 24px;background:var(--bg-page);display:flex;align-items:center;gap:10px;flex-shrink:0;">
           <div style="position:relative;flex:1;max-width:340px;">
             <svg style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" placeholder="Search policies..." style="width:100%;padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;font-family:inherit;color:var(--text-default);background:var(--bg-surface);outline:none;transition:border 0.15s;" onfocus="this.style.borderColor='var(--green1)';this.style.boxShadow='0 0 0 3px var(--green-dim)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"/>
+            <input id="pol-search" type="text" placeholder="Search policies..." oninput="filterPoliciesBySearch(this.value)" style="width:100%;padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;font-family:inherit;color:var(--text-default);background:var(--bg-surface);outline:none;transition:border 0.15s;" onfocus="this.style.borderColor='var(--green1)';this.style.boxShadow='0 0 0 3px var(--green-dim)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"/>
           </div>
           <div class="tag-filter" id="tag-filter-wrap">
             <button type="button" class="tag-filter-btn" id="tag-filter-btn" onclick="toggleTagFilter(event)">
@@ -6551,6 +6551,35 @@ body.dark .theme-toggle .icon-moon { display: none; }
       });
       var wrap = document.getElementById('tag-filter-wrap');
       if (wrap) wrap.classList.remove('is-open');
+    }
+    var _polActiveSearch = '';
+    function filterPoliciesBySearch(q) {
+      _polActiveSearch = (q || '').toLowerCase().trim();
+      var activeTab = document.querySelector('#v-policies .pol-tab-active');
+      var typeKey = 'all';
+      if (activeTab) {
+        var m = (activeTab.getAttribute('onclick')||'').match(/polSetTab\('([^']+)'/);
+        if (m) typeKey = m[1];
+      }
+      var anyVisible = false;
+      document.querySelectorAll('#v-policies [data-pol-type]').forEach(function(card) {
+        var tabOk = typeKey === 'all' || card.getAttribute('data-pol-type') === typeKey;
+        var tagOk = !card.hasAttribute('data-tag-hidden');
+        var searchOk = !_polActiveSearch || card.textContent.toLowerCase().indexOf(_polActiveSearch) !== -1;
+        var show = tabOk && tagOk && searchOk;
+        card.style.display = show ? 'flex' : 'none';
+        if (show) anyVisible = true;
+      });
+      var empty = document.getElementById('pol-search-empty');
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'pol-search-empty';
+        empty.style.cssText = 'padding:40px;text-align:center;color:var(--text-sec);font-size:13px;';
+        empty.textContent = 'No policies match your search';
+        var list = document.querySelector('#v-policies [data-pol-type]');
+        if (list) list.parentElement.appendChild(empty);
+      }
+      empty.style.display = (!anyVisible && _polActiveSearch) ? 'block' : 'none';
     }
     document.addEventListener('click', function(e){
       var wrap = document.getElementById('tag-filter-wrap');
