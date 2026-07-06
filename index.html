@@ -6416,10 +6416,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
       btn.style.borderBottom = '2px solid var(--green2)';
       btn.style.fontWeight = '600';
       btn.classList.add('pol-tab-active');
+      var anyVisible = false;
       document.querySelectorAll('#v-policies [data-pol-type]').forEach(function(card) {
         var t = card.getAttribute('data-pol-type');
-        card.style.display = (key === 'all' || t === key) ? 'flex' : 'none';
+        var tagOk = !card.hasAttribute('data-tag-hidden');
+        var searchOk = !_polActiveSearch || card.textContent.toLowerCase().indexOf(_polActiveSearch) !== -1;
+        var show = (key === 'all' || t === key) && tagOk && searchOk;
+        card.style.display = show ? 'flex' : 'none';
+        if (show) anyVisible = true;
       });
+      var empty = document.getElementById('pol-search-empty');
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'pol-search-empty';
+        empty.style.cssText = 'padding:40px;text-align:center;color:var(--text-sec);font-size:13px;';
+        var list = document.querySelector('#v-policies [data-pol-type]');
+        if (list) list.parentElement.appendChild(empty);
+      }
+      empty.textContent = 'No policies match';
+      empty.style.display = anyVisible ? 'none' : 'block';
     }
 
     function toggleApiKey(btn) {
