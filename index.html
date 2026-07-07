@@ -1144,8 +1144,8 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .action-meta { font-size:11.5px; color:var(--text-sec); margin-top:3px; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
 .type-pill { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; padding:2px 7px; border-radius:999px; white-space:nowrap; }
 .meta-chip { font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:6px; background:var(--bg-canvas); border:1px solid var(--border); color:var(--text-sec); white-space:nowrap; }
-.action-cta { display:inline-flex; align-items:center; justify-content:center; gap:5px; min-width:124px; padding:7px 15px; border-radius:8px; background:var(--bg-canvas); border:1.5px solid #10B981; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#10B981; cursor:pointer; flex-shrink:0; transition:all .12s; white-space:nowrap; }
-.action-cta:hover { border-color:#10B981; background:rgba(16,185,129,0.08); }
+.action-cta { display:inline-flex; align-items:center; justify-content:center; gap:5px; min-width:124px; padding:7px 15px; border-radius:8px; background:var(--bg-canvas); border:1.5px solid #34D399; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#34D399; cursor:pointer; flex-shrink:0; transition:all .12s; white-space:nowrap; }
+.action-cta:hover { border-color:#34D399; background:rgba(52,211,153,0.08); }
 /* Compact drift queue (Option B) — operational table layout */
 .drift-table { border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; background:var(--bg-surface); }
 .drift-grid { display:grid; grid-template-columns:26px 1.1fr 1.4fr 0.9fr 1fr 1.1fr 88px; align-items:center; gap:14px; padding:11px 16px; }
@@ -6416,10 +6416,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
       btn.style.borderBottom = '2px solid var(--green2)';
       btn.style.fontWeight = '600';
       btn.classList.add('pol-tab-active');
+      var anyVisible = false;
       document.querySelectorAll('#v-policies [data-pol-type]').forEach(function(card) {
         var t = card.getAttribute('data-pol-type');
-        card.style.display = (key === 'all' || t === key) ? 'flex' : 'none';
+        var tagOk = !card.hasAttribute('data-tag-hidden');
+        var searchOk = !_polActiveSearch || card.textContent.toLowerCase().indexOf(_polActiveSearch) !== -1;
+        var show = (key === 'all' || t === key) && tagOk && searchOk;
+        card.style.display = show ? 'flex' : 'none';
+        if (show) anyVisible = true;
       });
+      var empty = document.getElementById('pol-search-empty');
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'pol-search-empty';
+        empty.style.cssText = 'padding:40px;text-align:center;color:var(--text-sec);font-size:13px;';
+        var list = document.querySelector('#v-policies [data-pol-type]');
+        if (list) list.parentElement.appendChild(empty);
+      }
+      empty.textContent = 'No policies match';
+      empty.style.display = anyVisible ? 'none' : 'block';
     }
 
     function toggleApiKey(btn) {
@@ -7913,13 +7928,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
       <!-- Sticky bottom action bar -->
       <div style="background:var(--bg-surface);border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <button style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-sec);font-family:inherit;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='var(--bg-surface)'">← Prev</button>
+          <button style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-sec);font-family:inherit;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='var(--bg-surface)'">← Prev</button>
           <span id="change-progress" style="font-size:12px;color:var(--text-sec);padding:0 4px;white-space:nowrap;">Change 1 of 3</span>
-          <button onclick="showView('change-detail')" style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-default);font-weight:600;font-family:inherit;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='var(--bg-surface)'">Next →</button>
+          <button onclick="showView('change-detail')" style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-default);font-weight:600;font-family:inherit;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='var(--bg-surface)'">Next →</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <button onclick="skipChange()" style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;color:var(--text-sec);font-family:inherit;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='var(--bg-surface)'">Skip</button>
-          <button onclick="showView('change-unapprove')" style="border:1px solid var(--bg-error-border);background:var(--bg-surface);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;color:#FB3C44;font-weight:600;font-family:inherit;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='var(--bg-surface)'">Flag ↗</button>
+          <button onclick="skipChange()" style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;color:var(--text-sec);font-family:inherit;" onmouseover="this.style.background='var(--bg-subtle)'" onmouseout="this.style.background='var(--bg-surface)'">Skip</button>
+          <button onclick="showView('change-unapprove')" style="border:1px solid var(--bg-error-border);background:var(--bg-surface);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;color:#FB3C44;font-weight:600;font-family:inherit;" onmouseover="this.style.background='rgba(251,60,68,0.06)'" onmouseout="this.style.background='var(--bg-surface)'">Flag ↗</button>
           <button onclick="showView('change-approve')" class="btn-primary" style="padding:6px 18px;font-size:12px;width:auto;">✓ Approve</button>
         </div>
       </div>
