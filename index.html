@@ -12409,9 +12409,13 @@ function toggleReconFilters() {
   var arrow = document.getElementById('recon-toggle-arrow');
   if (!panel) return;
   var collapsed = panel.style.display === 'none';
-  panel.style.display = collapsed ? '' : 'none';
-  if (label) label.textContent = collapsed ? 'Less filters' : 'More filters';
-  if (arrow) arrow.style.transform = collapsed ? '' : 'rotate(180deg)';
+  if (collapsed) {
+    panel.style.display = '';
+    if (label) label.textContent = 'Less filters';
+    if (arrow) arrow.style.transform = '';
+  } else {
+    exitReconcileMode();
+  }
 }
 function clearAllReconFilters() {
   clearReconSearch();
