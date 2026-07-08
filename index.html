@@ -7444,7 +7444,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="display:flex;gap:8px;align-items:center;">
           <div id="drift-reconcile-btn" onclick="enterReconcileMode()" title="Advanced filters &amp; manual reconciliation" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:7px 14px;border:1px solid var(--green1);border-radius:var(--radius-md);background:var(--green1);cursor:pointer;color:#fff;white-space:nowrap;user-select:none;box-shadow:0 1px 2px rgba(0,0,0,0.06);" onmouseover="this.style.background='var(--green2)';this.style.borderColor='var(--green2)'" onmouseout="this.style.background='var(--green1)';this.style.borderColor='var(--green1)'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-            <span style="font-size:12px;font-weight:600;">More filters</span>
+            <span id="drift-reconcile-btn-label" style="font-size:12px;font-weight:600;">More filters</span>
           </div>
           <div style="font-size:11px;color:var(--text-sec);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 12px;white-space:nowrap;">
             Last scan: 2 hours ago
@@ -7487,9 +7487,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div class="pill" id="filter-reconciled" style="cursor:pointer;" onclick="filterChanges('reconciled')">Reconciled (1)</div>
             <div class="pill" id="filter-flagged" style="cursor:pointer;" onclick="filterChanges('flagged')">Flagged (1)</div>
             <div class="pill" id="filter-nocr" style="cursor:pointer;" onclick="filterChanges('nocr')">No CR (2)</div>
-            <span onclick="enterReconcileMode()" title="CR, node, type, group, environment filters live in Reconciliation mode" style="display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-size:11.5px;font-weight:600;color:var(--green1);cursor:pointer;white-space:nowrap;user-select:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+            <span onclick="enterReconcileMode()" title="Query, node, type, category &amp; approval filters" style="display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-size:11.5px;font-weight:600;color:var(--green1);cursor:pointer;white-space:nowrap;user-select:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-              More filters
+              <span id="drift-morefilters-label">More filters</span>
             </span>
           </div>
           <!-- Search + Filters + Sort row -->
@@ -7536,17 +7536,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <!-- Compact workspace toolbar-card -->
           <div style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg-surface);">
             <!-- Header: title + subtitle (left), result status (right) -->
-            <div style="display:flex;align-items:center;gap:9px;padding:9px 16px;border-bottom:1px solid var(--border);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2" style="flex-shrink:0;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <div style="display:flex;align-items:center;gap:8px;padding:9px 16px;border-bottom:1px solid var(--border);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
               <div style="flex:1;min-width:0;">
-                <div style="font-size:13px;font-weight:700;color:var(--text-default);line-height:1.2;">Advanced filters</div>
+                <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;line-height:1.2;">Advanced filters</div>
               </div>
               <div style="flex-shrink:0;display:flex;align-items:center;gap:12px;white-space:nowrap;">
                 <span style="font-size:11.5px;color:var(--text-sec);white-space:nowrap;"><span id="recon-set-count" style="font-weight:600;">2 events in view</span><span id="recon-filter-count-wrap"> · <span id="recon-filter-count">0 filters active</span></span><span id="recon-clear-all" onclick="clearAllReconFilters()" style="display:none;color:var(--green1);font-weight:600;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"> · Clear all</span></span>
-                <button id="recon-toggle-btn" onclick="toggleReconFilters()" style="display:flex;align-items:center;gap:5px;background:none;border:1px solid var(--border);border-radius:var(--radius-md);padding:5px 10px;font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;transition:border-color 0.12s,color 0.12s;" onmouseover="this.style.borderColor='var(--green1)';this.style.color='var(--green1)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-sec)'">
-                  <span id="recon-toggle-label">Less filters</span>
-                  <svg id="recon-toggle-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="18 15 12 9 6 15"/></svg>
-                </button>
               </div>
             </div>
             <!-- Controls: Query · Quick filters · Advanced filters -->
@@ -12253,28 +12249,21 @@ function driftClearSelection() {
   document.querySelectorAll('.drift-select-cb').forEach(function(cb){ cb.checked = false; });
   updateDriftBulkBar();
 }
-// Reconciliation mode (F5) — same-page switch: hide summary toolbar, show reconcile panel
+// Advanced filters (F5) — inline expand/collapse: summary toolbar stays put, panel opens below
 let driftReconcileMode = false;
-function enterReconcileMode() {
-  driftReconcileMode = true;
-  const tb = document.getElementById('drift-summary-toolbar');
+function setReconPanel(open) {
+  driftReconcileMode = open;
   const panel = document.getElementById('drift-reconcile-panel');
-  const banner = document.getElementById('sn-reconcile-banner');
-  if (tb) tb.style.display = 'none';
-  if (panel) panel.style.display = 'block';
-  if (banner) banner.style.display = 'none';
-  updateReconFilterCount();
+  if (panel) panel.style.display = open ? 'block' : 'none';
+  const inlineLbl = document.getElementById('drift-morefilters-label');
+  if (inlineLbl) inlineLbl.textContent = open ? 'Less filters' : 'More filters';
+  const btnLbl = document.getElementById('drift-reconcile-btn-label');
+  if (btnLbl) btnLbl.textContent = open ? 'Less filters' : 'More filters';
+  if (open) updateReconFilterCount();
+  else clearAllReconFilters();
 }
-function exitReconcileMode() {
-  driftReconcileMode = false;
-  const tb = document.getElementById('drift-summary-toolbar');
-  const panel = document.getElementById('drift-reconcile-panel');
-  const banner = document.getElementById('sn-reconcile-banner');
-  if (tb) tb.style.display = 'flex';
-  if (panel) panel.style.display = 'none';
-  if (banner) banner.style.display = 'flex';
-  clearAllReconFilters();
-}
+function enterReconcileMode() { setReconPanel(!driftReconcileMode); }
+function exitReconcileMode() { setReconPanel(false); }
 
 // Compound search (F5b) — include / -exclude / wildcard*
 let driftSearch = { include: [], exclude: [] };
@@ -12403,20 +12392,7 @@ function updateReconFilterCount() {
   const clearEl = document.getElementById('recon-clear-all');
   if (clearEl) clearEl.style.display = n > 0 ? 'inline' : 'none';
 }
-function toggleReconFilters() {
-  var panel = document.getElementById('recon-controls-panel');
-  var label = document.getElementById('recon-toggle-label');
-  var arrow = document.getElementById('recon-toggle-arrow');
-  if (!panel) return;
-  var collapsed = panel.style.display === 'none';
-  if (collapsed) {
-    panel.style.display = '';
-    if (label) label.textContent = 'Less filters';
-    if (arrow) arrow.style.transform = '';
-  } else {
-    exitReconcileMode();
-  }
-}
+function toggleReconFilters() { setReconPanel(!driftReconcileMode); }
 function clearAllReconFilters() {
   clearReconSearch();
   clearReconChips();
