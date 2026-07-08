@@ -7494,9 +7494,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
           <!-- Search + Filters + Sort row -->
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <div style="position:relative;width:240px;">
+          <div style="position:relative;width:320px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="changes-search" placeholder="Search drift items…" oninput="searchChanges(this.value)" style="width:100%;box-sizing:border-box;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
+            <input type="text" id="changes-search" placeholder="Search drift items… e.g. defender, -screen, lock*" title="Space-separated terms. Prefix with - to exclude, use * as a wildcard." oninput="searchChanges(this.value)" style="width:100%;box-sizing:border-box;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
           </div>
           <!-- Sort custom dropdown -->
           <div style="position:relative;flex-shrink:0;">
@@ -7547,15 +7547,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
             <!-- Controls: Query · Quick filters · Advanced filters -->
             <div id="recon-controls-panel" style="padding:14px 16px 12px;">
-              <!-- Section: Query -->
-              <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Query</div>
-              <div style="display:flex;align-items:center;gap:14px;">
-                <div style="position:relative;width:520px;flex-shrink:0;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input type="text" id="recon-search" placeholder="Search events… e.g. defender, -screen, lock*" title="Use -word to exclude, word* for wildcard" oninput="applyReconSearch(this.value)" style="width:100%;box-sizing:border-box;padding:7px 30px 7px 34px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor='var(--green1)'" onblur="this.style.borderColor='var(--border)'">
-                  <span id="recon-search-clear" onclick="clearReconSearch()" title="Clear search" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;" onmouseover="this.style.color='var(--text-default)'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
-                </div>
-              </div>
               <!-- Section: Quick filters -->
               <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:22px;margin-bottom:6px;">Quick filters</div>
               <!-- Row: CR / Status / Type / Group -->
@@ -12034,13 +12025,12 @@ function flagChange() {
 }
 
 function searchChanges(query) {
-  const q = (query || '').trim();
-  if (q) {
-    const esc = q.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
-    driftSearch = { include: [new RegExp(esc, 'i')], exclude: [] };
-  } else {
-    driftSearch = { include: [], exclude: [] };
-  }
+  const inc = [], exc = [];
+  (query || '').trim().split(/\s+/).filter(Boolean).forEach(function(tok) {
+    if (tok.length > 1 && tok[0] === '-') exc.push(_reconTermToRegex(tok.slice(1)));
+    else inc.push(_reconTermToRegex(tok));
+  });
+  driftSearch = { include: inc, exclude: exc };
   applyDriftFilters();
 }
 
@@ -12275,11 +12265,9 @@ function applyReconSearch(raw) {
   applyDriftFilters();
 }
 function clearReconSearch() {
-  const inp = document.getElementById('recon-search');
+  const inp = document.getElementById('changes-search');
   if (inp) inp.value = '';
   driftSearch = { include: [], exclude: [] };
-  const clr = document.getElementById('recon-search-clear');
-  if (clr) clr.style.display = 'none';
   applyDriftFilters();
 }
 // Node include / exclude (F5c) — tri-state chips: off → include → exclude → off
