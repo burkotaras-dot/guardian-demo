@@ -8552,7 +8552,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode(&#39;MACBOOK-TARAS&#39;)" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>MACBOOK-TARAS
           </span>
-          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter(&#39;cr&#39;,&#39;CHG0012345&#39;)" title="Filter by change request" style="justify-self:start;white-space:nowrap;">CHG0012345</span>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter(&#39;cr&#39;,&#39;CHG0012345&#39;)" title="3 associated change requests — reconciled against CHG0012345" style="justify-self:start;white-space:nowrap;">CHG0012345<span style="margin-left:5px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:10px;padding:0 5px;font-size:10px;">+2</span></span>
           <span id="change-status-1" class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);justify-self:start;white-space:nowrap;">Reconciled</span>
           <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
             <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
@@ -8693,6 +8693,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
           <!-- ServiceNow match (state-driven by setCrState) -->
           <div id="cd-cr-block"><div style="display:flex;align-items:center;gap:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.5" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg><div style="flex:1;"><div style="font-size:11px;color:var(--text-sec);margin-bottom:2px;">ServiceNow CR matched</div><div style="font-size:12px;font-weight:600;color:var(--text-default);">CHG0012345 — AV Software Migration</div><div style="font-size:11px;color:var(--text-sec);line-height:1.45;">Approved · 2 days ago · John Smith</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;"><span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span><span onclick="showView(&#39;cr-audit&#39;)" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.textDecoration=&#39;none&#39;">View audit →</span></div></div></div>
+
+          <!-- Associated change requests (multi-CR edge case) — populated by renderChangeDetail when >1 CR -->
+          <div id="cd-cr-list"></div>
 
           <!-- Notes — audit trail, separate from the approve/reject decision reason -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
@@ -12861,6 +12864,11 @@ var CHANGE_DATA = [
     detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
     impact: 'Without real-time protection, malware can execute on the device undetected — Compliance Policy failure.',
     cr: 'matched',
+    crs: [
+      { id:'CHG0012345', title:'AV Software Migration', status:'Approved', primary:true },
+      { id:'CHG0012346', title:'Endpoint Security Update', status:'Approved' },
+      { id:'CHG0012347', title:'Q3 Patch Rollout', status:'Approved' }
+    ],
     notes: [
       { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration.' },
       { author:'bambuk@cloudhouse.io', time:'1 day ago', text:'Reconciled against CHG0012345 — AV Software Migration. Closing as expected.' }
@@ -12915,6 +12923,31 @@ function renderChangeDetail(idx) {
   const nb = document.getElementById('nav-breadcrumb');
   if (nb) nb.innerHTML = `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">${d.title}</span>`;
   setCrState(d.cr);
+  const crList = document.getElementById('cd-cr-list');
+  if (crList) {
+    if (d.crs && d.crs.length > 1) {
+      crList.innerHTML =
+        '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">'
+          + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.8" style="flex-shrink:0;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>'
+          + '<span style="font-size:13px;font-weight:700;color:var(--text-default);">Associated change requests</span>'
+          + '<span style="font-size:11px;color:var(--text-muted);">' + d.crs.length + '</span>'
+        + '</div>'
+        + '<div style="font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:8px;">This drift falls within a busy change window and matches more than one approved change. Reconciled against the primary CR.</div>'
+        + d.crs.map(function(c, i) {
+            return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;' + (i < d.crs.length - 1 ? 'border-bottom:1px solid var(--border);' : '') + '">'
+              + '<span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;">' + c.id + '</span>'
+              + (c.primary ? '<span style="font-size:9px;font-weight:700;letter-spacing:0.4px;text-transform:uppercase;color:#15803d;background:rgba(37,167,96,0.1);border:1px solid rgba(37,167,96,0.2);border-radius:20px;padding:1px 6px;white-space:nowrap;">Primary</span>' : '')
+              + '<span style="font-size:12px;color:var(--text-sec);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.title + '</span>'
+              + '<span class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);white-space:nowrap;">' + c.status + '</span>'
+              + '<span onclick="showView(\'cr-audit\')" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">View audit &#8594;</span>'
+            + '</div>';
+          }).join('')
+        + '</div>';
+    } else {
+      crList.innerHTML = '';
+    }
+  }
   changeNotes = (d.notes || []).map(function(n) { return { author:n.author, time:n.time, text:n.text }; });
   renderChangeNotes();
 }
