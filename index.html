@@ -1795,6 +1795,19 @@ body.dark [onclick^="peToggleSec"] { border-bottom-color: rgba(255,255,255,0.12)
 body.dark [style*="grid-template-columns:16px 20px 1fr 148px"] { border-bottom-color: rgba(255,255,255,0.08) !important; }
 body.dark .policy-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
 body.dark .policy-menu > div { color: #C0C0C0 !important; }
+/* Reusable custom select (.csel) — unified styled dropdown replacing native <select> */
+.csel-wrap { position: relative; display: inline-block; vertical-align: middle; }
+.csel-btn { display: inline-flex; align-items: center; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 30px 7px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-default); cursor: pointer; outline: none; white-space: nowrap; position: relative; text-align: left; }
+.csel-btn:hover { border-color: var(--text-sec); }
+.csel-btn::after { content: ''; position: absolute; right: 12px; top: 50%; width: 7px; height: 7px; border-right: 1.6px solid #94a3b8; border-bottom: 1.6px solid #94a3b8; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.csel-menu { display: none; position: absolute; left: 0; top: calc(100% + 4px); background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.35); min-width: 100%; z-index: 200; overflow-y: auto; max-height: 280px; padding: 4px 0; }
+.csel-menu.open { display: block; }
+.csel-opt { padding: 9px 14px; font-size: 12px; cursor: pointer; color: var(--text-sec); font-weight: 400; white-space: nowrap; }
+.csel-opt:hover { background: rgba(0,175,115,0.08); }
+.csel-opt.sel { color: var(--green2); font-weight: 600; }
+body.dark .csel-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
+body.dark .csel-opt { color: #C0C0C0 !important; }
+body.dark .csel-opt.sel { color: var(--green1) !important; }
 body.dark span[style*="color:#7C3AED"] { color: #fff !important; border-color: rgba(167,139,250,0.55) !important; background: rgba(124,58,237,0.15) !important; }
 body.dark span[style*="color:#7C3AED"] svg { stroke: #A78BFA !important; }
 body.dark span[style*="color:#F59E0B"] { color: #fff !important; border-color: rgba(245,158,11,0.55) !important; background: rgba(245,158,11,0.15) !important; }
@@ -4555,27 +4568,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="display:flex;align-items:center;gap:7px;">
                 <span style="font-size:11px;font-weight:600;color:var(--text-sec);">Comparing</span>
                 <div style="position:relative;">
-                  <select id="sc-pick-a" onchange="renderScanCompare()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
+                  <select id="sc-pick-a" class="csel" onchange="renderScanCompare()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
                     <option value="now">Now · 2 min ago</option>
                     <option value="yest">Yesterday · 18:02</option>
                     <option value="3d">3 days ago · 09:14</option>
                     <option value="28may">28 May · 11:30</option>
                     <option value="baseline">★ Baseline</option>
                   </select>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
               </div>
               <span style="font-size:12px;font-weight:600;color:var(--text-sec);">against</span>
               <div style="display:flex;align-items:center;gap:7px;">
                 <div style="position:relative;">
-                  <select id="sc-pick-b" onchange="renderScanCompare()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
+                  <select id="sc-pick-b" class="csel" onchange="renderScanCompare()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
                     <option value="now">Now · 2 min ago</option>
                     <option value="yest">Yesterday · 18:02</option>
                     <option value="3d">3 days ago · 09:14</option>
                     <option value="28may">28 May · 11:30</option>
                     <option value="baseline">★ Baseline</option>
                   </select>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
               </div>
             </div>
@@ -4627,13 +4638,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="display:flex;align-items:center;gap:7px;">
             <span style="font-size:11px;font-weight:600;color:var(--text-sec);">Scan:</span>
             <div style="position:relative;">
-              <select id="nd-scan-select" onchange="ndSelectScan(this.value);ndUpdateBaselineUI()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
+              <select id="nd-scan-select" class="csel" onchange="ndSelectScan(this.value);ndUpdateBaselineUI()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
                 <option value="now">Now · 2 min ago</option>
                 <option value="yest">Yesterday · 18:02</option>
                 <option value="3d">3 days ago · 09:14</option>
                 <option value="28may">28 May · 11:30</option>
               </select>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
           </div>
           <button class="btn-outline" onclick="showScanCompare()" style="width:auto;padding:8px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;">
@@ -5398,6 +5408,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }
       var sel = document.getElementById('nd-scan-select');
       if (sel && sel.value !== id) sel.value = id;
+      if (sel && sel._csel) _cselSyncLabel(sel);
       if (id === 'now') {
         table.innerHTML = __ndNow.attrs;
         if (failed) failed.innerHTML = __ndNow.failed;
@@ -5450,8 +5461,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var cur = (document.getElementById('nd-scan-select') || {}).value || 'now';
       var a = cur, b = (cur === ndBaseline) ? 'now' : 'baseline';
       var pa = document.getElementById('sc-pick-a'), pb = document.getElementById('sc-pick-b');
-      if (pa) pa.value = a;
-      if (pb) pb.value = b;
+      if (pa) { pa.value = a; if (pa._csel) _cselSyncLabel(pa); }
+      if (pb) { pb.value = b; if (pb._csel) _cselSyncLabel(pb); }
       renderScanCompare();
       setScanCompareFilter('all');
       showView('compare-scans');
@@ -5605,6 +5616,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           var base = SC_LABELS[opt.value] || opt.textContent.replace(/\s*★ baseline$/, '');
           opt.textContent = base + (opt.value === ndBaseline ? '  ★ baseline' : '');
         });
+        if (sel._csel) refreshCsel(sel);
       });
     }
     function scanScore(id) {
@@ -5657,7 +5669,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       setTimeout(function () { t.style.opacity = '1'; }, 10);
       setTimeout(function () { t.style.opacity = '0'; setTimeout(function () { t.remove(); }, 250); }, 2400);
     }
-    window.addEventListener('load', function () { try { ndUpdateBaselineUI(); } catch (e) {} });
+    window.addEventListener('load', function () { try { enhanceAllSelects(); } catch (e) {} try { ndUpdateBaselineUI(); } catch (e) {} });
 
     function ndToggleCat(id) {
       var body = document.getElementById(id);
@@ -6489,7 +6501,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <span id="pe-bulk-count" style="font-size:12px;font-weight:700;color:#00AF73;">0 checks selected</span>
                 <div style="flex:1;"></div>
                 <button onclick="peAddTagMenu(this)" style="font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--bg-success-border);background:var(--bg-surface);color:#00AF73;cursor:pointer;">+ Add tags</button>
-                <select onchange="peBulkSev(this)" style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;">
+                <select class="csel" onchange="peBulkSev(this)" style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;">
                   <option>Set severity…</option>
                   <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
                 </select>
@@ -7692,6 +7704,71 @@ body.dark .theme-toggle .icon-moon { display: none; }
         o.style.fontWeight = on ? '600' : '400';
       });
       menu.style.display = 'none';
+    }
+
+    // ── Reusable custom select (.csel): keeps native <select> as backing store,
+    //    overlays a styled button+menu, dispatches native 'change' on pick ──
+    function enhanceSelect(sel) {
+      if (sel._csel) return;
+      var wrap = document.createElement('span');
+      wrap.className = 'csel-wrap';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'csel-btn';
+      var lbl = document.createElement('span');
+      lbl.className = 'csel-lbl';
+      btn.appendChild(lbl);
+      var menu = document.createElement('div');
+      menu.className = 'csel-menu';
+      sel.parentNode.insertBefore(wrap, sel);
+      wrap.appendChild(btn);
+      wrap.appendChild(menu);
+      sel.style.display = 'none';
+      sel._csel = { wrap: wrap, btn: btn, lbl: lbl, menu: menu };
+      btn.addEventListener('click', function (e) { e.stopPropagation(); _cselToggle(sel); });
+      refreshCsel(sel);
+    }
+    function refreshCsel(sel) {
+      var c = sel._csel; if (!c) return;
+      c.menu.innerHTML = '';
+      Array.prototype.forEach.call(sel.options, function (opt, i) {
+        var o = document.createElement('div');
+        o.className = 'csel-opt' + (i === sel.selectedIndex ? ' sel' : '');
+        o.textContent = opt.textContent;
+        o.addEventListener('click', function (e) {
+          e.stopPropagation();
+          sel.value = opt.value;
+          _cselSyncLabel(sel);
+          c.menu.classList.remove('open');
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        c.menu.appendChild(o);
+      });
+      _cselSyncLabel(sel);
+    }
+    function _cselSyncLabel(sel) {
+      var c = sel._csel; if (!c) return;
+      var opt = sel.options[sel.selectedIndex];
+      c.lbl.textContent = opt ? opt.textContent : '';
+      Array.prototype.forEach.call(c.menu.children, function (o, i) {
+        o.classList.toggle('sel', i === sel.selectedIndex);
+      });
+    }
+    function _cselToggle(sel) {
+      var c = sel._csel; if (!c) return;
+      var isOpen = c.menu.classList.contains('open');
+      document.querySelectorAll('.csel-menu.open').forEach(function (m) { m.classList.remove('open'); });
+      if (!isOpen) {
+        c.menu.classList.add('open');
+        setTimeout(function () {
+          document.addEventListener('click', function h(e) {
+            if (!c.wrap.contains(e.target)) { c.menu.classList.remove('open'); document.removeEventListener('click', h); }
+          });
+        }, 10);
+      }
+    }
+    function enhanceAllSelects() {
+      document.querySelectorAll('select.csel').forEach(enhanceSelect);
     }
 
     // Policy Edit functions
@@ -10483,12 +10560,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
             <span style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;">Scope</span>
-            <select style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All environments</option><option>Production</option><option>Staging</option><option>Development</option></select>
-            <select style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All node groups</option><option>Windows 11</option><option>Servers</option><option>Developer Macs</option></select>
-            <select style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>CIS Windows 11</option><option>CIS Ubuntu 22.04</option><option>All benchmarks</option></select>
-            <select style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All policies</option><option>Compliance Policy · Windows 11</option><option>Endpoint Protection Policy</option><option>Network Security Baseline</option><option>Data Policy</option></select>
-            <select style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All severities</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
-            <select style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>Latest scan</option><option>As of date…</option></select>
+            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All environments</option><option>Production</option><option>Staging</option><option>Development</option></select>
+            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All node groups</option><option>Windows 11</option><option>Servers</option><option>Developer Macs</option></select>
+            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>CIS Windows 11</option><option>CIS Ubuntu 22.04</option><option>All benchmarks</option></select>
+            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All policies</option><option>Compliance Policy · Windows 11</option><option>Endpoint Protection Policy</option><option>Network Security Baseline</option><option>Data Policy</option></select>
+            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All severities</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
+            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>Latest scan</option><option>As of date…</option></select>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;">
             <span style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;">Report</span>
