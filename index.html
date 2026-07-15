@@ -6348,12 +6348,15 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="font-size:13px;font-weight:700;color:var(--text-default);">Checks on this node</div>
               <div style="position:relative;display:flex;align-items:center;">
-                <select id="pd-view-select" onchange="pdFilter(this.value)" style="font-size:11px;padding:4px 24px 4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
-                  <option value="all">All checks</option>
-                  <option value="fail">Failing only</option>
-                  <option value="pass">Passing only</option>
-                </select>
-                <svg style="position:absolute;right:7px;pointer-events:none;" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <button id="pd-filter-btn" onclick="pdToggleFilter(this)" style="font-size:11px;padding:5px 26px 5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;white-space:nowrap;position:relative;">
+                  <span id="pd-filter-label">All checks</span>
+                  <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div id="pd-filter-menu" class="policy-menu" style="display:none;position:absolute;left:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:150px;z-index:200;overflow:hidden;">
+                  <div onclick="pdSetFilter(&#39;all&#39;,&#39;All checks&#39;)" data-val="all" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--green2);font-weight:600;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">All checks</div>
+                  <div onclick="pdSetFilter(&#39;fail&#39;,&#39;Failing only&#39;)" data-val="fail" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);font-weight:400;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Failing only</div>
+                  <div onclick="pdSetFilter(&#39;pass&#39;,&#39;Passing only&#39;)" data-val="pass" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);font-weight:400;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Passing only</div>
+                </div>
               </div>
             </div>
             <button id="pd-edit-inline-btn" onclick="document.getElementById(&#39;pe-name&#39;).textContent=document.getElementById(&#39;pd-name&#39;).textContent;showView(&#39;policy-edit&#39;);" style="display:flex;align-items:center;gap:5px;font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;white-space:nowrap;">
@@ -7092,7 +7095,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       document.getElementById('pd-applies').textContent = p.applies;
       document.getElementById('pd-edit-btn').style.display = p.isCustom ? 'inline-flex' : 'none';
       document.getElementById('pd-edit-inline-btn').style.display = p.isCustom ? 'inline-flex' : 'none';
-      document.getElementById('pd-view-select').value = 'all';
+      pdResetFilter();
       window._pdChecks = p.checks;
       window._pdIsCustom = p.isCustom;
       pdFilter('all');
@@ -7650,6 +7653,45 @@ body.dark .theme-toggle .icon-moon { display: none; }
       });
       if(filtered.length===0) html = '<div style="padding:24px;text-align:center;color:var(--text-sec);font-size:13px;">No '+(mode==='fail'?'failing':'passing')+' checks on this node</div>';
       document.getElementById('pd-checks-list').innerHTML = html;
+    }
+
+    function pdToggleFilter(btn) {
+      var menu = document.getElementById('pd-filter-menu');
+      var open = menu.style.display !== 'none';
+      menu.style.display = open ? 'none' : 'block';
+      if (!open) {
+        setTimeout(function() {
+          document.addEventListener('click', function h(e) {
+            if (!menu.contains(e.target) && !btn.contains(e.target)) {
+              menu.style.display = 'none';
+              document.removeEventListener('click', h);
+            }
+          });
+        }, 10);
+      }
+    }
+
+    function pdSetFilter(mode, label) {
+      pdFilter(mode);
+      document.getElementById('pd-filter-label').textContent = label;
+      var menu = document.getElementById('pd-filter-menu');
+      Array.prototype.forEach.call(menu.children, function(o) {
+        var on = o.getAttribute('data-val') === mode;
+        o.style.color = on ? 'var(--green2)' : 'var(--text-sec)';
+        o.style.fontWeight = on ? '600' : '400';
+      });
+      menu.style.display = 'none';
+    }
+
+    function pdResetFilter() {
+      document.getElementById('pd-filter-label').textContent = 'All checks';
+      var menu = document.getElementById('pd-filter-menu');
+      Array.prototype.forEach.call(menu.children, function(o) {
+        var on = o.getAttribute('data-val') === 'all';
+        o.style.color = on ? 'var(--green2)' : 'var(--text-sec)';
+        o.style.fontWeight = on ? '600' : '400';
+      });
+      menu.style.display = 'none';
     }
 
     // Policy Edit functions
