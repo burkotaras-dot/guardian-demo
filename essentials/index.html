@@ -1798,9 +1798,9 @@ body.dark .policy-menu > div { color: #C0C0C0 !important; }
 /* Reusable custom select (.csel) — unified styled dropdown replacing native <select> */
 .csel-wrap { position: relative; display: inline-block; vertical-align: middle; }
 .csel-btn { display: inline-flex; align-items: center; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 30px 7px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-default); cursor: pointer; outline: none; white-space: nowrap; position: relative; text-align: left; }
-.csel-btn:hover { border-color: var(--text-sec); }
+.csel-btn:hover { border-color: var(--green1); }
 .csel-btn::after { content: ''; position: absolute; right: 12px; top: 50%; width: 7px; height: 7px; border-right: 1.6px solid #94a3b8; border-bottom: 1.6px solid #94a3b8; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
-.csel-btn.csel-sm { padding: 5px 24px 5px 10px; color: var(--p-neutral-500); font-weight: 500; }
+.csel-btn.csel-sm { padding: 4px 24px 4px 10px; line-height: 1.4; color: var(--p-neutral-500); font-weight: 500; }
 .csel-btn.csel-sm::after { right: 10px; }
 .csel-menu { display: none; position: absolute; left: 0; top: calc(100% + 4px); background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.35); min-width: 100%; z-index: 200; overflow-y: auto; max-height: 280px; padding: 4px 0; }
 .csel-menu.open { display: block; }
@@ -6490,7 +6490,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <!-- Header row with bulk toolbar overlay (no layout shift) -->
             <div style="position:relative;background:var(--bg-canvas);border-bottom:1px solid var(--border);">
               <!-- Column headers -->
-              <div id="pe-col-header" style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 28px;gap:14px;padding:8px 20px;align-items:center;">
+              <div id="pe-col-header" style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 28px;gap:14px;padding:11px 20px;align-items:center;">
                 <input type="checkbox" onchange="peSelectAll(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
                 <div></div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
@@ -6499,8 +6499,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div></div>
               </div>
               <!-- Bulk toolbar — overlays column header, no layout shift -->
-              <div id="pe-bulk-toolbar" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;align-items:center;gap:10px;padding:0 20px 0 52px;background:var(--bg-success);border-bottom:1px solid var(--bg-success-border);">
-                <span id="pe-bulk-count" style="font-size:12px;font-weight:700;color:#00AF73;">0 checks selected</span>
+              <div id="pe-bulk-toolbar" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;align-items:center;gap:10px;padding:0 20px;background:var(--bg-success);border-bottom:1px solid var(--bg-success-border);">
+                <input type="checkbox" id="pe-bulk-master" data-selectall="1" checked="" onchange="peDeselectAll()" title="Clear selection" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;flex-shrink:0;">
+                <span id="pe-bulk-count" style="font-size:12px;font-weight:700;color:#00AF73;margin-left:4px;">0 checks selected</span>
                 <div style="flex:1;"></div>
                 <button onclick="peAddTagMenu(this)" style="font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--bg-success-border);background:var(--bg-surface);color:#00AF73;cursor:pointer;">+ Add tags</button>
                 <select class="csel csel-sm" onchange="peBulkSev(this)" style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;">
@@ -8047,11 +8048,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
 
     function peCheckRow(cb) {
+      var total = document.querySelectorAll('#pe-option-a input[type=checkbox]:not([data-selectall])').length;
       var sel = document.querySelectorAll('#pe-option-a input[type=checkbox]:not([data-selectall]):checked').length;
       var tb = document.getElementById('pe-bulk-toolbar');
       var cnt = document.getElementById('pe-bulk-count');
+      var master = document.getElementById('pe-bulk-master');
       if (tb) tb.style.display = sel > 0 ? 'flex' : 'none';
       if (cnt) cnt.textContent = sel + ' check' + (sel > 1 ? 's' : '') + ' selected';
+      if (master) { master.checked = sel > 0 && sel === total; master.indeterminate = sel > 0 && sel < total; }
     }
 
     function peSelectAll(masterCb) {
