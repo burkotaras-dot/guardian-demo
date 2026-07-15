@@ -1799,6 +1799,21 @@ body.dark [onclick^="peToggleSec"] { border-bottom-color: rgba(255,255,255,0.12)
 body.dark [style*="grid-template-columns:16px 20px 1fr 148px"] { border-bottom-color: rgba(255,255,255,0.08) !important; }
 body.dark .policy-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
 body.dark .policy-menu > div { color: #C0C0C0 !important; }
+/* Reusable custom select (.csel) — unified styled dropdown replacing native <select> */
+.csel-wrap { position: relative; display: inline-block; vertical-align: middle; }
+.csel-btn { display: inline-flex; align-items: center; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 30px 7px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-default); cursor: pointer; outline: none; white-space: nowrap; position: relative; text-align: left; }
+.csel-btn:hover { border-color: var(--green1); }
+.csel-btn::after { content: ''; position: absolute; right: 12px; top: 50%; width: 7px; height: 7px; border-right: 1.6px solid #94a3b8; border-bottom: 1.6px solid #94a3b8; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.csel-btn.csel-sm { padding: 4px 24px 4px 10px; line-height: 1.4; color: var(--p-neutral-500); font-weight: 500; }
+.csel-btn.csel-sm::after { right: 10px; }
+.csel-menu { display: none; position: absolute; left: 0; top: calc(100% + 4px); background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.35); min-width: 100%; z-index: 200; overflow-y: auto; max-height: 280px; padding: 4px 0; }
+.csel-menu.open { display: block; }
+.csel-opt { padding: 9px 14px; font-size: 12px; cursor: pointer; color: var(--text-sec); font-weight: 400; white-space: nowrap; }
+.csel-opt:hover { background: rgba(0,175,115,0.08); }
+.csel-opt.sel { color: var(--green2); font-weight: 600; }
+body.dark .csel-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
+body.dark .csel-opt { color: #C0C0C0 !important; }
+body.dark .csel-opt.sel { color: var(--green1) !important; }
 body.dark span[style*="color:#7C3AED"] { color: #fff !important; border-color: rgba(167,139,250,0.55) !important; background: rgba(124,58,237,0.15) !important; }
 body.dark span[style*="color:#7C3AED"] svg { stroke: #A78BFA !important; }
 body.dark span[style*="color:#F59E0B"] { color: #fff !important; border-color: rgba(245,158,11,0.55) !important; background: rgba(245,158,11,0.15) !important; }
@@ -5756,7 +5771,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <!-- Header row with bulk toolbar overlay (no layout shift) -->
             <div style="position:relative;background:var(--bg-canvas);border-bottom:1px solid var(--border);">
               <!-- Column headers -->
-              <div id="pe-col-header" style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 28px;gap:14px;padding:8px 20px;align-items:center;">
+              <div id="pe-col-header" style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 28px;gap:14px;padding:11px 20px;align-items:center;">
                 <input type="checkbox" onchange="peSelectAll(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
                 <div></div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
@@ -5765,11 +5780,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div></div>
               </div>
               <!-- Bulk toolbar — overlays column header, no layout shift -->
-              <div id="pe-bulk-toolbar" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;align-items:center;gap:10px;padding:0 20px 0 52px;background:var(--bg-success);border-bottom:1px solid var(--bg-success-border);">
-                <span id="pe-bulk-count" style="font-size:12px;font-weight:700;color:#00AF73;">0 checks selected</span>
+              <div id="pe-bulk-toolbar" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;align-items:center;gap:10px;padding:0 20px;background:var(--bg-success);border-bottom:1px solid var(--bg-success-border);">
+                <input type="checkbox" id="pe-bulk-master" data-selectall="1" checked="" onchange="peDeselectAll()" title="Clear selection" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;flex-shrink:0;">
+                <span id="pe-bulk-count" style="font-size:12px;font-weight:700;color:#00AF73;margin-left:4px;">0 checks selected</span>
                 <div style="flex:1;"></div>
                 <button onclick="peAddTagMenu(this)" style="font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--bg-success-border);background:var(--bg-surface);color:#00AF73;cursor:pointer;">+ Add tags</button>
-                <select onchange="peBulkSev(this)" style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;">
+                <select class="csel csel-sm" onchange="peBulkSev(this)" style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;">
                   <option>Set severity…</option>
                   <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
                 </select>
@@ -7120,11 +7136,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
 
     function peCheckRow(cb) {
+      var total = document.querySelectorAll('#pe-option-a input[type=checkbox]:not([data-selectall])').length;
       var sel = document.querySelectorAll('#pe-option-a input[type=checkbox]:not([data-selectall]):checked').length;
       var tb = document.getElementById('pe-bulk-toolbar');
       var cnt = document.getElementById('pe-bulk-count');
+      var master = document.getElementById('pe-bulk-master');
       if (tb) tb.style.display = sel > 0 ? 'flex' : 'none';
       if (cnt) cnt.textContent = sel + ' check' + (sel > 1 ? 's' : '') + ' selected';
+      if (master) { master.checked = sel > 0 && sel === total; master.indeterminate = sel > 0 && sel < total; }
     }
 
     function peSelectAll(masterCb) {
@@ -13501,10 +13520,75 @@ function authCloseForgot() { document.getElementById('auth-forgot-modal').style.
 function authSendReset() { document.getElementById('auth-forgot-form').style.display='none'; document.getElementById('auth-forgot-success').style.display='block'; }
 function authTogglePw(inputId,btn) { var i=document.getElementById(inputId);if(!i)return;if(i.type==='password'){i.type='text';btn.style.color='#3FC878';}else{i.type='password';btn.style.color='#94a3b8';} }
 
+// ── Reusable custom select (.csel): keeps native <select> as backing store,
+//    overlays a styled button+menu, dispatches native 'change' on pick ──
+function enhanceSelect(sel) {
+  if (sel._csel) return;
+  var wrap = document.createElement('span');
+  wrap.className = 'csel-wrap';
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'csel-btn' + (sel.classList.contains('csel-sm') ? ' csel-sm' : '');
+  var lbl = document.createElement('span');
+  lbl.className = 'csel-lbl';
+  btn.appendChild(lbl);
+  var menu = document.createElement('div');
+  menu.className = 'csel-menu';
+  sel.parentNode.insertBefore(wrap, sel);
+  wrap.appendChild(btn);
+  wrap.appendChild(menu);
+  sel.style.display = 'none';
+  sel._csel = { wrap: wrap, btn: btn, lbl: lbl, menu: menu };
+  btn.addEventListener('click', function (e) { e.stopPropagation(); _cselToggle(sel); });
+  refreshCsel(sel);
+}
+function refreshCsel(sel) {
+  var c = sel._csel; if (!c) return;
+  c.menu.innerHTML = '';
+  Array.prototype.forEach.call(sel.options, function (opt, i) {
+    var o = document.createElement('div');
+    o.className = 'csel-opt' + (i === sel.selectedIndex ? ' sel' : '');
+    o.textContent = opt.textContent;
+    o.addEventListener('click', function (e) {
+      e.stopPropagation();
+      sel.value = opt.value;
+      _cselSyncLabel(sel);
+      c.menu.classList.remove('open');
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    c.menu.appendChild(o);
+  });
+  _cselSyncLabel(sel);
+}
+function _cselSyncLabel(sel) {
+  var c = sel._csel; if (!c) return;
+  var opt = sel.options[sel.selectedIndex];
+  c.lbl.textContent = opt ? opt.textContent : '';
+  Array.prototype.forEach.call(c.menu.children, function (o, i) {
+    o.classList.toggle('sel', i === sel.selectedIndex);
+  });
+}
+function _cselToggle(sel) {
+  var c = sel._csel; if (!c) return;
+  var isOpen = c.menu.classList.contains('open');
+  document.querySelectorAll('.csel-menu.open').forEach(function (m) { m.classList.remove('open'); });
+  if (!isOpen) {
+    c.menu.classList.add('open');
+    setTimeout(function () {
+      document.addEventListener('click', function h(e) {
+        if (!c.wrap.contains(e.target)) { c.menu.classList.remove('open'); document.removeEventListener('click', h); }
+      });
+    }, 10);
+  }
+}
+function enhanceAllSelects() {
+  document.querySelectorAll('select.csel').forEach(enhanceSelect);
+}
+
 // ── INIT ──
 hideAll();
 // AUTH_FLOW_ENABLED: щоб включити — замінити go('s01') на showAuth('auth-login')
-window.addEventListener('load', function() { hideAuth(); showAuth('auth-login'); });
+window.addEventListener('load', function() { hideAuth(); showAuth('auth-login'); try { enhanceAllSelects(); } catch (e) {} });
 </script>
 
 <!-- ══════════════════════════════════════════════════════
