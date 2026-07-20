@@ -1907,11 +1907,16 @@ body.dark #pd-checks-list [style*="background:#f0fdf4"] { background: rgba(0,175
 body.dark #pd-checks-list [style*="background:#f1f5f9"] { background: rgba(255,255,255,0.08) !important; color: var(--p-neutral-300) !important; border-color: rgba(255,255,255,0.12) !important; }
 body.dark #pd-tag-picker [style*="background:var(--bg-subtle)"] { background: var(--p-dark-muted) !important; border-color: #143A2F !important; color: var(--p-neutral-300) !important; }
 body.dark #pd-tag-picker div:hover { background: #012F32 !important; border-radius: 5px; }
-/* Policy-detail header badges */
-#pd-type-badge { background:var(--bg-subtle); color:var(--p-neutral-500); }
-#pd-status-badge { background:var(--bg-error); color:#FB3C44; }
-body.dark #pd-type-badge { background:transparent; color:#A78BFA; border-color:rgba(167,139,250,0.55); }
-body.dark #pd-status-badge { background:transparent; color:#FB3C44; border:1px solid rgba(251,60,68,0.55); }
+/* Policy-detail header badges — light */
+#pd-type-badge[data-variant="benchmark"] { background:#ede9fe; color:#5b21b6; border-color:#ede9fe; }
+#pd-type-badge[data-variant="custom"] { background:#fef3c7; color:#92400e; border-color:#fef3c7; }
+#pd-status-badge[data-variant="failing"] { background:#fef2f2; color:#FB3C44; border-color:#fef2f2; }
+#pd-status-badge[data-variant="passing"] { background:#f0fdf4; color:#00AF73; border-color:#f0fdf4; }
+/* Policy-detail header badges — dark */
+body.dark #pd-type-badge[data-variant="benchmark"] { background:transparent; color:#A78BFA; border-color:rgba(167,139,250,0.55); }
+body.dark #pd-type-badge[data-variant="custom"] { background:transparent; color:#F59E0B; border-color:rgba(245,158,11,0.55); }
+body.dark #pd-status-badge[data-variant="failing"] { background:transparent; color:#FB3C44; border-color:rgba(251,60,68,0.55); }
+body.dark #pd-status-badge[data-variant="passing"] { background:transparent; color:#10B981; border-color:rgba(16,185,129,0.55); }
 body.dark #pd-tag-1 { background:transparent !important; color:#60A5FA !important; border-color:rgba(59,130,246,0.5) !important; }
 body.dark #pd-tag-2 { background:transparent !important; color:#34D399 !important; border-color:rgba(16,185,129,0.5) !important; }
 
@@ -6358,8 +6363,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="flex:1;">
             <div id="pd-card-name" style="font-size:17px;font-weight:700;color:var(--text-default);margin-bottom:10px;">Compliance Policy · Windows 11 v1.0.0</div>
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-              <span id="pd-type-badge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--border-default);">Compliance Policy</span>
-              <span id="pd-status-badge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">3 failing</span>
+              <span id="pd-type-badge" data-variant="benchmark" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--border-default);">Compliance Policy</span>
+              <span id="pd-status-badge" data-variant="failing" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid transparent;">3 failing</span>
             </div>
             <!-- Policy tags row -->
             <div id="pd-tags-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
@@ -7152,9 +7157,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
       document.getElementById('pd-name').textContent = p.name;
       document.getElementById('pd-sub').textContent = p.sub;
       var tb = document.getElementById('pd-type-badge');
-      tb.textContent = p.type; tb.style.background = p.typeBg; tb.style.color = p.typeColor;
+      tb.textContent = p.type; tb.dataset.variant = p.isCustom ? 'custom' : 'benchmark';
       var sb = document.getElementById('pd-status-badge');
-      sb.textContent = p.statusText; sb.style.background = p.statusBg; sb.style.color = p.statusColor;
+      sb.textContent = p.statusText; sb.dataset.variant = p.failing > 0 ? 'failing' : 'passing';
       document.getElementById('pd-desc').textContent = p.desc;
       document.getElementById('pd-total').textContent = p.total;
       document.getElementById('pd-passing').textContent = p.passing;
@@ -8362,14 +8367,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (pdSub) pdSub.textContent = (isCustom ? 'Custom policy' : 'Compliance Policy') + ' · Just created';
       if (pdTypeBadge) {
         pdTypeBadge.textContent = isCustom ? 'Custom' : 'Compliance Policy';
-        pdTypeBadge.style.background = isCustom ? '#f0fdf4' : '#f1f5f9';
-        pdTypeBadge.style.color = isCustom ? '#166534' : '#64748b';
-        pdTypeBadge.style.borderColor = isCustom ? '#bbf7d0' : '#e2e8f0';
+        pdTypeBadge.dataset.variant = isCustom ? 'custom' : 'benchmark';
       }
       if (pdStatusBadge) {
         pdStatusBadge.textContent = '0 failing';
-        pdStatusBadge.style.background = '#f0fdf4';
-        pdStatusBadge.style.color = '#166534';
+        pdStatusBadge.dataset.variant = 'passing';
       }
 
       // Pre-fill card title
