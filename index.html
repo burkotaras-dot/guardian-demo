@@ -864,6 +864,8 @@ body.dark .demo-control-btn:hover { background:rgba(16,185,129,0.18); color:var(
   position:relative;
 }
 .check-card:hover { border-color:#c7d2e0; box-shadow:var(--shadow-md); transform:translateY(-1px); }
+.rctx-opt:hover { background:var(--bg-subtle); }
+body.dark .rctx-opt:hover { background:rgba(255,255,255,0.06); }
 .check-card > .check-row > svg { position:absolute; right:14px; top:50%; transform:translateY(-50%); }
 .check-row   { display:flex; align-items:center; gap:8px; }
 .check-title { font-size:12.5px; font-weight:600; color:var(--text-default); flex:1; }
@@ -2758,7 +2760,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
             <div>
               <div style="font-size:17px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Failed checks</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score</div>
+              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score · <span style="color:var(--text-muted);">right-click a check to add it to a policy</span></div>
             </div>
           </div>
           <div class="filter-pills" id="results-pills" style="justify-content:space-between;flex-wrap:nowrap;">
@@ -2793,29 +2795,51 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <button class="btn-secondary" style="padding:5px 12px;font-size:11px;" onclick="showView(&#39;reports&#39;)">↓ Export</button>
             </div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)">
+          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)">
             <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Windows Defender real-time protection is disabled</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 8.1 · Current: Disabled · Expected: Enabled</div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)">
+          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)">
             <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">BitLocker encryption not enabled on system drive</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 3.6 · Current: Not encrypted · Expected: AES-256</div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)">
+          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)">
             <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Remote Desktop enabled without Network Level Auth</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 9.2 · Current: No NLA · Expected: NLA required</div>
           </div>
-          <div class="check-card" data-sev="medium">
+          <div class="check-card" data-sev="medium" oncontextmenu="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)">
             <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Windows Firewall disabled for Domain profile</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 9.1 · Current: Disabled · Expected: Enabled</div>
           </div>
-          <div class="check-card" data-sev="medium">
+          <div class="check-card" data-sev="medium" oncontextmenu="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)">
             <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Screen lock timeout exceeds 15 minutes</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 1.2 · Current: 30 min · Expected: ≤15 min</div>
           </div>
           <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec);">+ 22 more issues · <span style="color:var(--issues-link);cursor:pointer;">View all</span></div>
         </div><!-- /results-body -->
       </div><!-- /results-layout -->
+
+      <!-- Add-to-policy context menu (right-click on a failed check) -->
+      <div id="results-ctx" style="display:none;position:fixed;z-index:400;min-width:230px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-md);padding:6px;font-family:inherit;">
+        <div style="padding:8px 10px 6px;">
+          <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Add check to policy</div>
+          <div id="results-ctx-attr" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-sec);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        </div>
+        <div style="height:1px;background:var(--border);margin:2px 0 4px;"></div>
+        <div onclick="resultsCtxPick(&#39;Windows 11 Security Baseline&#39;)" class="rctx-opt" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;color:var(--text-default);cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Windows 11 Security Baseline
+        </div>
+        <div onclick="resultsCtxPick(&#39;Endpoint Protection&#39;)" class="rctx-opt" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;color:var(--text-default);cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Endpoint Protection
+        </div>
+        <div onclick="resultsCtxPick(&#39;PCI-DSS Baseline&#39;)" class="rctx-opt" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;color:var(--text-default);cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>PCI-DSS Baseline
+        </div>
+        <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+        <div onclick="resultsCtxNew()" class="rctx-opt" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;color:var(--green2);font-weight:600;cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New policy from this check…
+        </div>
+      </div>
     </div><!-- /v-results -->
 
     <!-- REMEDIATION -->
@@ -6542,7 +6566,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-error);border:1.5px solid #fca5a5;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </div>
-              <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus active and up to date</div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus active and up to date</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text-muted);">av.realtime_protection</span>
+                  <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">2 rules</span>
+                </div>
+              </div>
               <div class="pe-sev-btn" data-idx="0" data-val="critical" onclick="peOpenSevPick(this,0)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fca5a5;background:#fef2f2;color:#FB3C44;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Critical</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-0" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
@@ -6559,7 +6589,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Host firewall enabled</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Host firewall enabled</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text-muted);">fw.enabled</span>
+                  <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
+                </div>
+              </div>
               <div class="pe-sev-btn" data-idx="1" data-val="high" onclick="peOpenSevPick(this,1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-1" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Network ×</span>
@@ -6575,7 +6611,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">EDR agent installed</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">EDR agent installed</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text-muted);">edr.agent_present</span>
+                  <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
+                </div>
+              </div>
               <div class="pe-sev-btn" data-idx="2" data-val="high" onclick="peOpenSevPick(this,2)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-2" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
@@ -6599,7 +6641,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Vulnerability scanner present</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Vulnerability scanner present</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text-muted);">vuln.scanner_installed</span>
+                  <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
+                </div>
+              </div>
               <div class="pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#f9fafb;color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Medium</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-3" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
@@ -6615,7 +6663,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Endpoint encryption enabled</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Endpoint encryption enabled</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text-muted);">disk.encryption_enabled</span>
+                  <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
+                </div>
+              </div>
               <div class="pe-sev-btn" data-idx="4" data-val="high" onclick="peOpenSevPick(this,4)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-4" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Data ×</span>
@@ -6640,7 +6694,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Security logs retained ≥ 90 days</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Security logs retained ≥ 90 days</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text-muted);">log.retention_days</span>
+                  <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
+                </div>
+              </div>
               <div class="pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#f9fafb;color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Medium</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-5" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
@@ -6908,20 +6968,59 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <label class="form-label">Finding message</label>
               <textarea class="form-input" rows="3" placeholder="What message shows when this check fails?" style="resize:vertical;"></textarea>
             </div>
-            <!-- Remediation -->
+            <!-- Background -->
             <div class="form-group">
+              <label class="form-label">Background</label>
+              <textarea class="form-input" rows="2" placeholder="Additional context about why this check matters" style="resize:vertical;"></textarea>
+            </div>
+            <!-- Remediation -->
+            <div class="form-group" style="margin-bottom:0;">
               <label class="form-label">Remediation</label>
               <textarea class="form-input" rows="3" placeholder="How should this issue be fixed?" style="resize:vertical;"></textarea>
             </div>
-            <!-- Rule name -->
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Rule name</label>
-              <input type="text" class="form-input" placeholder="e.g. av.realtime_protection == true" style="font-family:&#39;DM Mono&#39;,monospace;font-size:12px;">
-            </div>
           </div>
-          <div style="margin-top:14px;padding:12px 16px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:var(--radius-md);display:flex;align-items:center;gap:10px;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            <span style="font-size:12px;color:var(--text-sec);">Check logic and thresholds can be configured after creation</span>
+          <!-- Check definition -->
+          <div style="margin-top:16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-sm);">
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">Check definition</div>
+            <!-- Attribute -->
+            <div class="form-group">
+              <label class="form-label">Attribute</label>
+              <input type="text" class="form-input" placeholder="e.g. av.realtime_protection" style="font-family:'DM Mono',monospace;font-size:12px;">
+            </div>
+            <!-- Type of check -->
+            <div class="form-group" style="position:relative;">
+              <label class="form-label">Type of check</label>
+              <div id="ac-type-btn" class="dk-form" onclick="acToggleType(event)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--text-default);font-size:13px;cursor:pointer;gap:8px;user-select:none;">
+                <span id="ac-type-label">Exact Match</span>
+                <svg id="ac-type-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div id="ac-type-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;max-height:240px;overflow-y:auto;">
+                <div onclick="acPickType('Exact Match')" class="ac-sec-opt">Exact Match</div>
+                <div onclick="acPickType('Includes')" class="ac-sec-opt">Includes</div>
+                <div onclick="acPickType('Excludes')" class="ac-sec-opt">Excludes</div>
+                <div onclick="acPickType('XPath')" class="ac-sec-opt">XPath</div>
+                <div onclick="acPickType('>')" class="ac-sec-opt">&gt; (Greater than)</div>
+                <div onclick="acPickType('>=')" class="ac-sec-opt">&gt;= (Greater or equal)</div>
+                <div onclick="acPickType('<')" class="ac-sec-opt">&lt; (Less than)</div>
+                <div onclick="acPickType('<=')" class="ac-sec-opt">&lt;= (Less or equal)</div>
+                <div onclick="acPickType('Regular Expression')" class="ac-sec-opt">Regular Expression</div>
+                <div onclick="acPickType('Regular Expression (Excludes)')" class="ac-sec-opt">Regular Expression (Excludes)</div>
+                <div onclick="acPickType('Group Equivalence')" class="ac-sec-opt">Group Equivalence</div>
+                <div onclick="acPickType('Time Comparison')" class="ac-sec-opt">Time Comparison</div>
+                <div onclick="acPickType('Version Comparison')" class="ac-sec-opt">Version Comparison</div>
+                <div onclick="acPickType('Allow/Deny')" class="ac-sec-opt">Allow / Deny</div>
+              </div>
+            </div>
+            <!-- Expected value -->
+            <div class="form-group">
+              <label class="form-label">Expected value</label>
+              <input type="text" class="form-input" placeholder="e.g. true" style="font-family:'DM Mono',monospace;font-size:12px;">
+            </div>
+            <!-- Pass if absent -->
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-sec);cursor:pointer;">
+              <input type="checkbox" style="width:14px;height:14px;accent-color:#00AF73;">
+              Check should pass if attribute is absent
+            </label>
           </div>
         </div>
       </div>
@@ -7010,16 +7109,70 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <label class="form-label">Finding message</label>
               <textarea class="form-input" rows="3" style="resize:vertical;">Antivirus is not active or definitions are out of date</textarea>
             </div>
-            <!-- Remediation -->
+            <!-- Background -->
             <div class="form-group">
+              <label class="form-label">Background</label>
+              <textarea class="form-input" rows="2" style="resize:vertical;">Real-time antivirus protection is a baseline requirement for endpoint security compliance</textarea>
+            </div>
+            <!-- Remediation -->
+            <div class="form-group" style="margin-bottom:0;">
               <label class="form-label">Remediation</label>
               <textarea class="form-input" rows="3" style="resize:vertical;">Enable Windows Defender or install an approved antivirus solution and update definitions</textarea>
             </div>
-            <!-- Rule name -->
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Rule name</label>
-              <input type="text" class="form-input" value="av.realtime_protection == true" style="font-family:&#39;DM Mono&#39;,monospace;font-size:12px;">
+          </div>
+
+          <!-- Check definition -->
+          <div style="margin-top:16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-sm);">
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">Check definition</div>
+            <!-- Attribute -->
+            <div class="form-group">
+              <label class="form-label">Attribute</label>
+              <input type="text" class="form-input" value="av.realtime_protection" style="font-family:'DM Mono',monospace;font-size:12px;">
             </div>
+            <!-- Value checks (repeatable) -->
+            <div id="ec-value-checks">
+              <div class="ec-vcheck">
+                <!-- Type of check -->
+                <div class="form-group" style="position:relative;">
+                  <label class="form-label">Type of check</label>
+                  <div class="dk-form ec-type-btn" onclick="ecToggleTypeG(this,event)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--text-default);font-size:13px;cursor:pointer;gap:8px;user-select:none;">
+                    <span class="ec-type-label">Exact Match</span>
+                    <svg class="ec-type-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </div>
+                  <div class="ec-type-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;max-height:240px;overflow-y:auto;">
+                    <div onclick="ecPickTypeG(this,'Exact Match')" class="ac-sec-opt">Exact Match</div>
+                    <div onclick="ecPickTypeG(this,'Includes')" class="ac-sec-opt">Includes</div>
+                    <div onclick="ecPickTypeG(this,'Excludes')" class="ac-sec-opt">Excludes</div>
+                    <div onclick="ecPickTypeG(this,'XPath')" class="ac-sec-opt">XPath</div>
+                    <div onclick="ecPickTypeG(this,'&gt; (Greater than)')" class="ac-sec-opt">&gt; (Greater than)</div>
+                    <div onclick="ecPickTypeG(this,'&gt;= (Greater or equal)')" class="ac-sec-opt">&gt;= (Greater or equal)</div>
+                    <div onclick="ecPickTypeG(this,'&lt; (Less than)')" class="ac-sec-opt">&lt; (Less than)</div>
+                    <div onclick="ecPickTypeG(this,'&lt;= (Less or equal)')" class="ac-sec-opt">&lt;= (Less or equal)</div>
+                    <div onclick="ecPickTypeG(this,'Regular Expression')" class="ac-sec-opt">Regular Expression</div>
+                    <div onclick="ecPickTypeG(this,'Regular Expression (Excludes)')" class="ac-sec-opt">Regular Expression (Excludes)</div>
+                    <div onclick="ecPickTypeG(this,'Group Equivalence')" class="ac-sec-opt">Group Equivalence</div>
+                    <div onclick="ecPickTypeG(this,'Time Comparison')" class="ac-sec-opt">Time Comparison</div>
+                    <div onclick="ecPickTypeG(this,'Version Comparison')" class="ac-sec-opt">Version Comparison</div>
+                    <div onclick="ecPickTypeG(this,'Allow / Deny')" class="ac-sec-opt">Allow / Deny</div>
+                  </div>
+                </div>
+                <!-- Expected value -->
+                <div class="form-group">
+                  <label class="form-label">Expected value</label>
+                  <input type="text" class="form-input" value="true" style="font-family:'DM Mono',monospace;font-size:12px;">
+                </div>
+              </div>
+            </div>
+            <!-- Pass if absent -->
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-sec);cursor:pointer;margin-bottom:16px;">
+              <input type="checkbox" style="width:14px;height:14px;accent-color:#00AF73;">
+              Check should pass if attribute is absent
+            </label>
+            <!-- Add another -->
+            <button onclick="ecAddValueCheck()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-md);border:1px dashed var(--border);background:var(--bg-canvas);color:var(--text-sec);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--text-muted)';this.style.color='var(--text-default)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-sec)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Add another value check
+            </button>
           </div>
 
           <!-- Danger zone -->
@@ -7958,6 +8111,42 @@ body.dark .theme-toggle .icon-moon { display: none; }
       setTimeout(function(){ t.style.display = 'none'; }, 3100);
     }
 
+    // ── Add check to policy from scan results (right-click context menu) ──
+    var _rctxCheck = '';
+    function resultsCtx(e, title, attr) {
+      e.preventDefault();
+      e.stopPropagation();
+      _rctxCheck = title;
+      var menu = document.getElementById('results-ctx');
+      if (!menu) return;
+      var attrEl = document.getElementById('results-ctx-attr');
+      if (attrEl) attrEl.textContent = attr || title;
+      menu.style.display = 'block';
+      // clamp to viewport
+      var mw = 240, mh = menu.offsetHeight || 260;
+      var x = Math.min(e.clientX, window.innerWidth - mw - 8);
+      var y = Math.min(e.clientY, window.innerHeight - mh - 8);
+      menu.style.left = Math.max(8, x) + 'px';
+      menu.style.top = Math.max(8, y) + 'px';
+    }
+    function hideResultsCtx() {
+      var menu = document.getElementById('results-ctx');
+      if (menu) menu.style.display = 'none';
+    }
+    function resultsCtxPick(policy) {
+      hideResultsCtx();
+      showToast('Added “' + _rctxCheck + '” to ' + policy);
+    }
+    function resultsCtxNew() {
+      hideResultsCtx();
+      showView('policy-create');
+    }
+    document.addEventListener('click', function(e) {
+      var menu = document.getElementById('results-ctx');
+      if (menu && menu.style.display === 'block' && !menu.contains(e.target)) hideResultsCtx();
+    });
+    document.addEventListener('scroll', hideResultsCtx, true);
+
     // ── Report export (generating → ready/error → download) ──
     var _exportKind = 'csv';
     var _exportTimer = null;
@@ -8576,7 +8765,85 @@ body.dark .theme-toggle .icon-moon { display: none; }
         ecPop.style.display = 'none';
         document.getElementById('ec-sec-chev').style.transform = '';
       }
+      var acTp = document.getElementById('ac-type-pop');
+      var acTb = document.getElementById('ac-type-btn');
+      if (acTp && acTp.style.display !== 'none' && acTb && !acTb.contains(e.target)) {
+        acTp.style.display = 'none';
+        document.getElementById('ac-type-chev').style.transform = '';
+      }
+      document.querySelectorAll('.ec-type-pop').forEach(function(p) {
+        var btn = p.parentElement.querySelector('.ec-type-btn');
+        if (p.style.display !== 'none' && btn && !btn.contains(e.target)) {
+          p.style.display = 'none';
+          var ch = btn.querySelector('.ec-type-chev');
+          if (ch) ch.style.transform = '';
+        }
+      });
     });
+
+    function acToggleType(e) {
+      e.stopPropagation();
+      var pop = document.getElementById('ac-type-pop');
+      var chev = document.getElementById('ac-type-chev');
+      var isOpen = pop.style.display !== 'none';
+      pop.style.display = isOpen ? 'none' : 'block';
+      chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+    function acPickType(label) {
+      document.getElementById('ac-type-label').textContent = label;
+      document.getElementById('ac-type-pop').style.display = 'none';
+      document.getElementById('ac-type-chev').style.transform = '';
+    }
+    // Edit Check — generic per-row Type-of-check dropdown (supports multiple value checks)
+    function ecToggleTypeG(btn, e) {
+      e.stopPropagation();
+      var pop = btn.parentElement.querySelector('.ec-type-pop');
+      var chev = btn.querySelector('.ec-type-chev');
+      var isOpen = pop.style.display !== 'none';
+      document.querySelectorAll('.ec-type-pop').forEach(function(p) { if (p !== pop) p.style.display = 'none'; });
+      pop.style.display = isOpen ? 'none' : 'block';
+      chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+    function ecPickTypeG(opt, label) {
+      var grp = opt.closest('.form-group');
+      grp.querySelector('.ec-type-label').textContent = label;
+      grp.querySelector('.ec-type-pop').style.display = 'none';
+      grp.querySelector('.ec-type-chev').style.transform = '';
+    }
+    var EC_TYPES = ['Exact Match','Includes','Excludes','XPath','&gt; (Greater than)','&gt;= (Greater or equal)','&lt; (Less than)','&lt;= (Less or equal)','Regular Expression','Regular Expression (Excludes)','Group Equivalence','Time Comparison','Version Comparison','Allow / Deny'];
+    function ecTypeOptsHTML() {
+      return EC_TYPES.map(function(t) { return '<div onclick="ecPickTypeG(this,\'' + t + '\')" class="ac-sec-opt">' + t + '</div>'; }).join('');
+    }
+    function ecAddValueCheck() {
+      var wrap = document.getElementById('ec-value-checks');
+      var row = document.createElement('div');
+      row.className = 'ec-vcheck';
+      row.style.cssText = 'border-top:1px dashed var(--border);margin-top:16px;padding-top:16px;';
+      row.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
+          '<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;">Additional value check</div>' +
+          '<button onclick="ecRemoveValueCheck(this)" style="display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;border:none;background:transparent;color:var(--text-muted);font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;" onmouseover="this.style.color=\'#FB3C44\'" onmouseout="this.style.color=\'var(--text-muted)\'">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>Remove' +
+          '</button>' +
+        '</div>' +
+        '<div class="form-group" style="position:relative;">' +
+          '<label class="form-label">Type of check</label>' +
+          '<div class="dk-form ec-type-btn" onclick="ecToggleTypeG(this,event)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--text-default);font-size:13px;cursor:pointer;gap:8px;user-select:none;">' +
+            '<span class="ec-type-label">Exact Match</span>' +
+            '<svg class="ec-type-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>' +
+          '</div>' +
+          '<div class="ec-type-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;max-height:240px;overflow-y:auto;">' + ecTypeOptsHTML() + '</div>' +
+        '</div>' +
+        '<div class="form-group" style="margin-bottom:0;">' +
+          '<label class="form-label">Expected value</label>' +
+          '<input type="text" class="form-input" placeholder="e.g. 15" style="font-family:\'DM Mono\',monospace;font-size:12px;">' +
+        '</div>';
+      wrap.appendChild(row);
+    }
+    function ecRemoveValueCheck(btn) {
+      var row = btn.closest('.ec-vcheck');
+      if (row) row.remove();
+    }
 
     function acSetSev(radio) {
       document.querySelectorAll('.ac-sev-pill').forEach(function(p) {
