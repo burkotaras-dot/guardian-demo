@@ -238,6 +238,34 @@ body {
 @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
 @keyframes spin     { to{transform:rotate(360deg)} }
 @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:0.35} }
+/* Demo-mode toggle (prototype-only affordance) */
+.demo-wrap { display:inline-flex; align-items:center; gap:7px; border:1px dashed var(--border); border-radius:8px; padding:3px 5px 3px 9px; }
+.demo-wrap .demo-lbl { font-size:9px; font-weight:800; letter-spacing:0.6px; text-transform:uppercase; color:var(--text-muted); }
+.demo-seg-group { display:inline-flex; background:var(--bg-canvas); border-radius:6px; padding:2px; }
+.demo-seg { font-size:11px; font-weight:600; padding:4px 11px; border-radius:5px; border:none; background:transparent; color:var(--text-sec); cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.demo-seg.on { background:var(--bg-surface); color:var(--text-default); box-shadow:var(--shadow-sm); }
+#exdemo-err.on { color:#FB3C44; }
+/* Report-type toggle (Compliance summary / Failed-checks / Full report) */
+.rep-type-btn { font-size:11px; font-weight:600; padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-sec); cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.rep-type-btn:hover { border-color:var(--green1); }
+.rep-type-btn.on { border-color:var(--green2); background:rgba(63,200,120,0.12); color:var(--green1); }
+/* Multi-select filter dropdown (Severity / Policy) */
+.ms-wrap { position:relative; display:inline-block; vertical-align:middle; }
+.ms-btn { display:inline-flex; align-items:center; height:32px; box-sizing:border-box; font-size:12px; font-weight:600; padding:0 26px 0 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-default); cursor:pointer; font-family:inherit; position:relative; white-space:nowrap; }
+.rep-scope-sel { height:32px; box-sizing:border-box; }
+.rep-prow, .rep-frow { transition:background 0.12s; }
+.rep-row-link { cursor:pointer; }
+.rep-row-link:hover { background:rgba(0,175,115,0.06) !important; }
+body.dark .rep-row-link:hover { background:rgba(0,175,115,0.10) !important; }
+.ms-btn:hover { border-color:var(--green1); }
+.ms-btn::after { content:''; position:absolute; right:10px; top:50%; width:6px; height:6px; border-right:1.6px solid #94a3b8; border-bottom:1.6px solid #94a3b8; transform:translateY(-70%) rotate(45deg); pointer-events:none; }
+.ms-menu { display:none; position:absolute; left:0; top:calc(100% + 4px); background:var(--bg-card); border:1px solid var(--border); border-radius:8px; box-shadow:0 8px 32px rgba(0,0,0,0.35); min-width:100%; z-index:200; padding:4px 0; white-space:nowrap; }
+.ms-wrap.open .ms-menu { display:block; }
+.ms-opt { display:flex; align-items:center; gap:8px; padding:8px 14px; font-size:12px; cursor:pointer; color:var(--text-sec); font-weight:500; }
+.ms-opt:hover { background:rgba(0,175,115,0.08); }
+.ms-opt input { accent-color:var(--green2); cursor:pointer; width:14px; height:14px; margin:0; }
+body.dark .ms-menu { background:#00262A !important; border-color:#1A3D40 !important; box-shadow:0 8px 32px rgba(0,0,0,0.6) !important; }
+body.dark .ms-opt { color:#C0C0C0 !important; }
 @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.5} }
 @keyframes remedScan { 0%{width:0%} 85%{width:90%} 100%{width:95%} }
 .remed-progress-bar { height:6px; background:var(--brand-primary); border-radius:3px; animation:remedScan 3s ease-out forwards; }
@@ -1051,7 +1079,7 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 
 /* PAGE HEADER */
 .page-header {
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:flex-start; justify-content:space-between;
   padding:16px 24px; background:transparent;
   border-bottom:1px solid var(--border);
   flex-shrink:0;
@@ -1252,10 +1280,14 @@ body.dark .recon-node-chip.recon-all[data-active="true"] { border-color:rgba(16,
 .recon-node-chip[data-active="true"] { border-color:#3FC878; background:rgba(0,175,115,0.08); color:#15803d; }
 body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.55) !important; background:rgba(16,185,129,0.18) !important; color:#fff !important; }
 
-body.dark #recon-approval-reason { color:#C9D5E2 !important; }
-body.dark #recon-approval-reason::placeholder { color:#C9D5E2 !important; opacity:1; }
-body.dark #recon-approval-comment { color:#C9D5E2 !important; }
-body.dark #recon-approval-comment::placeholder { color:#C9D5E2 !important; opacity:1; }
+/* Dark mode: form controls need distinct bg from panels */
+body.dark .csel-btn,
+body.dark .ms-btn,
+body.dark #recon-time-btn,
+body.dark #recon-node-btn,
+body.dark #recon-cat-btn,
+body.dark select[style*="background:var(--bg-surface)"],
+body.dark input[style*="background:var(--bg-surface)"] { background:rgba(255,255,255,0.07) !important; }
 
 .hh-toggle { display:flex; align-items:center; justify-content:center; gap:6px; min-width:121px; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); font-size:12px; font-weight:600; color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; flex-shrink:0; transition:all 0.12s; }
 .hh-toggle .hh-check { display:none; }
@@ -1784,7 +1816,9 @@ body.dark .pe-sev-btn[data-val="low"] { border-color: rgba(52,211,153,0.5) !impo
 /* Add Check — section dropdown options */
 .ac-sec-opt { padding:8px 12px;font-size:13px;color:var(--text-default);cursor:pointer;transition:background 0.1s; }
 .ac-sec-opt:hover { background:var(--bg-canvas); }
-body.dark #ac-sec-btn { background:var(--bg-surface);border-color:var(--border);color:#94a3b8; }
+body.dark #ac-sec-btn,
+body.dark #ec-sec-btn { background:rgba(255,255,255,0.07);border-color:var(--border);color:#94a3b8; }
+body.dark #ec-sec-pop { background:#00262A !important; border-color:#1A3D40 !important; box-shadow:0 8px 32px rgba(0,0,0,0.6) !important; }
 body.dark #ac-sec-pop { background:#00262A;border-color:#1A3D40;box-shadow:0 8px 32px rgba(0,0,0,0.5); }
 body.dark .ac-sec-opt { color:#CBD5E1; }
 body.dark .ac-sec-opt:hover { background:rgba(255,255,255,0.05); }
@@ -2256,13 +2290,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
 
               <!-- Add from Cloud -->
-              <div onclick="go(&#39;j3-connect&#39;)" style="background:var(--bg-surface);border:2px solid var(--border);border-radius:14px;padding:24px 18px;cursor:pointer;text-align:center;transition:all 0.15s;" onmouseover="this.style.borderColor=&#39;#3B82F6&#39;;this.style.boxShadow=&#39;0 4px 16px rgba(59,130,246,0.15)&#39;;this.style.transform=&#39;translateY(-2px)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.boxShadow=&#39;none&#39;;this.style.transform=&#39;none&#39;">
-                <div style="width:48px;height:48px;border-radius:12px;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+              <div onclick="go(&#39;j3-connect&#39;)" style="background:var(--bg-surface);border:2px solid var(--border);border-radius:14px;padding:24px 18px;cursor:pointer;text-align:center;transition:all 0.15s;" onmouseover="this.style.borderColor=&#39;#3FC878&#39;;this.style.boxShadow=&#39;0 4px 16px rgba(63,200,120,0.15)&#39;;this.style.transform=&#39;translateY(-2px)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.boxShadow=&#39;none&#39;;this.style.transform=&#39;none&#39;">
+                <div style="width:48px;height:48px;border-radius:12px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.8"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
                 </div>
                 <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:6px;">Add from Cloud</div>
                 <div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Auto-discover EC2, ECS, EKS, RDS nodes</div>
-                <div style="margin-top:14px;font-size:11px;font-weight:600;color:var(--status-info);">AWS · Azure →</div>
+                <div style="margin-top:14px;font-size:11px;font-weight:600;color:var(--p-green-400);">AWS · Azure →</div>
               </div>
 
 
@@ -2516,8 +2550,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
           </div>
 
-          <div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--radius-sm);padding:12px 14px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-            <span style="font-size:11px;color:#1d4ed8;">Demo: skip the wait and pretend the Connection Manager is now installed.</span>
+          <div style="background:var(--bg-canvas);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--text-sec);">Demo: skip the wait and pretend the Connection Manager is now installed.</span>
             <button class="btn-secondary" onclick="simulateCMInstalled()" style="width:auto;white-space:nowrap;">Simulate: CM installed →</button>
           </div>
 
@@ -2626,6 +2660,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div class="conn-title" id="conn-title">Listening for agent</div>
                 <div class="conn-sub" id="conn-sub">Waiting for connection on port 8443 — run the installer to continue</div>
               </div>
+            </div>
+            <div style="margin-top:18px;">
+              <button class="btn-outline" onclick="go(&#39;s-method&#39;)" style="width:auto;">← Back</button>
             </div>
           </div>
           <div class="demo-control">
@@ -4140,8 +4177,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       <div class="dash-main" style="max-width:100%;">
 
         <!-- Header -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
-          <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
             <button class="btn-outline" onclick="showView(&#39;all-devices&#39;)" style="padding:6px 12px;font-size:12px;">← All Nodes</button>
             <div>
               <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Node Comparison</div>
@@ -4550,8 +4587,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
             <!-- Header -->
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
-              <div style="display:flex;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
+              <div style="display:flex;align-items:flex-start;gap:12px;">
                 <button class="btn-outline" onclick="showView('node-detail')" style="padding:6px 12px;font-size:12px;">← Back to Node</button>
                 <div>
                   <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Scan Comparison</div>
@@ -4625,7 +4662,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <div class="view" id="v-node-detail" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="btn-outline" onclick="nodeDetailBack()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">MACBOOK-TARAS</div>
@@ -6816,7 +6853,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <!-- Add New Check screen -->
     <div class="view" id="v-add-check" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
           <button class="btn-outline" onclick="showView(&#39;policy-edit&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Add New Check</div>
@@ -6912,7 +6949,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <!-- Edit Check screen -->
     <div class="view" id="v-edit-check" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
           <button class="btn-outline" onclick="showView(&#39;policy-edit&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Edit Check</div>
@@ -6933,16 +6970,20 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <input type="text" class="form-input" value="Antivirus active and up to date">
             </div>
             <!-- Section -->
-            <div class="form-group">
+            <div class="form-group" style="position:relative;">
               <label class="form-label">Section</label>
-              <select class="form-input" style="cursor:pointer;">
-                <option value="general" selected="">General</option>
-                <option value="authentication">Authentication</option>
-                <option value="network">Network</option>
-                <option value="encryption">Encryption</option>
-                <option value="logging">Logging</option>
-                <option value="monitoring">Monitoring</option>
-              </select>
+              <div id="ec-sec-btn" onclick="ecToggleSec(event)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);font-size:13px;cursor:pointer;gap:8px;user-select:none;">
+                <span id="ec-sec-label">General</span>
+                <svg id="ec-sec-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div id="ec-sec-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;">
+                <div onclick="ecPickSec(&#39;general&#39;,&#39;General&#39;)" class="ac-sec-opt">General</div>
+                <div onclick="ecPickSec(&#39;authentication&#39;,&#39;Authentication&#39;)" class="ac-sec-opt">Authentication</div>
+                <div onclick="ecPickSec(&#39;network&#39;,&#39;Network&#39;)" class="ac-sec-opt">Network</div>
+                <div onclick="ecPickSec(&#39;encryption&#39;,&#39;Encryption&#39;)" class="ac-sec-opt">Encryption</div>
+                <div onclick="ecPickSec(&#39;logging&#39;,&#39;Logging&#39;)" class="ac-sec-opt">Logging</div>
+                <div onclick="ecPickSec(&#39;monitoring&#39;,&#39;Monitoring&#39;)" class="ac-sec-opt">Monitoring</div>
+              </div>
             </div>
             <!-- Severity pills -->
             <div class="form-group">
@@ -7472,6 +7513,20 @@ body.dark .theme-toggle .icon-moon { display: none; }
       go('s-agentless');
     }
 
+    function retryScan(btn) {
+      var orig = btn.textContent;
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      btn.textContent = 'Retrying…';
+      setTimeout(function () {
+        btn.disabled = false;
+        btn.style.opacity = '';
+        btn.textContent = orig;
+        if (typeof scToast === 'function') scToast('Scan queued — check node detail for progress');
+        showView('node-detail');
+      }, 1500);
+    }
+
     var _polActiveTag = '';
     function toggleTagFilter(e) {
       e.stopPropagation();
@@ -7913,6 +7968,373 @@ body.dark .theme-toggle .icon-moon { display: none; }
       setTimeout(function(){ t.style.display = 'none'; }, 3100);
     }
 
+    // ── Report export (generating → ready/error → download) ──
+    var _exportKind = 'csv';
+    var _exportTimer = null;
+    var _exportFail = false;
+    var _exportDemoFail = false;
+    var _exportMeta = { csv: { size: '18 KB', ext: 'csv' }, pdf: { size: '246 KB', ext: 'pdf' } };
+    function setExportDemo(fail) {
+      _exportDemoFail = !!fail;
+      var ok = document.getElementById('exdemo-ok');
+      var er = document.getElementById('exdemo-err');
+      if (ok) ok.classList.toggle('on', !fail);
+      if (er) er.classList.toggle('on', fail);
+    }
+    // ── Multi-select filters (Severity / Policy) ──
+    var _msMeta = {
+      'ms-sev': { all: 'All severities', names: { critical: 'Critical', high: 'High', medium: 'Medium', low: 'Low' } },
+      'ms-pol': { all: 'All policies', names: { compliance: 'Compliance Policy', endpoint: 'Endpoint Protection', network: 'Network Security', data: 'Data Policy' } }
+    };
+    function msToggle(id, ev) {
+      if (ev) ev.stopPropagation();
+      var w = document.getElementById(id);
+      var open = w.classList.contains('open');
+      document.querySelectorAll('.ms-wrap.open').forEach(function (x) { x.classList.remove('open'); });
+      if (!open) w.classList.add('open');
+    }
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.ms-wrap.open').forEach(function (x) { x.classList.remove('open'); });
+    });
+    function msValues(id) {
+      return Array.prototype.slice.call(document.querySelectorAll('#' + id + ' input:checked')).map(function (c) { return c.value; });
+    }
+    function msUpdateLabel(id) {
+      var meta = _msMeta[id];
+      var vals = msValues(id);
+      var total = document.querySelectorAll('#' + id + ' input').length;
+      var lbl = document.querySelector('#' + id + ' .ms-label');
+      var txt;
+      if (vals.length === total) txt = meta.all;
+      else if (vals.length === 0) txt = 'None selected';
+      else if (vals.length === 1) txt = meta.names[vals[0]] || vals[0];
+      else txt = vals.length + ' selected';
+      if (lbl) lbl.textContent = txt;
+    }
+    function msSetAll(id, checked) {
+      document.querySelectorAll('#' + id + ' input').forEach(function (c) { c.checked = checked; });
+      msUpdateLabel(id);
+    }
+    function msChange(id) {
+      msUpdateLabel(id);
+      reportApplyFilters();
+    }
+    function repOpenPolicy(pol) {
+      var map = { compliance: 'cis-win11', endpoint: 'endpoint-protection', network: 'network-security', data: 'data-protection' };
+      var key = map[pol];
+      if (key && typeof showPolicyDetail === 'function') showPolicyDetail(key);
+    }
+
+    // ── Deterministic scope model — Node group recomputes KPIs + both tables + export ──
+    // Subgroups sum to "All node groups": passed 69 / failed 4 / 4 nodes.
+    var REP_POL_NAMES = {
+      compliance: 'Compliance Policy · Windows 11',
+      endpoint: 'Endpoint Protection Policy',
+      network: 'Network Security Baseline',
+      data: 'Data Policy'
+    };
+    var REP_POL_SHORT = {
+      compliance: 'Compliance Policy',
+      endpoint: 'Endpoint Protection',
+      network: 'Network Security',
+      data: 'Data Policy'
+    };
+    var _F_WDEF = { pol: 'compliance', control: 'Ensure Windows Defender real-time protection is enabled', delta: 'Disabled → Enabled', sev: 'critical' };
+    var _F_BITL = { pol: 'compliance', control: 'Ensure BitLocker is enabled on the system drive', delta: 'Off → On', sev: 'high' };
+    var _F_LOCK = { pol: 'compliance', control: 'Ensure screen-lock timeout ≤ 15 min', delta: '30 min → 15 min', sev: 'medium' };
+    var _F_AGENT = { pol: 'endpoint', control: 'Ensure endpoint protection agent is running', delta: 'Stopped → Running', sev: 'high' };
+    var REP_SCOPE = {
+      'All node groups': {
+        benchmark: 'CIS Windows 11', nodes: 4,
+        policies: [
+          { pol: 'compliance', pass: 42, fail: 3, crit: 1, high: 1, med: 1, low: 0 },
+          { pol: 'endpoint', pass: 8, fail: 1, crit: 0, high: 1, med: 0, low: 0 },
+          { pol: 'network', pass: 12, fail: 0, crit: 0, high: 0, med: 0, low: 0 },
+          { pol: 'data', pass: 7, fail: 0, crit: 0, high: 0, med: 0, low: 0 }
+        ],
+        failed: [
+          Object.assign({ node: 'DESKTOP-WIN11-A' }, _F_WDEF),
+          Object.assign({ node: 'DESKTOP-WIN11-A' }, _F_BITL),
+          Object.assign({ node: 'DESKTOP-WIN11-B' }, _F_LOCK),
+          Object.assign({ node: 'DESKTOP-WIN11-B' }, _F_AGENT)
+        ]
+      },
+      'Windows 11': {
+        benchmark: 'CIS Windows 11', nodes: 2,
+        policies: [
+          { pol: 'compliance', pass: 20, fail: 3, crit: 1, high: 1, med: 1, low: 0 },
+          { pol: 'endpoint', pass: 5, fail: 1, crit: 0, high: 1, med: 0, low: 0 },
+          { pol: 'network', pass: 6, fail: 0, crit: 0, high: 0, med: 0, low: 0 },
+          { pol: 'data', pass: 4, fail: 0, crit: 0, high: 0, med: 0, low: 0 }
+        ],
+        failed: [
+          Object.assign({ node: 'DESKTOP-WIN11-A' }, _F_WDEF),
+          Object.assign({ node: 'DESKTOP-WIN11-A' }, _F_BITL),
+          Object.assign({ node: 'DESKTOP-WIN11-B' }, _F_LOCK),
+          Object.assign({ node: 'DESKTOP-WIN11-B' }, _F_AGENT)
+        ]
+      },
+      'Developer Macs': {
+        benchmark: 'CIS Windows 11', nodes: 2,
+        policies: [
+          { pol: 'compliance', pass: 22, fail: 0, crit: 0, high: 0, med: 0, low: 0 },
+          { pol: 'endpoint', pass: 3, fail: 0, crit: 0, high: 0, med: 0, low: 0 },
+          { pol: 'network', pass: 6, fail: 0, crit: 0, high: 0, med: 0, low: 0 },
+          { pol: 'data', pass: 3, fail: 0, crit: 0, high: 0, med: 0, low: 0 }
+        ],
+        failed: []
+      },
+      'Servers': { benchmark: 'CIS Windows 11', nodes: 0, policies: [], failed: [] }
+    };
+    var REP_SEV_STYLE = {
+      critical: 'color:#FB3C44;background:rgba(251,60,68,0.1);border:1px solid rgba(251,60,68,0.2)',
+      high: 'color:#9a3412;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.25)',
+      medium: 'color:#92400e;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.25)',
+      low: 'color:#1e40af;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2)'
+    };
+    var REP_SEV_LABEL = { critical: 'Critical', high: 'High', medium: 'Medium', low: 'Low' };
+    function _repSevBadge(sev) {
+      return '<span style="font-size:10px;font-weight:700;border-radius:20px;padding:2px 9px;' + (REP_SEV_STYLE[sev] || '') + '">' + (REP_SEV_LABEL[sev] || sev) + '</span>';
+    }
+    function _repSevChips(p) {
+      if (p.fail === 0) return '<span style="color:var(--text-muted);">—</span>';
+      var out = [];
+      ['critical', 'high', 'medium', 'low'].forEach(function (s) {
+        var n = p[{ critical: 'crit', high: 'high', medium: 'med', low: 'low' }[s]];
+        if (n > 0) out.push('<span style="font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;margin-right:5px;' + REP_SEV_STYLE[s] + '">' + n + ' ' + REP_SEV_LABEL[s].toLowerCase() + '</span>');
+      });
+      return out.join('');
+    }
+    function _repPolRow(p) {
+      var score = Math.round(p.pass / (p.pass + p.fail) * 100);
+      var accent = p.crit > 0 ? '#FB3C44' : (p.fail > 0 ? '#F97316' : '#10B981');
+      var scoreColor = score >= 100 ? '#15803d' : (score >= 90 ? '#00AF73' : '#d97706');
+      return '<div class="rep-prow rep-row-link" data-pol="' + p.pol + '" onclick="repOpenPolicy(&#39;' + p.pol + '&#39;)" ' +
+        'style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ' + accent + ';font-size:12px;">' +
+        '<div style="font-weight:600;color:var(--text-default);">' + REP_POL_NAMES[p.pol] + '</div>' +
+        '<div style="color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">' + p.pass + '</span> / <span style="color:' + (p.fail > 0 ? '#FB3C44' : 'var(--text-muted)') + ';font-weight:600;">' + p.fail + '</span></div>' +
+        '<div>' + _repSevChips(p) + '</div>' +
+        '<div style="font-weight:700;color:' + scoreColor + ';">' + score + '%</div>' +
+        '</div>';
+    }
+    function _repFailRow(f) {
+      return '<div class="rep-frow rep-row-link" data-pol="' + f.pol + '" data-sev="' + f.sev + '" onclick="repOpenPolicy(&#39;' + f.pol + '&#39;)" ' +
+        'style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);font-size:12px;">' +
+        '<div style="font-weight:600;color:var(--text-default);">' + f.node + '</div>' +
+        '<div style="color:var(--text-sec);">' + REP_POL_SHORT[f.pol] + '</div>' +
+        '<div style="color:var(--text-default);">' + f.control + '</div>' +
+        '<div style="color:var(--text-sec);font-family:var(--font-mono,monospace);font-size:11px;">' + f.delta + '</div>' +
+        '<div>' + _repSevBadge(f.sev) + '</div>' +
+        '</div>';
+    }
+    function renderReport() {
+      var grpSel = document.getElementById('rep-group');
+      var group = grpSel ? grpSel.value : 'All node groups';
+      var data = REP_SCOPE[group] || REP_SCOPE['All node groups'];
+      var results = document.getElementById('report-results');
+      var emptyEl = document.getElementById('report-empty');
+      // Scope with no scanned nodes → full-page empty state; export disabled.
+      var scopeEmpty = data.nodes === 0;
+      if (results) results.style.display = scopeEmpty ? 'none' : '';
+      if (emptyEl) emptyEl.style.display = scopeEmpty ? 'block' : 'none';
+      ['rep-export-csv', 'rep-export-pdf'].forEach(function (bid) {
+        var b = document.getElementById(bid);
+        if (!b) return;
+        b.style.opacity = scopeEmpty ? '0.45' : '';
+        b.style.pointerEvents = scopeEmpty ? 'none' : '';
+      });
+      if (scopeEmpty) {
+        var t = document.getElementById('report-empty-title');
+        var bo = document.getElementById('report-empty-body');
+        var sc = document.getElementById('report-empty-scan');
+        if (t) t.textContent = 'No data for this scope';
+        if (bo) bo.textContent = 'No scanned nodes match the "' + group + '" node group. Adjust the scope filters, or run a scan on nodes in this group first.';
+        if (sc) sc.style.display = '';
+        updateResetVisibility();
+        return;
+      }
+      // Aggregate KPIs from the policy rows (single source of truth → numbers always tie out).
+      var passed = 0, failed = 0;
+      data.policies.forEach(function (p) { passed += p.pass; failed += p.fail; });
+      var score = Math.round(passed / (passed + failed) * 100);
+      var elScore = document.getElementById('rep-kpi-score');
+      if (elScore) { elScore.textContent = score + '%'; elScore.style.color = score >= 90 ? '#00AF73' : '#d97706'; }
+      var elPass = document.getElementById('rep-kpi-passed');
+      if (elPass) elPass.textContent = passed;
+      var elFail = document.getElementById('rep-kpi-failed');
+      if (elFail) elFail.textContent = failed;
+      // Failed-checks KPI card: keep the red "error" styling only when there are failures.
+      var failCard = document.getElementById('rep-kpi-failed-card');
+      var failLbl = document.getElementById('rep-kpi-failed-lbl');
+      if (failCard) {
+        failCard.style.background = failed > 0 ? 'var(--bg-error)' : 'var(--bg-surface)';
+        failCard.style.borderColor = failed > 0 ? 'var(--bg-error-border)' : 'var(--border)';
+      }
+      if (elFail) elFail.style.color = failed > 0 ? '#FB3C44' : '#00AF73';
+      if (failLbl) failLbl.style.color = failed > 0 ? '#FB3C44' : 'var(--text-sec)';
+      // Scope context line
+      var ctx = document.getElementById('rep-scope-context');
+      if (ctx) ctx.textContent = data.policies.length + ' policies · ' + data.nodes + ' nodes covered · ' + data.benchmark + ' benchmark';
+      var ptitle = document.getElementById('rep-policy-title');
+      if (ptitle) ptitle.textContent = 'Policies in ' + data.benchmark;
+      // Render tables
+      var prows = document.getElementById('rep-prows');
+      if (prows) prows.innerHTML = data.policies.map(_repPolRow).join('');
+      var frows = document.getElementById('rep-frows');
+      if (frows) frows.innerHTML = data.failed.map(_repFailRow).join('');
+      // Apply local table filters (Policy / Severity) on top of the freshly rendered rows.
+      reportApplyFilters();
+    }
+    function updateResetVisibility() {
+      var btn = document.getElementById('rep-reset');
+      if (!btn) return;
+      var grp = document.getElementById('rep-group');
+      var when = document.getElementById('rep-when');
+      var scopeChanged = (grp && grp.value !== 'All node groups') || (when && when.value !== 'Latest scan');
+      var polAll = msValues('ms-pol').length === document.querySelectorAll('#ms-pol input').length;
+      var sevAll = msValues('ms-sev').length === document.querySelectorAll('#ms-sev input').length;
+      var full = document.getElementById('rt-full') && document.getElementById('rt-full').classList.contains('on');
+      var nonDefault = scopeChanged || !polAll || !sevAll || !full;
+      btn.style.display = nonDefault ? '' : 'none';
+    }
+    function reportApplyFilters() {
+      updateResetVisibility();
+      // LOCAL table filters (Policy, Severity) narrow the detail tables only.
+      // Scope + KPIs + empty-state are owned by renderReport().
+      var pols = msValues('ms-pol');
+      var sevs = msValues('ms-sev');
+      var visPol = 0;
+      document.querySelectorAll('.rep-prow').forEach(function (r) {
+        var show = pols.indexOf(r.getAttribute('data-pol')) !== -1;
+        r.style.display = show ? 'grid' : 'none';
+        if (show) visPol++;
+      });
+      var pnone = document.getElementById('rep-policy-none');
+      if (pnone) pnone.style.display = visPol === 0 ? 'block' : 'none';
+      var visFailed = 0;
+      document.querySelectorAll('.rep-frow').forEach(function (r) {
+        var show = pols.indexOf(r.getAttribute('data-pol')) !== -1 && sevs.indexOf(r.getAttribute('data-sev')) !== -1;
+        r.style.display = show ? 'grid' : 'none';
+        if (show) visFailed++;
+      });
+      var cnt = document.getElementById('rep-failed-count');
+      if (cnt) cnt.textContent = visFailed;
+      var none = document.getElementById('rep-failed-none');
+      if (none) none.style.display = visFailed === 0 ? 'block' : 'none';
+    }
+    function reportResetScope() {
+      var sel = document.getElementById('rep-group');
+      if (sel) {
+        sel.value = 'All node groups';
+        if (typeof refreshCsel === 'function') { try { refreshCsel(sel); } catch (e) {} }
+      }
+      var when = document.getElementById('rep-when');
+      if (when) {
+        when.value = 'Latest scan';
+        if (typeof refreshCsel === 'function') { try { refreshCsel(when); } catch (e) {} }
+        reportWhenChange();
+      }
+      msSetAll('ms-pol', true);
+      msSetAll('ms-sev', true);
+      setReportType('full');
+      renderReport();
+    }
+
+    // ── Report type: which sections are shown ──
+    function setReportType(type) {
+      var map = { summary: 'rt-summary', failed: 'rt-failed', full: 'rt-full' };
+      Object.keys(map).forEach(function (k) {
+        var b = document.getElementById(map[k]);
+        if (b) b.classList.toggle('on', k === type);
+      });
+      var band = document.getElementById('rep-summary-band');
+      var policy = document.getElementById('rep-policy-table');
+      var failed = document.getElementById('rep-failed-table');
+      var showBand = type === 'summary' || type === 'full';
+      var showPolicy = type === 'summary' || type === 'full';
+      var showFailed = type === 'failed' || type === 'full';
+      if (band) band.style.display = showBand ? 'grid' : 'none';
+      var ctx = document.getElementById('rep-scope-context');
+      if (ctx) ctx.style.display = showBand ? '' : 'none';
+      if (policy) policy.style.display = showPolicy ? '' : 'none';
+      if (failed) failed.style.display = showFailed ? '' : 'none';
+      updateResetVisibility();
+    }
+
+    // ── Date range: "Latest scan" vs "As of date…" ──
+    function _fmtReportDate(iso) {
+      var d = new Date(iso + 'T00:00:00');
+      if (isNaN(d)) return iso;
+      var mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+      return d.getDate() + ' ' + mon + ' ' + d.getFullYear();
+    }
+    function reportWhenChange() {
+      var sel = document.getElementById('rep-when');
+      var date = document.getElementById('rep-date');
+      var clr = document.getElementById('rep-when-clear');
+      var asOf = sel && sel.value === 'As of date…';
+      if (date) date.style.display = asOf ? 'inline-block' : 'none';
+      if (clr) clr.style.display = asOf ? 'inline-block' : 'none';
+      if (asOf) { reportDateChange(); }
+      else {
+        var lbl = document.getElementById('rep-when-label');
+        if (lbl) lbl.textContent = 'On-demand · generated 3 Jul 2026 · 14:22';
+      }
+    }
+    function reportDateChange() {
+      var date = document.getElementById('rep-date');
+      var lbl = document.getElementById('rep-when-label');
+      if (lbl && date) lbl.textContent = 'As of ' + _fmtReportDate(date.value) + ' · nearest scan';
+    }
+    function reportClearDate() {
+      var sel = document.getElementById('rep-when');
+      if (sel) {
+        sel.value = 'Latest scan';
+        if (typeof refreshCsel === 'function') { try { refreshCsel(sel); } catch (e) {} }
+      }
+      reportWhenChange();
+    }
+    function openExport(kind, fail) {
+      _exportKind = kind;
+      _exportFail = (fail === undefined) ? _exportDemoFail : !!fail;
+      var up = kind.toUpperCase();
+      var meta = _exportMeta[kind] || _exportMeta.csv;
+      document.getElementById('export-kind-g').textContent = up;
+      document.getElementById('export-kind-r').textContent = up;
+      document.getElementById('export-kind-d').textContent = up;
+      document.getElementById('export-file-badge').textContent = up;
+      document.getElementById('export-filename').textContent = 'guardian-compliance-cis-win11-2026-07-15.' + kind;
+      document.getElementById('export-filesize').textContent = meta.size + ' · generated just now';
+      document.getElementById('export-modal').style.display = 'flex';
+      _exportRun();
+    }
+    function _exportRun() {
+      document.getElementById('export-generating').style.display = 'block';
+      document.getElementById('export-ready').style.display = 'none';
+      document.getElementById('export-error').style.display = 'none';
+      clearTimeout(_exportTimer);
+      _exportTimer = setTimeout(function () {
+        document.getElementById('export-generating').style.display = 'none';
+        if (_exportFail) {
+          document.getElementById('export-error').style.display = 'block';
+        } else {
+          document.getElementById('export-ready').style.display = 'block';
+        }
+      }, 1500);
+    }
+    function exportRetry() {
+      _exportFail = false;
+      _exportRun();
+    }
+    function closeExportModal() {
+      document.getElementById('export-modal').style.display = 'none';
+      clearTimeout(_exportTimer);
+    }
+    function exportDownload() {
+      closeExportModal();
+      showToast(_exportKind.toUpperCase() + ' report downloaded');
+    }
+
     function pcFinishCreate() {
       var nameInput = document.getElementById('pc-name');
       var name = (nameInput && nameInput.value.trim()) || 'New Policy';
@@ -8104,6 +8526,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }, 0);
     }
 
+    function ecToggleSec(e) {
+      e.stopPropagation();
+      var pop = document.getElementById('ec-sec-pop');
+      var chev = document.getElementById('ec-sec-chev');
+      var isOpen = pop.style.display !== 'none';
+      pop.style.display = isOpen ? 'none' : 'block';
+      chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+    function ecPickSec(val, label) {
+      document.getElementById('ec-sec-label').textContent = label;
+      document.getElementById('ec-sec-pop').style.display = 'none';
+      document.getElementById('ec-sec-chev').style.transform = '';
+    }
     function acToggleSec(e) {
       e.stopPropagation();
       var pop = document.getElementById('ac-sec-pop');
@@ -8124,6 +8559,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (pop && pop.style.display !== 'none' && !document.getElementById('ac-sec-btn').contains(e.target)) {
         pop.style.display = 'none';
         document.getElementById('ac-sec-chev').style.transform = '';
+      }
+      var ecPop = document.getElementById('ec-sec-pop');
+      var ecBtn = document.getElementById('ec-sec-btn');
+      if (ecPop && ecPop.style.display !== 'none' && ecBtn && !ecBtn.contains(e.target)) {
+        ecPop.style.display = 'none';
+        document.getElementById('ec-sec-chev').style.transform = '';
       }
     });
 
@@ -8715,7 +9156,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
       <!-- Header: back + title + badge -->
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
           <button class="btn-outline" onclick="showView(&#39;changes&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back to Detected Drift</button>
           <div>
             <div id="cd-title" class="page-title">Windows Defender — Real-time protection</div>
@@ -8851,7 +9292,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     ═══════════════════════════════════════ -->
     <div class="view" id="v-cr-audit" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="btn-outline" onclick="showView(&#39;change-detail&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Change Request Audit</div>
@@ -10031,13 +10472,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
     <div class="view" id="v-j3-scan-complete" style="display: none;">
       <div class="page-header">
-        <div>
-          <div class="page-title">Scan Complete</div>
-          <div class="page-sub">CIS Level 1 scan finished successfully</div>
-        </div>
-        <div class="back-link" onclick="go(&#39;j3-scanning&#39;)" style="margin-bottom:0;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          Back
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <button class="btn-outline" onclick="go(&#39;j3-scanning&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <div>
+            <div class="page-title">Scan Complete</div>
+            <div class="page-sub">CIS Level 1 scan finished successfully</div>
+          </div>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);display:flex;align-items:center;justify-content:center;padding:32px;">
@@ -10098,13 +10538,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
     <div class="view" id="v-j3-results" style="display: none;">
       <div class="page-header">
-        <div>
-          <div class="page-title">Compliance Policy Results — AWS</div>
-          <div class="page-sub">12 nodes · Level 1 · Scanned just now</div>
-        </div>
-        <div class="back-link" onclick="go(&#39;j3-scan-complete&#39;)" style="margin-bottom:0;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          Back
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <button class="btn-outline" onclick="go(&#39;j3-scan-complete&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <div>
+            <div class="page-title">Compliance Policy Results — AWS</div>
+            <div class="page-sub">12 nodes · Level 1 · Scanned just now</div>
+          </div>
         </div>
       </div>
       <!-- Merge notice -->
@@ -10477,14 +10916,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <!-- SCAN-FAILED — general per-node scan-failure diagnostics (item 7) -->
     <div class="view" id="v-scan-failed" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="btn-outline" onclick="go(&#39;node-detail&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Scan Failed</div>
             <div class="page-sub">MACBOOK-TARAS · scan diagnostics</div>
           </div>
         </div>
-        <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:13px;">Retry scan</button>
+        <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:13px;" onclick="retryScan(this)">Retry scan</button>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
@@ -10543,7 +10982,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
           <button class="btn-secondary" onclick="alert(&#39;Contacting support…&#39;)">Contact support</button>
           <button class="btn-secondary" onclick="go(&#39;node-detail&#39;)">View last successful scan →</button>
-          <button class="btn-primary" style="width:auto;padding:12px 24px;">Retry scan →</button>
+          <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="retryScan(this)">Retry scan →</button>
         </div>
       </div>
     </div>
@@ -10555,9 +10994,17 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="page-title">Compliance Reports</div>
           <div class="page-sub">On-demand policy compliance report</div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button class="btn-outline" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="alert(&#39;Exporting CSV…&#39;)">↓ Export CSV</button>
-          <button class="btn-primary" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="alert(&#39;Generating PDF…&#39;)">↓ Export PDF</button>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div class="demo-wrap" title="Prototype only — simulate export success or failure. Not shown in the live product.">
+            <span class="demo-lbl">Demo</span>
+            <div class="demo-seg-group">
+              <button id="exdemo-ok" class="demo-seg on" onclick="setExportDemo(false)">Success</button>
+              <button id="exdemo-err" class="demo-seg" onclick="setExportDemo(true)">Error</button>
+            </div>
+          </div>
+          <div style="width:1px;height:26px;background:var(--border);"></div>
+          <button id="rep-export-csv" class="btn-outline" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="openExport(&#39;csv&#39;)">↓ Export CSV</button>
+          <button id="rep-export-pdf" class="btn-primary" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="openExport(&#39;pdf&#39;)">↓ Export PDF</button>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -10566,102 +11013,150 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
             <span style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;">Scope</span>
-            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All environments</option><option>Production</option><option>Staging</option><option>Development</option></select>
-            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All node groups</option><option>Windows 11</option><option>Servers</option><option>Developer Macs</option></select>
-            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>CIS Windows 11</option><option>CIS Ubuntu 22.04</option><option>All benchmarks</option></select>
-            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All policies</option><option>Compliance Policy · Windows 11</option><option>Endpoint Protection Policy</option><option>Network Security Baseline</option><option>Data Policy</option></select>
-            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All severities</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
-            <select class="csel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>Latest scan</option><option>As of date…</option></select>
+            <select class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All environments</option><option>Production</option><option>Staging</option><option>Development</option></select>
+            <select id="rep-group" onchange="renderReport()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All node groups</option><option>Windows 11</option><option>Servers</option><option>Developer Macs</option></select>
+            <select class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>CIS Windows 11</option><option>CIS Ubuntu 22.04</option><option>All benchmarks</option></select>
+            <select id="rep-when" onchange="reportWhenChange()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>Latest scan</option><option>As of date…</option></select>
+            <input id="rep-date" type="date" value="2026-07-03" max="2026-07-15" onchange="reportDateChange()" class="rep-scope-sel" style="display:none;font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;font-family:inherit;">
+            <button id="rep-when-clear" onclick="reportClearDate()" title="Back to latest scan" style="display:none;background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--text-muted);font-size:16px;line-height:1;">×</button>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;">
             <span style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;">Report</span>
-            <button style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-sec);cursor:pointer;font-family:inherit;">Compliance summary</button>
-            <button style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-sec);cursor:pointer;font-family:inherit;">Failed-checks detail</button>
-            <button style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid var(--green2);background:rgba(63,200,120,0.12);color:var(--green1);cursor:pointer;font-family:inherit;">Full report</button>
-            <span style="margin-left:auto;font-size:11px;color:var(--text-sec);">On-demand · generated 3 Jul 2026 · 14:22</span>
+            <button id="rt-summary" class="rep-type-btn" onclick="setReportType(&#39;summary&#39;)">Compliance summary</button>
+            <button id="rt-failed" class="rep-type-btn" onclick="setReportType(&#39;failed&#39;)">Failed-checks detail</button>
+            <button id="rt-full" class="rep-type-btn on" onclick="setReportType(&#39;full&#39;)">Full report</button>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:14px;">
+              <button id="rep-reset" onclick="reportResetScope()" style="display:none;font-size:11px;font-weight:600;color:var(--text-sec);background:none;border:1px solid var(--border);cursor:pointer;padding:4px 10px;border-radius:6px;white-space:nowrap;">↺ Reset filters</button>
+              <span id="rep-when-label" style="font-size:11px;color:var(--text-sec);">On-demand · generated 3 Jul 2026 · 14:22</span>
+            </div>
           </div>
         </div>
 
+        <!-- Report results (summary + tables) -->
+        <div id="report-results">
+
         <!-- Summary band -->
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;">
+        <div id="rep-summary-band" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:10px;">
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
-            <div style="font-size:24px;font-weight:800;color:#00AF73;">82%</div>
+            <div id="rep-kpi-score" style="font-size:24px;font-weight:800;color:#00AF73;">95%</div>
             <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">Compliance score</div>
           </div>
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
-            <div style="font-size:24px;font-weight:800;color:#00AF73;">69</div>
+            <div id="rep-kpi-passed" style="font-size:24px;font-weight:800;color:#00AF73;">69</div>
             <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">Checks passed</div>
           </div>
-          <div style="background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
-            <div style="font-size:24px;font-weight:800;color:#FB3C44;">4</div>
-            <div style="font-size:11px;color:#FB3C44;margin-top:4px;">Checks failed</div>
+          <div id="rep-kpi-failed-card" style="background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
+            <div id="rep-kpi-failed" style="font-size:24px;font-weight:800;color:#FB3C44;">4</div>
+            <div id="rep-kpi-failed-lbl" style="font-size:11px;color:#FB3C44;margin-top:4px;">Checks failed</div>
           </div>
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
-            <div style="font-size:24px;font-weight:800;color:var(--text-default);">4</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">Policies</div>
+        </div>
+        <div id="rep-scope-context" style="font-size:11px;color:var(--text-muted);margin:0 0 16px 2px;">4 policies · 4 nodes covered · CIS Windows 11 benchmark</div>
+
+        <!-- View filters — narrow the detail tables below (not the KPIs above) -->
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;">Filter tables</span>
+          <div class="ms-wrap" id="ms-pol">
+            <button type="button" class="ms-btn" onclick="msToggle(&#39;ms-pol&#39;,event)"><span class="ms-label">All policies</span></button>
+            <div class="ms-menu" onclick="event.stopPropagation()">
+              <label class="ms-opt"><input type="checkbox" value="compliance" checked onchange="msChange(&#39;ms-pol&#39;)">Compliance Policy · Windows 11</label>
+              <label class="ms-opt"><input type="checkbox" value="endpoint" checked onchange="msChange(&#39;ms-pol&#39;)">Endpoint Protection Policy</label>
+              <label class="ms-opt"><input type="checkbox" value="network" checked onchange="msChange(&#39;ms-pol&#39;)">Network Security Baseline</label>
+              <label class="ms-opt"><input type="checkbox" value="data" checked onchange="msChange(&#39;ms-pol&#39;)">Data Policy</label>
+            </div>
           </div>
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
-            <div style="font-size:24px;font-weight:800;color:var(--text-default);">4</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">Nodes covered</div>
+          <div class="ms-wrap" id="ms-sev">
+            <button type="button" class="ms-btn" onclick="msToggle(&#39;ms-sev&#39;,event)"><span class="ms-label">All severities</span></button>
+            <div class="ms-menu" onclick="event.stopPropagation()">
+              <label class="ms-opt"><input type="checkbox" value="critical" checked onchange="msChange(&#39;ms-sev&#39;)">Critical</label>
+              <label class="ms-opt"><input type="checkbox" value="high" checked onchange="msChange(&#39;ms-sev&#39;)">High</label>
+              <label class="ms-opt"><input type="checkbox" value="medium" checked onchange="msChange(&#39;ms-sev&#39;)">Medium</label>
+              <label class="ms-opt"><input type="checkbox" value="low" checked onchange="msChange(&#39;ms-sev&#39;)">Low</label>
+            </div>
           </div>
         </div>
 
         <!-- Per-policy table: benchmark → policies → checks → score -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-          <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
+        <div id="rep-policy-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+          <div id="rep-policy-title" style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
           <div style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div>Policy</div><div>Checks (pass / fail)</div><div>Failing by severity</div><div>Score</div>
           </div>
-          <div style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 0.8fr;padding:12px 18px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
-            <div style="font-size:12px;font-weight:600;color:var(--text-default);">Compliance Policy · Windows 11 v1.0.0</div>
-            <div style="font-size:12px;color:var(--text-sec);">42 / <span style="color:#FB3C44;font-weight:700;">3</span></div>
-            <div style="font-size:11px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">1 Critical</span> · 2 Medium</div>
-            <div style="font-size:12px;font-weight:700;color:#d97706;">93%</div>
-          </div>
-          <div style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 0.8fr;padding:12px 18px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #F97316;">
-            <div style="font-size:12px;font-weight:600;color:var(--text-default);">Endpoint Protection Policy</div>
-            <div style="font-size:12px;color:var(--text-sec);">8 / <span style="color:#FB3C44;font-weight:700;">1</span></div>
-            <div style="font-size:11px;color:var(--text-sec);">1 Medium</div>
-            <div style="font-size:12px;font-weight:700;color:#d97706;">89%</div>
-          </div>
-          <div style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 0.8fr;padding:12px 18px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #10B981;">
-            <div style="font-size:12px;font-weight:600;color:var(--text-default);">Network Security Baseline</div>
-            <div style="font-size:12px;color:var(--text-sec);">12 / 0</div>
-            <div style="font-size:11px;color:var(--text-sec);">—</div>
-            <div style="font-size:12px;font-weight:700;color:#15803d;">100%</div>
-          </div>
-          <div style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 0.8fr;padding:12px 18px;align-items:center;border-left:3px solid #10B981;">
-            <div style="font-size:12px;font-weight:600;color:var(--text-default);">Data Policy</div>
-            <div style="font-size:12px;color:var(--text-sec);">7 / 0</div>
-            <div style="font-size:11px;color:var(--text-sec);">—</div>
-            <div style="font-size:12px;font-weight:700;color:#15803d;">100%</div>
-          </div>
+          <div id="rep-prows"></div>
+          <div id="rep-policy-none" style="display:none;padding:28px 18px;text-align:center;font-size:12px;color:var(--text-sec);">No policies match the selected filters.</div>
         </div>
 
         <!-- Failed-checks detail -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-          <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (4)</div>
+        <div id="rep-failed-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+          <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (<span id="rep-failed-count">4</span>)</div>
           <div style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div>Node</div><div>Policy</div><div>Control</div><div>Current → Expected</div><div>Severity</div>
           </div>
-          <div style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;padding:11px 18px;border-bottom:1px solid var(--border);align-items:center;font-size:11px;color:var(--text-default);">
-            <div>MACBOOK-TARAS</div><div style="color:var(--text-sec);">Compliance Policy</div><div style="color:var(--text-sec);">Control 8.1 · Defender real-time</div><div style="color:var(--text-sec);">Disabled → Enabled</div>
-            <div><span style="font-size:10px;font-weight:700;color:#FB3C44;background:rgba(251,60,68,0.1);border:1px solid rgba(251,60,68,0.2);border-radius:20px;padding:2px 9px;">Critical</span></div>
+          <div id="rep-frows"></div>
+          <div id="rep-failed-none" style="display:none;padding:28px 18px;text-align:center;font-size:12px;color:var(--text-sec);">No failed checks match the selected filters.</div>
+        </div>
+
+        </div><!-- /report-results -->
+
+        <!-- Empty state — no nodes/scans match the current scope -->
+        <div id="report-empty" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:56px 24px;text-align:center;">
+          <div style="width:56px;height:56px;margin:0 auto 18px;border-radius:50%;background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
           </div>
-          <div style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;padding:11px 18px;border-bottom:1px solid var(--border);align-items:center;font-size:11px;color:var(--text-default);">
-            <div>MACBOOK-TARAS</div><div style="color:var(--text-sec);">Compliance Policy</div><div style="color:var(--text-sec);">Screen lock timeout</div><div style="color:var(--text-sec);">30 min → ≤15 min</div>
-            <div><span style="font-size:10px;font-weight:700;color:#92400e;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.25);border-radius:20px;padding:2px 9px;">Medium</span></div>
-          </div>
-          <div style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;padding:11px 18px;border-bottom:1px solid var(--border);align-items:center;font-size:11px;color:var(--text-default);">
-            <div>MACBOOK-TARAS</div><div style="color:var(--text-sec);">Compliance Policy</div><div style="color:var(--text-sec);">Local admin accounts</div><div style="color:var(--text-sec);">3 → 2</div>
-            <div><span style="font-size:10px;font-weight:700;color:#92400e;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.25);border-radius:20px;padding:2px 9px;">Medium</span></div>
-          </div>
-          <div style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;padding:11px 18px;align-items:center;font-size:11px;color:var(--text-default);">
-            <div>SARAH-LAPTOP-01</div><div style="color:var(--text-sec);">Endpoint Protection</div><div style="color:var(--text-sec);">AV definitions current</div><div style="color:var(--text-sec);">Out of date → Current</div>
-            <div><span style="font-size:10px;font-weight:700;color:#92400e;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.25);border-radius:20px;padding:2px 9px;">Medium</span></div>
+          <div id="report-empty-title" style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">No data for this scope</div>
+          <div id="report-empty-body" style="font-size:13px;color:var(--text-sec);margin-top:8px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.55;">No scanned nodes match this node group. Adjust the scope filters, or run a scan on nodes in this group first.</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:22px;">
+            <button onclick="reportResetScope()" class="btn-outline" style="width:auto;padding:9px 18px;font-size:13px;">Reset filters</button>
+            <button id="report-empty-scan" onclick="go(&#39;scan-schedule&#39;)" class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;">Set up a scan →</button>
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- Export report modal — generation → ready → download -->
+    <div id="export-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeExportModal()">
+      <div style="background:var(--bg-surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:420px;max-width:calc(100vw - 40px);padding:28px;animation:fadeUp 0.2s ease;position:relative;">
+        <button onclick="closeExportModal()" style="position:absolute;top:18px;right:18px;background:none;border:none;cursor:pointer;padding:4px;color:var(--text-sec);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+
+        <!-- GENERATING -->
+        <div id="export-generating" style="text-align:center;padding:8px 0;">
+          <div style="width:44px;height:44px;margin:6px auto 18px;border:3px solid var(--border);border-top-color:var(--green2);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+          <div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Generating <span id="export-kind-g">CSV</span> report…</div>
+          <div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Compiling compliance data for the current scope</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:14px;">CIS Windows 11 · 4 policies · 4 nodes · latest scan</div>
+        </div>
+
+        <!-- READY -->
+        <div id="export-ready" style="display:none;text-align:center;padding:8px 0;">
+          <div style="width:48px;height:48px;margin:6px auto 16px;border-radius:50%;background:rgba(63,200,120,0.12);display:flex;align-items:center;justify-content:center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Report ready</div>
+          <div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Your <span id="export-kind-r">CSV</span> export has been generated</div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin:18px 0 6px;text-align:left;">
+            <div id="export-file-badge" style="flex-shrink:0;width:34px;height:34px;border-radius:7px;background:rgba(63,200,120,0.1);color:var(--green1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:0.3px;">CSV</div>
+            <div style="min-width:0;flex:1;">
+              <div id="export-filename" style="font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">guardian-compliance.csv</div>
+              <div id="export-filesize" style="font-size:11px;color:var(--text-sec);margin-top:1px;">18 KB · generated just now</div>
+            </div>
+          </div>
+          <button onclick="exportDownload()" class="btn-primary" style="width:100%;padding:11px;font-size:13px;margin-top:12px;">↓ Download <span id="export-kind-d">CSV</span></button>
+        </div>
+
+        <!-- ERROR -->
+        <div id="export-error" style="display:none;text-align:center;padding:8px 0;">
+          <div style="width:48px;height:48px;margin:6px auto 16px;border-radius:50%;background:rgba(251,60,68,0.1);display:flex;align-items:center;justify-content:center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+          <div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Export failed</div>
+          <div style="font-size:12px;color:var(--text-sec);margin-top:6px;line-height:1.5;">Couldn't reach the scan engine while compiling the report. No file was generated — your data is unchanged.</div>
+          <div style="display:flex;gap:8px;margin-top:20px;">
+            <button onclick="closeExportModal()" class="btn-outline" style="flex:1;padding:11px;font-size:13px;">Cancel</button>
+            <button onclick="exportRetry()" class="btn-primary" style="flex:1;padding:11px;font-size:13px;">Retry</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -12814,6 +13309,7 @@ function showView(name) {
   const sb = document.getElementById(map[name]);
   if (name === 'secret-server-config') renderSSFolders();
   if (name === 'scan-schedule') renderSchedules();
+  if (name === 'reports') renderReport();
   if (sb) sb.classList.add('active');
   if (isJ3Nav) updateJ3Nav(name);
   if (isJ4Nav) updateJ4Nav(name);
