@@ -1079,7 +1079,7 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 
 /* PAGE HEADER */
 .page-header {
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:flex-start; justify-content:space-between;
   padding:16px 24px; background:transparent;
   border-bottom:1px solid var(--border);
   flex-shrink:0;
@@ -1816,7 +1816,9 @@ body.dark .pe-sev-btn[data-val="low"] { border-color: rgba(52,211,153,0.5) !impo
 /* Add Check — section dropdown options */
 .ac-sec-opt { padding:8px 12px;font-size:13px;color:var(--text-default);cursor:pointer;transition:background 0.1s; }
 .ac-sec-opt:hover { background:var(--bg-canvas); }
-body.dark #ac-sec-btn { background:var(--bg-surface);border-color:var(--border);color:#94a3b8; }
+body.dark #ac-sec-btn,
+body.dark #ec-sec-btn { background:rgba(255,255,255,0.07);border-color:var(--border);color:#94a3b8; }
+body.dark #ec-sec-pop { background:#00262A !important; border-color:#1A3D40 !important; box-shadow:0 8px 32px rgba(0,0,0,0.6) !important; }
 body.dark #ac-sec-pop { background:#00262A;border-color:#1A3D40;box-shadow:0 8px 32px rgba(0,0,0,0.5); }
 body.dark .ac-sec-opt { color:#CBD5E1; }
 body.dark .ac-sec-opt:hover { background:rgba(255,255,255,0.05); }
@@ -4175,8 +4177,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       <div class="dash-main" style="max-width:100%;">
 
         <!-- Header -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
-          <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
             <button class="btn-outline" onclick="showView(&#39;all-devices&#39;)" style="padding:6px 12px;font-size:12px;">← All Nodes</button>
             <div>
               <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Node Comparison</div>
@@ -4585,8 +4587,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
             <!-- Header -->
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
-              <div style="display:flex;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
+              <div style="display:flex;align-items:flex-start;gap:12px;">
                 <button class="btn-outline" onclick="showView('node-detail')" style="padding:6px 12px;font-size:12px;">← Back to Node</button>
                 <div>
                   <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Scan Comparison</div>
@@ -4660,7 +4662,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <div class="view" id="v-node-detail" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="btn-outline" onclick="nodeDetailBack()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">MACBOOK-TARAS</div>
@@ -6851,7 +6853,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <!-- Add New Check screen -->
     <div class="view" id="v-add-check" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
           <button class="btn-outline" onclick="showView(&#39;policy-edit&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Add New Check</div>
@@ -6947,7 +6949,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <!-- Edit Check screen -->
     <div class="view" id="v-edit-check" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
           <button class="btn-outline" onclick="showView(&#39;policy-edit&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Edit Check</div>
@@ -6968,16 +6970,20 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <input type="text" class="form-input" value="Antivirus active and up to date">
             </div>
             <!-- Section -->
-            <div class="form-group">
+            <div class="form-group" style="position:relative;">
               <label class="form-label">Section</label>
-              <select class="form-input" style="cursor:pointer;">
-                <option value="general" selected="">General</option>
-                <option value="authentication">Authentication</option>
-                <option value="network">Network</option>
-                <option value="encryption">Encryption</option>
-                <option value="logging">Logging</option>
-                <option value="monitoring">Monitoring</option>
-              </select>
+              <div id="ec-sec-btn" onclick="ecToggleSec(event)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);font-size:13px;cursor:pointer;gap:8px;user-select:none;">
+                <span id="ec-sec-label">General</span>
+                <svg id="ec-sec-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div id="ec-sec-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;">
+                <div onclick="ecPickSec(&#39;general&#39;,&#39;General&#39;)" class="ac-sec-opt">General</div>
+                <div onclick="ecPickSec(&#39;authentication&#39;,&#39;Authentication&#39;)" class="ac-sec-opt">Authentication</div>
+                <div onclick="ecPickSec(&#39;network&#39;,&#39;Network&#39;)" class="ac-sec-opt">Network</div>
+                <div onclick="ecPickSec(&#39;encryption&#39;,&#39;Encryption&#39;)" class="ac-sec-opt">Encryption</div>
+                <div onclick="ecPickSec(&#39;logging&#39;,&#39;Logging&#39;)" class="ac-sec-opt">Logging</div>
+                <div onclick="ecPickSec(&#39;monitoring&#39;,&#39;Monitoring&#39;)" class="ac-sec-opt">Monitoring</div>
+              </div>
             </div>
             <!-- Severity pills -->
             <div class="form-group">
@@ -8520,6 +8526,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }, 0);
     }
 
+    function ecToggleSec(e) {
+      e.stopPropagation();
+      var pop = document.getElementById('ec-sec-pop');
+      var chev = document.getElementById('ec-sec-chev');
+      var isOpen = pop.style.display !== 'none';
+      pop.style.display = isOpen ? 'none' : 'block';
+      chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+    function ecPickSec(val, label) {
+      document.getElementById('ec-sec-label').textContent = label;
+      document.getElementById('ec-sec-pop').style.display = 'none';
+      document.getElementById('ec-sec-chev').style.transform = '';
+    }
     function acToggleSec(e) {
       e.stopPropagation();
       var pop = document.getElementById('ac-sec-pop');
@@ -8540,6 +8559,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (pop && pop.style.display !== 'none' && !document.getElementById('ac-sec-btn').contains(e.target)) {
         pop.style.display = 'none';
         document.getElementById('ac-sec-chev').style.transform = '';
+      }
+      var ecPop = document.getElementById('ec-sec-pop');
+      var ecBtn = document.getElementById('ec-sec-btn');
+      if (ecPop && ecPop.style.display !== 'none' && ecBtn && !ecBtn.contains(e.target)) {
+        ecPop.style.display = 'none';
+        document.getElementById('ec-sec-chev').style.transform = '';
       }
     });
 
@@ -9131,7 +9156,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
       <!-- Header: back + title + badge -->
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
           <button class="btn-outline" onclick="showView(&#39;changes&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back to Detected Drift</button>
           <div>
             <div id="cd-title" class="page-title">Windows Defender — Real-time protection</div>
@@ -9267,7 +9292,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     ═══════════════════════════════════════ -->
     <div class="view" id="v-cr-audit" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="btn-outline" onclick="showView(&#39;change-detail&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Change Request Audit</div>
@@ -10447,7 +10472,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
     <div class="view" id="v-j3-scan-complete" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="btn-outline" onclick="go(&#39;j3-scanning&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Scan Complete</div>
@@ -10513,7 +10538,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
     <div class="view" id="v-j3-results" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="btn-outline" onclick="go(&#39;j3-scan-complete&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Compliance Policy Results — AWS</div>
@@ -10891,7 +10916,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <!-- SCAN-FAILED — general per-node scan-failure diagnostics (item 7) -->
     <div class="view" id="v-scan-failed" style="display: none;">
       <div class="page-header">
-        <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="btn-outline" onclick="go(&#39;node-detail&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Scan Failed</div>
