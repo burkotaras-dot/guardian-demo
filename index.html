@@ -8107,13 +8107,22 @@ body.dark .theme-toggle .icon-moon { display: none; }
         '<div style="font-weight:700;color:' + scoreColor + ';">' + score + '%</div>' +
         '</div>';
     }
+    var _REP_SEV_ACCENT = { critical: '#FB3C44', high: '#F97316', medium: '#F59E0B', low: '#3B82F6' };
     function _repFailRow(f) {
+      var accent = _REP_SEV_ACCENT[f.sev] || 'var(--border)';
+      var parts = f.delta.split(' → ');
+      var deltaHtml = parts.length === 2
+        ? '<span style="color:#FB3C44;font-weight:600;">' + parts[0] + '</span>' +
+          ' <span style="color:var(--text-muted);">→</span> ' +
+          '<span style="color:#00AF73;font-weight:600;">' + parts[1] + '</span>'
+        : f.delta;
       return '<div class="rep-frow rep-row-link" data-pol="' + f.pol + '" data-sev="' + f.sev + '" onclick="repOpenPolicy(&#39;' + f.pol + '&#39;)" ' +
-        'style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);font-size:12px;">' +
-        '<div style="font-weight:600;color:var(--text-default);">' + f.node + '</div>' +
-        '<div style="color:var(--text-sec);">' + REP_POL_SHORT[f.pol] + '</div>' +
+        'style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ' + accent + ';font-size:12px;transition:background 0.12s;" ' +
+        'onmouseover="this.style.background=document.body.classList.contains(\'dark\')?\'rgba(255,255,255,0.03)\':\'#f8fafc\'" onmouseout="this.style.background=\'\'">' +
+        '<div style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg><span style="font-weight:600;color:var(--text-default);font-family:var(--font-mono,\'DM Mono\',monospace);font-size:11px;">' + f.node + '</span></div>' +
+        '<div style="display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span style="color:var(--text-sec);">' + REP_POL_SHORT[f.pol] + '</span></div>' +
         '<div style="color:var(--text-default);">' + f.control + '</div>' +
-        '<div style="color:var(--text-sec);font-family:var(--font-mono,monospace);font-size:11px;">' + f.delta + '</div>' +
+        '<div style="font-family:var(--font-mono,monospace);font-size:11px;">' + deltaHtml + '</div>' +
         '<div>' + _repSevBadge(f.sev) + '</div>' +
         '</div>';
     }
@@ -11067,7 +11076,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div id="rep-failed-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (<span id="rep-failed-count">4</span>)</div>
           <div style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
-            <div>Node</div><div>Policy</div><div>Control</div><div>Current → Expected</div><div>Severity</div>
+            <div style="display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>Node</div><div style="display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Policy</div><div>Control</div><div>Current → Expected</div><div>Severity</div>
           </div>
           <div id="rep-frows"></div>
           <div id="rep-failed-none" style="display:none;padding:28px 18px;text-align:center;font-size:12px;color:var(--text-sec);">No failed checks match the selected filters.</div>
