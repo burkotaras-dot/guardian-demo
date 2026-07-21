@@ -2773,7 +2773,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
             <div>
               <div id="results-heading" style="font-size:17px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Failed checks</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score · <span style="color:var(--text-muted);">use the ⋯ menu (or right-click) on any check — passing ones too — to add it to a policy</span></div>
+              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;"><span id="results-subline-lead">27 issues · fix to improve your score</span> · <span style="color:var(--text-muted);">use the ⋯ menu (or right-click) on any check — passing ones too — to add it to a policy</span></div>
             </div>
           </div>
           <div class="filter-pills" id="results-pills" style="justify-content:space-between;flex-wrap:nowrap;">
@@ -2840,7 +2840,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">SMBv1 protocol is disabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;SMBv1 protocol is disabled&#39;,&#39;smb.v1_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button></div>
             <div class="check-desc">Control 9.4 · Current: Disabled · Expected: Disabled</div>
           </div>
-          <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec);">+ 22 more issues · <span style="color:var(--issues-link);cursor:pointer;">View all</span></div>
+          <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec);"><span id="results-footer-text">+ 22 more issues</span> · <span style="color:var(--issues-link);cursor:pointer;">View all</span></div>
         </div><!-- /results-body -->
       </div><!-- /results-layout -->
 
@@ -7326,8 +7326,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
         Object.values(classMap).forEach(function(c){ p.classList.remove(c); });
       });
       pillEl.classList.add(classMap[sev]);
+      var passed = sev === 'passed';
       var heading = document.getElementById('results-heading');
-      if (heading) heading.textContent = sev === 'passed' ? 'Passing checks' : 'Failed checks';
+      if (heading) heading.textContent = passed ? 'Passing checks' : 'Failed checks';
+      var lead = document.getElementById('results-subline-lead');
+      if (lead) lead.textContent = passed ? '78 passing checks' : '27 issues · fix to improve your score';
+      var footer = document.getElementById('results-footer-text');
+      if (footer) footer.textContent = passed ? '+ 75 more checks' : '+ 22 more issues';
       var cards = document.querySelectorAll('#v-results .check-card');
       var anyVisible = false;
       cards.forEach(function(c) {
