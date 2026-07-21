@@ -857,7 +857,7 @@ body.dark .demo-control-btn:hover { background:rgba(16,185,129,0.18); color:var(
 
 .check-card {
   background:var(--bg-surface); border-radius:var(--radius-md);
-  border:1px solid var(--border); padding:14px 40px 14px 16px;
+  border:1px solid var(--border); padding:14px 66px 14px 16px;
   margin-bottom:8px; cursor:pointer;
   transition:all 0.15s;
   box-shadow:var(--shadow-sm);
@@ -867,6 +867,12 @@ body.dark .demo-control-btn:hover { background:rgba(16,185,129,0.18); color:var(
 .rctx-opt:hover { background:var(--bg-subtle); }
 body.dark .rctx-opt:hover { background:rgba(255,255,255,0.06); }
 .check-card > .check-row > svg { position:absolute; right:14px; top:50%; transform:translateY(-50%); }
+#v-results .check-card > .check-row > svg { stroke:var(--green1); }
+body.dark #v-results .check-card > .check-row > svg { stroke:#34D399; }
+.check-menu-btn { position:absolute; right:38px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:1px solid rgba(16,185,129,0.3); background:var(--bg-surface); border-radius:var(--radius-md); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--interactive-secondary); box-shadow:var(--shadow-sm); transition:all .15s; }
+.check-menu-btn:hover { border-color:var(--green1); color:var(--green2); box-shadow:0 2px 8px rgba(16,185,129,0.15); }
+body.dark .check-menu-btn { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.45); color:var(--p-green-300); }
+body.dark .check-menu-btn:hover { background:rgba(16,185,129,0.18); border-color:var(--green1); color:#fff; }
 .check-row   { display:flex; align-items:center; gap:8px; }
 .check-title { font-size:12.5px; font-weight:600; color:var(--text-default); flex:1; }
 .check-desc  { font-size:11px; color:var(--text-sec); margin-top:4px; }
@@ -1285,9 +1291,14 @@ body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.
 /* Dark mode: form controls need distinct bg from panels */
 /* Form controls: light bg + dark raised bg */
 .dk-form { background:var(--bg-surface); }
-body.dark .dk-form { background:rgba(255,255,255,0.07); }
+/* RULE (app-wide, 2026-07-21): in DARK, EVERY dropdown/select CONTROL trigger uses var(--bg-subtle)
+   (#081E18) as its fill — the green-tinted subtle, NEVER grey rgba(255,255,255,0.07). Add any new
+   select/dropdown trigger to this list. Toggles (.hh-toggle) are NOT dropdowns → stay grey. */
+body.dark .dk-form,
 body.dark .csel-btn,
 body.dark .ms-btn,
+body.dark .pe-sev-btn,
+body.dark select.form-input { background:var(--bg-subtle) !important; }
 body.dark .hh-toggle { background:rgba(255,255,255,0.07) !important; }
 
 .hh-toggle { display:flex; align-items:center; justify-content:center; gap:6px; min-width:121px; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); font-size:12px; font-weight:600; color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; flex-shrink:0; transition:all 0.12s; }
@@ -1605,13 +1616,13 @@ body.dark .toggle-btn.active  { background: var(--green1); color: var(--text-inv
 body.dark .toggle-btn.active:hover { background: var(--green1); color: var(--text-inverse); }
 
 /* Tables */
-body.dark .j3-table th        { background: #081E18; border-color: var(--border); }
+body.dark .j3-table th        { background: #063135; border-color: var(--border); }
 body.dark .j3-table td        { color: var(--p-neutral-300); border-color: var(--border); }
 body.dark .j3-table tr:hover td { background: #012F32; }
 
 body.dark div:has(> table.data-table) { background: var(--p-dark-surface) !important; border-color: var(--p-dark-border) !important; }
-body.dark .data-table th      { background: #062528; color: var(--p-neutral-400); border-color: var(--border); }
-body.dark .drift-thead        { background: #062528; color: var(--p-neutral-400); border-color: var(--border); }
+body.dark .data-table th      { background: #063135; color: var(--p-neutral-400); border-color: var(--border); }
+body.dark .drift-thead        { background: #063135; color: var(--p-neutral-400); border-color: var(--border); }
 body.dark .drift-row:hover    { background: #012F32; }
 body.dark .data-table td      { color: var(--p-neutral-300); border-color: var(--border); }
 body.dark .data-table tr:hover td { background: #012F32; }
@@ -1796,24 +1807,24 @@ body.dark button[title="Edit check"] svg { stroke: var(--green1) !important; }
 body.dark button[title="Edit check"]:hover { border-color: var(--green1) !important; background: rgba(16,185,129,0.14) !important; }
 body.dark button[title="Edit check"]:hover svg { stroke: var(--green1) !important; }
 /* Compare view dark mode */
-body.dark #v-compare-nodes div.compare-thead { background: #00262A !important; color: #94a3b8 !important; }
+body.dark #v-compare-nodes div.compare-thead { background: #063135 !important; color: #94a3b8 !important; }
+/* App-wide rule: table column-header rows use #063135 in dark (never black) */
+body.dark .col-thead,
+body.dark .compare-thead,
+body.dark #v-policy-edit .col-thead { background: #063135 !important; }
 body.dark .compare-sec { border-bottom: 1px solid #1C4A50 !important; }
 body.dark #v-compare-nodes [style*="background:var(--bg-canvas)"] { background: #0F3539 !important; }
-/* Severity picker popup dark mode */
+/* RULE: severity SELECTs use neutral control chrome; colour lives ONLY on a small dot next to the
+   always-present text label (never fill the whole field). Same dot colours light + dark. */
 body.dark #pe-sev-pick { background: var(--bg-card) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important; }
-body.dark #pe-sev-pick div[onclick*="pePickSev('critical')"] { color: #FF6B6B !important; }
-body.dark #pe-sev-pick div[onclick*="pePickSev('critical')"]:hover { background: rgba(255,107,107,0.12) !important; }
-body.dark #pe-sev-pick div[onclick*="pePickSev('high')"] { color: #FBBF24 !important; }
-body.dark #pe-sev-pick div[onclick*="pePickSev('high')"]:hover { background: rgba(251,191,36,0.12) !important; }
-body.dark #pe-sev-pick div[onclick*="pePickSev('medium')"] { color: #9CA3AF !important; }
-body.dark #pe-sev-pick div[onclick*="pePickSev('medium')"]:hover { background: rgba(156,163,175,0.12) !important; }
-body.dark #pe-sev-pick div[onclick*="pePickSev('low')"] { color: #34D399 !important; }
-body.dark #pe-sev-pick div[onclick*="pePickSev('low')"]:hover { background: rgba(52,211,153,0.12) !important; }
-/* Severity buttons dark mode overrides */
-body.dark .pe-sev-btn[data-val="critical"] { border-color: rgba(255,107,107,0.5) !important; background: rgba(251,60,68,0.12) !important; color: #FF6B6B !important; }
-body.dark .pe-sev-btn[data-val="high"] { border-color: rgba(251,191,36,0.5) !important; background: rgba(251,191,36,0.12) !important; color: #FBBF24 !important; }
-body.dark .pe-sev-btn[data-val="medium"] { border-color: rgba(156,163,175,0.4) !important; background: rgba(107,114,128,0.12) !important; color: #9CA3AF !important; }
-body.dark .pe-sev-btn[data-val="low"] { border-color: rgba(52,211,153,0.5) !important; background: rgba(52,211,153,0.12) !important; color: #34D399 !important; }
+.pe-sev-btn { background: var(--bg-subtle); }
+.pe-sev-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; display:inline-block; background:#94A3B8; }
+.pe-sev-btn[data-val="critical"] .pe-sev-dot, .pe-sev-opt[data-val="critical"] .pe-sev-dot { background:#FB3C44; }
+.pe-sev-btn[data-val="high"]     .pe-sev-dot, .pe-sev-opt[data-val="high"]     .pe-sev-dot { background:#F97316; }
+.pe-sev-btn[data-val="medium"]   .pe-sev-dot, .pe-sev-opt[data-val="medium"]   .pe-sev-dot { background:#F59E0B; }
+.pe-sev-btn[data-val="low"]      .pe-sev-dot, .pe-sev-opt[data-val="low"]      .pe-sev-dot { background:#3B82F6; }
+#pe-sev-pick .pe-sev-opt { display:flex; align-items:center; gap:8px; color:var(--text-default); }
+body.dark .pe-sev-btn { border-color: var(--border) !important; color: var(--text-default) !important; }
 /* Add Check — section dropdown options */
 .ac-sec-opt { padding:8px 12px;font-size:13px;color:var(--text-default);cursor:pointer;transition:background 0.1s; }
 .ac-sec-opt:hover { background:var(--bg-canvas); }
@@ -1854,6 +1865,9 @@ body.dark .policy-menu > div { color: #C0C0C0 !important; }
 body.dark .csel-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
 body.dark .csel-opt { color: #C0C0C0 !important; }
 body.dark .csel-opt.sel { color: var(--green1) !important; }
+/* Policy-create step 1: full-width benchmark picker + softer selected Type-card border in dark */
+#pc-cis-dropdown .csel-wrap, #pc-cis-dropdown .csel-btn { display: flex; width: 100%; }
+body.dark #pc-step-1 label:has(input[name="pc-type"]:checked) { border-color: rgba(16,185,129,0.55) !important; }
 body.dark span[style*="color:#7C3AED"] { color: #fff !important; border-color: rgba(167,139,250,0.55) !important; background: rgba(124,58,237,0.15) !important; }
 body.dark span[style*="color:#7C3AED"] svg { stroke: #A78BFA !important; }
 body.dark span[style*="color:#F59E0B"] { color: #fff !important; border-color: rgba(245,158,11,0.55) !important; background: rgba(245,158,11,0.15) !important; }
@@ -1863,7 +1877,7 @@ body.dark #v-policies [style*="background: white"] { background: var(--bg-card) 
 body.dark #v-policies [style*="color:var(--text-default)"] { color: var(--p-neutral-50) !important; }
 body.dark #v-policies input[type="text"] { color: #698787 !important; }
 body.dark #v-policies input[type="text"]::placeholder { color: #698787; }
-body.dark #changes-sort-btn { background: rgba(255,255,255,0.07) !important; color: var(--p-neutral-50) !important; }
+body.dark #changes-sort-btn { background: var(--bg-subtle) !important; color: var(--p-neutral-50) !important; }
 body.dark #changes-sort-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
 body.dark #changes-group-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
 body.dark .sort-opt { color: #C0C0C0 !important; }
@@ -2095,6 +2109,193 @@ body.dark .theme-toggle { background: #062528; border-color: rgba(16,185,129,0.3
 body.dark .theme-toggle:hover { background: #012F32; border-color: #2A6B53; color: var(--p-neutral-50); }
 body.dark .theme-toggle .icon-sun  { display: block; }
 body.dark .theme-toggle .icon-moon { display: none; }
+
+/* Auth login — quiet, responsive infrastructure signal field */
+.auth-effect-stage {
+  --auth-pointer-x: 68%;
+  --auth-pointer-y: 34%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+#auth-ov input:not([type="checkbox"]) {
+  background-color: #F9FAFC !important;
+}
+#auth-ov input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 4px;
+  background-color: #FFFFFF;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 10px 10px;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+#auth-ov input[type="checkbox"]:hover {
+  border-color: #34D399;
+  box-shadow: 0 0 0 3px rgba(52,211,153,0.09);
+}
+#auth-ov input[type="checkbox"]:checked {
+  border-color: #10B981;
+  background-color: #10B981;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.2 6.1 4.8 8.6 9.9 3.3' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  box-shadow: 0 2px 6px rgba(16,185,129,0.24);
+}
+#auth-ov input[type="checkbox"]:active { transform: scale(0.92); }
+#auth-ov input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.20);
+}
+.auth-brand-panel {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 105% 72% at 108% 4%, rgba(16,185,129,0.145) 0%, rgba(16,185,129,0.055) 34%, transparent 66%),
+    radial-gradient(ellipse 115% 78% at -18% 104%, rgba(8,145,178,0.115) 0%, rgba(8,145,178,0.04) 42%, transparent 70%),
+    linear-gradient(155deg, #06151F 0%, #082432 48%, #071B28 100%) !important;
+}
+.auth-brand-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 88% 72% at 50% 45%, transparent 45%, rgba(1,10,17,0.18) 100%),
+    linear-gradient(128deg, rgba(255,255,255,0.018) 0%, transparent 43%, rgba(16,185,129,0.018) 72%, transparent 100%);
+}
+.auth-brand-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.64' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0' result='m'/%3E%3CfeColorMatrix in='m' type='matrix' values='.56 0 0 0 .13 0 .39 0 0 .07 0 0 .22 0 .025 0 0 0 .78 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+.auth-brand-panel > * {
+  position: relative;
+  z-index: 1;
+}
+.auth-effect-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(15, 29, 45, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 29, 45, 0.025) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to right, transparent 2%, #000 28%, #000 78%, transparent 100%);
+}
+.auth-effect-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(420px circle at var(--auth-pointer-x) var(--auth-pointer-y), rgba(63, 200, 120, 0.09), transparent 68%),
+    radial-gradient(560px circle at 82% 84%, rgba(6, 42, 46, 0.035), transparent 72%);
+  transition: background-position 180ms ease-out;
+}
+.auth-signal-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.58;
+}
+.auth-signal-link {
+  fill: none;
+  stroke: rgba(6,42,46,0.10);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.auth-signal-link--active {
+  stroke: rgba(16,185,129,0.22);
+  stroke-dasharray: 2 13;
+  stroke-linecap: round;
+  animation: authSignalFlow 17s linear infinite;
+}
+.auth-signal-node { animation: authNodeBreathe 5.5s ease-in-out infinite; }
+.auth-signal-node circle:first-child {
+  fill: rgba(255,255,255,0.74);
+  stroke: rgba(6,42,46,0.12);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.auth-signal-node circle:last-child { fill: rgba(16,185,129,0.68); }
+.auth-inspection-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background-image:
+    linear-gradient(rgba(16,185,129,0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16,185,129,0.075) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(250px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.72) 46%, transparent 78%);
+  -webkit-mask-image: radial-gradient(250px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.72) 46%, transparent 78%);
+  transition: opacity 240ms ease;
+}
+.auth-effect-stage.is-scanning .auth-inspection-field { opacity: 0.62; }
+.auth-signal-focus {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  mask-image: radial-gradient(220px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.8) 42%, transparent 78%);
+  -webkit-mask-image: radial-gradient(220px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.8) 42%, transparent 78%);
+  transition: opacity 220ms ease;
+}
+.auth-signal-focus path {
+  fill: none;
+  stroke: rgba(16,185,129,0.62);
+  stroke-width: 1.35;
+  vector-effect: non-scaling-stroke;
+}
+.auth-signal-focus circle:first-child {
+  fill: rgba(240,253,247,0.96);
+  stroke: rgba(16,185,129,0.55);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+.auth-signal-focus circle:last-child {
+  fill: #10B981;
+  filter: drop-shadow(0 0 4px rgba(16,185,129,0.35));
+}
+.auth-effect-stage.is-scanning .auth-signal-focus { opacity: 0.72; }
+.auth-login-content { position: relative; z-index: 2; }
+.auth-effect-stage > :not(.auth-signal-field):not(.auth-signal-focus):not(.auth-inspection-field) {
+  position: relative;
+  z-index: 2;
+}
+@keyframes authSignalFlow { to { stroke-dashoffset: -150; } }
+@keyframes authNodeBreathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-signal-link--active,
+  .auth-signal-node { animation: none; }
+  .auth-effect-stage::after { transition: none; }
+}
+@media (max-width: 860px) {
+  .auth-effect-stage.is-scanning .auth-inspection-field { opacity: 0.48; }
+  .auth-effect-stage::before { background-size: 44px 44px; }
+}
 </style>
 </head>
 <body>
@@ -2768,8 +2969,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div class="results-body">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
             <div>
-              <div style="font-size:17px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Failed checks</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score · <span style="color:var(--text-muted);">right-click a check to add it to a policy</span></div>
+              <div id="results-heading" style="font-size:17px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Failed checks</div>
+              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;"><span id="results-subline-lead">27 issues · fix to improve your score</span> · <span style="color:var(--text-muted);">use the ⋯ menu (or right-click) on any check — passing ones too — to add it to a policy</span></div>
             </div>
           </div>
           <div class="filter-pills" id="results-pills" style="justify-content:space-between;flex-wrap:nowrap;">
@@ -2804,27 +3005,39 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <button class="btn-secondary" style="padding:5px 12px;font-size:11px;" onclick="showView(&#39;reports&#39;)">↓ Export</button>
             </div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Windows Defender real-time protection is disabled</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="critical" onclick="openRemediation(0)" oncontextmenu="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)">
+            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Windows Defender real-time protection is disabled</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 8.1 · Current: Disabled · Expected: Enabled</div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">BitLocker encryption not enabled on system drive</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="critical" onclick="openRemediation(1)" oncontextmenu="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)">
+            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">BitLocker encryption not enabled on system drive</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 3.6 · Current: Not encrypted · Expected: AES-256</div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Remote Desktop enabled without Network Level Auth</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="critical" onclick="openRemediation(2)" oncontextmenu="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)">
+            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Remote Desktop enabled without Network Level Auth</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 9.2 · Current: No NLA · Expected: NLA required</div>
           </div>
-          <div class="check-card" data-sev="medium" oncontextmenu="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)">
-            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Windows Firewall disabled for Domain profile</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="medium" onclick="openRemediation(3)" oncontextmenu="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)">
+            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Windows Firewall disabled for Domain profile</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 9.1 · Current: Disabled · Expected: Enabled</div>
           </div>
-          <div class="check-card" data-sev="medium" oncontextmenu="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)">
-            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Screen lock timeout exceeds 15 minutes</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="medium" onclick="openRemediation(4)" oncontextmenu="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)">
+            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Screen lock timeout exceeds 15 minutes</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 1.2 · Current: 30 min · Expected: ≤15 min</div>
           </div>
-          <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec);">+ 22 more issues · <span style="color:var(--issues-link);cursor:pointer;">View all</span></div>
+          <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;Automatic Windows Update is enabled&#39;,&#39;update.auto_enabled&#39;)">
+            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">Automatic Windows Update is enabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;Automatic Windows Update is enabled&#39;,&#39;update.auto_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></div>
+            <div class="check-desc">Control 7.3 · Current: Enabled · Expected: Enabled</div>
+          </div>
+          <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;Built-in Guest account is disabled&#39;,&#39;account.guest_disabled&#39;)">
+            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">Built-in Guest account is disabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;Built-in Guest account is disabled&#39;,&#39;account.guest_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></div>
+            <div class="check-desc">Control 5.1 · Current: Disabled · Expected: Disabled</div>
+          </div>
+          <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;SMBv1 protocol is disabled&#39;,&#39;smb.v1_disabled&#39;)">
+            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">SMBv1 protocol is disabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;SMBv1 protocol is disabled&#39;,&#39;smb.v1_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></div>
+            <div class="check-desc">Control 9.4 · Current: Disabled · Expected: Disabled</div>
+          </div>
+          <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec);"><span id="results-footer-text">+ 22 more issues</span> · <span style="color:var(--issues-link);cursor:pointer;">View all</span></div>
         </div><!-- /results-body -->
       </div><!-- /results-layout -->
 
@@ -2886,8 +3099,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
               <div style="background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:var(--radius-md);padding:12px;">
                 <div style="font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.6px;margin-bottom:5px;">EXPECTED STATE</div>
-                <div style="font-size:13px;font-weight:700;color:var(--text-default);">Enabled</div>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Real-time scanning active</div>
+                <div id="remed-expected-val" style="font-size:13px;font-weight:700;color:var(--text-default);">Enabled</div>
+                <div id="remed-expected-sub" style="font-size:11px;color:var(--text-sec);margin-top:2px;">Real-time scanning active</div>
               </div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:8px;padding:12px 14px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;">
@@ -3090,7 +3303,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
               <button class="action-cta" onclick="event.stopPropagation();showView(&#39;changes&#39;)">Reconcile →</button>
             </div>
-            <div class="action-row" onclick="showView(&#39;results&#39;)">
+            <div class="action-row" onclick="openRemediation(0)">
               <div class="action-row-l">
                 <div class="action-ico" style="background:rgba(148,163,184,0.14);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
                 <div style="min-width:0;">
@@ -3098,7 +3311,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <div class="action-meta"><span class="type-pill" style="color:#FB3C44;background:rgba(251,60,68,0.1);border:1px solid rgba(251,60,68,0.3);">Compliance</span> Windows Defender disabled · BitLocker off · Latest scan</div>
                 </div>
               </div>
-              <button class="action-cta" onclick="event.stopPropagation();showView(&#39;results&#39;)">View issue →</button>
+              <button class="action-cta" onclick="event.stopPropagation();openRemediation(0)">View issue →</button>
             </div>
             <div style="text-align:center;margin-top:14px;font-size:12px;"><span style="color:var(--issues-link);cursor:pointer;font-weight:500;" onclick="showView(&#39;changes&#39;)">View all activity →</span></div>
           </div>
@@ -6146,13 +6359,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <div class="view" id="v-policy-create" style="display: none;">
       <!-- Page header -->
       <div class="page-header">
-        <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <button class="btn-outline" onclick="pcBack()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Create New Policy</div>
             <div class="page-sub">Build a custom compliance policy step by step</div>
           </div>
         </div>
-        <button class="btn-outline" onclick="showView(&#39;policies&#39;)" style="font-size:13px;">Cancel</button>
+        <button class="btn-outline" onclick="pcBack()" style="font-size:13px;">Cancel</button>
       </div>
 
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -6213,7 +6427,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                     <div style="font-size:13px;font-weight:600;color:var(--text-default);">Based on Compliance Policy</div>
                     <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Start from an industry-standard Compliance Policy template</div>
                     <div id="pc-cis-dropdown" style="display:none;margin-top:10px;">
-                      <select class="form-input" style="cursor:pointer;font-size:12px;padding:8px 12px;">
+                      <select class="csel" style="cursor:pointer;font-size:12px;padding:8px 12px;">
                         <option value="">Select a benchmark…</option>
                         <option>Compliance Policy · Windows 11 v1.0.0</option>
                         <option>CIS macOS Ventura Benchmark</option>
@@ -6262,7 +6476,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </button>
             </div>
             <!-- Column header -->
-            <div style="display:grid;grid-template-columns:20px 1fr 130px 28px;gap:16px;padding:8px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);align-items:center;">
+            <div class="col-thead" style="display:grid;grid-template-columns:20px 1fr 130px 28px;gap:16px;padding:8px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);align-items:center;">
               <div></div>
               <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
               <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Severity</div>
@@ -6277,8 +6491,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus active and up to date</div>
                 <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(59,130,246,0.1);color:#3B82F6;border:1px solid rgba(59,130,246,0.4);">Security</span></div>
               </div>
-              <div class="pe-sev-btn" data-val="critical" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fca5a5;background:#fef2f2;color:#FB3C44;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Critical</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
-              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;white&#39;">×</button>
+              <div class="pe-sev-btn" data-val="critical" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
             <!-- Check row B -->
             <div class="pc-check-row" style="display:grid;grid-template-columns:20px 1fr 130px 28px;gap:16px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
@@ -6289,8 +6503,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Host firewall enabled</div>
                 <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(6,182,212,0.1);color:#06B6D4;border:1px solid rgba(6,182,212,0.4);">Network</span></div>
               </div>
-              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
-              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;white&#39;">×</button>
+              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
             <!-- Check row C -->
             <div class="pc-check-row" style="display:grid;grid-template-columns:20px 1fr 130px 28px;gap:16px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
@@ -6301,8 +6515,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Endpoint encryption enabled</div>
                 <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(99,102,241,0.1);color:#6366F1;border:1px solid rgba(99,102,241,0.4);">Data</span></div>
               </div>
-              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
-              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;white&#39;">×</button>
+              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
           </div>
           <!-- Navigation -->
@@ -6539,7 +6753,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
             </div>
             <!-- Header row with bulk toolbar overlay (no layout shift) -->
-            <div style="position:relative;background:var(--bg-canvas);border-bottom:1px solid var(--border);">
+            <div class="col-thead" style="position:relative;background:var(--bg-canvas);border-bottom:1px solid var(--border);">
               <!-- Column headers -->
               <div id="pe-col-header" style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 28px;gap:14px;padding:11px 20px;align-items:center;">
                 <input type="checkbox" onchange="peSelectAll(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
@@ -6582,7 +6796,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">2 rules</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="0" data-val="critical" onclick="peOpenSevPick(this,0)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fca5a5;background:#fef2f2;color:#FB3C44;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Critical</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="0" data-val="critical" onclick="peOpenSevPick(this,0)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-0" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
@@ -6605,7 +6819,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="1" data-val="high" onclick="peOpenSevPick(this,1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="1" data-val="high" onclick="peOpenSevPick(this,1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-1" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Network ×</span>
                 <button onclick="peAddTagMenu(this,1)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
@@ -6627,7 +6841,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="2" data-val="high" onclick="peOpenSevPick(this,2)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="2" data-val="high" onclick="peOpenSevPick(this,2)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-2" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
                 <button onclick="peAddTagMenu(this,2)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
@@ -6657,7 +6871,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#f9fafb;color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Medium</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-3" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
                 <button onclick="peAddTagMenu(this,3)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
@@ -6679,7 +6893,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="4" data-val="high" onclick="peOpenSevPick(this,4)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>High</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="4" data-val="high" onclick="peOpenSevPick(this,4)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-4" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Data ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
@@ -6710,7 +6924,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#f9fafb;color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span>Medium</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-5" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
@@ -7310,6 +7524,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
         Object.values(classMap).forEach(function(c){ p.classList.remove(c); });
       });
       pillEl.classList.add(classMap[sev]);
+      var passed = sev === 'passed';
+      var heading = document.getElementById('results-heading');
+      if (heading) heading.textContent = passed ? 'Passing checks' : 'Failed checks';
+      var lead = document.getElementById('results-subline-lead');
+      if (lead) lead.textContent = passed ? '78 passing checks' : '27 issues · fix to improve your score';
+      var footer = document.getElementById('results-footer-text');
+      if (footer) footer.textContent = passed ? '+ 75 more checks' : '+ 22 more issues';
       var cards = document.querySelectorAll('#v-results .check-card');
       var anyVisible = false;
       cards.forEach(function(c) {
@@ -8042,13 +8263,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
             dot.innerHTML = i;
             dot.style.boxShadow = '0 3px 8px rgba(63,200,120,0.3)';
           } else {
-            dot.style.background = '#e2e8f0';
-            dot.style.color = '#94a3b8';
+            dot.style.background = 'var(--bg-subtle)';
+            dot.style.color = 'var(--p-neutral-400)';
             dot.style.boxShadow = 'none';
             dot.innerHTML = i;
           }
         }
-        if (lbl) lbl.style.color = i === n ? '#0F172A' : (i < n ? 'var(--green2)' : '#94a3b8');
+        if (lbl) lbl.style.color = i === n ? 'var(--text-default)' : (i < n ? 'var(--green2)' : '#94a3b8');
         if (line && i < 3) line.style.background = i < n ? 'var(--green2)' : 'var(--border)';
       });
       var cont = document.getElementById('v-policy-create');
@@ -8063,8 +8284,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       document.querySelectorAll('#v-policy-create label[style*="border-radius"]').forEach(function(lbl){
         var inp = lbl.querySelector('input[type=radio]');
         if (!inp) return;
-        lbl.style.borderColor = inp.checked ? 'var(--green2)' : '#e5e7eb';
-        lbl.style.background = inp.checked ? '#f0fdf4' : 'white';
+        lbl.style.borderColor = inp.checked ? 'var(--green1)' : 'var(--border)';
+        lbl.style.background = inp.checked ? 'var(--green-dim)' : 'var(--bg-surface)';
       });
     }
 
@@ -8132,9 +8353,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (attrEl) attrEl.textContent = attr || title;
       menu.style.display = 'block';
       // clamp to viewport
-      var mw = 240, mh = menu.offsetHeight || 260;
-      var x = Math.min(e.clientX, window.innerWidth - mw - 8);
-      var y = Math.min(e.clientY, window.innerHeight - mh - 8);
+      var mw = menu.offsetWidth || 240, mh = menu.offsetHeight || 260;
+      var px, py;
+      // From the ⋯ button (click): anchor under the button. From right-click: at cursor.
+      if (e.type === 'click' && e.currentTarget && e.currentTarget.getBoundingClientRect) {
+        var r = e.currentTarget.getBoundingClientRect();
+        px = r.right - mw;
+        py = r.bottom + 4;
+      } else {
+        px = e.clientX;
+        py = e.clientY;
+      }
+      var x = Math.min(px, window.innerWidth - mw - 8);
+      var y = Math.min(py, window.innerHeight - mh - 8);
       menu.style.left = Math.max(8, x) + 'px';
       menu.style.top = Math.max(8, y) + 'px';
     }
@@ -8648,10 +8879,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var btn = _peSevPickTarget;
       _peSevPickTarget = null;
       btn.setAttribute('data-val', val);
-      btn.style.borderColor = s.border;
-      btn.style.background = s.bg;
-      btn.style.color = s.color;
-      var span = btn.querySelector('span');
+      var span = btn.querySelector('.pe-sev-lbl');
       if (span) span.textContent = val.charAt(0).toUpperCase() + val.slice(1);
     }
     function peASev(idx, val) {
@@ -8661,10 +8889,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var s = _peSevMap[val];
       if (!s) return;
       btn.setAttribute('data-val', val);
-      btn.style.borderColor = s.border;
-      btn.style.background = s.bg;
-      btn.style.color = s.color;
-      var span = btn.querySelector('span');
+      var span = btn.querySelector('.pe-sev-lbl');
       if (span) span.textContent = val.charAt(0).toUpperCase() + val.slice(1);
     }
 
@@ -8710,10 +8935,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         var btn = cb.parentElement.querySelector('.pe-sev-btn');
         if (btn) {
           btn.setAttribute('data-val', val);
-          btn.style.borderColor = s.border;
-          btn.style.background = s.bg;
-          btn.style.color = s.color;
-          var span = btn.querySelector('span');
+          var span = btn.querySelector('.pe-sev-lbl');
           if (span) span.textContent = val.charAt(0).toUpperCase() + val.slice(1);
         }
       });
@@ -11346,7 +11568,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <!-- Per-policy table: benchmark → policies → checks → score -->
         <div id="rep-policy-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div id="rep-policy-title" style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
-          <div style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
+          <div class="col-thead" style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div style="cursor:pointer;">Policy <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Checks (pass / fail) <span style="opacity:0.4;">⇅</span></div><div>Failing by severity</div><div style="cursor:pointer;">Score <span style="opacity:0.4;">⇅</span></div>
           </div>
           <div id="rep-prows"></div>
@@ -11378,7 +11600,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
+          <div class="col-thead" style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div style="cursor:pointer;">Node <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Policy <span style="opacity:0.4;">⇅</span></div><div>Control</div><div>Current → Expected</div><div style="cursor:pointer;">Severity <span style="opacity:0.4;">⇅</span></div>
           </div>
           <div id="rep-frows"></div>
@@ -13565,6 +13787,14 @@ var NODE_REF = {
   'changes':      { label: 'Detected Drift', view: 'changes' },
   'change-detail':{ label: 'Change Detail',  view: 'change-detail' }
 };
+var _pcRef = 'policies';
+var PC_REF = {
+  'policies': { label: 'Policies', view: 'policies' },
+  'results':  { label: 'Scans',    view: 'results' }
+};
+function pcBack() {
+  showView(PC_REF[_pcRef] ? _pcRef : 'policies');
+}
 function nodeDetailBack() {
   var ref = NODE_REF[_nodeRef] ? _nodeRef : 'all-devices';
   showView(ref);
@@ -13574,6 +13804,9 @@ function showView(name) {
   // Capture the view we're leaving as the node-detail referrer (fallback: All Devices)
   if (name === 'node-detail' && _currentView && _currentView !== 'node-detail') {
     _nodeRef = NODE_REF[_currentView] ? _currentView : 'all-devices';
+  }
+  if (name === 'policy-create' && _currentView && _currentView !== 'policy-create') {
+    _pcRef = PC_REF[_currentView] ? _currentView : 'policies';
   }
   const isJ3Nav = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(name);
   const isJ4Nav = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(name);
@@ -13607,6 +13840,10 @@ function showView(name) {
     if (name === 'node-detail') {
       const _r = NODE_REF[_nodeRef] || NODE_REF['all-devices'];
       _bc = `<span class="bc-link" onclick="showView('${_r.view}')">${_r.label}</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>`;
+    }
+    if (name === 'policy-create') {
+      const _r = PC_REF[_pcRef] || PC_REF['policies'];
+      _bc = `<span class="bc-link" onclick="showView('${_r.view}')">${_r.label}</span><span class="bc-sep">›</span><span class="bc-cur">Create New Policy</span>`;
     }
     if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
   }
@@ -13691,6 +13928,13 @@ var remedChecks = [
   }
 ];
 
+// Deep-link into Remediation with a specific check preselected
+function openRemediation(idx) {
+  showView('remediation');
+  var items = document.querySelectorAll('#v-remediation .remed-item');
+  if (items[idx]) selectCheck(items[idx]);
+}
+
 function selectCheck(el) {
   document.querySelectorAll('.remed-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
@@ -13708,13 +13952,11 @@ function selectCheck(el) {
   var detailCard = document.querySelector('.remed-detail .card:first-child');
   detailCard.querySelector('[style*="font-size:16px"]').textContent = c.title;
   detailCard.querySelector('[style*="font-size:11px"][style*="color:var(--text-sec)"]').textContent = c.sub;
-  // Expected val stays static per item
-  var expectedBox = detailCard.querySelectorAll('[style*="padding:12px"]')[1];
-  if (expectedBox) {
-    var expDivs = expectedBox.querySelectorAll('div');
-    if (expDivs[1]) expDivs[1].textContent = c.expectedVal;
-    if (expDivs[2]) expDivs[2].textContent = c.expectedSub;
-  }
+  // Expected state — update via explicit ids
+  var expVal = document.getElementById('remed-expected-val');
+  var expSub = document.getElementById('remed-expected-sub');
+  if (expVal) expVal.textContent = c.expectedVal;
+  if (expSub) expSub.textContent = c.expectedSub;
   // Impact text
   var impactSpan = detailCard.querySelector('span[style*="font-size:11px"]');
   if (impactSpan) impactSpan.textContent = c.impact;
@@ -16315,11 +16557,41 @@ function authForgotPw() { document.getElementById('auth-forgot-modal').style.dis
 function authCloseForgot() { document.getElementById('auth-forgot-modal').style.display='none'; document.getElementById('auth-forgot-form').style.display='block'; document.getElementById('auth-forgot-success').style.display='none'; }
 function authSendReset() { document.getElementById('auth-forgot-form').style.display='none'; document.getElementById('auth-forgot-success').style.display='block'; }
 function authTogglePw(inputId,btn) { var i=document.getElementById(inputId);if(!i)return;if(i.type==='password'){i.type='text';btn.style.color='#3FC878';}else{i.type='password';btn.style.color='#94a3b8';} }
-
+function authInitBackdrops() {
+  var source = document.querySelector('#auth-login .auth-effect-stage');
+  var stages = document.querySelectorAll('.auth-effect-stage');
+  if (!source || !stages.length) return;
+  var effectSelectors = ['.auth-signal-field', '.auth-signal-focus', '.auth-inspection-field'];
+  stages.forEach(function(stage) {
+    if (stage !== source && !stage.querySelector('.auth-signal-field')) {
+      var anchor = stage.firstChild;
+      effectSelectors.forEach(function(selector) {
+        var node = source.querySelector(selector);
+        if (node) stage.insertBefore(node.cloneNode(true), anchor);
+      });
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var frame = 0;
+    stage.addEventListener('pointermove', function(e) {
+      stage.classList.add('is-scanning');
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(function() {
+        var r = stage.getBoundingClientRect();
+        stage.style.setProperty('--auth-pointer-x', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+        stage.style.setProperty('--auth-pointer-y', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+      });
+    });
+    stage.addEventListener('pointerleave', function() {
+      stage.classList.remove('is-scanning');
+      stage.style.setProperty('--auth-pointer-x', '68%');
+      stage.style.setProperty('--auth-pointer-y', '34%');
+    });
+  });
+}
 // ── INIT ──
 hideAll();
 // AUTH_FLOW_ENABLED: щоб включити — замінити go('s01') на showAuth('auth-login')
-window.addEventListener('load', function() { hideAuth(); showAuth('auth-login'); });
+window.addEventListener('load', function() { hideAuth(); showAuth('auth-login'); authInitBackdrops(); });
 </script>
 
 <!-- ══════════════════════════════════════════════════════
@@ -16334,7 +16606,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: LOGIN
   ───────────────────────────────────────── -->
   <div id="auth-login" class="auth-s" style="display: flex; width: 100%; height: 100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:0;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16351,8 +16623,29 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
-      <div style="width:100%;max-width:360px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
+      <svg class="auth-signal-field" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path class="auth-signal-link" d="M20 610 C120 575 155 485 240 420 C310 365 370 290 470 310 C575 330 630 400 740 420 C850 440 925 350 1040 320 C1115 300 1165 230 1230 195"></path>
+        <path class="auth-signal-link auth-signal-link--active" d="M20 610 C120 575 155 485 240 420 C310 365 370 290 470 310 C575 330 630 400 740 420 C850 440 925 350 1040 320 C1115 300 1165 230 1230 195"></path>
+        <path class="auth-signal-link" d="M20 150 C145 170 235 225 330 330 C390 395 425 440 500 460 C590 490 680 455 740 420 C800 385 820 330 860 285 C930 210 1045 270 1190 315"></path>
+        <path class="auth-signal-link auth-signal-link--active" d="M20 150 C145 170 235 225 330 330 C390 395 425 440 500 460 C590 490 680 455 740 420 C800 385 820 330 860 285 C930 210 1045 270 1190 315" style="animation-direction:reverse;animation-duration:21s;"></path>
+        <g class="auth-signal-node" transform="translate(240 420)"><circle r="9"></circle><circle r="2.5"></circle></g>
+        <g class="auth-signal-node" transform="translate(330 330)"><circle r="7"></circle><circle r="2"></circle></g>
+        <g class="auth-signal-node" transform="translate(740 420)"><circle r="10"></circle><circle r="2.5"></circle></g>
+        <g class="auth-signal-node" transform="translate(860 285)"><circle r="8"></circle><circle r="2"></circle></g>
+        <g class="auth-signal-node" transform="translate(1040 320)"><circle r="9"></circle><circle r="2.5"></circle></g>
+      </svg>
+      <svg class="auth-signal-focus" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path d="M20 610 C120 575 155 485 240 420 C310 365 370 290 470 310 C575 330 630 400 740 420 C850 440 925 350 1040 320 C1115 300 1165 230 1230 195"></path>
+        <path d="M20 150 C145 170 235 225 330 330 C390 395 425 440 500 460 C590 490 680 455 740 420 C800 385 820 330 860 285 C930 210 1045 270 1190 315"></path>
+        <g transform="translate(240 420)"><circle r="9"></circle><circle r="2.5"></circle></g>
+        <g transform="translate(330 330)"><circle r="7"></circle><circle r="2"></circle></g>
+        <g transform="translate(740 420)"><circle r="10"></circle><circle r="2.5"></circle></g>
+        <g transform="translate(860 285)"><circle r="8"></circle><circle r="2"></circle></g>
+        <g transform="translate(1040 320)"><circle r="9"></circle><circle r="2.5"></circle></g>
+      </svg>
+      <div class="auth-inspection-field" aria-hidden="true"></div>
+      <div class="auth-login-content" style="width:100%;max-width:360px;">
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:22px;font-weight:700;color:#0f1d2d;margin-bottom:5px;">Welcome back</div>
           <div style="font-size:13px;color:#6b7a8d;">Sign in to your Guardian account</div>
@@ -16393,7 +16686,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: SIGNUP (single form)
   ───────────────────────────────────────── -->
   <div id="auth-signup-1" class="auth-s" style="display:none;width:100%;height:100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16414,7 +16707,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:32px 48px;overflow-y:auto;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:32px 48px;overflow-y:auto;">
       <div style="width:100%;max-width:420px;">
         <div style="text-align:center;margin-bottom:24px;">
           <div style="font-size:24px;font-weight:800;color:#0f1d2d;letter-spacing:-0.5px;margin-bottom:6px;">Create your account</div>
@@ -16439,7 +16732,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <label style="display:block;font-size:11px;font-weight:700;color:var(--p-neutral-400);letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">Company</label>
             <div style="position:relative;">
               <input type="text" placeholder="Acme Corp" style="width:100%;padding:11px 13px 11px 38px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;box-sizing:border-box;" onfocus="this.style.borderColor=&#39;#3FC878&#39;;this.style.boxShadow=&#39;0 0 0 3px rgba(63,200,120,0.1)&#39;" onblur="this.style.borderColor=&#39;#e9ecef&#39;;this.style.boxShadow=&#39;none&#39;">
-              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c4cdd6;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path></svg></span>
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path></svg></span>
             </div>
           </div>
           <!-- Email -->
@@ -16447,7 +16740,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <label style="display:block;font-size:11px;font-weight:700;color:var(--p-neutral-400);letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">Corporate email</label>
             <div style="position:relative;">
               <input type="email" placeholder="you@company.com" style="width:100%;padding:11px 13px 11px 38px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;box-sizing:border-box;" onfocus="this.style.borderColor=&#39;#3FC878&#39;;this.style.boxShadow=&#39;0 0 0 3px rgba(63,200,120,0.1)&#39;" onblur="this.style.borderColor=&#39;#e9ecef&#39;;this.style.boxShadow=&#39;none&#39;">
-              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c4cdd6;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"></rect><polyline points="2 4 12 13 22 4"></polyline></svg></span>
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"></rect><polyline points="2 4 12 13 22 4"></polyline></svg></span>
             </div>
           </div>
           <!-- Password -->
@@ -16455,8 +16748,8 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <label style="display:block;font-size:11px;font-weight:700;color:var(--p-neutral-400);letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">Password</label>
             <div style="position:relative;">
               <input type="password" id="su1-pw" placeholder="Min. 8 chars, numbers &amp; symbols" style="width:100%;padding:11px 38px 11px 38px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;box-sizing:border-box;" onfocus="this.style.borderColor=&#39;#3FC878&#39;;this.style.boxShadow=&#39;0 0 0 3px rgba(63,200,120,0.1)&#39;" onblur="this.style.borderColor=&#39;#e9ecef&#39;;this.style.boxShadow=&#39;none&#39;">
-              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c4cdd6;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-              <button onclick="authTogglePw(&#39;su1-pw&#39;,this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#c4cdd6;padding:2px;display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+              <button onclick="authTogglePw(&#39;su1-pw&#39;,this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
             </div>
             <div style="display:flex;gap:4px;margin-top:7px;">
               <div style="height:3px;flex:1;border-radius:3px;background:#3FC878;"></div>
@@ -16486,7 +16779,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: CHECK YOUR EMAIL
   ───────────────────────────────────────── -->
   <div id="auth-check-email" class="auth-s" style="display:none;width:100%;height:100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16504,7 +16797,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px 48px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px 48px;">
       <div style="width:100%;max-width:400px;">
         <div style="text-align:center;margin-bottom:24px;">
           <div style="font-size:24px;font-weight:800;color:#0f1d2d;letter-spacing:-0.5px;margin-bottom:6px;">Check your inbox</div>
@@ -16585,7 +16878,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: ACCOUNT ACTIVATED
   ───────────────────────────────────────── -->
   <div id="auth-activated" class="auth-s" style="display:none;width:100%;height:100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16603,7 +16896,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px 48px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px 48px;">
       <div style="width:100%;max-width:400px;">
         <div style="text-align:center;margin-bottom:24px;">
           <div style="font-size:24px;font-weight:800;color:#0f1d2d;letter-spacing:-0.5px;margin-bottom:6px;">You're all set!</div>
@@ -16632,7 +16925,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
   ───────────────────────────────────────── -->
   <div id="auth-invite" class="auth-s" style="display:none;width:100%;height:100%;">
     <!-- Left panel – same pattern as login -->
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:0;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16662,7 +16955,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
     <!-- Right panel – same gray bg + white card pattern as login -->
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
       <div style="width:100%;max-width:360px;">
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:22px;font-weight:700;color:#0f1d2d;margin-bottom:5px;">Set your password</div>
@@ -16739,7 +17032,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: ACCOUNT LOCKED
   ───────────────────────────────────────── -->
   <div id="auth-locked" class="auth-s" style="display:none;width:100%;height:100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(251,60,68,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16757,7 +17050,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
       <div style="width:100%;max-width:360px;">
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:22px;font-weight:700;color:#0f1d2d;margin-bottom:5px;">Account locked</div>
@@ -16895,10 +17188,10 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
 
 <!-- Global tag picker popover — lives outside all views so position:fixed works everywhere -->
 <div id="pe-sev-pick" style="display:none;position:fixed;z-index:10000;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:5px;box-shadow:0 8px 24px rgba(0,0,0,0.25);">
-  <div onclick="pePickSev(&#39;critical&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:#FB3C44;" onmouseover="this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.background=&#39;&#39;">Critical</div>
-  <div onclick="pePickSev(&#39;high&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:#92400e;" onmouseover="this.style.background=&#39;#fffbeb&#39;" onmouseout="this.style.background=&#39;&#39;">High</div>
-  <div onclick="pePickSev(&#39;medium&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:var(--text-default);" onmouseover="this.style.background=&#39;#f9fafb&#39;" onmouseout="this.style.background=&#39;&#39;">Medium</div>
-  <div onclick="pePickSev(&#39;low&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;color:#00AF73;" onmouseover="this.style.background=&#39;#f0fdf4&#39;" onmouseout="this.style.background=&#39;&#39;">Low</div>
+  <div class="pe-sev-opt" data-val="critical" onclick="pePickSev(&#39;critical&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;&#39;"><span class="pe-sev-dot"></span><span>Critical</span></div>
+  <div class="pe-sev-opt" data-val="high" onclick="pePickSev(&#39;high&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;&#39;"><span class="pe-sev-dot"></span><span>High</span></div>
+  <div class="pe-sev-opt" data-val="medium" onclick="pePickSev(&#39;medium&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;&#39;"><span class="pe-sev-dot"></span><span>Medium</span></div>
+  <div class="pe-sev-opt" data-val="low" onclick="pePickSev(&#39;low&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;&#39;"><span class="pe-sev-dot"></span><span>Low</span></div>
 </div>
 
 <div id="pe-tag-pop" style="display:none;position:fixed;z-index:9999;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,0.25);min-width:210px;">
