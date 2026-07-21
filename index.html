@@ -2111,14 +2111,77 @@ body.dark .theme-toggle .icon-sun  { display: block; }
 body.dark .theme-toggle .icon-moon { display: none; }
 
 /* Auth login — quiet, responsive infrastructure signal field */
-.auth-login-stage {
+.auth-effect-stage {
   --auth-pointer-x: 68%;
   --auth-pointer-y: 34%;
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
-.auth-login-stage::before {
+#auth-ov input:not([type="checkbox"]) {
+  background-color: #F9FAFC !important;
+}
+#auth-ov input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 4px;
+  background-color: #FFFFFF;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 10px 10px;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+#auth-ov input[type="checkbox"]:hover {
+  border-color: #34D399;
+  box-shadow: 0 0 0 3px rgba(52,211,153,0.09);
+}
+#auth-ov input[type="checkbox"]:checked {
+  border-color: #10B981;
+  background-color: #10B981;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.2 6.1 4.8 8.6 9.9 3.3' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  box-shadow: 0 2px 6px rgba(16,185,129,0.24);
+}
+#auth-ov input[type="checkbox"]:active { transform: scale(0.92); }
+#auth-ov input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.20);
+}
+.auth-brand-panel {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 105% 72% at 108% 4%, rgba(16,185,129,0.145) 0%, rgba(16,185,129,0.055) 34%, transparent 66%),
+    radial-gradient(ellipse 115% 78% at -18% 104%, rgba(8,145,178,0.115) 0%, rgba(8,145,178,0.04) 42%, transparent 70%),
+    linear-gradient(155deg, #06151F 0%, #082432 48%, #071B28 100%) !important;
+}
+.auth-brand-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 88% 72% at 50% 45%, transparent 45%, rgba(1,10,17,0.18) 100%),
+    linear-gradient(128deg, rgba(255,255,255,0.018) 0%, transparent 43%, rgba(16,185,129,0.018) 72%, transparent 100%);
+}
+.auth-brand-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.64' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0' result='m'/%3E%3CfeColorMatrix in='m' type='matrix' values='.56 0 0 0 .13 0 .39 0 0 .07 0 0 .22 0 .025 0 0 0 .78 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+.auth-brand-panel > * {
+  position: relative;
+  z-index: 1;
+}
+.auth-effect-stage::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -2130,7 +2193,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
   background-size: 52px 52px;
   mask-image: linear-gradient(to right, transparent 2%, #000 28%, #000 78%, transparent 100%);
 }
-.auth-login-stage::after {
+.auth-effect-stage::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -2141,75 +2204,97 @@ body.dark .theme-toggle .icon-moon { display: none; }
     radial-gradient(560px circle at 82% 84%, rgba(6, 42, 46, 0.035), transparent 72%);
   transition: background-position 180ms ease-out;
 }
-.auth-scan-field {
+.auth-signal-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.58;
+}
+.auth-signal-link {
+  fill: none;
+  stroke: rgba(6,42,46,0.10);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.auth-signal-link--active {
+  stroke: rgba(16,185,129,0.22);
+  stroke-dasharray: 2 13;
+  stroke-linecap: round;
+  animation: authSignalFlow 17s linear infinite;
+}
+.auth-signal-node { animation: authNodeBreathe 5.5s ease-in-out infinite; }
+.auth-signal-node circle:first-child {
+  fill: rgba(255,255,255,0.74);
+  stroke: rgba(6,42,46,0.12);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.auth-signal-node circle:last-child { fill: rgba(16,185,129,0.68); }
+.auth-inspection-field {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   opacity: 0;
-  background-image: radial-gradient(circle, rgba(6,42,46,0.20) 1px, transparent 1.2px);
-  background-size: 19px 19px;
-  mask-image: radial-gradient(210px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.78) 42%, transparent 74%);
-  -webkit-mask-image: radial-gradient(210px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.78) 42%, transparent 74%);
+  background-image:
+    linear-gradient(rgba(16,185,129,0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16,185,129,0.075) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(250px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.72) 46%, transparent 78%);
+  -webkit-mask-image: radial-gradient(250px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.72) 46%, transparent 78%);
+  transition: opacity 240ms ease;
+}
+.auth-effect-stage.is-scanning .auth-inspection-field { opacity: 0.62; }
+.auth-signal-focus {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  mask-image: radial-gradient(220px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.8) 42%, transparent 78%);
+  -webkit-mask-image: radial-gradient(220px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.8) 42%, transparent 78%);
   transition: opacity 220ms ease;
 }
-.auth-login-stage.is-scanning .auth-scan-field { opacity: 0.72; }
-.auth-scan-lens {
-  position: absolute;
-  left: var(--auth-pointer-x);
-  top: var(--auth-pointer-y);
-  z-index: 0;
-  width: 148px;
-  height: 148px;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.88);
-  background:
-    radial-gradient(circle, rgba(16,185,129,0.72) 0 2px, rgba(16,185,129,0.08) 3px 9px, transparent 10px),
-    radial-gradient(circle, transparent 0 47px, rgba(16,185,129,0.12) 48px, transparent 49px);
-  transition: left 110ms cubic-bezier(.2,.7,.2,1), top 110ms cubic-bezier(.2,.7,.2,1), opacity 180ms ease, transform 220ms ease;
-  animation: authScanRotate 18s linear infinite;
+.auth-signal-focus path {
+  fill: none;
+  stroke: rgba(16,185,129,0.62);
+  stroke-width: 1.35;
+  vector-effect: non-scaling-stroke;
 }
-.auth-scan-lens::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(from 25deg,
-    transparent 0 9%, rgba(16,185,129,0.42) 9% 15%, transparent 15% 42%,
-    rgba(6,42,46,0.20) 42% 48%, transparent 48% 76%,
-    rgba(16,185,129,0.34) 76% 82%, transparent 82% 100%);
-  mask-image: radial-gradient(circle, transparent 0 64px, #000 65px 67px, transparent 68px);
-  -webkit-mask-image: radial-gradient(circle, transparent 0 64px, #000 65px 67px, transparent 68px);
+.auth-signal-focus circle:first-child {
+  fill: rgba(240,253,247,0.96);
+  stroke: rgba(16,185,129,0.55);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
 }
-.auth-scan-lens::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.94);
-  box-shadow: 0 0 10px rgba(16,185,129,0.44);
-  transform: translate(-50%, -50%);
+.auth-signal-focus circle:last-child {
+  fill: #10B981;
+  filter: drop-shadow(0 0 4px rgba(16,185,129,0.35));
 }
-.auth-login-stage.is-scanning .auth-scan-lens {
-  opacity: 0.82;
-  transform: translate(-50%, -50%) scale(1);
+.auth-effect-stage.is-scanning .auth-signal-focus { opacity: 0.72; }
+.auth-login-content { position: relative; z-index: 2; }
+.auth-effect-stage > :not(.auth-signal-field):not(.auth-signal-focus):not(.auth-inspection-field) {
+  position: relative;
+  z-index: 2;
 }
-.auth-login-content { position: relative; z-index: 1; }
-@keyframes authScanRotate {
-  to { rotate: 360deg; }
+@keyframes authSignalFlow { to { stroke-dashoffset: -150; } }
+@keyframes authNodeBreathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .auth-scan-lens { animation: none; transition: opacity 180ms ease; }
-  .auth-login-stage::after { transition: none; }
+  .auth-signal-link--active,
+  .auth-signal-node { animation: none; }
+  .auth-effect-stage::after { transition: none; }
 }
 @media (max-width: 860px) {
-  .auth-login-stage.is-scanning .auth-scan-field { opacity: 0.52; }
-  .auth-login-stage::before { background-size: 44px 44px; }
+  .auth-effect-stage.is-scanning .auth-inspection-field { opacity: 0.48; }
+  .auth-effect-stage::before { background-size: 44px 44px; }
 }
 </style>
 </head>
@@ -16472,30 +16557,41 @@ function authForgotPw() { document.getElementById('auth-forgot-modal').style.dis
 function authCloseForgot() { document.getElementById('auth-forgot-modal').style.display='none'; document.getElementById('auth-forgot-form').style.display='block'; document.getElementById('auth-forgot-success').style.display='none'; }
 function authSendReset() { document.getElementById('auth-forgot-form').style.display='none'; document.getElementById('auth-forgot-success').style.display='block'; }
 function authTogglePw(inputId,btn) { var i=document.getElementById(inputId);if(!i)return;if(i.type==='password'){i.type='text';btn.style.color='#3FC878';}else{i.type='password';btn.style.color='#94a3b8';} }
-function authInitBackdrop() {
-  var stage = document.querySelector('#auth-login .auth-login-stage');
-  if (!stage || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var frame = 0;
-  stage.addEventListener('pointermove', function(e) {
-    stage.classList.add('is-scanning');
-    if (frame) cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(function() {
-      var r = stage.getBoundingClientRect();
-      stage.style.setProperty('--auth-pointer-x', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
-      stage.style.setProperty('--auth-pointer-y', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+function authInitBackdrops() {
+  var source = document.querySelector('#auth-login .auth-effect-stage');
+  var stages = document.querySelectorAll('.auth-effect-stage');
+  if (!source || !stages.length) return;
+  var effectSelectors = ['.auth-signal-field', '.auth-signal-focus', '.auth-inspection-field'];
+  stages.forEach(function(stage) {
+    if (stage !== source && !stage.querySelector('.auth-signal-field')) {
+      var anchor = stage.firstChild;
+      effectSelectors.forEach(function(selector) {
+        var node = source.querySelector(selector);
+        if (node) stage.insertBefore(node.cloneNode(true), anchor);
+      });
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var frame = 0;
+    stage.addEventListener('pointermove', function(e) {
+      stage.classList.add('is-scanning');
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(function() {
+        var r = stage.getBoundingClientRect();
+        stage.style.setProperty('--auth-pointer-x', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+        stage.style.setProperty('--auth-pointer-y', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+      });
+    });
+    stage.addEventListener('pointerleave', function() {
+      stage.classList.remove('is-scanning');
+      stage.style.setProperty('--auth-pointer-x', '68%');
+      stage.style.setProperty('--auth-pointer-y', '34%');
     });
   });
-  stage.addEventListener('pointerleave', function() {
-    stage.classList.remove('is-scanning');
-    stage.style.setProperty('--auth-pointer-x', '68%');
-    stage.style.setProperty('--auth-pointer-y', '34%');
-  });
 }
-
 // ── INIT ──
 hideAll();
 // AUTH_FLOW_ENABLED: щоб включити — замінити go('s01') на showAuth('auth-login')
-window.addEventListener('load', function() { hideAuth(); showAuth('auth-login'); authInitBackdrop(); });
+window.addEventListener('load', function() { hideAuth(); showAuth('auth-login'); authInitBackdrops(); });
 </script>
 
 <!-- ══════════════════════════════════════════════════════
@@ -16510,7 +16606,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: LOGIN
   ───────────────────────────────────────── -->
   <div id="auth-login" class="auth-s" style="display: flex; width: 100%; height: 100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:0;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16527,9 +16623,28 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div class="auth-login-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
-      <div class="auth-scan-field" aria-hidden="true"></div>
-      <div class="auth-scan-lens" aria-hidden="true"></div>
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
+      <svg class="auth-signal-field" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path class="auth-signal-link" d="M20 610 C120 575 155 485 240 420 C310 365 370 290 470 310 C575 330 630 400 740 420 C850 440 925 350 1040 320 C1115 300 1165 230 1230 195"></path>
+        <path class="auth-signal-link auth-signal-link--active" d="M20 610 C120 575 155 485 240 420 C310 365 370 290 470 310 C575 330 630 400 740 420 C850 440 925 350 1040 320 C1115 300 1165 230 1230 195"></path>
+        <path class="auth-signal-link" d="M20 150 C145 170 235 225 330 330 C390 395 425 440 500 460 C590 490 680 455 740 420 C800 385 820 330 860 285 C930 210 1045 270 1190 315"></path>
+        <path class="auth-signal-link auth-signal-link--active" d="M20 150 C145 170 235 225 330 330 C390 395 425 440 500 460 C590 490 680 455 740 420 C800 385 820 330 860 285 C930 210 1045 270 1190 315" style="animation-direction:reverse;animation-duration:21s;"></path>
+        <g class="auth-signal-node" transform="translate(240 420)"><circle r="9"></circle><circle r="2.5"></circle></g>
+        <g class="auth-signal-node" transform="translate(330 330)"><circle r="7"></circle><circle r="2"></circle></g>
+        <g class="auth-signal-node" transform="translate(740 420)"><circle r="10"></circle><circle r="2.5"></circle></g>
+        <g class="auth-signal-node" transform="translate(860 285)"><circle r="8"></circle><circle r="2"></circle></g>
+        <g class="auth-signal-node" transform="translate(1040 320)"><circle r="9"></circle><circle r="2.5"></circle></g>
+      </svg>
+      <svg class="auth-signal-focus" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path d="M20 610 C120 575 155 485 240 420 C310 365 370 290 470 310 C575 330 630 400 740 420 C850 440 925 350 1040 320 C1115 300 1165 230 1230 195"></path>
+        <path d="M20 150 C145 170 235 225 330 330 C390 395 425 440 500 460 C590 490 680 455 740 420 C800 385 820 330 860 285 C930 210 1045 270 1190 315"></path>
+        <g transform="translate(240 420)"><circle r="9"></circle><circle r="2.5"></circle></g>
+        <g transform="translate(330 330)"><circle r="7"></circle><circle r="2"></circle></g>
+        <g transform="translate(740 420)"><circle r="10"></circle><circle r="2.5"></circle></g>
+        <g transform="translate(860 285)"><circle r="8"></circle><circle r="2"></circle></g>
+        <g transform="translate(1040 320)"><circle r="9"></circle><circle r="2.5"></circle></g>
+      </svg>
+      <div class="auth-inspection-field" aria-hidden="true"></div>
       <div class="auth-login-content" style="width:100%;max-width:360px;">
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:22px;font-weight:700;color:#0f1d2d;margin-bottom:5px;">Welcome back</div>
@@ -16571,7 +16686,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: SIGNUP (single form)
   ───────────────────────────────────────── -->
   <div id="auth-signup-1" class="auth-s" style="display:none;width:100%;height:100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16592,7 +16707,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:32px 48px;overflow-y:auto;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:32px 48px;overflow-y:auto;">
       <div style="width:100%;max-width:420px;">
         <div style="text-align:center;margin-bottom:24px;">
           <div style="font-size:24px;font-weight:800;color:#0f1d2d;letter-spacing:-0.5px;margin-bottom:6px;">Create your account</div>
@@ -16617,7 +16732,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <label style="display:block;font-size:11px;font-weight:700;color:var(--p-neutral-400);letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">Company</label>
             <div style="position:relative;">
               <input type="text" placeholder="Acme Corp" style="width:100%;padding:11px 13px 11px 38px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;box-sizing:border-box;" onfocus="this.style.borderColor=&#39;#3FC878&#39;;this.style.boxShadow=&#39;0 0 0 3px rgba(63,200,120,0.1)&#39;" onblur="this.style.borderColor=&#39;#e9ecef&#39;;this.style.boxShadow=&#39;none&#39;">
-              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c4cdd6;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path></svg></span>
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path></svg></span>
             </div>
           </div>
           <!-- Email -->
@@ -16625,7 +16740,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <label style="display:block;font-size:11px;font-weight:700;color:var(--p-neutral-400);letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">Corporate email</label>
             <div style="position:relative;">
               <input type="email" placeholder="you@company.com" style="width:100%;padding:11px 13px 11px 38px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;box-sizing:border-box;" onfocus="this.style.borderColor=&#39;#3FC878&#39;;this.style.boxShadow=&#39;0 0 0 3px rgba(63,200,120,0.1)&#39;" onblur="this.style.borderColor=&#39;#e9ecef&#39;;this.style.boxShadow=&#39;none&#39;">
-              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c4cdd6;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"></rect><polyline points="2 4 12 13 22 4"></polyline></svg></span>
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"></rect><polyline points="2 4 12 13 22 4"></polyline></svg></span>
             </div>
           </div>
           <!-- Password -->
@@ -16633,8 +16748,8 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
             <label style="display:block;font-size:11px;font-weight:700;color:var(--p-neutral-400);letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">Password</label>
             <div style="position:relative;">
               <input type="password" id="su1-pw" placeholder="Min. 8 chars, numbers &amp; symbols" style="width:100%;padding:11px 38px 11px 38px;border:1.5px solid #e9ecef;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#0f1d2d;box-sizing:border-box;" onfocus="this.style.borderColor=&#39;#3FC878&#39;;this.style.boxShadow=&#39;0 0 0 3px rgba(63,200,120,0.1)&#39;" onblur="this.style.borderColor=&#39;#e9ecef&#39;;this.style.boxShadow=&#39;none&#39;">
-              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c4cdd6;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-              <button onclick="authTogglePw(&#39;su1-pw&#39;,this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#c4cdd6;padding:2px;display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+              <button onclick="authTogglePw(&#39;su1-pw&#39;,this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
             </div>
             <div style="display:flex;gap:4px;margin-top:7px;">
               <div style="height:3px;flex:1;border-radius:3px;background:#3FC878;"></div>
@@ -16664,7 +16779,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: CHECK YOUR EMAIL
   ───────────────────────────────────────── -->
   <div id="auth-check-email" class="auth-s" style="display:none;width:100%;height:100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16682,7 +16797,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px 48px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px 48px;">
       <div style="width:100%;max-width:400px;">
         <div style="text-align:center;margin-bottom:24px;">
           <div style="font-size:24px;font-weight:800;color:#0f1d2d;letter-spacing:-0.5px;margin-bottom:6px;">Check your inbox</div>
@@ -16763,7 +16878,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: ACCOUNT ACTIVATED
   ───────────────────────────────────────── -->
   <div id="auth-activated" class="auth-s" style="display:none;width:100%;height:100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16781,7 +16896,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px 48px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px 48px;">
       <div style="width:100%;max-width:400px;">
         <div style="text-align:center;margin-bottom:24px;">
           <div style="font-size:24px;font-weight:800;color:#0f1d2d;letter-spacing:-0.5px;margin-bottom:6px;">You're all set!</div>
@@ -16810,7 +16925,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
   ───────────────────────────────────────── -->
   <div id="auth-invite" class="auth-s" style="display:none;width:100%;height:100%;">
     <!-- Left panel – same pattern as login -->
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(63,200,120,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:0;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16840,7 +16955,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
     <!-- Right panel – same gray bg + white card pattern as login -->
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
       <div style="width:100%;max-width:360px;">
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:22px;font-weight:700;color:#0f1d2d;margin-bottom:5px;">Set your password</div>
@@ -16917,7 +17032,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
        AUTH: ACCOUNT LOCKED
   ───────────────────────────────────────── -->
   <div id="auth-locked" class="auth-s" style="display:none;width:100%;height:100%;">
-    <div style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
+    <div class="auth-brand-panel" style="width:400px;background:linear-gradient(160deg,#071520 0%,#0c2436 55%,#082030 100%);padding:44px 40px;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(251,60,68,0.07) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="gclogo" style="width:32px;height:32px;"></span>
@@ -16935,7 +17050,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
-    <div style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
+    <div class="auth-effect-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
       <div style="width:100%;max-width:360px;">
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:22px;font-weight:700;color:#0f1d2d;margin-bottom:5px;">Account locked</div>
