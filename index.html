@@ -857,7 +857,7 @@ body.dark .demo-control-btn:hover { background:rgba(16,185,129,0.18); color:var(
 
 .check-card {
   background:var(--bg-surface); border-radius:var(--radius-md);
-  border:1px solid var(--border); padding:14px 40px 14px 16px;
+  border:1px solid var(--border); padding:14px 66px 14px 16px;
   margin-bottom:8px; cursor:pointer;
   transition:all 0.15s;
   box-shadow:var(--shadow-sm);
@@ -867,6 +867,10 @@ body.dark .demo-control-btn:hover { background:rgba(16,185,129,0.18); color:var(
 .rctx-opt:hover { background:var(--bg-subtle); }
 body.dark .rctx-opt:hover { background:rgba(255,255,255,0.06); }
 .check-card > .check-row > svg { position:absolute; right:14px; top:50%; transform:translateY(-50%); }
+.check-menu-btn { position:absolute; right:38px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:1px solid transparent; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-muted); transition:background .12s,color .12s,border-color .12s; }
+.check-menu-btn:hover { background:var(--bg-subtle); color:var(--text-default); border-color:var(--border); }
+body.dark .check-menu-btn { color:#94a3b8; }
+body.dark .check-menu-btn:hover { background:rgba(255,255,255,0.08); color:#fff; border-color:rgba(255,255,255,0.18); }
 .check-row   { display:flex; align-items:center; gap:8px; }
 .check-title { font-size:12.5px; font-weight:600; color:var(--text-default); flex:1; }
 .check-desc  { font-size:11px; color:var(--text-sec); margin-top:4px; }
@@ -2769,7 +2773,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
             <div>
               <div style="font-size:17px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Failed checks</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score · <span style="color:var(--text-muted);">right-click a check to add it to a policy</span></div>
+              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score · <span style="color:var(--text-muted);">use the ⋯ menu (or right-click) to add a check to a policy</span></div>
             </div>
           </div>
           <div class="filter-pills" id="results-pills" style="justify-content:space-between;flex-wrap:nowrap;">
@@ -2804,24 +2808,24 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <button class="btn-secondary" style="padding:5px 12px;font-size:11px;" onclick="showView(&#39;reports&#39;)">↓ Export</button>
             </div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Windows Defender real-time protection is disabled</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="critical" onclick="openRemediation(0)" oncontextmenu="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)">
+            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Windows Defender real-time protection is disabled</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 8.1 · Current: Disabled · Expected: Enabled</div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">BitLocker encryption not enabled on system drive</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="critical" onclick="openRemediation(1)" oncontextmenu="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)">
+            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">BitLocker encryption not enabled on system drive</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 3.6 · Current: Not encrypted · Expected: AES-256</div>
           </div>
-          <div class="check-card" data-sev="critical" onclick="showView(&#39;remediation&#39;)" oncontextmenu="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Remote Desktop enabled without Network Level Auth</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="critical" onclick="openRemediation(2)" oncontextmenu="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)">
+            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Remote Desktop enabled without Network Level Auth</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 9.2 · Current: No NLA · Expected: NLA required</div>
           </div>
-          <div class="check-card" data-sev="medium" oncontextmenu="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)">
-            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Windows Firewall disabled for Domain profile</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="medium" onclick="openRemediation(3)" oncontextmenu="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)">
+            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Windows Firewall disabled for Domain profile</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 9.1 · Current: Disabled · Expected: Enabled</div>
           </div>
-          <div class="check-card" data-sev="medium" oncontextmenu="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)">
-            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Screen lock timeout exceeds 15 minutes</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          <div class="check-card" data-sev="medium" onclick="openRemediation(4)" oncontextmenu="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)">
+            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Screen lock timeout exceeds 15 minutes</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 1.2 · Current: 30 min · Expected: ≤15 min</div>
           </div>
           <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec);">+ 22 more issues · <span style="color:var(--issues-link);cursor:pointer;">View all</span></div>
@@ -2886,8 +2890,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
               <div style="background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:var(--radius-md);padding:12px;">
                 <div style="font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.6px;margin-bottom:5px;">EXPECTED STATE</div>
-                <div style="font-size:13px;font-weight:700;color:var(--text-default);">Enabled</div>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Real-time scanning active</div>
+                <div id="remed-expected-val" style="font-size:13px;font-weight:700;color:var(--text-default);">Enabled</div>
+                <div id="remed-expected-sub" style="font-size:11px;color:var(--text-sec);margin-top:2px;">Real-time scanning active</div>
               </div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:8px;padding:12px 14px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;">
@@ -3090,7 +3094,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
               <button class="action-cta" onclick="event.stopPropagation();showView(&#39;changes&#39;)">Reconcile →</button>
             </div>
-            <div class="action-row" onclick="showView(&#39;results&#39;)">
+            <div class="action-row" onclick="openRemediation(0)">
               <div class="action-row-l">
                 <div class="action-ico" style="background:rgba(148,163,184,0.14);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
                 <div style="min-width:0;">
@@ -3098,7 +3102,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <div class="action-meta"><span class="type-pill" style="color:#FB3C44;background:rgba(251,60,68,0.1);border:1px solid rgba(251,60,68,0.3);">Compliance</span> Windows Defender disabled · BitLocker off · Latest scan</div>
                 </div>
               </div>
-              <button class="action-cta" onclick="event.stopPropagation();showView(&#39;results&#39;)">View issue →</button>
+              <button class="action-cta" onclick="event.stopPropagation();openRemediation(0)">View issue →</button>
             </div>
             <div style="text-align:center;margin-top:14px;font-size:12px;"><span style="color:var(--issues-link);cursor:pointer;font-weight:500;" onclick="showView(&#39;changes&#39;)">View all activity →</span></div>
           </div>
@@ -8132,9 +8136,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (attrEl) attrEl.textContent = attr || title;
       menu.style.display = 'block';
       // clamp to viewport
-      var mw = 240, mh = menu.offsetHeight || 260;
-      var x = Math.min(e.clientX, window.innerWidth - mw - 8);
-      var y = Math.min(e.clientY, window.innerHeight - mh - 8);
+      var mw = menu.offsetWidth || 240, mh = menu.offsetHeight || 260;
+      var px, py;
+      // From the ⋯ button (click): anchor under the button. From right-click: at cursor.
+      if (e.type === 'click' && e.currentTarget && e.currentTarget.getBoundingClientRect) {
+        var r = e.currentTarget.getBoundingClientRect();
+        px = r.right - mw;
+        py = r.bottom + 4;
+      } else {
+        px = e.clientX;
+        py = e.clientY;
+      }
+      var x = Math.min(px, window.innerWidth - mw - 8);
+      var y = Math.min(py, window.innerHeight - mh - 8);
       menu.style.left = Math.max(8, x) + 'px';
       menu.style.top = Math.max(8, y) + 'px';
     }
@@ -13691,6 +13705,13 @@ var remedChecks = [
   }
 ];
 
+// Deep-link into Remediation with a specific check preselected
+function openRemediation(idx) {
+  showView('remediation');
+  var items = document.querySelectorAll('#v-remediation .remed-item');
+  if (items[idx]) selectCheck(items[idx]);
+}
+
 function selectCheck(el) {
   document.querySelectorAll('.remed-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
@@ -13708,13 +13729,11 @@ function selectCheck(el) {
   var detailCard = document.querySelector('.remed-detail .card:first-child');
   detailCard.querySelector('[style*="font-size:16px"]').textContent = c.title;
   detailCard.querySelector('[style*="font-size:11px"][style*="color:var(--text-sec)"]').textContent = c.sub;
-  // Expected val stays static per item
-  var expectedBox = detailCard.querySelectorAll('[style*="padding:12px"]')[1];
-  if (expectedBox) {
-    var expDivs = expectedBox.querySelectorAll('div');
-    if (expDivs[1]) expDivs[1].textContent = c.expectedVal;
-    if (expDivs[2]) expDivs[2].textContent = c.expectedSub;
-  }
+  // Expected state — update via explicit ids
+  var expVal = document.getElementById('remed-expected-val');
+  var expSub = document.getElementById('remed-expected-sub');
+  if (expVal) expVal.textContent = c.expectedVal;
+  if (expSub) expSub.textContent = c.expectedSub;
   // Impact text
   var impactSpan = detailCard.querySelector('span[style*="font-size:11px"]');
   if (impactSpan) impactSpan.textContent = c.impact;
