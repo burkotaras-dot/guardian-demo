@@ -1291,9 +1291,14 @@ body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.
 /* Dark mode: form controls need distinct bg from panels */
 /* Form controls: light bg + dark raised bg */
 .dk-form { background:var(--bg-surface); }
-body.dark .dk-form { background:rgba(255,255,255,0.07); }
+/* RULE (app-wide, 2026-07-21): in DARK, EVERY dropdown/select CONTROL trigger uses var(--bg-subtle)
+   (#081E18) as its fill — the green-tinted subtle, NEVER grey rgba(255,255,255,0.07). Add any new
+   select/dropdown trigger to this list. Toggles (.hh-toggle) are NOT dropdowns → stay grey. */
+body.dark .dk-form,
 body.dark .csel-btn,
 body.dark .ms-btn,
+body.dark .pe-sev-btn,
+body.dark select.form-input { background:var(--bg-subtle) !important; }
 body.dark .hh-toggle { background:rgba(255,255,255,0.07) !important; }
 
 .hh-toggle { display:flex; align-items:center; justify-content:center; gap:6px; min-width:121px; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); font-size:12px; font-weight:600; color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; flex-shrink:0; transition:all 0.12s; }
@@ -1812,13 +1817,14 @@ body.dark #v-compare-nodes [style*="background:var(--bg-canvas)"] { background: 
 /* RULE: severity SELECTs use neutral control chrome; colour lives ONLY on a small dot next to the
    always-present text label (never fill the whole field). Same dot colours light + dark. */
 body.dark #pe-sev-pick { background: var(--bg-card) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important; }
+.pe-sev-btn { background: var(--bg-subtle); }
 .pe-sev-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; display:inline-block; background:#94A3B8; }
 .pe-sev-btn[data-val="critical"] .pe-sev-dot, .pe-sev-opt[data-val="critical"] .pe-sev-dot { background:#FB3C44; }
 .pe-sev-btn[data-val="high"]     .pe-sev-dot, .pe-sev-opt[data-val="high"]     .pe-sev-dot { background:#F97316; }
 .pe-sev-btn[data-val="medium"]   .pe-sev-dot, .pe-sev-opt[data-val="medium"]   .pe-sev-dot { background:#F59E0B; }
 .pe-sev-btn[data-val="low"]      .pe-sev-dot, .pe-sev-opt[data-val="low"]      .pe-sev-dot { background:#3B82F6; }
 #pe-sev-pick .pe-sev-opt { display:flex; align-items:center; gap:8px; color:var(--text-default); }
-body.dark .pe-sev-btn { border-color: var(--border) !important; background: var(--bg-subtle) !important; color: var(--text-default) !important; }
+body.dark .pe-sev-btn { border-color: var(--border) !important; color: var(--text-default) !important; }
 /* Add Check — section dropdown options */
 .ac-sec-opt { padding:8px 12px;font-size:13px;color:var(--text-default);cursor:pointer;transition:background 0.1s; }
 .ac-sec-opt:hover { background:var(--bg-canvas); }
@@ -1871,7 +1877,7 @@ body.dark #v-policies [style*="background: white"] { background: var(--bg-card) 
 body.dark #v-policies [style*="color:var(--text-default)"] { color: var(--p-neutral-50) !important; }
 body.dark #v-policies input[type="text"] { color: #698787 !important; }
 body.dark #v-policies input[type="text"]::placeholder { color: #698787; }
-body.dark #changes-sort-btn { background: rgba(255,255,255,0.07) !important; color: var(--p-neutral-50) !important; }
+body.dark #changes-sort-btn { background: var(--bg-subtle) !important; color: var(--p-neutral-50) !important; }
 body.dark #changes-sort-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
 body.dark #changes-group-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
 body.dark .sort-opt { color: #C0C0C0 !important; }
@@ -2135,61 +2141,74 @@ body.dark .theme-toggle .icon-moon { display: none; }
     radial-gradient(560px circle at 82% 84%, rgba(6, 42, 46, 0.035), transparent 72%);
   transition: background-position 180ms ease-out;
 }
-.auth-signal-field {
+.auth-scan-field {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.68;
+  opacity: 0;
+  background-image: radial-gradient(circle, rgba(6,42,46,0.20) 1px, transparent 1.2px);
+  background-size: 19px 19px;
+  mask-image: radial-gradient(210px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.78) 42%, transparent 74%);
+  -webkit-mask-image: radial-gradient(210px circle at var(--auth-pointer-x) var(--auth-pointer-y), #000 0%, rgba(0,0,0,0.78) 42%, transparent 74%);
+  transition: opacity 220ms ease;
 }
-.auth-signal-link {
-  fill: none;
-  stroke: rgba(6, 42, 46, 0.105);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
+.auth-login-stage.is-scanning .auth-scan-field { opacity: 0.72; }
+.auth-scan-lens {
+  position: absolute;
+  left: var(--auth-pointer-x);
+  top: var(--auth-pointer-y);
+  z-index: 0;
+  width: 148px;
+  height: 148px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.88);
+  background:
+    radial-gradient(circle, rgba(16,185,129,0.72) 0 2px, rgba(16,185,129,0.08) 3px 9px, transparent 10px),
+    radial-gradient(circle, transparent 0 47px, rgba(16,185,129,0.12) 48px, transparent 49px);
+  transition: left 110ms cubic-bezier(.2,.7,.2,1), top 110ms cubic-bezier(.2,.7,.2,1), opacity 180ms ease, transform 220ms ease;
+  animation: authScanRotate 18s linear infinite;
 }
-.auth-signal-link--active {
-  stroke: rgba(16, 185, 129, 0.24);
-  stroke-dasharray: 2 13;
-  stroke-linecap: round;
-  animation: authSignalFlow 15s linear infinite;
+.auth-scan-lens::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 25deg,
+    transparent 0 9%, rgba(16,185,129,0.42) 9% 15%, transparent 15% 42%,
+    rgba(6,42,46,0.20) 42% 48%, transparent 48% 76%,
+    rgba(16,185,129,0.34) 76% 82%, transparent 82% 100%);
+  mask-image: radial-gradient(circle, transparent 0 64px, #000 65px 67px, transparent 68px);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 64px, #000 65px 67px, transparent 68px);
 }
-.auth-signal-node { animation: authNodeBreathe 5.5s ease-in-out infinite; }
-.auth-signal-node:nth-of-type(2) { animation-delay: -1.8s; }
-.auth-signal-node:nth-of-type(3) { animation-delay: -3.6s; }
-.auth-signal-node circle:first-child {
-  fill: rgba(255,255,255,0.72);
-  stroke: rgba(6, 42, 46, 0.13);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
+.auth-scan-lens::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 0 10px rgba(16,185,129,0.44);
+  transform: translate(-50%, -50%);
 }
-.auth-signal-node circle:last-child { fill: rgba(16,185,129,0.7); }
-.auth-signal-orbit {
-  fill: none;
-  stroke: rgba(16,185,129,0.12);
-  stroke-width: 1;
-  stroke-dasharray: 3 8;
-  vector-effect: non-scaling-stroke;
-  transform-origin: center;
-  animation: authOrbit 34s linear infinite;
+.auth-login-stage.is-scanning .auth-scan-lens {
+  opacity: 0.82;
+  transform: translate(-50%, -50%) scale(1);
 }
 .auth-login-content { position: relative; z-index: 1; }
-@keyframes authSignalFlow { to { stroke-dashoffset: -150; } }
-@keyframes authNodeBreathe {
-  0%, 100% { opacity: 0.48; }
-  50% { opacity: 1; }
+@keyframes authScanRotate {
+  to { rotate: 360deg; }
 }
-@keyframes authOrbit { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
-  .auth-signal-link--active,
-  .auth-signal-node,
-  .auth-signal-orbit { animation: none; }
+  .auth-scan-lens { animation: none; transition: opacity 180ms ease; }
   .auth-login-stage::after { transition: none; }
 }
 @media (max-width: 860px) {
-  .auth-signal-field { opacity: 0.42; }
+  .auth-login-stage.is-scanning .auth-scan-field { opacity: 0.52; }
   .auth-login-stage::before { background-size: 44px 44px; }
 }
 </style>
@@ -6387,7 +6406,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus active and up to date</div>
                 <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(59,130,246,0.1);color:#3B82F6;border:1px solid rgba(59,130,246,0.4);">Security</span></div>
               </div>
-              <div class="pe-sev-btn" data-val="critical" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-val="critical" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
             <!-- Check row B -->
@@ -6399,7 +6418,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Host firewall enabled</div>
                 <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(6,182,212,0.1);color:#06B6D4;border:1px solid rgba(6,182,212,0.4);">Network</span></div>
               </div>
-              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
             <!-- Check row C -->
@@ -6411,7 +6430,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Endpoint encryption enabled</div>
                 <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(99,102,241,0.1);color:#6366F1;border:1px solid rgba(99,102,241,0.4);">Data</span></div>
               </div>
-              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
           </div>
@@ -6692,7 +6711,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">2 rules</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="0" data-val="critical" onclick="peOpenSevPick(this,0)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="0" data-val="critical" onclick="peOpenSevPick(this,0)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-0" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
@@ -6715,7 +6734,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="1" data-val="high" onclick="peOpenSevPick(this,1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="1" data-val="high" onclick="peOpenSevPick(this,1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-1" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Network ×</span>
                 <button onclick="peAddTagMenu(this,1)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
@@ -6737,7 +6756,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="2" data-val="high" onclick="peOpenSevPick(this,2)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="2" data-val="high" onclick="peOpenSevPick(this,2)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-2" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
                 <button onclick="peAddTagMenu(this,2)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
@@ -6767,7 +6786,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-3" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
                 <button onclick="peAddTagMenu(this,3)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
@@ -6789,7 +6808,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="4" data-val="high" onclick="peOpenSevPick(this,4)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="4" data-val="high" onclick="peOpenSevPick(this,4)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-4" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Data ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
@@ -6820,7 +6839,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border-default);">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-subtle);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <div class="pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
               <div id="pe-a-tags-5" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
                 <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
@@ -16458,6 +16477,7 @@ function authInitBackdrop() {
   if (!stage || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var frame = 0;
   stage.addEventListener('pointermove', function(e) {
+    stage.classList.add('is-scanning');
     if (frame) cancelAnimationFrame(frame);
     frame = requestAnimationFrame(function() {
       var r = stage.getBoundingClientRect();
@@ -16466,6 +16486,7 @@ function authInitBackdrop() {
     });
   });
   stage.addEventListener('pointerleave', function() {
+    stage.classList.remove('is-scanning');
     stage.style.setProperty('--auth-pointer-x', '68%');
     stage.style.setProperty('--auth-pointer-y', '34%');
   });
@@ -16507,19 +16528,8 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
       <div style="font-size:11px;color:rgba(255,255,255,0.2);">© 2025 Cloudhouse Technologies</div>
     </div>
     <div class="auth-login-stage" style="flex:1;background:#f2f4f6;display:flex;align-items:center;justify-content:center;padding:40px;">
-      <svg class="auth-signal-field" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <circle class="auth-signal-orbit" cx="600" cy="380" r="245"></circle>
-        <circle class="auth-signal-orbit" cx="600" cy="380" r="330" style="animation-direction:reverse;animation-duration:48s;"></circle>
-        <path class="auth-signal-link" d="M88 594 C250 520 303 239 470 276 S724 555 1110 181"></path>
-        <path class="auth-signal-link" d="M124 138 C324 177 365 500 593 468 S871 215 1160 323"></path>
-        <path class="auth-signal-link auth-signal-link--active" d="M88 594 C250 520 303 239 470 276 S724 555 1110 181"></path>
-        <path class="auth-signal-link auth-signal-link--active" d="M124 138 C324 177 365 500 593 468 S871 215 1160 323" style="animation-direction:reverse;animation-duration:19s;"></path>
-        <g class="auth-signal-node" transform="translate(222 455)"><circle r="11"></circle><circle r="2.5"></circle></g>
-        <g class="auth-signal-node" transform="translate(470 276)"><circle r="14"></circle><circle r="3"></circle></g>
-        <g class="auth-signal-node" transform="translate(872 288)"><circle r="10"></circle><circle r="2.5"></circle></g>
-        <g class="auth-signal-node" transform="translate(1018 221)"><circle r="13"></circle><circle r="3"></circle></g>
-        <g class="auth-signal-node" transform="translate(775 400)"><circle r="8"></circle><circle r="2"></circle></g>
-      </svg>
+      <div class="auth-scan-field" aria-hidden="true"></div>
+      <div class="auth-scan-lens" aria-hidden="true"></div>
       <div class="auth-login-content" style="width:100%;max-width:360px;">
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:22px;font-weight:700;color:#0f1d2d;margin-bottom:5px;">Welcome back</div>
