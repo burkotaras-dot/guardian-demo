@@ -2772,8 +2772,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div class="results-body">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
             <div>
-              <div style="font-size:17px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Failed checks</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score · <span style="color:var(--text-muted);">use the ⋯ menu (or right-click) to add a check to a policy</span></div>
+              <div id="results-heading" style="font-size:17px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Failed checks</div>
+              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">27 issues · fix to improve your score · <span style="color:var(--text-muted);">use the ⋯ menu (or right-click) on any check — passing ones too — to add it to a policy</span></div>
             </div>
           </div>
           <div class="filter-pills" id="results-pills" style="justify-content:space-between;flex-wrap:nowrap;">
@@ -2827,6 +2827,18 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="check-card" data-sev="medium" onclick="openRemediation(4)" oncontextmenu="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)">
             <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Screen lock timeout exceeds 15 minutes</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             <div class="check-desc">Control 1.2 · Current: 30 min · Expected: ≤15 min</div>
+          </div>
+          <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;Automatic Windows Update is enabled&#39;,&#39;update.auto_enabled&#39;)">
+            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">Automatic Windows Update is enabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;Automatic Windows Update is enabled&#39;,&#39;update.auto_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button></div>
+            <div class="check-desc">Control 7.3 · Current: Enabled · Expected: Enabled</div>
+          </div>
+          <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;Built-in Guest account is disabled&#39;,&#39;account.guest_disabled&#39;)">
+            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">Built-in Guest account is disabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;Built-in Guest account is disabled&#39;,&#39;account.guest_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button></div>
+            <div class="check-desc">Control 5.1 · Current: Disabled · Expected: Disabled</div>
+          </div>
+          <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;SMBv1 protocol is disabled&#39;,&#39;smb.v1_disabled&#39;)">
+            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">SMBv1 protocol is disabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;SMBv1 protocol is disabled&#39;,&#39;smb.v1_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></button></div>
+            <div class="check-desc">Control 9.4 · Current: Disabled · Expected: Disabled</div>
           </div>
           <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec);">+ 22 more issues · <span style="color:var(--issues-link);cursor:pointer;">View all</span></div>
         </div><!-- /results-body -->
@@ -7314,6 +7326,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
         Object.values(classMap).forEach(function(c){ p.classList.remove(c); });
       });
       pillEl.classList.add(classMap[sev]);
+      var heading = document.getElementById('results-heading');
+      if (heading) heading.textContent = sev === 'passed' ? 'Passing checks' : 'Failed checks';
       var cards = document.querySelectorAll('#v-results .check-card');
       var anyVisible = false;
       cards.forEach(function(c) {
