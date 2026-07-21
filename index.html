@@ -6170,7 +6170,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div class="page-sub">Build a custom compliance policy step by step</div>
           </div>
         </div>
-        <button class="btn-outline" onclick="showView(&#39;policies&#39;)" style="font-size:13px;">Cancel</button>
+        <button class="btn-outline" onclick="pcBack()" style="font-size:13px;">Cancel</button>
       </div>
 
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -6257,8 +6257,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
 
           </div>
-          <!-- Next button -->
-          <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+          <!-- Navigation -->
+          <div style="display:flex;justify-content:space-between;margin-top:16px;">
+            <button class="btn-outline" onclick="pcBack()" style="display:flex;align-items:center;gap:6px;padding:10px 18px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Back
+            </button>
             <button class="btn-primary" style="width:auto;padding:10px 22px;font-size:13px;" onclick="pcGoStep(2)">
               Next: Add Checks
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -13600,6 +13604,14 @@ var NODE_REF = {
   'changes':      { label: 'Detected Drift', view: 'changes' },
   'change-detail':{ label: 'Change Detail',  view: 'change-detail' }
 };
+var _pcRef = 'policies';
+var PC_REF = {
+  'policies': { label: 'Policies', view: 'policies' },
+  'results':  { label: 'Scans',    view: 'results' }
+};
+function pcBack() {
+  showView(PC_REF[_pcRef] ? _pcRef : 'policies');
+}
 function nodeDetailBack() {
   var ref = NODE_REF[_nodeRef] ? _nodeRef : 'all-devices';
   showView(ref);
@@ -13609,6 +13621,9 @@ function showView(name) {
   // Capture the view we're leaving as the node-detail referrer (fallback: All Devices)
   if (name === 'node-detail' && _currentView && _currentView !== 'node-detail') {
     _nodeRef = NODE_REF[_currentView] ? _currentView : 'all-devices';
+  }
+  if (name === 'policy-create' && _currentView && _currentView !== 'policy-create') {
+    _pcRef = PC_REF[_currentView] ? _currentView : 'policies';
   }
   const isJ3Nav = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(name);
   const isJ4Nav = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(name);
@@ -13642,6 +13657,10 @@ function showView(name) {
     if (name === 'node-detail') {
       const _r = NODE_REF[_nodeRef] || NODE_REF['all-devices'];
       _bc = `<span class="bc-link" onclick="showView('${_r.view}')">${_r.label}</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>`;
+    }
+    if (name === 'policy-create') {
+      const _r = PC_REF[_pcRef] || PC_REF['policies'];
+      _bc = `<span class="bc-link" onclick="showView('${_r.view}')">${_r.label}</span><span class="bc-sep">›</span><span class="bc-cur">Create New Policy</span>`;
     }
     if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
   }
