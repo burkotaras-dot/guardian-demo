@@ -8102,8 +8102,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
       });
     }
     function cmStartConnCheck() {
-      var name = (document.getElementById('cmw-name') || {}).value || '';
-      if (!name.trim()) { if (typeof scToast === 'function') scToast('Give the Connection Manager a name first'); return; }
+      var nameEl = document.getElementById('cmw-name');
+      var name = (nameEl || {}).value || '';
+      if (!name.trim()) {
+        if (nameEl) { nameEl.style.borderColor = '#FB3C44'; nameEl.focus(); nameEl.addEventListener('input', function h() { nameEl.style.borderColor = ''; nameEl.removeEventListener('input', h); }, { once: true }); }
+        return;
+      }
       cmStep(3);
       cmConnResult('checking');
       cmSetup._t = setTimeout(function () { cmConnResult('connected'); }, 2600);
