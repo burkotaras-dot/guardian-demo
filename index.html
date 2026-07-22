@@ -1482,7 +1482,7 @@ body.dark span[style*="font-size:11px"][style*="font-weight:600"][style*="color:
 .panel-sub   { font-size:12px;color:var(--text-sec);margin-bottom:24px; }
 .form-group  { margin-bottom:18px; }
 .form-label  { font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;display:block; }
-.form-input  { width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;font-family:inherit;color:var(--text-default);background:var(--bg-surface);box-sizing:border-box;transition:border 0.15s; }
+.form-input  { width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;font-family:inherit;color:var(--text-default);background:#F9FAFC;box-sizing:border-box;transition:border 0.15s; }
 .form-input:focus { outline:none;border-color:var(--green1);box-shadow:0 0 0 3px var(--green-dim); }
 .toggle-group { display:flex;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden; }
 .mapping-select { border:1px solid var(--border);border-radius:4px;padding:6px 36px 6px 10px;font-size:11px;color:var(--text-default);appearance:none;-webkit-appearance:none;background-color:var(--bg-surface);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer; }
@@ -1969,7 +1969,7 @@ body.dark .policy-menu { background: #00262A !important; border-color: #1A3D40 !
 body.dark .policy-menu > div { color: #C0C0C0 !important; }
 /* Reusable custom select (.csel) — unified styled dropdown replacing native <select> */
 .csel-wrap { position: relative; display: inline-block; vertical-align: middle; }
-.csel-btn { display: inline-flex; align-items: center; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 28px 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-default); cursor: pointer; outline: none; white-space: nowrap; position: relative; text-align: left; }
+.csel-btn { display: inline-flex; align-items: center; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 28px 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: #F9FAFC; color: var(--text-default); cursor: pointer; outline: none; white-space: nowrap; position: relative; text-align: left; }
 .csel-btn:hover { border-color: var(--green1); }
 .csel-btn::after { content: ''; position: absolute; right: 10px; top: 50%; width: 5px; height: 5px; border-right: 1.5px solid #94a3b8; border-bottom: 1.5px solid #94a3b8; transform: translateY(-65%) rotate(45deg); pointer-events: none; }
 .csel-btn.csel-sm { padding: 4px 24px 4px 10px; line-height: 1.4; color: var(--p-neutral-500); font-weight: 500; }
@@ -2872,7 +2872,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div class="cmw-tab" id="cmw-tab-1"><span class="cmw-num">1</span> Prerequisites</div>
             <div class="cmw-tab" id="cmw-tab-2"><span class="cmw-num">2</span> Install &amp; register</div>
             <div class="cmw-tab" id="cmw-tab-3"><span class="cmw-num">3</span> Connectivity</div>
-            <div class="cmw-tab" id="cmw-tab-4"><span class="cmw-num">4</span> Ready</div>
           </div>
 
           <!-- ── STEP 1: Prerequisites ── -->
@@ -2948,11 +2947,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
           </div>
 
-          <!-- ── STEP 4: Ready ── -->
-          <div class="cmw-panel" id="cmw-step-4" style="display:none;">
-            <div id="cmw-finish-body" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:26px 22px;"></div>
-            <div id="cmw-finish-actions" style="display:flex;gap:10px;margin-top:20px;"></div>
-          </div>
 
         </div>
       </div>
@@ -8093,10 +8087,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
     function cmStep(n) {
       cmSetup.step = n;
-      var names = { 1:'Prerequisites', 2:'Install & register', 3:'Connectivity', 4:'Ready' };
+      var names = { 1:'Prerequisites', 2:'Install & register', 3:'Connectivity' };
       var lbl = document.getElementById('cmw-step-label');
-      if (lbl) lbl.textContent = 'Connection Manager setup · Step ' + n + ' of 4 — ' + (names[n] || '');
-      [1, 2, 3, 4].forEach(function (i) {
+      if (lbl) lbl.textContent = 'Connection Manager setup · Step ' + n + ' of 3 — ' + (names[n] || '');
+      [1, 2, 3].forEach(function (i) {
         var panel = document.getElementById('cmw-step-' + i);
         if (panel) panel.style.display = i === n ? '' : 'none';
         var tab = document.getElementById('cmw-tab-' + i);
@@ -8125,16 +8119,17 @@ body.dark .theme-toggle .icon-moon { display: none; }
         body.innerHTML = '<div class="connecting-ring"></div>'
           + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">Waiting for the Connection Manager…</div>'
           + '<div style="font-size:12px;color:var(--text-sec);margin-top:4px;">It usually checks in within ~30 seconds of starting the service.</div>';
-        actions.innerHTML = '<button class="btn-outline" onclick="cmStep(2)" style="width:auto;">← Back</button>';
+        actions.innerHTML = '';
         return;
       }
+      var dk = _isDk();
       var map = {
-        pending:   { c:'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Installation pending', s:'The installer is still running or the service hasn\'t started yet. Leave it running — this page updates automatically.', ic:'clock' },
-        failed:    { c:'#b91c1c', bg:'#fef2f2', bd:'#fecaca', t:'Connection failed', s:'Guardian couldn\'t reach the Connection Manager. Check the host has outbound HTTPS 443 and that the enrollment key was entered correctly.', ic:'x' },
-        timeout:   { c:'#b91c1c', bg:'#fef2f2', bd:'#fecaca', t:'Connection timed out', s:'No check-in after 2 minutes. Confirm the service is running and a firewall isn\'t blocking outbound 443.', ic:'x' },
-        offline:   { c:'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Registered but offline', s:'The Connection Manager enrolled once but is no longer reporting in. It may have been stopped or lost network. Restart the service, then re-check.', ic:'clock' },
-        notready:  { c:'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Connected — not scan-ready', s:'The Connection Manager is online but can\'t reach your targets over WinRM/SSH yet. Open the ports to your nodes, then it\'s ready to scan.', ic:'clock' },
-        connected: { c:'#047857', bg:'var(--bg-success)', bd:'var(--bg-success-border)', t:'Connection Manager connected', s:'It checked in successfully and can reach targets over WinRM and SSH.', ic:'check' }
+        pending:   { c: dk?'#F59E0B':'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Installation pending', s:'The installer is still running or the service hasn\'t started yet. Leave it running — this page updates automatically.', ic:'clock' },
+        failed:    { c: dk?'#FB3C44':'#b91c1c', bg: dk?'rgba(251,60,68,0.12)':'#fef2f2', bd: dk?'rgba(251,60,68,0.3)':'#fecaca', t:'Connection failed', s:'Guardian couldn\'t reach the Connection Manager. Check the host has outbound HTTPS 443 and that the enrollment key was entered correctly.', ic:'x' },
+        timeout:   { c: dk?'#FB3C44':'#b91c1c', bg: dk?'rgba(251,60,68,0.12)':'#fef2f2', bd: dk?'rgba(251,60,68,0.3)':'#fecaca', t:'Connection timed out', s:'No check-in after 2 minutes. Confirm the service is running and a firewall isn\'t blocking outbound 443.', ic:'x' },
+        offline:   { c: dk?'#F59E0B':'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Registered but offline', s:'The Connection Manager enrolled once but is no longer reporting in. It may have been stopped or lost network. Restart the service, then re-check.', ic:'clock' },
+        notready:  { c: dk?'#F59E0B':'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Connected — not scan-ready', s:'The Connection Manager is online but can\'t reach your targets over WinRM/SSH yet. Open the ports to your nodes, then it\'s ready to scan.', ic:'clock' },
+        connected: { c: dk?'#10B981':'#047857', bg:'var(--bg-success)', bd:'var(--bg-success-border)', t:'Connection Manager connected', s:'It checked in successfully and can reach targets over WinRM and SSH.', ic:'check' }
       };
       var m = map[state] || map.connected;
       var icons = {
@@ -8146,11 +8141,9 @@ body.dark .theme-toggle .icon-moon { display: none; }
         + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">' + m.t + '</div>'
         + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;">' + m.s + '</div>';
 
-      if (state === 'connected') {
-        actions.innerHTML = '<button class="btn-primary" onclick="cmSetupFinish(\'connected\')" style="width:auto;flex:1;">Finish setup →</button>';
-      } else if (state === 'notready') {
-        actions.innerHTML = '<button class="btn-outline" onclick="cmStartConnCheck()" style="width:auto;">Re-check</button>'
-          + '<button class="btn-primary" onclick="cmSetupFinish(\'notready\')" style="width:auto;flex:1;">Finish — I\'ll open ports later →</button>';
+      if (state === 'connected' || state === 'notready') {
+        cmSetupFinish(state);
+        return;
       } else {
         actions.innerHTML = '<button class="btn-outline" onclick="cmStep(2)" style="width:auto;">← Review install</button>'
           + '<button class="btn-primary" onclick="cmStartConnCheck()" style="width:auto;flex:1;">Retry connection</button>';
@@ -8164,25 +8157,24 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var status = outcome === 'notready' ? 'not-ready' : 'connected';
       CONNECTION_MANAGERS.push({ id: newId, name: name, host: host, os: [addNodeOS], nodes: 0, status: status });
       cmSetup.newId = newId; cmSetup.newName = name; cmSetup.result = outcome;
-      cmStep(4);
       cmRenderFinish(outcome, name);
     }
     function cmRenderFinish(outcome, name) {
-      var body = document.getElementById('cmw-finish-body');
-      var actions = document.getElementById('cmw-finish-actions');
+      var body = document.getElementById('cmw-conn-body');
+      var actions = document.getElementById('cmw-conn-actions');
       if (!body || !actions) return;
       var ready = outcome !== 'notready';
-      var accent = ready ? '#047857' : '#b45309';
+      var dk = _isDk();
+      var accent = ready ? (dk ? '#10B981' : '#047857') : (dk ? '#F59E0B' : '#b45309');
       var accentBg = ready ? 'var(--bg-success)' : 'var(--bg-warning)';
       var accentBd = ready ? 'var(--bg-success-border)' : 'var(--bg-warning-border)';
       var ico = ready
         ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + accent + '" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>'
         : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + accent + '" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>';
-      body.innerHTML = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'
-        + '<div style="width:44px;height:44px;border-radius:50%;background:' + accentBg + ';border:1px solid ' + accentBd + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + ico + '</div>'
-        + '<div><div style="font-size:16px;font-weight:700;color:var(--text-default);">' + (ready ? 'Connection Manager ready' : 'Connection Manager registered') + '</div>'
-        + '<div style="font-size:12px;color:var(--text-sec);margin-top:2px;">' + name + (ready ? ' is online and can scan targets.' : ' is online but not scan-ready yet — open WinRM/SSH to your targets.') + '</div></div></div>'
-        + '<div style="background:var(--bg-canvas);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;font-size:12px;color:var(--text-sec);line-height:1.6;">'
+      body.innerHTML = '<div style="width:56px;height:56px;border-radius:50%;background:' + accentBg + ';border:1px solid ' + accentBd + ';display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' + ico + '</div>'
+        + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">' + (ready ? 'Connection Manager ready' : 'Connection Manager registered') + '</div>'
+        + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;"><strong style="color:var(--text-default);">' + name + '</strong> ' + (ready ? 'is online and can scan targets.' : 'is online but not scan-ready yet — open WinRM/SSH to your targets.') + '</div>'
+        + '<div style="background:var(--bg-canvas);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:16px;text-align:left;">'
         + '<div><strong style="color:var(--text-default);">Status:</strong> ' + (ready ? 'Connected · scan-ready' : 'Connected · not scan-ready') + '</div>'
         + '<div><strong style="color:var(--text-default);">Next:</strong> ' + (ready ? 'return to Add Node to finish onboarding, or add credentials for your first scan.' : 'once ports are open it becomes scan-ready automatically.') + '</div></div>';
       actions.innerHTML = '<button class="btn-primary" onclick="cmReturnToAddNode()" style="width:auto;flex:1;">← Back to Add Node</button>'
