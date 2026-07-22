@@ -256,7 +256,7 @@ body {
 .rep-prow, .rep-frow { transition:background 0.12s; }
 .rep-row-link { cursor:pointer; }
 .rep-row-link:hover { background:rgba(0,175,115,0.06) !important; }
-body.dark .rep-row-link:hover { background:rgba(0,175,115,0.10) !important; }
+body.dark .rep-row-link:hover { background:#063135 !important; }
 .ms-btn:hover { border-color:var(--green1); }
 .ms-btn::after { content:''; position:absolute; right:10px; top:50%; width:6px; height:6px; border-right:1.6px solid #94a3b8; border-bottom:1.6px solid #94a3b8; transform:translateY(-70%) rotate(45deg); pointer-events:none; }
 .ms-menu { display:none; position:absolute; left:0; top:calc(100% + 4px); background:var(--bg-card); border:1px solid var(--border); border-radius:8px; box-shadow:0 8px 32px rgba(0,0,0,0.35); min-width:100%; z-index:200; padding:4px 0; white-space:nowrap; }
@@ -1304,6 +1304,7 @@ body.dark .hh-toggle { background:rgba(255,255,255,0.07) !important; }
    --bg-inset: #0A3035 (1 step above surface #062528). border stays #04363A. */
 body.dark [style*="background:var(--bg-surface)"] .csel-btn,
 body.dark [style*="background:var(--bg-surface)"] .dk-form,
+body.dark [style*="background:var(--bg-surface)"] .ms-btn,
 body.dark [style*="background:var(--bg-surface)"] .pe-sev-btn,
 body.dark [style*="background:var(--bg-surface)"] select.form-input,
 body.dark #v-policy-create .pe-sev-btn,
@@ -8777,13 +8778,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
           ' <span style="color:var(--text-muted);">→</span> ' +
           '<span style="color:#00AF73;font-weight:600;">' + parts[1] + '</span>'
         : f.delta;
-      var nodeStyle = dim
-        ? 'font-weight:500;color:var(--text-muted);font-family:var(--font-mono,\'DM Mono\',monospace);font-size:11px;'
-        : 'font-weight:600;color:var(--text-default);font-family:var(--font-mono,\'DM Mono\',monospace);font-size:11px;';
+      var nodeStyle = 'font-weight:600;color:var(--text-default);font-family:var(--font-mono,\'DM Mono\',monospace);font-size:11px;';
       return '<div class="rep-frow rep-row-link" data-pol="' + f.pol + '" data-sev="' + f.sev + '" onclick="repOpenPolicy(&#39;' + f.pol + '&#39;)" ' +
         'style="display:grid;grid-template-columns:1.3fr 1.6fr 1.7fr 1.4fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ' + accent + ';font-size:12px;transition:background 0.12s;" ' +
-        'onmouseover="this.style.background=document.body.classList.contains(\'dark\')?\'rgba(255,255,255,0.03)\':\'#f8fafc\'" onmouseout="this.style.background=\'\'">' +
-        '<div style="' + nodeStyle + '">' + (dim ? '〃' : f.node) + '</div>' +
+        'onmouseover="this.style.background=document.body.classList.contains(\'dark\')?\'#063135\':\'#f8fafc\'" onmouseout="this.style.background=\'\'">' +
+        '<div style="' + nodeStyle + '">' + f.node + '</div>' +
         '<div style="color:var(--text-sec);">' + REP_POL_SHORT[f.pol] + '</div>' +
         '<div style="color:var(--text-default);">' + f.control + '</div>' +
         '<div style="font-family:var(--font-mono,monospace);font-size:11px;">' + deltaHtml + '</div>' +
@@ -11804,7 +11803,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div style="font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (<span id="rep-failed-count">4</span>)</div>
             <div style="display:flex;gap:8px;align-items:center;">
               <div class="ms-wrap" id="ms-pol">
-                <button type="button" class="ms-btn" onclick="msToggle(&#39;ms-pol&#39;,event)" style="font-size:11px;padding:4px 10px;"><span class="ms-label">All policies</span></button>
+                <button type="button" class="ms-btn" onclick="msToggle(&#39;ms-pol&#39;,event)" style="font-size:11px;padding:4px 26px 4px 10px;"><span class="ms-label">All policies</span></button>
                 <div class="ms-menu" onclick="event.stopPropagation()">
                   <label class="ms-opt"><input type="checkbox" value="compliance" checked onchange="msChange(&#39;ms-pol&#39;)">Compliance Policy</label>
                   <label class="ms-opt"><input type="checkbox" value="endpoint" checked onchange="msChange(&#39;ms-pol&#39;)">Endpoint Protection</label>
@@ -11813,7 +11812,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
               </div>
               <div class="ms-wrap" id="ms-sev">
-                <button type="button" class="ms-btn" onclick="msToggle(&#39;ms-sev&#39;,event)" style="font-size:11px;padding:4px 10px;"><span class="ms-label">All severities</span></button>
+                <button type="button" class="ms-btn" onclick="msToggle(&#39;ms-sev&#39;,event)" style="font-size:11px;padding:4px 26px 4px 10px;"><span class="ms-label">All severities</span></button>
                 <div class="ms-menu" onclick="event.stopPropagation()">
                   <label class="ms-opt"><input type="checkbox" value="critical" checked onchange="msChange(&#39;ms-sev&#39;)">Critical</label>
                   <label class="ms-opt"><input type="checkbox" value="high" checked onchange="msChange(&#39;ms-sev&#39;)">High</label>
