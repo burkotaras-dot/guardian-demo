@@ -1598,11 +1598,11 @@ body.dark .stat-sub           { color: var(--p-neutral-0); }
 body.dark .stat-value         { color: var(--p-neutral-50); }
 body.dark .issues-card        { background: transparent; border-color: transparent; }
 body.dark .issues-card-title  { color: var(--p-neutral-50); }
-body.dark .badge-critical { background:rgba(251,60,68,0.14); color:#fff;    border-color:rgba(251,60,68,0.55); }
-body.dark .badge-medium   { background:rgba(217,119,6,0.14);  color:#fff;    border-color:rgba(217,119,6,0.55); }
-body.dark .badge-high     { background:rgba(234,88,12,0.14);  color:#fff;    border-color:rgba(234,88,12,0.55); }
-body.dark .badge-low      { background:rgba(37,99,235,0.16);  color:#fff;    border-color:rgba(37,99,235,0.55); }
-body.dark .badge-pass     { background:rgba(16,185,129,0.16); color:#fff;    border-color:rgba(16,185,129,0.55); }
+body.dark .badge-critical { background:rgba(251,60,68,0.14); color:#FF4646;    border-color:rgba(251,60,68,0.55); }
+body.dark .badge-medium   { background:rgba(217,119,6,0.14);  color:#F59E0B;    border-color:rgba(217,119,6,0.55); }
+body.dark .badge-high     { background:rgba(234,88,12,0.14);  color:#F97316;    border-color:rgba(234,88,12,0.55); }
+body.dark .badge-low      { background:rgba(37,99,235,0.16);  color:#3B82F6;    border-color:rgba(37,99,235,0.55); }
+body.dark .badge-pass     { background:rgba(16,185,129,0.16); color:#10B981;    border-color:rgba(16,185,129,0.55); }
 body.dark .node-row > div:nth-child(6) { color: var(--p-neutral-50) !important; }
 body.dark #nf-local, body.dark #nf-aws, body.dark #nf-all { color: var(--p-neutral-50) !important; }
 body.dark .score-svg circle:first-child { stroke: #335255; }
@@ -1612,7 +1612,7 @@ body.dark .issue-row:hover    { background: var(--issue-row-bg-hover); }
 body.dark .issue-name         { color: var(--p-neutral-50); }
 body.dark .issue-fix-btn      { background: transparent; border-color: rgba(63,200,120,0.45); color: var(--p-green-300); }
 body.dark .issue-fix-btn:hover{ background: rgba(63,200,120,0.08); border-color: var(--p-green-300); }
-body.dark .badge-critical     { color: #fff; border-color: rgba(251,60,68,0.55); }
+body.dark .badge-critical     { color: #FF4646; border-color: rgba(251,60,68,0.55); }
 body.dark .badge-critical::before { background: #FB3C44; }
 body.dark .badge-critical svg     { stroke: #FF4646 !important; fill: none !important; }
 body.dark .badge-medium::before   { background: #F59E0B; }
@@ -1693,6 +1693,8 @@ body.dark .perm-item          { color: var(--p-neutral-300); }
 body.dark .form-input         { color: var(--p-neutral-50) !important; background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.2) !important; }
 body.dark .form-input:focus   { border-color: var(--green1) !important; }
 body.dark .mapping-select     { color: var(--p-neutral-50) !important; background-color: var(--bg-card) !important; border-color: var(--p-dark-border) !important; }
+
+body.dark input[type="date"] { color-scheme: dark; }
 
 /* ── Checkboxes dark mode ── */
 body.dark input[type="checkbox"] {
@@ -8938,10 +8940,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
     function reportWhenChange() {
       var sel = document.getElementById('rep-when');
       var date = document.getElementById('rep-date');
-      var clr = document.getElementById('rep-when-clear');
       var asOf = sel && sel.value === 'As of date…';
       if (date) date.style.display = asOf ? 'inline-block' : 'none';
-      if (clr) clr.style.display = asOf ? 'inline-block' : 'none';
       if (asOf) { reportDateChange(); }
       else {
         var lbl = document.getElementById('rep-when-label');
@@ -11743,7 +11743,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <select onchange="renderReport()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>CIS Windows 11</option><option>CIS Ubuntu 22.04</option><option>All benchmarks</option></select>
             <select id="rep-when" onchange="reportWhenChange()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>Latest completed</option><option>As of date…</option></select>
             <input id="rep-date" type="date" value="2026-07-03" max="2026-07-15" onchange="reportDateChange()" class="rep-scope-sel" style="display:none;font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;font-family:inherit;">
-            <button id="rep-when-clear" onclick="reportClearDate()" title="Back to latest scan" style="display:none;background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--text-muted);font-size:16px;line-height:1;">×</button>
             <button id="rep-reset" onclick="reportResetScope()" style="display:none;font-size:11px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:4px 0;white-space:nowrap;">↺ Reset scope</button>
             <!-- Divider -->
             <div style="width:1px;height:24px;background:var(--border);margin:0 4px;"></div>
@@ -11763,24 +11762,49 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div id="report-results">
 
         <!-- Summary band -->
-        <div id="rep-summary-band" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:10px;">
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
-            <div id="rep-kpi-score" style="font-size:24px;font-weight:800;color:#00AF73;">95%</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">Compliance score</div>
-            <div id="rep-kpi-score-delta" style="font-size:10px;color:#00AF73;margin-top:6px;font-weight:600;">↑ 2% vs previous scan</div>
+        <div id="rep-summary-band" class="stat-grid" style="margin-bottom:16px;">
+          <div class="stat-card" style="padding:14px 20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div class="stat-card-label" style="margin-bottom:0;">Compliance Score</div>
+              <span id="rep-kpi-score-delta" style="font-size:11px;color:#00AF73;font-weight:600;">↑ 2 pp</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+              <span id="rep-kpi-score" style="font-size:32px;font-weight:700;color:#00AF73;line-height:1;">95%</span>
+              <span style="font-size:11px;color:var(--text-sec);">·</span>
+              <span style="font-size:11px;color:var(--text-sec);">4 policies</span>
+              <span style="font-size:11px;color:var(--text-sec);">·</span>
+              <span style="font-size:11px;color:var(--text-sec);">4 nodes covered</span>
+            </div>
           </div>
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
-            <div id="rep-kpi-passed" style="font-size:24px;font-weight:800;color:#00AF73;">69</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">Checks passed</div>
-            <div id="rep-kpi-passed-delta" style="font-size:10px;color:#00AF73;margin-top:6px;font-weight:600;">↑ 3 vs previous scan</div>
+          <div class="stat-card" style="padding:14px 20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div class="stat-card-label" style="margin-bottom:0;">Checks Passed</div>
+              <span id="rep-kpi-passed-delta" style="font-size:11px;color:#00AF73;font-weight:600;">↑ 3 checks</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+              <span id="rep-kpi-passed" style="font-size:32px;font-weight:700;color:#00AF73;line-height:1;">69</span>
+              <span style="font-size:14px;color:var(--text-sec);font-weight:600;">of 73</span>
+              <span style="font-size:11px;color:var(--text-sec);">·</span>
+              <span style="font-size:11px;color:var(--text-sec);">94.5% pass rate</span>
+            </div>
           </div>
-          <div id="rep-kpi-failed-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;box-shadow:var(--shadow-sm);">
-            <div id="rep-kpi-failed" style="font-size:24px;font-weight:800;color:#FB3C44;">4</div>
-            <div id="rep-kpi-failed-lbl" style="font-size:11px;color:#FB3C44;margin-top:4px;">Checks failed</div>
-            <div id="rep-kpi-failed-delta" style="font-size:10px;color:#00AF73;margin-top:6px;font-weight:600;">↓ 1 vs previous scan</div>
+          <div class="stat-card" id="rep-kpi-failed-card" style="padding:14px 20px;cursor:pointer;" onclick="setReportType('fails');document.getElementById('rep-failed-table').scrollIntoView({behavior:'smooth',block:'start'});">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div class="stat-card-label" style="margin-bottom:0;">Checks Failed</div>
+              <span id="rep-kpi-failed-delta" style="font-size:11px;color:#00AF73;font-weight:600;">↓ 1 failed check</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+              <span id="rep-kpi-failed" style="font-size:32px;font-weight:700;color:#FB3C44;line-height:1;">4</span>
+              <span style="font-size:14px;color:var(--text-sec);font-weight:600;">of 73</span>
+              <span style="font-size:11px;color:var(--text-sec);">·</span>
+              <span style="font-size:11px;color:var(--text-sec);">2 nodes affected</span>
+              <span style="font-size:11px;color:var(--text-sec);">·</span>
+              <span class="badge badge-critical" style="font-size:9px;padding:1px 6px;">1 Critical</span>
+              <span class="badge badge-high" style="font-size:9px;padding:1px 6px;">2 High</span>
+              <span class="badge badge-medium" style="font-size:9px;padding:1px 6px;">1 Medium</span>
+            </div>
           </div>
         </div>
-        <div id="rep-scope-context" style="font-size:11px;color:var(--text-muted);margin:0 0 16px 2px;">4 policies · 4 nodes covered · CIS Windows 11 benchmark</div>
 
         <!-- filters moved into Failed checks table header below -->
 
