@@ -246,13 +246,19 @@ body {
 .demo-seg.on { background:var(--bg-surface); color:var(--text-default); box-shadow:var(--shadow-sm); }
 #exdemo-err.on { color:#FB3C44; }
 /* Report-type toggle (Compliance summary / Failed-checks / Full report) */
-.rep-type-btn { font-size:11px; font-weight:600; padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-sec); cursor:pointer; font-family:inherit; transition:all 0.15s; }
-.rep-type-btn:hover { border-color:var(--green1); }
-.rep-type-btn.on { border-color:var(--green2); background:rgba(63,200,120,0.12); color:var(--green1); }
+.rep-seg-btn { font-size:11px; font-weight:600; padding:6px 14px; border:none; border-right:1px solid var(--border); background:#F9FAFC; color:var(--text-sec); cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.rep-seg-btn:last-child { border-right:none; }
+.rep-seg-btn:hover { color:var(--text-default); }
+.rep-seg-btn.on { background:rgba(0,175,115,0.10); color:var(--green1); font-weight:700; }
+body.dark .rep-seg-btn { background:#00262A; }
+body.dark .rep-seg-btn.on { background:rgba(0,175,115,0.15); color:var(--green2); }
 /* Multi-select filter dropdown (Severity / Policy) */
 .ms-wrap { position:relative; display:inline-block; vertical-align:middle; }
 .ms-btn { display:inline-flex; align-items:center; height:32px; box-sizing:border-box; font-size:12px; font-weight:600; padding:0 26px 0 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-default); cursor:pointer; font-family:inherit; position:relative; white-space:nowrap; }
-.rep-scope-sel { height:32px; box-sizing:border-box; }
+.rep-scope-sel { height:32px; box-sizing:border-box; background:#F9FAFC !important; }
+#rep-scope-bar .csel-btn { background:#F9FAFC !important; min-width:140px; }
+body.dark .rep-scope-sel { background:#0A3035 !important; }
+body.dark #rep-scope-bar .csel-btn { background:#0A3035 !important; }
 .rep-prow, .rep-frow { transition:background 0.12s; }
 .rep-row-link { cursor:pointer; }
 .rep-row-link:hover { background:rgba(0,175,115,0.06) !important; }
@@ -11725,32 +11731,35 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
           </div>
           <div style="width:1px;height:26px;background:var(--border);"></div>
-          <button id="rep-export-csv" class="btn-outline" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="openExport(&#39;csv&#39;)">↓ Export CSV</button>
-          <button id="rep-export-pdf" class="btn-primary" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="openExport(&#39;pdf&#39;)">↓ Export PDF</button>
+          <button id="rep-export-csv" class="btn-secondary" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="openExport(&#39;csv&#39;)">↓ Download CSV</button>
+          <button id="rep-export-pdf" class="btn-primary" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="openExport(&#39;pdf&#39;)">↓ Download PDF</button>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
-        <!-- Config / scope bar -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-            <span style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;">Scope</span>
-            <select class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All environments</option><option>Production</option><option>Staging</option><option>Development</option></select>
+        <!-- Scope + Report view bar -->
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+          <div id="rep-scope-bar" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <!-- SCOPE -->
+            <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Scope</span>
+            <select onchange="renderReport()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All environments</option><option>Production</option><option>Staging</option><option>Development</option></select>
             <select id="rep-group" onchange="renderReport()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>All node groups</option><option>Windows 11</option><option>Servers</option><option>Developer Macs</option></select>
-            <select class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>CIS Windows 11</option><option>CIS Ubuntu 22.04</option><option>All benchmarks</option></select>
-            <select id="rep-when" onchange="reportWhenChange()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>Latest scan</option><option>As of date…</option></select>
+            <select onchange="renderReport()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>CIS Windows 11</option><option>CIS Ubuntu 22.04</option><option>All benchmarks</option></select>
+            <select id="rep-when" onchange="reportWhenChange()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option>Latest completed</option><option>As of date…</option></select>
             <input id="rep-date" type="date" value="2026-07-03" max="2026-07-15" onchange="reportDateChange()" class="rep-scope-sel" style="display:none;font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;font-family:inherit;">
             <button id="rep-when-clear" onclick="reportClearDate()" title="Back to latest scan" style="display:none;background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--text-muted);font-size:16px;line-height:1;">×</button>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;">
-            <span style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;">Report</span>
-            <button id="rt-summary" class="rep-type-btn" onclick="setReportType(&#39;summary&#39;)">Compliance summary</button>
-            <button id="rt-failed" class="rep-type-btn" onclick="setReportType(&#39;failed&#39;)">Failed-checks detail</button>
-            <button id="rt-full" class="rep-type-btn on" onclick="setReportType(&#39;full&#39;)">Full report</button>
-            <div style="margin-left:auto;display:flex;align-items:center;gap:14px;">
-              <button id="rep-reset" onclick="reportResetScope()" style="display:none;font-size:11px;font-weight:600;color:var(--text-sec);background:none;border:1px solid var(--border);cursor:pointer;padding:4px 10px;border-radius:6px;white-space:nowrap;">↺ Reset filters</button>
-              <span id="rep-when-label" style="font-size:11px;color:var(--text-sec);">On-demand · generated 3 Jul 2026 · 14:22</span>
+            <button id="rep-reset" onclick="reportResetScope()" style="display:none;font-size:11px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:4px 0;white-space:nowrap;">↺ Reset scope</button>
+            <!-- Divider -->
+            <div style="width:1px;height:24px;background:var(--border);margin:0 4px;"></div>
+            <!-- REPORT VIEW segmented control -->
+            <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Report</span>
+            <div class="rep-seg" style="display:inline-flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+              <button id="rt-summary" class="rep-seg-btn" onclick="setReportType(&#39;summary&#39;)">Summary</button>
+              <button id="rt-failed" class="rep-seg-btn" onclick="setReportType(&#39;failed&#39;)">Failed checks</button>
+              <button id="rt-full" class="rep-seg-btn on" onclick="setReportType(&#39;full&#39;)">All sections</button>
             </div>
+            <!-- Metadata -->
+            <span id="rep-when-label" style="margin-left:auto;font-size:11px;color:var(--text-sec);">Based on latest completed scans · Updated at 14:22</span>
           </div>
         </div>
 
