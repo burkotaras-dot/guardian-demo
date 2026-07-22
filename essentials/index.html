@@ -8894,17 +8894,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (none) none.style.display = (visFailed === 0 && totalFrows > 0) ? 'block' : 'none';
     }
     function reportResetScope() {
-      var sel = document.getElementById('rep-group');
-      if (sel) {
-        sel.value = 'All node groups';
-        if (typeof refreshCsel === 'function') { try { refreshCsel(sel); } catch (e) {} }
-      }
+      // Reset all scope selects to first option
+      document.querySelectorAll('#rep-scope-bar select.rep-scope-sel').forEach(function(s) {
+        s.selectedIndex = 0;
+        if (typeof refreshCsel === 'function') { try { refreshCsel(s); } catch (e) {} }
+      });
       var when = document.getElementById('rep-when');
-      if (when) {
-        when.value = 'Latest scan';
-        if (typeof refreshCsel === 'function') { try { refreshCsel(when); } catch (e) {} }
-        reportWhenChange();
-      }
+      if (when) reportWhenChange();
       msSetAll('ms-pol', true);
       msSetAll('ms-sev', true);
       setReportType('full');
