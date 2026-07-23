@@ -1198,6 +1198,11 @@ body.dark #v-dashboard .dash-main > .stat-grid > .stat-card:nth-child(4) { --car
 .stat-card-label { font-size:10px; font-weight:600; color:var(--text-sec); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:10px; }
 .stat-head { display:flex; align-items:center; gap:8px; min-height:20px; margin-bottom:12px; }
 .stat-head .stat-card-label { margin-bottom:0; white-space:nowrap; }
+.stat-ico { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.stat-legend-row { display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); }
+.stat-legend-row:last-child { border-bottom:none; }
+.stat-trend-ico { margin-left:auto; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; opacity:0.5; }
+body.dark .stat-legend-row { border-color:var(--p-dark-border); }
 .stat-info { position:relative; margin-left:auto; flex-shrink:0; width:20px; height:20px; border-radius:50%; border:1.5px solid #cbd5e1; background:none; display:flex; align-items:center; justify-content:center; cursor:help; color:#94a3b8; transition:all .15s; font-size:11px; font-weight:700; font-style:italic; font-family:Georgia,serif; line-height:1; }
 .stat-info:hover { border-color:var(--green2); color:var(--green2); }
 body.dark .stat-info { border-color:#475569; color:#64748b; }
@@ -1388,7 +1393,7 @@ body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.
 
 /* Dark mode: form controls need distinct bg from panels */
 /* Form controls: light bg + dark raised bg */
-.dk-form { background:var(--bg-surface); }
+.dk-form { background:#F9FAFC; }
 /* RULE (app-wide, 2026-07-21): in DARK, EVERY dropdown/select CONTROL trigger uses var(--bg-subtle)
    (#081E18) as its fill — the green-tinted subtle, NEVER grey rgba(255,255,255,0.07). Add any new
    select/dropdown trigger to this list. Toggles (.hh-toggle) are NOT dropdowns → stay grey. */
@@ -3382,23 +3387,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
               </div>
               <div style="flex:1;min-width:0;">
-                <div style="display:flex;flex-direction:column;gap:5px;" id="dash-unreconciled-sub">
-                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;flex-direction:column;" id="dash-unreconciled-sub">
+                  <div class="stat-legend-row">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span>Modified</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:#d97706;min-width:20px;text-align:right;">2</span><span style="font-size:10px;color:#d97706;font-weight:700;width:20px;padding-left:3px;"><span class="delta-arrow">↑</span>1</span></span>
                   </div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div class="stat-legend-row">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0;"></span>Added</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:#2563eb;min-width:20px;text-align:right;">1</span><span style="width:20px;display:inline-block;"></span></span>
                   </div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div class="stat-legend-row">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Removed</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">1</span><span style="width:20px;display:inline-block;"></span></span>
                   </div>
                 </div>
               </div>
             </div>
-            <button class="stat-link" onclick="event.stopPropagation();showView(&#39;changes&#39;)"><span class="stat-link-txt">Review now</span> <span class="arr">→</span></button>
+            <div style="display:flex;align-items:center;margin-top:auto;padding-top:4px;">
+              <button class="stat-link" style="padding-top:8px;" onclick="event.stopPropagation();showView(&#39;changes&#39;)"><span class="stat-link-txt">Review now</span> <span class="arr">→</span></button>
+            </div>
           </div>
 
           <!-- Compliance Score -->
@@ -3417,19 +3424,21 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
               </div>
               <div style="flex:1;min-width:0;">
-                <div style="display:flex;flex-direction:column;gap:5px;">
-                  <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showView(&#39;results&#39;)">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row" style="cursor:pointer;" onclick="showView(&#39;results&#39;)">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#3FC878;flex-shrink:0;"></span>Pass</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:var(--text-default);min-width:20px;text-align:right;">78</span><span style="font-size:10px;color:#FB3C44;font-weight:700;width:20px;padding-left:3px;"><span class="delta-arrow">↓</span>3</span></span>
                   </div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showView(&#39;results&#39;)">
+                  <div class="stat-legend-row" style="cursor:pointer;" onclick="showView(&#39;results&#39;)">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Fail</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">22</span><span style="width:20px;display:inline-block;"></span></span>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="stat-foot">Compliance Policy · Windows 11</div>
+            <div style="display:flex;align-items:center;margin-top:auto;padding-top:4px;">
+              <div class="stat-foot" style="padding-top:8px;">Compliance Policy · Windows 11</div>
+            </div>
           </div>
 
           <!-- Failed Checks -->
@@ -3449,23 +3458,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
               </div>
               <div style="flex:1;min-width:0;">
-                <div style="display:flex;flex-direction:column;gap:5px;">
-                  <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showView(&#39;results&#39;)">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row" style="cursor:pointer;" onclick="showView(&#39;results&#39;)">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Critical</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">9</span><span style="font-size:10px;color:#FB3C44;font-weight:700;width:20px;padding-left:3px;"><span class="delta-arrow">↑</span>2</span></span>
                   </div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showView(&#39;results&#39;)">
+                  <div class="stat-legend-row" style="cursor:pointer;" onclick="showView(&#39;results&#39;)">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></span>Medium</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:#f59e0b;min-width:20px;text-align:right;">12</span><span style="width:20px;display:inline-block;"></span></span>
                   </div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showView(&#39;results&#39;)">
+                  <div class="stat-legend-row" style="cursor:pointer;" onclick="showView(&#39;results&#39;)">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);flex-shrink:0;"></span>Low</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:var(--p-neutral-400);min-width:20px;text-align:right;">6</span><span style="width:20px;display:inline-block;"></span></span>
                   </div>
                 </div>
               </div>
             </div>
-            <button class="stat-link" onclick="event.stopPropagation();showView(&#39;results&#39;)">View all <span class="arr">→</span></button>
+            <div style="display:flex;align-items:center;margin-top:auto;padding-top:4px;">
+              <button class="stat-link" style="padding-top:8px;" onclick="event.stopPropagation();showView(&#39;results&#39;)">View all <span class="arr">→</span></button>
+            </div>
           </div>
 
           <!-- Nodes Monitored -->
@@ -3484,19 +3495,21 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 </div>
               </div>
               <div style="flex:1;min-width:0;">
-                <div style="display:flex;flex-direction:column;gap:5px;">
-                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#3FC878;flex-shrink:0;"></span>Local</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:var(--text-default);min-width:20px;text-align:right;">4</span><span style="width:20px;display:inline-block;"></span></span>
                   </div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div class="stat-legend-row">
                     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#6366f1;flex-shrink:0;"></span>Cloud</span>
                     <span style="display:flex;align-items:center;"><span style="font-size:12px;font-weight:700;color:#6366f1;min-width:20px;text-align:right;">10</span><span style="font-size:10px;color:var(--text-sec);font-weight:600;width:20px;padding-left:3px;"><span class="delta-arrow">↑</span>2</span></span>
                   </div>
                 </div>
               </div>
             </div>
-            <button class="stat-link" onclick="event.stopPropagation();showView(&#39;all-devices&#39;)">View all nodes <span class="arr">→</span></button>
+            <div style="display:flex;align-items:center;margin-top:auto;padding-top:4px;">
+              <button class="stat-link" style="padding-top:8px;" onclick="event.stopPropagation();showView(&#39;all-devices&#39;)">View all nodes <span class="arr">→</span></button>
+            </div>
           </div>
 
         </div>
@@ -7327,7 +7340,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <span style="font-size:11px;color:var(--green2);font-weight:600;">Effective immediately after save</span>
             </div>
             <!-- Previous assignment info row -->
-            <div style="display:flex;align-items:center;gap:7px;padding-top:4px;border-top:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:7px;padding-top:10px;border-top:1px solid var(--border);">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <span style="font-size:11px;color:var(--text-sec);">This policy was previously assigned to: <strong style="color:var(--text-default);">All Windows Devices only</strong></span>
             </div>
