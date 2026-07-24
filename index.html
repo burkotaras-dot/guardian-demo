@@ -2628,7 +2628,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       </div>
       <div class="sidebar-item" id="sb-cm-list" onclick="showView(&#39;cm-list&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>
-        Connection Managers
+        CM Groups
         <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
       </div>
       <div class="sidebar-item" id="sb-integrations" onclick="showView(&#39;settings-integrations&#39;)">
@@ -2847,11 +2847,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div id="al-port-hint" style="font-size:11px;color:var(--text-sec);margin:-8px 0 18px;line-height:1.5;"></div>
 
           <!-- CM picker -->
-          <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Connection Manager</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Connection Manager Group</div>
           <div id="cm-rec-hint" style="font-size:11px;color:var(--text-sec);margin-bottom:12px;line-height:1.5;"></div>
           <div id="cm-list"></div>
 
-          <button onclick="go('s-cm-setup')" style="background:none;border:none;color:var(--green1);font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;font-family:inherit;">Don't see a suitable one? Set up a new Connection Manager →</button>
+          <button onclick="go('s-cm-setup')" style="background:none;border:none;color:var(--green1);font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;font-family:inherit;">Don't see a suitable one? Create a new group →</button>
 
           <!-- Credentials -->
           <div style="font-size:13px;font-weight:700;color:var(--text-default);margin:18px 0 4px;">Credentials</div>
@@ -2922,10 +2922,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
           <!-- Header + stepper -->
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
-            <div style="font-size:20px;font-weight:700;color:var(--text-default);">Set up a Connection Manager</div>
+            <div style="font-size:20px;font-weight:700;color:var(--text-default);">Create Connection Manager Group</div>
             <span style="font-size:10px;font-weight:700;color:#92400e;background:var(--bg-warning);border:1px solid var(--bg-warning-border);border-radius:20px;padding:2px 9px;">One-time setup</span>
           </div>
-          <div style="font-size:13px;color:var(--text-sec);margin-bottom:18px;line-height:1.5;">A Connection Manager is a lightweight relay you install once on your network. Guardian sends agentless scans through it to reach targets over WinRM (Windows) or SSH (Linux/macOS) — nothing is installed on the nodes themselves.</div>
+          <div style="font-size:13px;color:var(--text-sec);margin-bottom:18px;line-height:1.5;">A Connection Manager Group organises one or more lightweight relays on your network. Guardian sends agentless scans through them to reach targets over WinRM (Windows) or SSH (Linux/macOS) — nothing is installed on the nodes themselves.</div>
 
           <div id="cmw-step-label" style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;">Connection Manager setup · Step 1 of 4</div>
           <div class="cmw-stepper" style="display:flex;gap:6px;margin-bottom:22px;">
@@ -2955,8 +2955,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="cmw-panel" id="cmw-step-2" style="display:none;">
             <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px 22px;">
               <div class="form-group">
-                <label class="form-label" for="cmw-name">Connection Manager name</label>
-                <input id="cmw-name" type="text" class="form-input" placeholder="e.g. CM-LONDON-02">
+                <label class="form-label" for="cmw-name">Connection Manager Group name</label>
+                <input id="cmw-name" type="text" class="form-input" placeholder="e.g. London DC Group">
               </div>
               <div class="form-group">
                 <label class="form-label" for="cmw-loc">Deployment location</label>
@@ -7972,8 +7972,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (selectedCM === null) selectedCM = recId;
       var hint = document.getElementById('cm-rec-hint');
       if (hint) hint.textContent = recId
-        ? ('Recommended for your ' + osName + ' node — based on the OS your existing Connection Managers already scan. Change it below if you prefer.')
-        : ('No installed Connection Manager scans ' + osName + ' yet — set one up below.');
+        ? ('Recommended for your ' + osName + ' node — based on the OS your existing CM groups already scan. Change it below if you prefer.')
+        : ('No CM group scans ' + osName + ' yet — create one below.');
       var list = document.getElementById('cm-list');
       if (!list) return;
       list.innerHTML = CONNECTION_MANAGERS.map(function (c) {
@@ -8160,7 +8160,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       cmSetup.step = n;
       var names = { 1:'Prerequisites', 2:'Install & register', 3:'Connectivity' };
       var lbl = document.getElementById('cmw-step-label');
-      if (lbl) lbl.textContent = 'Connection Manager setup · Step ' + n + ' of 3 — ' + (names[n] || '');
+      if (lbl) lbl.textContent = 'CM Group setup · Step ' + n + ' of 3 — ' + (names[n] || '');
       [1, 2, 3].forEach(function (i) {
         var panel = document.getElementById('cmw-step-' + i);
         if (panel) panel.style.display = i === n ? '' : 'none';
@@ -8325,7 +8325,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var s2=document.getElementById('cm-stat-connected');
       var s3=document.getElementById('cm-stat-offline');
       var s4=document.getElementById('cm-stat-nodes');
-      if(s1) s1.innerHTML='<div class="sm-label">Total</div><div class="sm-val">'+cms.length+'</div><div class="sm-sub">Connection Managers</div>';
+      if(s1) s1.innerHTML='<div class="sm-label">Total</div><div class="sm-val">'+cms.length+'</div><div class="sm-sub">CM Groups</div>';
       if(s2) s2.innerHTML='<div class="sm-label">Healthy</div><div class="sm-val" style="color:#059669;">'+connCount+'</div><div class="sm-sub">Online &amp; reporting</div>';
       if(s3) s3.innerHTML='<div class="sm-label">Needs attention</div><div class="sm-val" style="color:'+(offCount?'#d97706':'#059669')+';">'+offCount+'</div><div class="sm-sub">'+attSub+'</div>';
       if(s4) s4.innerHTML='<div class="sm-label">Assigned nodes</div><div class="sm-val">'+totalNodes+'</div><div class="sm-sub">Across all CMs</div>';
@@ -12710,10 +12710,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
       <div class="dash-main" style="max-width:100%;">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
         <div>
-          <div class="page-title">Connection Managers</div>
-          <div class="page-sub">Lightweight relays that reach your nodes over WinRM / SSH</div>
+          <div class="page-title">Connection Manager Groups</div>
+          <div class="page-sub">Organise lightweight relays that reach your nodes over WinRM / SSH</div>
         </div>
-        <button class="btn-primary" onclick="go('s-cm-setup')" style="width:auto;padding:10px 20px;">+ Add Connection Manager</button>
+        <button class="btn-primary" onclick="go('s-cm-setup')" style="width:auto;padding:10px 20px;">+ Create Group</button>
       </div>
 
       <!-- Summary cards -->
@@ -12809,7 +12809,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
           </div>
           <div id="cmd-nodes"></div>
-          <div id="cmd-nodes-empty" style="display:none;padding:32px;text-align:center;font-size:12px;color:var(--text-muted);">No nodes assigned to this Connection Manager</div>
+          <div id="cmd-nodes-empty" style="display:none;padding:32px;text-align:center;font-size:12px;color:var(--text-muted);">No nodes assigned to this group</div>
         </div>
 
         <!-- Recent Activity -->
@@ -14622,7 +14622,7 @@ const LABELS = {
   s07:'s07 · Scan in Progress',
   's-method':'Add Node · Scan Method',
   's-agentless':'Add Node · Agentless',
-  's-cm-setup':'Connection Manager · Setup',
+  's-cm-setup':'CM Group · Setup',
   results:'s08 · CIS Results', remediation:'s09 · Remediation',
   dashboard:'s11 · Dashboard',
   changes:'s12 · Detected Drift Summary',
@@ -14643,7 +14643,7 @@ const LABELS = {
   'add-check':'Policy · Add Check',
   'edit-check':'Policy · Edit Check'
 ,'j3-connect':'J3 · Connect AWS','j3-connecting':'J3 · Connecting','j3-connected':'J3 · Connected','j3-syncing':'J3 · Syncing','j3-inventory':'J3 · Node Inventory','j3-cmdb':'J3 · CMDB Match','j3-matched':'J3 · Match Confirmed','j3-scan-config':'J3 · Scan Config','j3-scanning':'J3 · Scanning','j3-scan-complete':'J3 · Scan Complete','j3-results':'J3 · Results','j3-connect-failed':'J3 · Connection Failed','j3-no-resources':'J3 · No Resources','j3-manual-match':'J3 · Manual Match','j3-scan-failed':'J3 · Scan Failed'
-,'scan-schedule':'Scan Schedules','cm-list':'Connection Managers','cm-detail':'Connection Manager · Detail','settings-integrations':'Settings · Integrations','secret-server-config':'Settings · Secret Server','scan-failed':'Node · Scan Failed','reports':'Compliance Reports'
+,'scan-schedule':'Scan Schedules','cm-list':'Connection Manager Groups','cm-detail':'CM Group · Detail','settings-integrations':'Settings · Integrations','secret-server-config':'Settings · Secret Server','scan-failed':'Node · Scan Failed','reports':'Compliance Reports'
 ,'j4-connect':'J4 · Configure ServiceNow','j4-connecting':'J4 · Connecting','j4-connected':'J4 · Connected','j4-syncing':'J4 · Syncing Nodes','j4-match':'J4 · Match Nodes','j4-active':'J4 · Recon Active','j4-summary':'J4 · Summary','j4-connect-failed':'J4 · Connection Failed','j4-no-crs':'J4 · No CRs Found','j4-partial-match':'J4 · Partial Match'
 ,'cmdb-connect':'CMDB · Connect','cmdb-connecting':'CMDB · Connecting','cmdb-connect-failed':'CMDB · Connection Failed','cmdb-browse':'CMDB · Select Nodes','cmdb-credentials':'CMDB · Credentials','cmdb-importing':'CMDB · Importing','cmdb-complete':'CMDB · Complete'
 ,'csv-import':'CSV · Upload','csv-preview':'CSV · Review','csv-importing':'CSV · Importing','csv-complete':'CSV · Complete'};
@@ -14911,7 +14911,7 @@ function showView(name) {
       _bc = `<span class="bc-link" onclick="showView('${_r.view}')">${_r.label}</span><span class="bc-sep">›</span><span class="bc-cur">Create New Policy</span>`;
     }
     if (name === 'cm-detail' && _currentCM) {
-      _bc = `<span class="bc-link" onclick="showView('cm-list')">Connection Managers</span><span class="bc-sep">›</span><span class="bc-cur">${_currentCM.name}</span>`;
+      _bc = `<span class="bc-link" onclick="showView('cm-list')">CM Groups</span><span class="bc-sep">›</span><span class="bc-cur">${_currentCM.name}</span>`;
     }
     if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
   }
