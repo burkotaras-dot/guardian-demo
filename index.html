@@ -1393,7 +1393,7 @@ body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.
 
 /* Dark mode: form controls need distinct bg from panels */
 /* Form controls: light bg + dark raised bg */
-.dk-form { background:#F9FAFC; }
+.dk-form { background:#F1F5F9; }
 /* RULE (app-wide, 2026-07-21): in DARK, EVERY dropdown/select CONTROL trigger uses var(--bg-subtle)
    (#081E18) as its fill — the green-tinted subtle, NEVER grey rgba(255,255,255,0.07). Add any new
    select/dropdown trigger to this list. Toggles (.hh-toggle) are NOT dropdowns → stay grey. */
@@ -1985,7 +1985,7 @@ body.dark .policy-menu > div { color: #C0C0C0 !important; }
 .stat-mini .sm-label { font-size:9px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
 .stat-mini .sm-val { font-size:20px; font-weight:800; color:var(--text-default); }
 .stat-mini .sm-sub { font-size:10px; color:var(--text-muted); margin-top:1px; }
-.cm-row { display:grid; grid-template-columns:1.4fr 1fr 1.4fr 1fr 0.7fr 0.7fr 50px; min-width:700px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
+.cm-row { display:grid; grid-template-columns:1.4fr 0.8fr 1.6fr 1.2fr 0.7fr 50px; min-width:700px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
 .cm-row:hover, .cm-row-node:hover { background:var(--bg-canvas); }
 body.dark .cm-row:hover, body.dark .cm-row-node:hover { background:#012F32; }
 .cmd-chip { display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:var(--bg-subtle);color:var(--text-default); }
@@ -1994,13 +1994,13 @@ body.dark .cmd-chip { background:rgba(255,255,255,0.07) !important;border-color:
 body.dark .cmd-mono { background:rgba(255,255,255,0.07) !important;border-color:rgba(255,255,255,0.15) !important; }
 .cm-row:last-child { border-bottom:none; }
 .cm-status { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; }
-.cm-status[data-s="connected"] { background:rgba(16,185,129,0.1); color:#059669; border:1px solid rgba(16,185,129,0.3); }
+.cm-status[data-s="connected"], .cm-status[data-s="active"] { background:rgba(16,185,129,0.1); color:#059669; border:1px solid rgba(16,185,129,0.3); }
 .cm-status[data-s="offline"]   { background:rgba(100,116,139,0.1); color:#64748b; border:1px solid rgba(100,116,139,0.3); }
 .cm-status[data-s="error"]     { background:rgba(251,60,68,0.1); color:#dc2626; border:1px solid rgba(251,60,68,0.3); }
 .cm-status[data-s="pending"]   { background:rgba(245,158,11,0.1); color:#d97706; border:1px solid rgba(245,158,11,0.3); }
 .cm-status[data-s="update"]    { background:rgba(59,130,246,0.1); color:#2563eb; border:1px solid rgba(59,130,246,0.3); }
 .cm-status[data-s="disabled"]  { background:rgba(100,116,139,0.08); color:#94a3b8; border:1px solid rgba(100,116,139,0.2); }
-body.dark .cm-status[data-s="connected"] { background:rgba(16,185,129,0.12); color:#10B981; border-color:rgba(16,185,129,0.35); }
+body.dark .cm-status[data-s="connected"], body.dark .cm-status[data-s="active"] { background:rgba(16,185,129,0.12); color:#10B981; border-color:rgba(16,185,129,0.35); }
 body.dark .cm-status[data-s="offline"]   { background:rgba(148,163,184,0.1); color:#94a3b8; border-color:rgba(148,163,184,0.25); }
 body.dark .cm-status[data-s="error"]     { background:rgba(251,60,68,0.12); color:#FB3C44; border-color:rgba(251,60,68,0.35); }
 body.dark .cm-status[data-s="pending"]   { background:rgba(245,158,11,0.12); color:#F59E0B; border-color:rgba(245,158,11,0.35); }
@@ -7951,13 +7951,76 @@ body.dark .theme-toggle .icon-moon { display: none; }
     // ── Agentless / Connection Managers ──
     var addNodeOS = 'windows';
     var OS_LABEL = { windows: 'Windows', macos: 'macOS', linux: 'Linux' };
-    var CONNECTION_MANAGERS = [
-      { id: 'cm1', name: 'CM-LONDON-01', host: '10.0.4.12', os: ['windows', 'linux'], nodes: 28, status: 'connected', version: '2.4.1', location: 'On-prem · London DC', lastSeen: '2 min ago', scanReady: true },
-      { id: 'cm2', name: 'CM-AWS-EUWEST', host: '10.2.1.5', os: ['linux'], nodes: 41, status: 'connected', version: '2.4.1', location: 'AWS VPC · eu-west-1', lastSeen: '1 min ago', scanReady: true },
-      { id: 'cm3', name: 'CM-CORP-MAC', host: '10.0.7.3', os: ['macos'], nodes: 9, status: 'offline', version: '2.3.0', location: 'On-prem · Corp HQ', lastSeen: '3 hours ago', scanReady: false, scanReadyReason: 'Connection Manager offline', issueTitle: 'Host unreachable', issueDesc: 'Connection lost — host unreachable (timeout). Last seen 3 hours ago.', issueCta: 'Retry connection', issueCtaAction: 'retry' },
-      { id: 'cm4', name: 'CM-STAGING-01', host: '10.5.2.8', os: ['windows'], nodes: 0, status: 'error', version: '2.4.1', location: 'On-prem · Staging', lastSeen: '45 min ago', scanReady: false, scanReadyReason: 'Connectivity test failed', issueTitle: 'Certificate expired', issueDesc: 'Authentication failed because the Connection Manager certificate has expired.', issueCta: 'Renew certificate', issueCtaAction: 'renew' },
-      { id: 'cm5', name: 'CM-AZURE-WE', host: '10.3.1.9', os: ['windows', 'linux'], nodes: 15, status: 'connected', version: '2.2.0', location: 'Azure VNet · west-europe', lastSeen: '30 sec ago', scanReady: true, updateAvailable: true }
+    // ── CMG → CM instances → assigned nodes ──
+    var CM_GROUPS = [
+      { id: 'grp1', name: 'London DC Group', state: 'active', apiKey: 'grd_k8x…masked', location: 'On-prem · London DC',
+        instances: [
+          { id:'cm1', reportedName:'CM-LONDON-01', status:'connected', lastContact:'2 min ago', host:'10.0.4.12', protocols:['WinRM','SSH'] },
+          { id:'cm2', reportedName:'CM-LONDON-02', status:'offline',   lastContact:'3 hours ago', host:'10.0.4.13', protocols:['WinRM'] }
+        ],
+        assignedNodes: [
+          { name:'WIN-LAPTOP-01', os:'Windows 11', status:'online', lastScan:'2 min ago' },
+          { name:'WIN-LAPTOP-02', os:'Windows 11', status:'online', lastScan:'5 min ago' },
+          { name:'LNX-SRV-01', os:'Ubuntu 22.04', status:'online', lastScan:'3 min ago' },
+          { name:'WIN-DESKTOP-03', os:'Windows 10', status:'offline', lastScan:'1 day ago' },
+          { name:'LNX-SRV-02', os:'RHEL 9', status:'online', lastScan:'4 min ago' }
+        ], nodeCount: 28 },
+      { id: 'grp2', name: 'AWS EU-West', state: 'active', apiKey: 'grd_m3w…masked', location: 'AWS VPC · eu-west-1',
+        instances: [
+          { id:'cm3', reportedName:'CM-AWS-EUWEST', status:'connected', lastContact:'1 min ago', host:'10.2.1.5', protocols:['SSH'] }
+        ],
+        assignedNodes: [
+          { name:'AWS-WEB-01', os:'Amazon Linux 2', status:'online', lastScan:'1 min ago' },
+          { name:'AWS-WEB-02', os:'Amazon Linux 2', status:'online', lastScan:'1 min ago' },
+          { name:'AWS-API-01', os:'Ubuntu 22.04', status:'online', lastScan:'2 min ago' },
+          { name:'AWS-API-02', os:'Ubuntu 22.04', status:'online', lastScan:'2 min ago' }
+        ], nodeCount: 41 },
+      { id: 'grp3', name: 'Corp HQ Macs', state: 'active', apiKey: 'grd_q9p…masked', location: 'On-prem · Corp HQ',
+        instances: [
+          { id:'cm4', reportedName:'CM-CORP-MAC', status:'registered_not_connected', lastContact:'Never', host:'—', protocols:['SSH'] }
+        ],
+        assignedNodes: [
+          { name:'MAC-DEV-01', os:'macOS 15', status:'offline', lastScan:'3 hours ago' },
+          { name:'MAC-DEV-02', os:'macOS 14', status:'offline', lastScan:'3 hours ago' }
+        ], nodeCount: 9 },
+      { id: 'grp4', name: 'Azure West Europe', state: 'active', apiKey: 'grd_v2a…masked', location: 'Azure VNet · west-europe',
+        instances: [
+          { id:'cm5', reportedName:'CM-AZURE-WE-01', status:'connected', lastContact:'30 sec ago', host:'10.3.1.9', protocols:['WinRM','SSH'] },
+          { id:'cm6', reportedName:'CM-AZURE-WE-02', status:'connected', lastContact:'45 sec ago', host:'10.3.1.10', protocols:['WinRM','SSH'] }
+        ],
+        assignedNodes: [
+          { name:'AZ-WIN-01', os:'Windows Server 2022', status:'online', lastScan:'30 sec ago' },
+          { name:'AZ-LNX-01', os:'Ubuntu 22.04', status:'online', lastScan:'45 sec ago' },
+          { name:'AZ-WIN-02', os:'Windows Server 2022', status:'online', lastScan:'1 min ago' }
+        ], nodeCount: 15 },
+      { id: 'grp5', name: 'Staging Lab', state: 'disabled', apiKey: 'grd_t7z…masked', location: 'On-prem · Staging',
+        instances: [
+          { id:'cm7', reportedName:'CM-STAGING-01', status:'offline', lastContact:'2 days ago', host:'10.5.2.8', protocols:['WinRM'] }
+        ],
+        assignedNodes: [], nodeCount: 0 }
     ];
+    // Helper: total nodes across all groups
+    function _cmgTotalNodes(g) { return g.nodeCount || g.assignedNodes.length; }
+    // Helper: aggregated health summary string from instances
+    function _cmgHealthSummary(g) {
+      if (g.state === 'disabled') return g.instances.length + ' CM instance' + (g.instances.length !== 1 ? 's' : '') + ' · ' + _cmgTotalNodes(g) + ' assigned nodes';
+      var conn = 0, off = 0, reg = 0;
+      g.instances.forEach(function(i) { if (i.status === 'connected') conn++; else if (i.status === 'offline') off++; else reg++; });
+      var parts = [];
+      if (conn) parts.push(conn + ' connected');
+      if (off) parts.push(off + ' offline');
+      if (reg) parts.push(reg + ' registered, not connected');
+      return parts.join(' · ') || 'No CM instances';
+    }
+    // Backward compat: flat list for agentless picker (maps groups to old shape)
+    var CONNECTION_MANAGERS = CM_GROUPS.map(function(g) {
+      var protos = [];
+      g.instances.forEach(function(i) { i.protocols.forEach(function(p) { if (protos.indexOf(p) === -1) protos.push(p); }); });
+      var os = [];
+      if (protos.indexOf('WinRM') !== -1) os.push('windows');
+      if (protos.indexOf('SSH') !== -1) { os.push('linux'); os.push('macos'); }
+      return { id: g.id, name: g.name, host: g.instances[0] ? g.instances[0].host : '—', os: os, nodes: _cmgTotalNodes(g), status: g.state === 'disabled' ? 'disabled' : 'connected' };
+    });
     var selectedCM = null;
     function recommendedCMId() {
       var m = CONNECTION_MANAGERS.filter(function (c) { return c.os.indexOf(addNodeOS) !== -1; });
@@ -8108,12 +8171,18 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
     }
     function simulateCMInstalled() {
-      var newId = 'cm-new';
-      if (!CONNECTION_MANAGERS.some(function (c) { return c.id === newId; })) {
-        CONNECTION_MANAGERS.push({ id: newId, name: 'CM-' + (OS_LABEL[addNodeOS] || 'NEW').toUpperCase() + '-NEW', host: '10.0.9.20', os: [addNodeOS], nodes: 0 });
+      var newId = 'grp-new';
+      if (!CM_GROUPS.some(function (g) { return g.id === newId; })) {
+        var os = addNodeOS || 'windows';
+        var protos = os === 'windows' ? ['WinRM'] : ['SSH'];
+        CM_GROUPS.push({ id: newId, name: 'New Group', state: 'active', apiKey: 'grd_new…masked', location: 'On-prem',
+          instances: [{ id:'cm-new-1', reportedName:'CM-NEW-01', status:'connected', lastContact:'Just now', host:'10.0.9.20', protocols: protos }],
+          assignedNodes: [], nodeCount: 0 });
+        // Rebuild flat compat list
+        CONNECTION_MANAGERS.push({ id: newId, name: 'New Group', host: '10.0.9.20', os: [os], nodes: 0, status: 'connected' });
       }
       selectedCM = newId;
-      if (typeof scToast === 'function') scToast('Connection Manager registered — continuing agentless setup');
+      if (typeof scToast === 'function') scToast('CM Group created — continuing agentless setup');
       go('s-agentless');
     }
 
@@ -8225,12 +8294,17 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }
     }
     function cmSetupFinish(outcome) {
-      var name = ((document.getElementById('cmw-name') || {}).value || '').trim() || ('CM-' + (OS_LABEL[addNodeOS] || 'NEW').toUpperCase() + '-NEW');
+      var name = ((document.getElementById('cmw-name') || {}).value || '').trim() || 'New Group';
       var loc = (document.getElementById('cmw-loc') || {}).value || 'onprem';
+      var locLabel = { onprem:'On-prem', aws:'AWS VPC', azure:'Azure VNet', other:'Other' }[loc] || 'On-prem';
       var host = { onprem:'10.0.9.20', aws:'10.2.4.7', azure:'10.3.1.9', other:'10.0.9.20' }[loc] || '10.0.9.20';
-      var newId = 'cm-' + Date.now();
-      var status = outcome === 'notready' ? 'not-ready' : 'connected';
-      CONNECTION_MANAGERS.push({ id: newId, name: name, host: host, os: [addNodeOS], nodes: 0, status: status });
+      var newId = 'grp-' + Date.now();
+      var os = addNodeOS || 'windows';
+      var protos = os === 'windows' ? ['WinRM'] : ['SSH'];
+      CM_GROUPS.push({ id: newId, name: name, state: 'active', apiKey: 'grd_' + newId.slice(-6) + '…masked', location: locLabel,
+        instances: [{ id:'cm-auto-'+Date.now(), reportedName:'Awaiting check-in', status:'registered_not_connected', lastContact:'—', host: host, protocols: protos }],
+        assignedNodes: [], nodeCount: 0 });
+      CONNECTION_MANAGERS.push({ id: newId, name: name, host: host, os: [os], nodes: 0, status: 'connected' });
       cmSetup.newId = newId; cmSetup.newName = name; cmSetup.result = outcome;
       cmRenderFinish(outcome, name);
     }
@@ -8261,9 +8335,16 @@ body.dark .theme-toggle .icon-moon { display: none; }
       go('s-agentless');
     }
 
-    // ── Connection Manager List ──
-    var CM_STATUS_LABEL = { connected:'Connected', offline:'Offline', error:'Error', pending:'Installation pending', update:'Update required', disabled:'Disabled' };
-    var CM_STATUS_DOT = { connected:'#10B981', offline:'#94a3b8', error:'#FB3C44', pending:'#F59E0B', update:'#3B82F6', disabled:'#64748b' };
+    // ── Connection Manager Group List ──
+    // CMG state colours
+    var CMG_STATE_LABEL = { active:'Active', disabled:'Disabled' };
+    var CMG_STATE_DOT   = { active:'#10B981', disabled:'#64748b' };
+    // CM instance status colours
+    var CM_INST_LABEL = { connected:'Connected', offline:'Offline', registered_not_connected:'Registered, not connected' };
+    var CM_INST_DOT   = { connected:'#10B981', offline:'#94a3b8', registered_not_connected:'#F59E0B' };
+    // Backward compat aliases (used by detail page for now)
+    var CM_STATUS_LABEL = { connected:'Connected', offline:'Offline', disabled:'Disabled', registered_not_connected:'Registered, not connected' };
+    var CM_STATUS_DOT = { connected:'#10B981', offline:'#94a3b8', disabled:'#64748b', registered_not_connected:'#F59E0B' };
     var _cmStatusFilter = 'all';
 
     function toggleCMStatusDrop() {
@@ -8309,128 +8390,92 @@ body.dark .theme-toggle .icon-moon { display: none; }
     function renderCMList() {
       var rows = document.getElementById('cm-rows');
       if (!rows) return;
-      var cms = CONNECTION_MANAGERS;
-      var connCount = cms.filter(function(c){return c.status==='connected';}).length;
-      var offCount = cms.filter(function(c){return c.status!=='connected'&&c.status!=='disabled';}).length;
-      var totalNodes = cms.reduce(function(s,c){return s+c.nodes;},0);
-
-      var offlineCount = cms.filter(function(c){return c.status==='offline';}).length;
-      var errorCount = cms.filter(function(c){return c.status==='error';}).length;
-      var attBreak = [];
-      if(offlineCount) attBreak.push(offlineCount+' Offline');
-      if(errorCount) attBreak.push(errorCount+' Error');
-      var attSub = attBreak.length ? attBreak.join(' · ') : 'All healthy';
+      var groups = CM_GROUPS;
+      var activeCount = groups.filter(function(g){return g.state==='active';}).length;
+      var disabledCount = groups.filter(function(g){return g.state==='disabled';}).length;
+      var totalNodes = groups.reduce(function(s,g){return s+_cmgTotalNodes(g);},0);
+      var totalInstances = groups.reduce(function(s,g){return s+g.instances.length;},0);
+      // Count instances with issues (offline or registered_not_connected) across active groups
+      var connInst = 0, issueInst = 0;
+      groups.forEach(function(g){ if(g.state==='active') g.instances.forEach(function(i){ if(i.status==='connected') connInst++; else issueInst++; }); });
 
       var s1=document.getElementById('cm-stat-total');
       var s2=document.getElementById('cm-stat-connected');
       var s3=document.getElementById('cm-stat-offline');
       var s4=document.getElementById('cm-stat-nodes');
-      if(s1) s1.innerHTML='<div class="sm-label">Total</div><div class="sm-val">'+cms.length+'</div><div class="sm-sub">CM Groups</div>';
-      if(s2) s2.innerHTML='<div class="sm-label">Healthy</div><div class="sm-val" style="color:#059669;">'+connCount+'</div><div class="sm-sub">Online &amp; reporting</div>';
-      if(s3) s3.innerHTML='<div class="sm-label">Needs attention</div><div class="sm-val" style="color:'+(offCount?'#d97706':'#059669')+';">'+offCount+'</div><div class="sm-sub">'+attSub+'</div>';
-      if(s4) s4.innerHTML='<div class="sm-label">Assigned nodes</div><div class="sm-val">'+totalNodes+'</div><div class="sm-sub">Across all CMs</div>';
+      if(s1) s1.innerHTML='<div class="sm-label">Total</div><div class="sm-val">'+groups.length+'</div><div class="sm-sub">CM Groups</div>';
+      if(s2) s2.innerHTML='<div class="sm-label">Active</div><div class="sm-val" style="color:#059669;">'+activeCount+'</div><div class="sm-sub">'+connInst+' CM instances connected</div>';
+      if(s3) s3.innerHTML='<div class="sm-label">Disabled</div><div class="sm-val" style="color:'+(disabledCount?'#64748b':'#059669')+';">'+disabledCount+'</div><div class="sm-sub">'+(disabledCount ? disabledCount+' group'+(disabledCount!==1?'s':'')+' paused' : 'None disabled')+'</div>';
+      if(s4) s4.innerHTML='<div class="sm-label">Assigned nodes</div><div class="sm-val">'+totalNodes+'</div><div class="sm-sub">Across '+totalInstances+' CM instances</div>';
 
       // Update sidebar count
       var sbCount = document.querySelector('#sb-cm-list span');
-      if(sbCount) sbCount.textContent = CONNECTION_MANAGERS.length;
+      if(sbCount) sbCount.textContent = groups.length;
 
       // Apply filters
       var searchVal = (document.getElementById('cm-search') || {}).value || '';
       var q = searchVal.toLowerCase().trim();
-      var filtered = cms.filter(function(c) {
-        // Status filter
-        if (_cmStatusFilter === 'attention') {
-          if (c.status === 'connected' || c.status === 'disabled') return false;
-        } else if (_cmStatusFilter !== 'all') {
-          if (c.status !== _cmStatusFilter) return false;
-        }
+      var filtered = groups.filter(function(g) {
+        // State filter
+        if (_cmStatusFilter === 'active') { if (g.state !== 'active') return false; }
+        else if (_cmStatusFilter === 'disabled') { if (g.state !== 'disabled') return false; }
+        else if (_cmStatusFilter === 'has-connected') { if (g.state === 'disabled' || !g.instances.some(function(i){return i.status==='connected';})) return false; }
+        else if (_cmStatusFilter === 'no-connected') { if (g.state === 'disabled' || g.instances.some(function(i){return i.status==='connected';})) return false; }
         // Search filter
         if (q) {
-          var haystack = (c.name + ' ' + c.location + ' ' + c.host + ' v' + c.version).toLowerCase();
+          var haystack = (g.name + ' ' + g.location + ' ' + g.instances.map(function(i){return i.reportedName;}).join(' ')).toLowerCase();
           if (haystack.indexOf(q) === -1) return false;
         }
         return true;
       });
 
-      rows.innerHTML = filtered.map(function(c) {
-        var st = c.status || 'connected';
-        var label = CM_STATUS_LABEL[st] || st;
-        var updateBadge = c.updateAvailable
-          ? ' <span class="cm-status cm-update-badge" data-s="update"><span class="cm-dot" style="background:'+CM_STATUS_DOT['update']+'"></span> Update</span>'
-          : '';
-        var readyBadge = c.scanReady
-          ? '<span class="cm-status" data-s="connected" style="font-size:10px;padding:2px 8px;">Ready</span>'
-          : '<span class="cm-status" data-s="offline" style="font-size:10px;padding:2px 8px;">Not ready</span>';
-        return '<div class="cm-row" onclick="showCMDetail(\''+c.id+'\')">'
+      rows.innerHTML = filtered.map(function(g) {
+        var st = g.state;
+        var stLabel = CMG_STATE_LABEL[st] || st;
+        var stDot = CMG_STATE_DOT[st] || '#94a3b8';
+        var health = _cmgHealthSummary(g);
+        var nodes = _cmgTotalNodes(g);
+        return '<div class="cm-row" onclick="showCMDetail(\''+g.id+'\')">'
           + '<div style="display:flex;align-items:flex-start;gap:8px;padding-top:2px;">'
           +   '<svg style="flex-shrink:0;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>'
-          +   '<div><div style="font-weight:600;color:var(--text-default);">'+c.name+'</div><div style="font-size:10px;color:var(--text-sec);margin-top:1px;">'+(c.updateAvailable ? 'v'+c.version+' <span style="color:var(--green1);">→ v2.4.1</span>' : 'v'+c.version)+'</div></div>'
+          +   '<div><div style="font-weight:600;color:var(--text-default);">'+g.name+'</div><div style="font-size:10px;color:var(--text-sec);margin-top:1px;">'+g.instances.length+' instance'+(g.instances.length!==1?'s':'')+'</div></div>'
           + '</div>'
-          + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="cm-status" data-s="'+st+'"><span class="cm-dot" style="background:'+CM_STATUS_DOT[st]+'"></span> '+label+'</span>'+updateBadge+'</div>'
-          + '<div style="color:var(--text-sec);">'+(c.location || '—')+'</div>'
-          + '<div style="color:var(--text-sec);">'+(c.lastSeen || '—')+'</div>'
-          + '<div style="font-weight:600;color:var(--text-default);">'+c.nodes+'</div>'
-          + '<div>'+readyBadge+'</div>'
-          + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="event.stopPropagation();cmRowMenu(this,\''+c.id+'\')">⋯</button></div>'
+          + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="cm-status" data-s="'+st+'"><span class="cm-dot" style="background:'+stDot+'"></span> '+stLabel+'</span></div>'
+          + '<div style="color:var(--text-sec);font-size:11px;">'+health+'</div>'
+          + '<div style="color:var(--text-sec);">'+(g.location || '—')+'</div>'
+          + '<div style="font-weight:600;color:var(--text-default);">'+nodes+'</div>'
+          + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="event.stopPropagation();cmRowMenu(this,\''+g.id+'\')">⋯</button></div>'
           + '</div>';
       }).join('');
     }
     // ── CM Detail Data ──
-    var CM_NODES = {
-      cm1: [
-        { name:'WIN-LAPTOP-01', os:'Windows 11', status:'online', lastScan:'2 min ago' },
-        { name:'WIN-LAPTOP-02', os:'Windows 11', status:'online', lastScan:'5 min ago' },
-        { name:'LNX-SRV-01', os:'Ubuntu 22.04', status:'online', lastScan:'3 min ago' },
-        { name:'WIN-DESKTOP-03', os:'Windows 10', status:'offline', lastScan:'1 day ago' },
-        { name:'LNX-SRV-02', os:'RHEL 9', status:'online', lastScan:'4 min ago' }
-      ],
-      cm2: [
-        { name:'AWS-WEB-01', os:'Amazon Linux 2', status:'online', lastScan:'1 min ago' },
-        { name:'AWS-WEB-02', os:'Amazon Linux 2', status:'online', lastScan:'1 min ago' },
-        { name:'AWS-API-01', os:'Ubuntu 22.04', status:'online', lastScan:'2 min ago' },
-        { name:'AWS-API-02', os:'Ubuntu 22.04', status:'online', lastScan:'2 min ago' }
-      ],
-      cm3: [
-        { name:'MAC-DEV-01', os:'macOS 15', status:'offline', lastScan:'3 hours ago' },
-        { name:'MAC-DEV-02', os:'macOS 14', status:'offline', lastScan:'3 hours ago' }
-      ],
-      cm4: [],
-      cm5: [
-        { name:'AZ-WIN-01', os:'Windows Server 2022', status:'online', lastScan:'30 sec ago' },
-        { name:'AZ-LNX-01', os:'Ubuntu 22.04', status:'online', lastScan:'45 sec ago' },
-        { name:'AZ-WIN-02', os:'Windows Server 2022', status:'online', lastScan:'1 min ago' }
-      ]
-    };
+    // Activity keyed by GROUP id
     var CM_ACTIVITY = {
-      cm1: [
+      grp1: [
         { time:'2 min ago', icon:'scan', text:'Scan completed — 28 nodes scanned, 0 errors' },
         { time:'1 hour ago', icon:'node', text:'Node WIN-DESKTOP-03 went offline' },
         { time:'6 hours ago', icon:'scan', text:'Scan completed — 28 nodes scanned, 0 errors' },
-        { time:'12 hours ago', icon:'scan', text:'Scan completed — 28 nodes scanned, 0 errors' },
-        { time:'1 day ago', icon:'ok', text:'Connection Manager came online' },
-        { time:'1 day ago', icon:'scan', text:'Scan completed — 27 nodes scanned, 1 error' },
+        { time:'1 day ago', icon:'ok', text:'CM-LONDON-01 came online' },
         { time:'2 days ago', icon:'node', text:'Node LNX-SRV-02 added to managed nodes' },
-        { time:'3 days ago', icon:'ok', text:'Version updated to v2.4.1' }
+        { time:'3 days ago', icon:'ok', text:'CM-LONDON-02 registered (not yet connected)' }
       ],
-      cm2: [
+      grp2: [
         { time:'1 min ago', icon:'scan', text:'Scan completed — 41 nodes scanned, 0 errors' },
         { time:'5 hours ago', icon:'scan', text:'Scan completed — 41 nodes scanned, 0 errors' },
         { time:'2 days ago', icon:'node', text:'3 new nodes auto-discovered and assigned' }
       ],
-      cm3: [
-        { time:'3 hours ago', icon:'err', text:'Connection lost — host unreachable (timeout)' },
-        { time:'3 hours ago', icon:'scan', text:'Scan aborted — connection lost mid-scan' },
+      grp3: [
+        { time:'3 hours ago', icon:'err', text:'CM-CORP-MAC registered but has not connected yet' },
         { time:'1 day ago', icon:'scan', text:'Scan completed — 9 nodes scanned, 0 errors' }
       ],
-      cm4: [
-        { time:'45 min ago', icon:'err', text:'Authentication failed — certificate expired' },
-        { time:'1 hour ago', icon:'err', text:'Retry failed — same certificate error' },
-        { time:'3 hours ago', icon:'err', text:'Initial connection attempt failed' }
-      ],
-      cm5: [
+      grp4: [
         { time:'30 sec ago', icon:'scan', text:'Scan completed — 15 nodes scanned, 0 errors' },
-        { time:'2 hours ago', icon:'update', text:'Update v2.4.1 available — current v2.2.0' },
-        { time:'6 hours ago', icon:'scan', text:'Scan completed — 15 nodes scanned, 0 errors' }
+        { time:'6 hours ago', icon:'scan', text:'Scan completed — 15 nodes scanned, 0 errors' },
+        { time:'1 day ago', icon:'ok', text:'CM-AZURE-WE-02 came online' }
+      ],
+      grp5: [
+        { time:'2 days ago', icon:'node', text:'Group disabled by admin' },
+        { time:'5 days ago', icon:'scan', text:'Last scan — 0 nodes' }
       ]
     };
     var CM_ACT_ICON = {
@@ -8444,89 +8489,67 @@ body.dark .theme-toggle .icon-moon { display: none; }
     var _currentCM = null;
 
     function showCMDetail(id) {
-      var cm = CONNECTION_MANAGERS.filter(function(c){ return c.id === id; })[0];
-      if (!cm) return;
-      _currentCM = cm;
+      var grp = CM_GROUPS.filter(function(g){ return g.id === id; })[0];
+      if (!grp) return;
+      _currentCM = grp;
       showView('cm-detail');
-      renderCMDetail(cm);
+      renderCMDetail(grp);
     }
 
     function renderCMDetail(cm) {
+      // cm is now a CMG group object
       // Title & subtitle
       document.getElementById('cmd-name').textContent = cm.name;
-      var st = cm.status || 'connected';
-      var statusBadge = '<span class="cm-status" data-s="'+st+'"><span class="cm-dot" style="background:'+CM_STATUS_DOT[st]+'"></span> '+(CM_STATUS_LABEL[st]||st)+'</span>';
+      var st = cm.state || 'active';
+      var stDot = CMG_STATE_DOT[st] || '#94a3b8';
+      var statusBadge = '<span class="cm-status" data-s="'+st+'"><span class="cm-dot" style="background:'+stDot+'"></span> '+(CMG_STATE_LABEL[st]||st)+'</span>';
       document.getElementById('cmd-sub').innerHTML = cm.location + ' · ' + statusBadge;
 
       // Action buttons
-      var acts = '<button id="cmd-test-btn" class="btn-outline" onclick="cmTestConnection()" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">'
-        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>'
-        + 'Test connection</button>'
-        + '<span id="cmd-test-status" style="font-size:11px;color:var(--text-muted);"></span>';
-      acts += '<button class="btn-outline" onclick="cmAction(\'edit\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Edit</button>';
-      if (cm.updateAvailable) {
-        acts += '<button class="btn-primary" onclick="cmAction(\'update\')" style="width:auto;padding:7px 14px;font-size:12px;">Update</button>';
-      }
+      var acts = '<button class="btn-outline" onclick="cmAction(\'edit\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Edit group</button>';
+      acts += '<button class="btn-outline" onclick="go(\'s-cm-setup\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Add CM to this group</button>';
       acts += '<button class="cm-actions-btn" onclick="cmDetailMenu(this)" style="margin-left:4px;">⋯</button>';
       document.getElementById('cmd-actions').innerHTML = acts;
 
-      // Connectivity card
-      var lastSeenDot = st === 'connected'
-        ? '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10B981;margin-right:5px;vertical-align:middle;"></span>'
-        : '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#94a3b8;margin-right:5px;vertical-align:middle;"></span>';
-      var connHTML = _cmdRow('Host', '<span class="cmd-mono" style="font-size:11px;padding:1px 6px;">'+cm.host+'</span>'
-        + ' <span onclick="navigator.clipboard.writeText(\''+cm.host+'\');scToast(\'Copied\')" style="cursor:pointer;color:var(--text-muted);vertical-align:middle;" title="Copy"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span>')
-        + _cmdRow('Last seen', lastSeenDot + cm.lastSeen)
-        + _cmdRow('Last test', '<span id="cmd-last-test" style="color:var(--text-muted);font-style:italic;">Never</span>')
-        + _cmdRow('Scan ready', cm.scanReady
-          ? '<span class="cm-status" data-s="connected" style="font-size:10px;padding:2px 8px;">Ready</span>'
-          : '<span class="cm-status" data-s="offline" style="font-size:10px;padding:2px 8px;">Not ready</span>'
-            + (cm.scanReadyReason ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">'+cm.scanReadyReason+'</div>' : ''));
-      document.getElementById('cmd-connectivity').innerHTML = connHTML;
-
-      // Configuration card
-      var osChips = cm.os.map(function(o){
-        var label = o.charAt(0).toUpperCase()+o.slice(1);
-        return '<span class="cmd-chip" style="margin-right:4px;">'+label+'</span>';
+      // Connectivity card → now "CM Instances" card
+      var instHTML = cm.instances.map(function(inst) {
+        var iDot = CM_INST_DOT[inst.status] || '#94a3b8';
+        var iLabel = CM_INST_LABEL[inst.status] || inst.status;
+        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">'
+          + '<div style="flex:1;"><div style="font-weight:600;font-size:12px;color:var(--text-default);">'+inst.reportedName+'</div>'
+          + '<div style="font-size:10px;color:var(--text-sec);margin-top:2px;">'+inst.host+' · '+inst.protocols.join(', ')+'</div></div>'
+          + '<div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+iDot+';"></span><span style="font-size:11px;color:var(--text-sec);">'+iLabel+'</span></div>'
+          + '<div style="font-size:10px;color:var(--text-muted);white-space:nowrap;">'+inst.lastContact+'</div>'
+          + '</div>';
       }).join('');
-      var verBadge = '<span class="cmd-mono">v'+cm.version+'</span>';
-      if (cm.updateAvailable) verBadge += ' <span style="color:var(--green1);font-size:11px;">→ v2.4.1 available</span>';
-      var nodesVal = '<a onclick="document.getElementById(\'cmd-nodes\').scrollIntoView({behavior:\'smooth\'})" style="font-weight:700;color:var(--text-default);cursor:pointer;text-decoration:none;">'+cm.nodes+'</a>'
+      if (!cm.instances.length) instHTML = '<div style="padding:12px 0;font-size:12px;color:var(--text-muted);font-style:italic;">No CM instances registered yet</div>';
+      document.getElementById('cmd-connectivity').innerHTML = instHTML;
+
+      // Configuration card → Group info
+      var protos = [];
+      cm.instances.forEach(function(i) { i.protocols.forEach(function(p) { if (protos.indexOf(p) === -1) protos.push(p); }); });
+      var protoChips = protos.map(function(p){ return '<span class="cmd-chip" style="margin-right:4px;">'+p+'</span>'; }).join('') || '<span style="color:var(--text-muted);font-style:italic;">—</span>';
+      var nodesVal = '<a onclick="document.getElementById(\'cmd-nodes\').scrollIntoView({behavior:\'smooth\'})" style="font-weight:700;color:var(--text-default);cursor:pointer;text-decoration:none;">'+_cmgTotalNodes(cm)+'</a>'
         + ' <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="vertical-align:middle;"><polyline points="6 9 12 15 18 9"/></svg>';
-      var configHTML = _cmdRow('Version', verBadge)
-        + _cmdRow('OS targets', osChips)
+      var apiKeyMasked = cm.apiKey || '—';
+      var configHTML = _cmdRow('API key', '<span class="cmd-mono" style="font-size:11px;padding:1px 6px;">'+apiKeyMasked+'</span>'
+        + ' <span onclick="navigator.clipboard.writeText(\''+apiKeyMasked+'\');scToast(\'Copied\')" style="cursor:pointer;color:var(--text-muted);vertical-align:middle;" title="Copy"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span>')
+        + _cmdRow('Protocols', protoChips)
         + _cmdRow('Location', cm.location)
+        + _cmdRow('Instances', cm.instances.length + '')
         + _cmdRow('Nodes assigned', nodesVal);
       document.getElementById('cmd-config').innerHTML = configHTML;
 
-      // Update banner (stays full-width — separate concern)
-      document.getElementById('cmd-update-banner').style.display = cm.updateAvailable ? 'flex' : 'none';
-      if (cm.updateAvailable) {
-        document.getElementById('cmd-update-text').innerHTML = 'A newer version <strong style="color:#D97706;">v2.4.1</strong> is available. Current version: <strong>v'+cm.version+'</strong>. Update recommended for security patches and performance improvements.';
-      }
+      // Hide update banner (no longer relevant)
+      document.getElementById('cmd-update-banner').style.display = 'none';
 
-      // Issue banner (error / offline)
+      // Hide issue banner (no error/issue model)
       var issueBanner = document.getElementById('cmd-issue-banner');
-      if ((st === 'error' || st === 'offline') && cm.issueTitle) {
-        var isErr = st === 'error';
-        var borderCol = isErr ? '#FB3C44' : '#D97706';
-        var titleCol = isErr ? '#FB3C44' : '#D97706';
-        issueBanner.style.borderLeftColor = borderCol;
-        document.getElementById('cmd-issue-title').style.color = titleCol;
-        document.getElementById('cmd-issue-title').textContent = cm.issueTitle;
-        document.getElementById('cmd-issue-desc').textContent = cm.issueDesc;
-        document.getElementById('cmd-issue-actions').innerHTML =
-          '<button class="btn-outline" onclick="cmAction(\'troubleshoot\')" style="width:auto;padding:6px 14px;font-size:11px;font-weight:600;">Troubleshoot</button>'
-          + '<button class="btn-primary" onclick="cmAction(\''+cm.issueCtaAction+'\')" style="width:auto;padding:6px 14px;font-size:11px;">'+cm.issueCta+'</button>';
-        issueBanner.style.display = 'flex';
-      } else {
-        issueBanner.style.display = 'none';
-      }
+      issueBanner.style.display = 'none';
 
       // Assigned nodes
-      var nodes = CM_NODES[cm.id] || [];
-      // Use CM.nodes as total count (sample rows in CM_NODES are a preview)
-      var totalNodes = cm.nodes;
+      var nodes = cm.assignedNodes || [];
+      var totalNodes = _cmgTotalNodes(cm);
       document.getElementById('cmd-node-count').textContent = '('+totalNodes+')';
       // Node summary line: X assigned · Y online · Z offline
       var onlineCount = nodes.filter(function(n){ return n.status === 'online'; }).length;
@@ -8632,8 +8655,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
 
     function cmAction(action, cmId) {
-      var cm = cmId ? CONNECTION_MANAGERS.filter(function(c){ return c.id === cmId; })[0] : _currentCM;
-      var name = cm ? cm.name : 'CM';
+      var cm = cmId ? CM_GROUPS.filter(function(g){ return g.id === cmId; })[0] : _currentCM;
+      var name = cm ? cm.name : 'CM Group';
       if (action === 'test') {
         cmTestConnection();
       } else if (action === 'update') {
@@ -8662,25 +8685,21 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var old = document.getElementById('cm-ctx-menu');
       if (old) old.remove();
 
-      var cm = CONNECTION_MANAGERS.filter(function(c){ return c.id === id; })[0];
+      var cm = CM_GROUPS.filter(function(g){ return g.id === id; })[0];
       if (!cm) return;
 
       var items = [
         { label:'View details', action:"showCMDetail('"+id+"')" },
-        { label:'Edit', action:"cmAction('edit')" },
-        { label:'Test connection', action:"cmAction('test')" }
+        { label:'Edit group', action:"cmAction('edit')" }
       ];
-      if (cm.status === 'offline' || cm.status === 'error') {
-        items.push({ label:'Retry', action:"cmAction('retry')" });
-        items.push({ label:'Troubleshoot', action:"cmAction('troubleshoot')" });
+      if (cm.state === 'active') {
+        items.push({ sep:true });
+        items.push({ label:'Disable group', action:"cmConfirmDisable('"+id+"')" });
+      } else {
+        items.push({ sep:true });
+        items.push({ label:'Enable group', action:"cmAction('enable','"+id+"')" });
       }
-      if (cm.updateAvailable) {
-        items.push({ label:'Update', action:"cmAction('update')" });
-      }
-      items.push({ label:'Restart', action:"cmAction('restart','"+id+"')" });
-      items.push({ sep:true });
-      items.push({ label:'Disable', action:"cmConfirmDisable('"+id+"')" });
-      items.push({ label:'Remove', action:"cmConfirmRemove('"+id+"')", danger:true });
+      items.push({ label:'Remove group', action:"cmConfirmRemove('"+id+"')", danger:true });
 
       var menu = document.createElement('div');
       menu.id = 'cm-ctx-menu';
@@ -8717,12 +8736,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
     function _cmWarningHTML(cm, action) {
       var isRemove = action === 'remove';
-      var title = isRemove ? 'Remove Connection Manager' : 'Disable Connection Manager';
+      var title = isRemove ? 'Remove CM Group' : 'Disable CM Group';
       var desc = isRemove
         ? 'This will permanently remove <b>' + cm.name + '</b> and unassign all its nodes.'
         : 'Disabling <b>' + cm.name + '</b> will pause all scanning for its assigned nodes.';
-      var nodeCount = cm.nodes || 0;
-      var otherCMs = CONNECTION_MANAGERS.filter(function(c){ return c.id !== cm.id && c.status === 'connected'; });
+      var nodeCount = _cmgTotalNodes(cm);
+      var otherCMs = CM_GROUPS.filter(function(g){ return g.id !== cm.id && g.state === 'active'; });
       var hasAlt = otherCMs.length > 0;
       var altNames = otherCMs.slice(0, 3).map(function(c){ return c.name; }).join(', ');
       var warn = '';
@@ -8745,7 +8764,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         warn += '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.25);border-radius:8px;margin-bottom:12px;">'
           + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
           + '<div style="font-size:12px;color:var(--text-default);line-height:1.5;">'
-          + 'No other Connection Managers available — these nodes will have <b>no scan coverage</b>.'
+          + 'No other CM Groups available — these nodes will have <b>no scan coverage</b>.'
           + '</div></div>';
       }
       var btnColor = isRemove ? '#FB3C44' : '#F59E0B';
@@ -8776,28 +8795,28 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
 
     function cmConfirmRemove(cmId) {
-      var cm = cmId ? CONNECTION_MANAGERS.filter(function(c){ return c.id === cmId; })[0] : _currentCM;
+      var cm = cmId ? CM_GROUPS.filter(function(g){ return g.id === cmId; })[0] : _currentCM;
       if (!cm) return;
       _showCMWarn(_cmWarningHTML(cm, 'remove'));
     }
 
     function cmConfirmDisable(cmId) {
-      var cm = cmId ? CONNECTION_MANAGERS.filter(function(c){ return c.id === cmId; })[0] : _currentCM;
+      var cm = cmId ? CM_GROUPS.filter(function(g){ return g.id === cmId; })[0] : _currentCM;
       if (!cm) return;
       _showCMWarn(_cmWarningHTML(cm, 'disable'));
     }
 
     function cmExecRemove(cmId) {
       closeCMWarn();
-      var cm = CONNECTION_MANAGERS.filter(function(c){ return c.id === cmId; })[0];
-      scToast((cm ? cm.name : 'Connection Manager') + ' removed');
+      var cm = CM_GROUPS.filter(function(g){ return g.id === cmId; })[0];
+      scToast((cm ? cm.name : 'CM Group') + ' removed');
       showView('cm-list');
     }
 
     function cmExecDisable(cmId) {
       closeCMWarn();
-      var cm = CONNECTION_MANAGERS.filter(function(c){ return c.id === cmId; })[0];
-      scToast((cm ? cm.name : 'Connection Manager') + ' disabled');
+      var cm = CM_GROUPS.filter(function(g){ return g.id === cmId; })[0];
+      scToast((cm ? cm.name : 'CM Group') + ' disabled');
     }
 
     function retryScan(btn) {
@@ -12732,23 +12751,26 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
         <div style="position:relative;flex-shrink:0;">
           <div id="cm-status-btn" class="dk-form" onclick="toggleCMStatusDrop()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-            <span id="cm-status-label">All statuses</span>
+            <span id="cm-status-label">All groups</span>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </div>
-          <div id="cm-status-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:170px;z-index:100;">
-            <div class="cms-opt cms-opt-active" data-val="all" onclick="pickCMStatus(this,'All statuses')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All statuses</div>
-            <div class="cms-opt" data-val="connected" onclick="pickCMStatus(this,'Connected')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Connected</div>
-            <div class="cms-opt" data-val="offline" onclick="pickCMStatus(this,'Offline')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Offline</div>
-            <div class="cms-opt" data-val="error" onclick="pickCMStatus(this,'Error')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Error</div>
-            <div class="cms-opt" data-val="attention" onclick="pickCMStatus(this,'Needs attention')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Needs attention</div>
+          <div id="cm-status-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:200px;z-index:100;">
+            <div style="padding:4px 12px 6px;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">State</div>
+            <div class="cms-opt cms-opt-active" data-val="all" onclick="pickCMStatus(this,'All groups')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All groups</div>
+            <div class="cms-opt" data-val="active" onclick="pickCMStatus(this,'Active')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Active</div>
+            <div class="cms-opt" data-val="disabled" onclick="pickCMStatus(this,'Disabled')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Disabled</div>
+            <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+            <div style="padding:4px 12px 6px;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Availability</div>
+            <div class="cms-opt" data-val="has-connected" onclick="pickCMStatus(this,'Has connected managers')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Has connected managers</div>
+            <div class="cms-opt" data-val="no-connected" onclick="pickCMStatus(this,'No connected managers')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>No connected managers</div>
           </div>
         </div>
       </div>
 
       <!-- Table -->
       <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;">
-        <div class="col-thead" style="display:grid;grid-template-columns:1.4fr 1fr 1.4fr 1fr 0.7fr 0.7fr 50px;min-width:700px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
-          <div>Name</div><div>Status</div><div>Location</div><div>Last seen</div><div>Nodes</div><div>Scan ready</div><div></div>
+        <div class="col-thead" style="display:grid;grid-template-columns:1.4fr 0.8fr 1.6fr 1.2fr 0.7fr 50px;min-width:700px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
+          <div>Group</div><div>State</div><div>CM Health</div><div>Location</div><div>Nodes</div><div></div>
         </div>
         <div id="cm-rows"></div>
       </div>
@@ -12779,14 +12801,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <!-- Info cards row -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-          <!-- Connectivity -->
+          <!-- CM Instances -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;">
-            <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>Connectivity</div>
-            <div id="cmd-connectivity" style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px;"></div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>CM Instances</div>
+            <div id="cmd-connectivity" style="font-size:12px;"></div>
           </div>
-          <!-- Configuration -->
+          <!-- Group Info -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;">
-            <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Configuration</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Group Info</div>
             <div id="cmd-config" style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px;"></div>
           </div>
         </div>
