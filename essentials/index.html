@@ -2005,6 +2005,23 @@ body.dark #cmd-actions .btn-outline:hover { background:rgba(16,185,129,0.18) !im
 body.dark .cm-actions-btn { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.45); color:var(--p-green-300); }
 body.dark .cm-actions-btn:hover { background:rgba(16,185,129,0.18); border-color:var(--green1); color:#fff; }
 .cm-dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
+/* ── Credential Vault ── */
+.cred-row { display:grid; grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px; min-width:900px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
+.cred-row:hover { background:var(--bg-canvas); }
+body.dark .cred-row:hover { background:#012F32; }
+.cred-row:last-child { border-bottom:none; }
+.cred-badge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; white-space:nowrap; }
+.cred-badge[data-s="valid"]          { background:rgba(16,185,129,0.1); color:#059669; border:1px solid rgba(16,185,129,0.3); }
+.cred-badge[data-s="invalid"]        { background:rgba(251,60,68,0.1);  color:#dc2626; border:1px solid rgba(251,60,68,0.3); }
+.cred-badge[data-s="expired"]        { background:rgba(245,158,11,0.1); color:#d97706; border:1px solid rgba(245,158,11,0.3); }
+.cred-badge[data-s="cannot-connect"] { background:rgba(251,60,68,0.1);  color:#dc2626; border:1px solid rgba(251,60,68,0.3); }
+.cred-badge[data-s="insufficient"]   { background:rgba(234,88,12,0.1);  color:#ea580c; border:1px solid rgba(234,88,12,0.3); }
+body.dark .cred-badge[data-s="valid"]          { background:rgba(16,185,129,0.12); color:#10B981; border-color:rgba(16,185,129,0.35); }
+body.dark .cred-badge[data-s="invalid"]        { background:rgba(251,60,68,0.12);  color:#FB3C44; border-color:rgba(251,60,68,0.35); }
+body.dark .cred-badge[data-s="expired"]        { background:rgba(245,158,11,0.12); color:#F59E0B; border-color:rgba(245,158,11,0.35); }
+body.dark .cred-badge[data-s="cannot-connect"] { background:rgba(251,60,68,0.12);  color:#FB3C44; border-color:rgba(251,60,68,0.35); }
+body.dark .cred-badge[data-s="insufficient"]   { background:rgba(234,88,12,0.14);  color:#F97316; border-color:rgba(234,88,12,0.4); }
+.cred-src { display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--text-sec); white-space:nowrap; }
 #v-s-cm-setup .btn-outline { border-color:var(--green2); color:var(--green2); font-weight:600; background:rgba(5,150,105,0.06); }
 #v-s-cm-setup .btn-outline:hover { border-color:var(--green1); color:var(--green1); background:rgba(5,150,105,0.12); }
 body.dark #v-s-cm-setup .btn-outline { background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.45); color:#10B981; }
@@ -2619,6 +2636,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>
         CM Groups
         <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
+      </div>
+      <div class="sidebar-item" id="sb-credentials" onclick="showView(&#39;credentials&#39;)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path></svg>
+        Credentials
+        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">8</span>
       </div>
       <div class="sidebar-item" id="sb-integrations" onclick="showView(&#39;settings-integrations&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"></circle><circle cx="16" cy="16" r="3"></circle><path d="M8 11v2a5 5 0 0 0 5 5h1"></path><path d="M16 5v2a5 5 0 0 0-5 5h-1" transform="rotate(180 16 10)"></path><path d="M11 8h2M13 16h-2"></path></svg>
@@ -8385,6 +8407,75 @@ body.dark .theme-toggle .icon-moon { display: none; }
           + '</div>';
       }).join('');
     }
+    // ══════════ Credential Vault (Thursday W2 · step 1: list) ══════════
+    var CREDENTIALS = [
+      { id:'cr1', name:'web-prod-01',           type:'Windows / WinRM', user:'Administrator',    status:'valid',          lastVal:'2 hours ago',       usedBy:12, source:'vault' },
+      { id:'cr2', name:'linux-fleet',           type:'Linux / SSH',     user:'svc-scan',         status:'valid',          lastVal:'40 min ago',        usedBy:41, source:'vault' },
+      { id:'cr3', name:'db-cluster-key',        type:'SSH key',         user:'deploy',           status:'expired',        lastVal:'expired 6 days ago', usedBy:3,  source:'vault' },
+      { id:'cr4', name:'legacy-win2012',        type:'Windows / WinRM', user:'svc-legacy',       status:'cannot-connect', lastVal:'failed 1 hour ago',  usedBy:2,  source:'vault' },
+      { id:'cr5', name:'readonly-audit',        type:'Linux / SSH',     user:'auditor',          status:'insufficient',   lastVal:'3 hours ago',        usedBy:8,  source:'vault' },
+      { id:'cr6', name:'api-vault-token',       type:'API token',       user:'—',                status:'invalid',        lastVal:'failed 2 days ago',  usedBy:0,  source:'vault' },
+      { id:'cr7', name:'corp-vault / win-admin',type:'Windows / WinRM', user:'CORP\\svc-guardian',status:'valid',         lastVal:'1 hour ago',         usedBy:15, source:'secret-server' },
+      { id:'cr8', name:'spare-ssh',             type:'SSH key',         user:'backup',           status:'valid',          lastVal:'never used',         usedBy:0,  source:'vault' }
+    ];
+    var CRED_STATUS = {
+      'valid':          { label:'Valid',                     dot:'#10B981' },
+      'invalid':        { label:'Invalid',                   dot:'#FB3C44' },
+      'expired':        { label:'Expired',                   dot:'#F59E0B' },
+      'cannot-connect': { label:'Cannot connect',            dot:'#FB3C44' },
+      'insufficient':   { label:'Insufficient permissions',  dot:'#F97316' }
+    };
+    function credComingSoon() { scToast('Credential editor — coming in the next step'); }
+    function renderCredentials() {
+      var rows = document.getElementById('cred-rows');
+      if (!rows) return;
+      var all = CREDENTIALS;
+      var valid  = all.filter(function(c){ return c.status === 'valid'; }).length;
+      var issues = all.filter(function(c){ return c.status !== 'valid'; }).length;
+      var unused = all.filter(function(c){ return c.usedBy === 0; }).length;
+
+      var s1 = document.getElementById('cred-stat-total');
+      var s2 = document.getElementById('cred-stat-valid');
+      var s3 = document.getElementById('cred-stat-issues');
+      var s4 = document.getElementById('cred-stat-unused');
+      if (s1) s1.innerHTML = '<div class="sm-label">Total</div><div class="sm-val">'+all.length+'</div><div class="sm-sub">Credentials</div>';
+      if (s2) s2.innerHTML = '<div class="sm-label">Valid</div><div class="sm-val" style="color:#059669;">'+valid+'</div><div class="sm-sub">Ready to use</div>';
+      if (s3) s3.innerHTML = '<div class="sm-label">Needs attention</div><div class="sm-val" style="color:'+(issues?'#dc2626':'#059669')+';">'+issues+'</div><div class="sm-sub">'+(issues ? 'Invalid / expired / failing' : 'All valid')+'</div>';
+      if (s4) s4.innerHTML = '<div class="sm-label">Unused</div><div class="sm-val" style="color:'+(unused?'#64748b':'#059669')+';">'+unused+'</div><div class="sm-sub">Not assigned to any node</div>';
+
+      var sbCount = document.querySelector('#sb-credentials span');
+      if (sbCount) sbCount.textContent = all.length;
+
+      var q = ((document.getElementById('cred-search') || {}).value || '').toLowerCase().trim();
+      var filtered = all.filter(function(c) {
+        if (!q) return true;
+        return (c.name + ' ' + c.type + ' ' + c.user).toLowerCase().indexOf(q) !== -1;
+      });
+
+      rows.innerHTML = filtered.map(function(c) {
+        var st = CRED_STATUS[c.status] || { label:c.status, dot:'#94a3b8' };
+        var usedByCell = c.usedBy > 0
+          ? '<span class="usedby-tag">'+c.usedBy+' node'+(c.usedBy!==1?'s':'')+'</span>'
+          : '<span style="color:var(--text-muted);font-size:11px;">Unused</span>';
+        var srcCell = c.source === 'secret-server'
+          ? '<span class="cred-src"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Secret Server</span>'
+          : '<span class="cred-src"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Guardian Vault</span>';
+        return '<div class="cred-row" onclick="credComingSoon()">'
+          + '<div style="display:flex;align-items:center;gap:8px;min-width:0;">'
+          +   '<svg style="flex-shrink:0;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path></svg>'
+          +   '<span style="font-weight:600;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+c.name+'</span>'
+          + '</div>'
+          + '<div style="color:var(--text-sec);">'+c.type+'</div>'
+          + '<div style="color:var(--text-sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+c.user+'</div>'
+          + '<div><span class="cred-badge" data-s="'+c.status+'"><span class="cm-dot" style="background:'+st.dot+'"></span>'+st.label+'</span></div>'
+          + '<div style="color:var(--text-sec);font-size:11px;">'+c.lastVal+'</div>'
+          + '<div>'+usedByCell+'</div>'
+          + '<div>'+srcCell+'</div>'
+          + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="event.stopPropagation();credComingSoon()">⋯</button></div>'
+          + '</div>';
+      }).join('');
+    }
+
     // ── CM Detail Data ──
     // Activity keyed by GROUP id
     var CM_ACTIVITY = {
@@ -12853,6 +12944,43 @@ body.dark .theme-toggle .icon-moon { display: none; }
       </div>
     </div>
 
+    <!-- ═══ Credential Vault list ═══ -->
+    <div class="view" id="v-credentials" style="display: none;">
+      <div class="dash-main" style="max-width:100%;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div>
+          <div class="page-title">Credential Vault</div>
+          <div class="page-sub">Reusable scan credentials — stored encrypted, used by Connection Managers at scan time</div>
+        </div>
+        <button class="btn-primary" onclick="credComingSoon()" style="width:auto;padding:10px 20px;">+ New credential</button>
+      </div>
+
+      <!-- Summary cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;">
+        <div id="cred-stat-total" class="stat-mini"></div>
+        <div id="cred-stat-valid" class="stat-mini"></div>
+        <div id="cred-stat-issues" class="stat-mini"></div>
+        <div id="cred-stat-unused" class="stat-mini"></div>
+      </div>
+
+      <!-- Search -->
+      <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;">
+        <div style="position:relative;flex:1 1 180px;min-width:140px;max-width:280px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+          <input id="cred-search" type="text" placeholder="Search credentials…" oninput="renderCredentials()" style="width:100%;padding:9px 12px 9px 36px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;">
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;">
+        <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px;min-width:900px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
+          <div>Name</div><div>Type</div><div>Username</div><div>Status</div><div>Last validated</div><div>Used by</div><div>Source</div><div></div>
+        </div>
+        <div id="cred-rows"></div>
+      </div>
+      </div>
+    </div>
+
     <div class="view" id="v-settings-integrations" style="display: none;">
       <div class="page-header">
         <div>
@@ -14674,7 +14802,7 @@ const LABELS = {
   'add-check':'Policy · Add Check',
   'edit-check':'Policy · Edit Check'
 ,'j3-connect':'J3 · Connect AWS','j3-connecting':'J3 · Connecting','j3-connected':'J3 · Connected','j3-syncing':'J3 · Syncing','j3-inventory':'J3 · Node Inventory','j3-cmdb':'J3 · CMDB Match','j3-matched':'J3 · Match Confirmed','j3-scan-config':'J3 · Scan Config','j3-scanning':'J3 · Scanning','j3-scan-complete':'J3 · Scan Complete','j3-results':'J3 · Results','j3-connect-failed':'J3 · Connection Failed','j3-no-resources':'J3 · No Resources','j3-manual-match':'J3 · Manual Match','j3-scan-failed':'J3 · Scan Failed'
-,'scan-schedule':'Scan Schedules','cm-list':'Connection Manager Groups','cm-detail':'CM Group · Detail','settings-integrations':'Settings · Integrations','secret-server-config':'Settings · Secret Server','scan-failed':'Node · Scan Failed','reports':'Compliance Reports'
+,'scan-schedule':'Scan Schedules','cm-list':'Connection Manager Groups','cm-detail':'CM Group · Detail','credentials':'Credential Vault','settings-integrations':'Settings · Integrations','secret-server-config':'Settings · Secret Server','scan-failed':'Node · Scan Failed','reports':'Compliance Reports'
 ,'j4-connect':'J4 · Configure ServiceNow','j4-connecting':'J4 · Connecting','j4-connected':'J4 · Connected','j4-syncing':'J4 · Syncing Nodes','j4-match':'J4 · Match Nodes','j4-active':'J4 · Recon Active','j4-summary':'J4 · Summary','j4-connect-failed':'J4 · Connection Failed','j4-no-crs':'J4 · No CRs Found','j4-partial-match':'J4 · Partial Match'
 ,'cmdb-connect':'CMDB · Connect','cmdb-connecting':'CMDB · Connecting','cmdb-connect-failed':'CMDB · Connection Failed','cmdb-browse':'CMDB · Select Nodes','cmdb-credentials':'CMDB · Credentials','cmdb-importing':'CMDB · Importing','cmdb-complete':'CMDB · Complete'
 ,'csv-import':'CSV · Upload','csv-preview':'CSV · Review','csv-importing':'CSV · Importing','csv-complete':'CSV · Complete'};
@@ -14956,11 +15084,13 @@ function showView(name) {
     'policies':'sb-policies', 'policy-create':'sb-policies', 'policy-detail':'sb-policies', 'policy-edit':'sb-policies',
     'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies', 'reports':'sb-reports',
     'settings-integrations':'sb-integrations', 'secret-server-config':'sb-integrations',
-    'scan-schedule':'sb-scan-schedule', 'cm-list':'sb-cm-list', 'cm-detail':'sb-cm-list' };
+    'scan-schedule':'sb-scan-schedule', 'cm-list':'sb-cm-list', 'cm-detail':'sb-cm-list',
+    'credentials':'sb-credentials' };
   const sb = document.getElementById(map[name]);
   if (name === 'secret-server-config') renderSSFolders();
   if (name === 'scan-schedule') renderSchedules();
   if (name === 'cm-list') renderCMList();
+  if (name === 'credentials') renderCredentials();
   if (name === 'reports') renderReport();
   if (sb) sb.classList.add('active');
   if (isJ3Nav) updateJ3Nav(name);
