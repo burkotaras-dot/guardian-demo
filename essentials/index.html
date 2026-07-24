@@ -2044,6 +2044,10 @@ body.dark .csel-opt { color: #C0C0C0 !important; }
 body.dark .csel-opt.sel { color: var(--green1) !important; }
 /* Policy-create step 1: full-width benchmark picker + softer selected Type-card border in dark */
 #pc-cis-dropdown .csel-wrap, #pc-cis-dropdown .csel-btn { display: flex; width: 100%; }
+/* Credential editor type picker: match form-input sizing */
+#cred-edit-overlay .csel-wrap, #cred-edit-overlay .csel-btn { display: flex; width: 100%; }
+#cred-edit-overlay .csel-btn { padding: 10px 28px 10px 14px; font-size: 13px; font-weight: 400; border-radius: var(--radius-md); }
+body.dark #cred-edit-overlay .csel-btn { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.2) !important; color: var(--p-neutral-50); }
 body.dark #pc-step-1 label:has(input[name="pc-type"]:checked) { border-color: rgba(16,185,129,0.55) !important; }
 body.dark span[style*="color:#7C3AED"] { color: #A78BFA !important; border-color: rgba(167,139,250,0.55) !important; background: rgba(124,58,237,0.15) !important; }
 body.dark span[style*="color:#7C3AED"] svg { stroke: #A78BFA !important; }
@@ -8425,7 +8429,128 @@ body.dark .theme-toggle .icon-moon { display: none; }
       'cannot-connect': { label:'Cannot connect',            dot:'#FB3C44' },
       'insufficient':   { label:'Insufficient permissions',  dot:'#F97316' }
     };
-    function credComingSoon() { scToast('Credential editor — coming in the next step'); }
+    // ── Credential types & editor (step 2: Add / Edit) ──
+    var CRED_TYPES = [
+      { val:'Windows / WinRM', secretLabel:'Password',        secretKind:'password', userLabel:'Username',           userPh:'e.g. Administrator or DOMAIN\\svc-scan' },
+      { val:'Linux / SSH',     secretLabel:'Password',        secretKind:'password', userLabel:'Username',           userPh:'e.g. svc-scan' },
+      { val:'SSH key',         secretLabel:'SSH private key', secretKind:'key',      userLabel:'Username',           userPh:'e.g. deploy' },
+      { val:'API token',       secretLabel:'API secret / token', secretKind:'password', userLabel:'Account (optional)', userPh:'e.g. svc-account' }
+    ];
+    var _credEditId = null;
+    var _credTested = false;
+    function _credTypeDef(v) { return CRED_TYPES.filter(function(t){ return t.val === v; })[0] || CRED_TYPES[0]; }
+    function _esc(s) { return (s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+    function credOpenEditor(id) {
+      var c = id ? CREDENTIALS.filter(function(x){ return x.id === id; })[0] : null;
+      _credEditId = c ? c.id : null;
+      _credTested = false;
+      var typeVal = c ? c.type : CRED_TYPES[0].val;
+      var old = document.getElementById('cred-edit-overlay');
+      if (old) old.remove();
+      var ov = document.createElement('div');
+      ov.id = 'cred-edit-overlay';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);padding:20px;';
+      var opts = CRED_TYPES.map(function(t){ return '<option value="'+t.val+'"'+(t.val===typeVal?' selected':'')+'>'+t.val+'</option>'; }).join('');
+      var html = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.3);max-width:460px;width:100%;max-height:90vh;overflow-y:auto;">'
+        + '<div style="padding:22px 24px 0;">'
+        + '<div style="font-size:15px;font-weight:600;color:var(--text-default);margin-bottom:4px;">'+(c ? 'Edit credential' : 'New credential')+'</div>'
+        + '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px;line-height:1.5;">Stored encrypted in the Guardian Credential Vault and used by Connection Managers at scan time.</div>'
+        + '<div class="form-group"><label class="form-label" for="cred-f-type">Credential type</label>'
+        +   '<select id="cred-f-type" class="form-input csel" onchange="credTypeChange()">'+opts+'</select></div>'
+        + '<div class="form-group"><label class="form-label" for="cred-f-name">Name</label>'
+        +   '<input id="cred-f-name" type="text" class="form-input" placeholder="e.g. web-prod-01" value="'+_esc(c?c.name:'')+'"></div>'
+        + '<div class="form-group"><label class="form-label" for="cred-f-user" id="cred-f-user-lbl">Username</label>'
+        +   '<input id="cred-f-user" type="text" class="form-input" value="'+_esc(c && c.user!=='—' ? c.user : '')+'"></div>'
+        + '<div class="form-group" id="cred-secret-wrap"></div>'
+        + '<div class="form-group"><label class="form-label" for="cred-f-scope">Scope / intended use <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>'
+        +   '<input id="cred-f-scope" type="text" class="form-input" placeholder="e.g. Production Windows servers" value="'+_esc(c?c.scope:'')+'"></div>'
+        + '<div id="cred-test-result" style="display:none;font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:14px;"></div>'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0 16px;border-top:1px solid var(--border);margin-top:6px;">'
+        +   '<button id="cred-test-btn" onclick="credTest()" class="btn-outline" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test credentials</button>'
+        +   '<div style="display:flex;gap:8px;">'
+        +     '<button onclick="credCloseEditor()" style="padding:7px 16px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Cancel</button>'
+        +     '<button onclick="credSave()" style="padding:7px 16px;font-size:12px;border:none;border-radius:6px;background:var(--green1);color:#fff;cursor:pointer;font-weight:600;">'+(c?'Save changes':'Save credential')+'</button>'
+        +   '</div>'
+        + '</div></div></div>';
+      ov.innerHTML = html;
+      ov.addEventListener('click', function(e){ if (e.target === ov) credCloseEditor(); });
+      document.body.appendChild(ov);
+      var typeSel = document.getElementById('cred-f-type');
+      if (typeSel && window.enhanceSelect) enhanceSelect(typeSel);
+      credTypeChange();
+      if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+      var nameEl = document.getElementById('cred-f-name');
+      if (nameEl) nameEl.focus();
+    }
+    function credTypeChange() {
+      var t = _credTypeDef((document.getElementById('cred-f-type') || {}).value);
+      var userLbl = document.getElementById('cred-f-user-lbl');
+      var userIn = document.getElementById('cred-f-user');
+      if (userLbl) userLbl.textContent = t.userLabel;
+      if (userIn) userIn.placeholder = t.userPh;
+      var wrap = document.getElementById('cred-secret-wrap');
+      if (wrap) {
+        var cur = (document.getElementById('cred-f-secret') || {}).value || '';
+        if (t.secretKind === 'key') {
+          wrap.innerHTML = '<label class="form-label" for="cred-f-secret">'+t.secretLabel+'</label>'
+            + '<textarea id="cred-f-secret" class="form-input" rows="3" placeholder="Paste private key (PEM)…" style="resize:vertical;font-family:\'SF Mono\',Consolas,monospace;font-size:11px;">'+_esc(cur)+'</textarea>';
+        } else {
+          wrap.innerHTML = '<label class="form-label" for="cred-f-secret">'+t.secretLabel+'</label>'
+            + '<input id="cred-f-secret" type="password" class="form-input" placeholder="••••••••" value="'+_esc(cur)+'">';
+        }
+      }
+      _credTested = false;
+      var res = document.getElementById('cred-test-result');
+      if (res) res.style.display = 'none';
+      if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+    }
+    function credCloseEditor() {
+      var ov = document.getElementById('cred-edit-overlay');
+      if (ov) ov.remove();
+    }
+    function credTest() {
+      var secret = (document.getElementById('cred-f-secret') || {}).value || '';
+      var res = document.getElementById('cred-test-result');
+      var btn = document.getElementById('cred-test-btn');
+      if (!secret.trim()) {
+        if (res) { res.style.display = 'block'; res.style.background = 'rgba(245,158,11,0.12)'; res.style.color = '#B45309'; res.textContent = 'Enter a password / key / secret before testing.'; }
+        return;
+      }
+      if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; btn.innerHTML = 'Testing…'; }
+      if (res) { res.style.display = 'block'; res.style.background = 'var(--bg-canvas)'; res.style.color = 'var(--text-muted)'; res.textContent = 'Testing connection…'; }
+      setTimeout(function() {
+        _credTested = true;
+        if (res) { res.style.background = 'rgba(16,185,129,0.12)'; res.style.color = '#059669'; res.innerHTML = '✓ Credential validated — connection successful'; }
+        if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test credentials'; }
+      }, 1100);
+    }
+    function credSave() {
+      var typeVal = (document.getElementById('cred-f-type') || {}).value;
+      var name = ((document.getElementById('cred-f-name') || {}).value || '').trim();
+      var user = ((document.getElementById('cred-f-user') || {}).value || '').trim();
+      var scope = ((document.getElementById('cred-f-scope') || {}).value || '').trim();
+      var nameEl = document.getElementById('cred-f-name');
+      if (!name) { if (nameEl) { nameEl.style.borderColor = '#FB3C44'; nameEl.focus(); } return; }
+      if (_credEditId) {
+        var c = CREDENTIALS.filter(function(x){ return x.id === _credEditId; })[0];
+        if (c) {
+          c.name = name; c.type = typeVal; c.user = user || '—'; c.scope = scope;
+          if (_credTested) { c.status = 'valid'; c.lastVal = 'just now'; }
+        }
+      } else {
+        CREDENTIALS.unshift({
+          id: 'cr' + Date.now(),
+          name: name, type: typeVal, user: user || '—', scope: scope,
+          status: 'valid',
+          lastVal: _credTested ? 'just now' : 'not yet validated',
+          usedBy: 0, source: 'vault'
+        });
+      }
+      credCloseEditor();
+      scToast(_credEditId ? 'Credential updated' : 'Credential saved');
+      renderCredentials();
+    }
     function renderCredentials() {
       var rows = document.getElementById('cred-rows');
       if (!rows) return;
@@ -8460,7 +8585,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         var srcCell = c.source === 'secret-server'
           ? '<span class="cred-src"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Secret Server</span>'
           : '<span class="cred-src"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Guardian Vault</span>';
-        return '<div class="cred-row" onclick="credComingSoon()">'
+        return '<div class="cred-row" onclick="credOpenEditor(\''+c.id+'\')">'
           + '<div style="display:flex;align-items:center;gap:8px;min-width:0;">'
           +   '<svg style="flex-shrink:0;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path></svg>'
           +   '<span style="font-weight:600;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+c.name+'</span>'
@@ -8471,7 +8596,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           + '<div style="color:var(--text-sec);font-size:11px;">'+c.lastVal+'</div>'
           + '<div>'+usedByCell+'</div>'
           + '<div>'+srcCell+'</div>'
-          + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="event.stopPropagation();credComingSoon()">⋯</button></div>'
+          + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="event.stopPropagation();credOpenEditor(\''+c.id+'\')">⋯</button></div>'
           + '</div>';
       }).join('');
     }
@@ -12952,7 +13077,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="page-title">Credential Vault</div>
           <div class="page-sub">Reusable scan credentials — stored encrypted, used by Connection Managers at scan time</div>
         </div>
-        <button class="btn-primary" onclick="credComingSoon()" style="width:auto;padding:10px 20px;">+ New credential</button>
+        <button class="btn-primary" onclick="credOpenEditor(null)" style="width:auto;padding:10px 20px;">+ New credential</button>
       </div>
 
       <!-- Summary cards -->
