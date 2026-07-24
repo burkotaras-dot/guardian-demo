@@ -1566,21 +1566,8 @@ body.dark span[style*="font-size:11px"][style*="font-weight:600"][style*="color:
 .radio-item.selected .radio-dot { border-color:var(--green1); }
 .radio-item.selected .radio-dot::after { content:'';width:8px;height:8px;border-radius:50%;background:var(--green1);display:block; }
 /* CM setup wizard (Week-2) */
-.cmw-stepper { }
-.cmw-tab { flex:1;display:flex;align-items:center;gap:6px;justify-content:center;font-size:11px;font-weight:600;color:var(--text-muted);padding:8px 6px;border-bottom:2px solid var(--border);text-align:center;transition:all 0.12s; }
-.cmw-tab.active { color:var(--green2);border-bottom-color:var(--green1); }
-.cmw-tab.done { color:var(--text-sec);cursor:pointer; }
-.cmw-tab.done:hover { color:var(--green2); }
-.cmw-num { width:18px;height:18px;border-radius:50%;background:var(--border);color:var(--text-sec);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0; }
-.cmw-tab.active .cmw-num { background:var(--green1);color:#fff; }
-.cmw-tab.done .cmw-num { background:var(--green1);color:#fff; }
-.cmw-check-row { display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--border); }
-.cmw-check-row:last-child { border-bottom:none; }
-.cmw-check-ico { width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px; }
 .cmw-demo { font-size:10px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:20px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:all 0.12s; }
 .cmw-demo:hover { border-color:var(--green1);color:var(--green2); }
-body.dark .cmw-num { background:rgba(255,255,255,0.12);color:var(--p-neutral-300); }
-body.dark .cmw-tab.active .cmw-num, body.dark .cmw-tab.done .cmw-num { background:var(--green1);color:#fff; }
 body.dark .cmw-demo { background:rgba(255,255,255,0.05);color:var(--p-neutral-300); }
 /* helper text */
 .helper-text { font-size:11px;color:var(--text-sec);margin-top:6px; }
@@ -2923,86 +2910,78 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <!-- Header + stepper -->
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
             <div style="font-size:20px;font-weight:700;color:var(--text-default);">Create Connection Manager Group</div>
-            <span style="font-size:10px;font-weight:700;color:#92400e;background:var(--bg-warning);border:1px solid var(--bg-warning-border);border-radius:20px;padding:2px 9px;">One-time setup</span>
           </div>
           <div style="font-size:13px;color:var(--text-sec);margin-bottom:18px;line-height:1.5;">A Connection Manager Group organises one or more lightweight relays on your network. Guardian sends agentless scans through them to reach targets over WinRM (Windows) or SSH (Linux/macOS) — nothing is installed on the nodes themselves.</div>
 
-          <div id="cmw-step-label" style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;">Connection Manager setup · Step 1 of 4</div>
-          <div class="cmw-stepper" style="display:flex;gap:6px;margin-bottom:22px;">
-            <div class="cmw-tab" id="cmw-tab-1"><span class="cmw-num">1</span> Prerequisites</div>
-            <div class="cmw-tab" id="cmw-tab-2"><span class="cmw-num">2</span> Install &amp; register</div>
-            <div class="cmw-tab" id="cmw-tab-3"><span class="cmw-num">3</span> Connectivity</div>
-          </div>
-
-          <!-- ── STEP 1: Prerequisites ── -->
-          <div class="cmw-panel" id="cmw-step-1">
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px 22px;">
-              <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Before you start</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-bottom:16px;line-height:1.5;">Pick a host that can reach your target nodes and confirm it meets these requirements. Guardian re-checks them automatically after install.</div>
-              <div id="cmw-prereq-list"></div>
-            </div>
-
-            <div style="display:flex;gap:10px;margin-top:20px;align-items:center;justify-content:space-between;">
-              <button class="btn-outline" onclick="go('s-agentless')" style="width:auto;padding:11px 18px;">← Back to connection method</button>
-              <button class="btn-primary" id="cmw-prereq-continue" onclick="cmStep(2)" style="width:auto;padding:11px 28px;">Continue to installation →</button>
-            </div>
-            <div style="margin-top:10px;">
-              <button onclick="cmTogglePrereq()" style="background:none;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;font-family:inherit;text-decoration:underline;">Demo: toggle a missing prerequisite</button>
-            </div>
-          </div>
-
-          <!-- ── STEP 2: Install & register ── -->
-          <div class="cmw-panel" id="cmw-step-2" style="display:none;">
+          <!-- ── Create Group (always visible until submitted) ── -->
+          <div id="cmw-create-block">
             <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px 22px;">
               <div class="form-group">
                 <label class="form-label" for="cmw-name">Connection Manager Group name</label>
                 <input id="cmw-name" type="text" class="form-input" placeholder="e.g. London DC Group">
               </div>
-              <div class="form-group">
-                <label class="form-label" for="cmw-loc">Deployment location</label>
-                <select id="cmw-loc" class="csel" style="width:100%;">
-                  <option value="onprem">On-prem host (data centre / office network)</option>
-                  <option value="aws">AWS VPC — eu-west-1</option>
-                  <option value="azure">Azure VNet — west-europe</option>
-                  <option value="other">Other private network</option>
-                </select>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:7px;line-height:1.5;">Install it on the network segment that can reach the nodes you want to scan.</div>
-              </div>
-
-              <div style="border-top:1px solid var(--border);margin:6px 0 16px;"></div>
-
-              <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:4px;">1 · Download &amp; install</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;line-height:1.5;">Run this on the host above. Requires local admin / sudo.</div>
-              <div class="oneliner-box"><div class="oneliner-header"><span class="oneliner-lang">bash</span><button class="oneliner-copy">Copy</button></div><code class="oneliner-code">curl -fsSL https://accelerator.cloudhouse.com/cm/install.sh | sudo bash</code></div>
-
-              <div style="font-size:13px;font-weight:700;color:var(--text-default);margin:16px 0 4px;">2 · Register with this Guardian environment</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;line-height:1.5;">Paste this enrollment key when the installer asks. It expires in 24 hours.</div>
-              <div class="code-row"><span class="code-label">Enrollment key:</span><span class="code-value">CM-ENROLL-9F2A-44B1</span><button class="code-btn">Copy</button></div>
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:20px;justify-content:space-between;">
-              <button class="btn-outline" onclick="cmStep(1)" style="width:auto;padding:11px 18px;">← Back to prerequisites</button>
-              <button class="btn-primary" onclick="cmStartConnCheck()" style="width:auto;padding:11px 28px;">I've installed it — check connection →</button>
+            <div style="display:flex;gap:10px;margin-top:20px;align-items:center;justify-content:space-between;">
+              <button class="btn-outline" onclick="go('s-agentless')" style="width:auto;padding:11px 18px;">← Back</button>
+              <button class="btn-primary" onclick="cmCreateGroup()" style="width:auto;padding:11px 28px;">Create group →</button>
             </div>
           </div>
 
-          <!-- ── STEP 3: Connectivity test ── -->
-          <div class="cmw-panel" id="cmw-step-3" style="display:none;">
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:28px 22px;text-align:center;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <!-- ── Created confirmation (revealed after submit) ── -->
+          <div id="cmw-created-summary" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:16px 20px;margin-bottom:16px;align-items:center;gap:12px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:14px;font-weight:700;color:var(--text-default);"><span id="cmw-created-name">Group</span> created</div>
+              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">Install a Connection Manager below to activate this group.</div>
+            </div>
+          </div>
+
+          <!-- ── Install & wait for check-in (revealed on same screen) ── -->
+          <div id="cmw-install-block" style="display:none;">
+            <!-- API key + Guardian URL -->
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px 22px;margin-bottom:16px;">
+              <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:12px;">Group created — use these credentials to install</div>
+              <div class="code-row" style="margin-bottom:8px;"><span class="code-label">API key:</span><span class="code-value" id="cmw-api-key">grd_k8x…generated</span><button class="code-btn" onclick="navigator.clipboard.writeText(document.getElementById('cmw-api-key').textContent);scToast('API key copied')">Copy</button></div>
+              <div class="code-row"><span class="code-label">Guardian URL:</span><span class="code-value">https://guardian.cloudhouse.com</span><button class="code-btn" onclick="navigator.clipboard.writeText('https://guardian.cloudhouse.com');scToast('URL copied')">Copy</button></div>
+            </div>
+
+            <!-- Installer choice -->
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px 22px;margin-bottom:16px;">
+              <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:10px;">Choose installer</div>
+              <div style="display:flex;gap:8px;margin-bottom:14px;">
+                <button id="cmw-os-win" class="btn-outline cmw-os-btn" onclick="cmwPickOS('windows')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Windows</button>
+                <button id="cmw-os-linux" class="btn-outline cmw-os-btn" onclick="cmwPickOS('linux')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Linux</button>
+              </div>
+              <div id="cmw-install-cmd">
+                <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;line-height:1.5;">Run this command on the host where you want to install the Connection Manager:</div>
+                <div class="oneliner-box"><div class="oneliner-header"><span class="oneliner-lang" id="cmw-cmd-lang">powershell</span><button class="oneliner-copy" onclick="navigator.clipboard.writeText(document.getElementById('cmw-cmd-code').textContent);scToast('Command copied')">Copy</button></div><code class="oneliner-code" id="cmw-cmd-code">irm https://guardian.cloudhouse.com/cm/install.ps1 | iex</code></div>
+              </div>
+            </div>
+
+            <!-- Requirements (guidance, not a step) -->
+            <div style="background:var(--bg-canvas);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:16px;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Installation requirements</div>
+              <div style="font-size:12px;color:var(--text-sec);line-height:1.7;">
+                • Supported OS: Windows Server 2019+ or Linux (RHEL/Ubuntu) 64-bit<br>
+                • Admin permissions: local admin or sudo<br>
+                • Network: outbound HTTPS 443 to Guardian, WinRM 5985/5986 or SSH 22 to targets<br>
+                • Guardian URL must be reachable from the host
+              </div>
+            </div>
+
+            <!-- Waiting / result area -->
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:28px 22px;text-align:center;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
               <div id="cmw-conn-body"></div>
             </div>
 
             <div id="cmw-conn-actions" style="display:flex;gap:10px;margin-top:20px;justify-content:space-between;"></div>
 
             <div style="text-align:center;margin-top:12px;">
-              <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Demo: jump to a connectivity outcome</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Demo: simulate check-in</div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
-                <button class="cmw-demo" onclick="cmConnResult('connected')">connected</button>
-                <button class="cmw-demo" onclick="cmConnResult('pending')">installation pending</button>
-                <button class="cmw-demo" onclick="cmConnResult('failed')">connection failed</button>
-                <button class="cmw-demo" onclick="cmConnResult('timeout')">timeout</button>
-                <button class="cmw-demo" onclick="cmConnResult('offline')">installed but offline</button>
-                <button class="cmw-demo" onclick="cmConnResult('notready')">connected · not scan-ready</button>
+                <button class="cmw-demo" onclick="cmConnResult('connected')">CM checks in</button>
+                <button class="cmw-demo" onclick="cmConnResult('waiting')">still waiting</button>
               </div>
             </div>
           </div>
@@ -8187,70 +8166,59 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
 
     // ══════════════════════════════════════════════════════════════
-    //  CM SETUP WIZARD (Week-2 Tuesday) — prereq → install → connect → ready
+    //  CM SETUP WIZARD — single flow: create group → install & wait (same screen)
     // ══════════════════════════════════════════════════════════════
-    var cmSetup = { step: 1, prereqMissing: false, result: null };
-    var CMW_PREREQS = [
-      { key: 'os',    label: 'Supported host OS',        detail: 'Windows Server 2019+ or Linux (RHEL/Ubuntu) 64-bit' },
-      { key: 'net',   label: 'Network access to targets', detail: 'Host can reach the nodes you want to scan' },
-      { key: 'perm',  label: 'Local admin / sudo',        detail: 'Needed to install the Connection Manager service' },
-      { key: 'ports', label: 'Outbound connectivity',     detail: 'HTTPS 443 to Guardian · WinRM 5985/5986 or SSH 22 to targets' }
-    ];
+    var cmSetup = { result: null, installerOS: 'windows' };
     function cmSetupInit() {
-      cmSetup = { step: 1, prereqMissing: false, result: null }; cmRenderPrereq(); cmStep(1);
-      var loc = document.getElementById('cmw-loc');
-      if (loc && typeof enhanceSelect === 'function') { enhanceSelect(loc); var c = loc._csel; if (c) { c.btn.style.width = '100%'; c.btn.style.padding = '10px 30px 10px 14px'; c.btn.style.fontSize = '13px'; c.wrap.style.display = 'block'; } }
+      cmSetup = { result: null, installerOS: 'windows' };
+      var createBlk = document.getElementById('cmw-create-block');
+      var summary = document.getElementById('cmw-created-summary');
+      var installBlk = document.getElementById('cmw-install-block');
+      if (createBlk) createBlk.style.display = '';
+      if (summary) summary.style.display = 'none';
+      if (installBlk) installBlk.style.display = 'none';
+      var nameEl = document.getElementById('cmw-name');
+      if (nameEl) nameEl.value = '';
     }
-    function cmTogglePrereq() { cmSetup.prereqMissing = !cmSetup.prereqMissing; cmRenderPrereq(); }
-    function cmRenderPrereq() {
-      var list = document.getElementById('cmw-prereq-list');
-      if (!list) return;
-      var okIco  = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-      var badIco = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
-      list.innerHTML = CMW_PREREQS.map(function (p, i) {
-        var missing = cmSetup.prereqMissing && i === 3; // demo: last one missing
-        var bg = missing ? 'rgba(245,158,11,0.12)' : 'var(--bg-success)';
-        var bd = missing ? 'rgba(245,158,11,0.3)' : 'var(--bg-success-border)';
-        return '<div class="cmw-check-row">'
-          + '<div class="cmw-check-ico" style="background:' + bg + ';border:1px solid ' + bd + ';">' + (missing ? badIco : okIco) + '</div>'
-          + '<div style="flex:1;"><div style="font-size:12.5px;font-weight:600;color:var(--text-default);">' + p.label
-          + (missing ? ' <span style="font-size:10px;font-weight:700;color:#F59E0B;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:20px;padding:1px 7px;margin-left:4px;">Action needed</span>' : '')
-          + '</div><div style="font-size:11px;color:var(--text-sec);margin-top:2px;line-height:1.5;">' + (missing ? 'Open outbound HTTPS 443 and WinRM/SSH to your targets, then re-check.' : p.detail) + '</div></div></div>';
-      }).join('');
-      var btn = document.getElementById('cmw-prereq-continue');
-      if (btn) {
-        btn.disabled = cmSetup.prereqMissing;
-        btn.style.opacity = cmSetup.prereqMissing ? '0.5' : '';
-        btn.style.cursor = cmSetup.prereqMissing ? 'not-allowed' : '';
-        btn.textContent = cmSetup.prereqMissing ? 'Resolve prerequisites to continue' : 'Continue to installation →';
-      }
-    }
-    function cmStep(n) {
-      cmSetup.step = n;
-      var names = { 1:'Prerequisites', 2:'Install & register', 3:'Connectivity' };
-      var lbl = document.getElementById('cmw-step-label');
-      if (lbl) lbl.textContent = 'CM Group setup · Step ' + n + ' of 3 — ' + (names[n] || '');
-      [1, 2, 3].forEach(function (i) {
-        var panel = document.getElementById('cmw-step-' + i);
-        if (panel) panel.style.display = i === n ? '' : 'none';
-        var tab = document.getElementById('cmw-tab-' + i);
-        if (tab) {
-          tab.classList.toggle('active', i === n);
-          tab.classList.toggle('done', i < n);
-          tab.onclick = i < n ? (function (step) { return function () { cmStep(step); }; })(i) : null;
-        }
-      });
-    }
-    function cmStartConnCheck() {
+    function cmCreateGroup() {
       var nameEl = document.getElementById('cmw-name');
       var name = (nameEl || {}).value || '';
       if (!name.trim()) {
         if (nameEl) { nameEl.style.borderColor = '#FB3C44'; nameEl.focus(); nameEl.addEventListener('input', function h() { nameEl.style.borderColor = ''; nameEl.removeEventListener('input', h); }, { once: true }); }
         return;
       }
-      cmStep(3);
+      // Generate API key
+      var apiKey = 'grd_' + Math.random().toString(36).slice(2, 10);
+      cmSetup.apiKey = apiKey;
+      cmSetup.groupName = name.trim();
+      document.getElementById('cmw-api-key').textContent = apiKey;
+      // Reveal install block on the same screen (no panel switch)
+      var createBlk = document.getElementById('cmw-create-block');
+      var summary = document.getElementById('cmw-created-summary');
+      var installBlk = document.getElementById('cmw-install-block');
+      var nameSpan = document.getElementById('cmw-created-name');
+      if (nameSpan) nameSpan.textContent = cmSetup.groupName;
+      if (createBlk) createBlk.style.display = 'none';
+      if (summary) summary.style.display = 'flex';
+      if (installBlk) installBlk.style.display = '';
+      cmwPickOS(cmSetup.installerOS);
       cmConnResult('checking');
-      cmSetup._t = setTimeout(function () { cmConnResult('connected'); }, 2600);
+    }
+    function cmwPickOS(os) {
+      cmSetup.installerOS = os;
+      var winBtn = document.getElementById('cmw-os-win');
+      var linBtn = document.getElementById('cmw-os-linux');
+      if (winBtn) { winBtn.style.background = os === 'windows' ? 'var(--green1)' : ''; winBtn.style.color = os === 'windows' ? '#fff' : ''; winBtn.style.borderColor = os === 'windows' ? 'var(--green1)' : ''; }
+      if (linBtn) { linBtn.style.background = os === 'linux' ? 'var(--green1)' : ''; linBtn.style.color = os === 'linux' ? '#fff' : ''; linBtn.style.borderColor = os === 'linux' ? 'var(--green1)' : ''; }
+      var lang = document.getElementById('cmw-cmd-lang');
+      var code = document.getElementById('cmw-cmd-code');
+      if (os === 'windows') {
+        if (lang) lang.textContent = 'powershell';
+        if (code) code.textContent = 'irm https://guardian.cloudhouse.com/cm/install.ps1 | iex';
+      } else {
+        if (lang) lang.textContent = 'bash';
+        if (code) code.textContent = 'curl -fsSL https://guardian.cloudhouse.com/cm/install.sh | sudo bash';
+      }
     }
     function cmConnResult(state) {
       if (cmSetup._t) { clearTimeout(cmSetup._t); cmSetup._t = null; }
@@ -8258,75 +8226,48 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var body = document.getElementById('cmw-conn-body');
       var actions = document.getElementById('cmw-conn-actions');
       if (!body || !actions) return;
-
-      if (state === 'checking') {
-        body.innerHTML = '<div class="connecting-ring"></div>'
-          + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">Waiting for the Connection Manager…</div>'
-          + '<div style="font-size:12px;color:var(--text-sec);margin-top:4px;">It usually checks in within ~30 seconds of starting the service.</div>';
-        actions.innerHTML = '';
-        return;
-      }
       var dk = _isDk();
-      var map = {
-        pending:   { c: dk?'#F59E0B':'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Installation pending', s:'The installer is still running or the service hasn\'t started yet. Leave it running — this page updates automatically.', ic:'clock' },
-        failed:    { c: dk?'#FB3C44':'#b91c1c', bg: dk?'rgba(251,60,68,0.12)':'#fef2f2', bd: dk?'rgba(251,60,68,0.3)':'#fecaca', t:'Connection failed', s:'Guardian couldn\'t reach the Connection Manager. Check the host has outbound HTTPS 443 and that the enrollment key was entered correctly.', ic:'x' },
-        timeout:   { c: dk?'#FB3C44':'#b91c1c', bg: dk?'rgba(251,60,68,0.12)':'#fef2f2', bd: dk?'rgba(251,60,68,0.3)':'#fecaca', t:'Connection timed out', s:'No check-in after 2 minutes. Confirm the service is running and a firewall isn\'t blocking outbound 443.', ic:'x' },
-        offline:   { c: dk?'#F59E0B':'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Registered but offline', s:'The Connection Manager enrolled once but is no longer reporting in. It may have been stopped or lost network. Restart the service, then re-check.', ic:'clock' },
-        notready:  { c: dk?'#F59E0B':'#b45309', bg:'var(--bg-warning)', bd:'var(--bg-warning-border)', t:'Connected — not scan-ready', s:'The Connection Manager is online but can\'t reach your targets over WinRM/SSH yet. Open the ports to your nodes, then it\'s ready to scan.', ic:'clock' },
-        connected: { c: dk?'#10B981':'#047857', bg:'var(--bg-success)', bd:'var(--bg-success-border)', t:'Connection Manager connected', s:'It checked in successfully and can reach targets over WinRM and SSH.', ic:'check' }
-      };
-      var m = map[state] || map.connected;
-      var icons = {
-        check: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="' + m.c + '" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-        x:     '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="' + m.c + '" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-        clock: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="' + m.c + '" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>'
-      };
-      body.innerHTML = '<div style="width:56px;height:56px;border-radius:50%;background:' + m.bg + ';border:1px solid ' + m.bd + ';display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' + icons[m.ic] + '</div>'
-        + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">' + m.t + '</div>'
-        + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;">' + m.s + '</div>';
 
-      if (state === 'connected' || state === 'notready') {
-        cmSetupFinish(state);
+      if (state === 'checking' || state === 'waiting') {
+        var isFirst = state === 'checking';
+        body.innerHTML = '<div class="connecting-ring"></div>'
+          + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">Waiting for a Connection Manager to check in…</div>'
+          + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;">'
+          + (isFirst ? 'Run the installation command above, then this page updates automatically when the CM connects.' : 'No Connection Manager has checked in yet. Confirm that the installer was run with the correct Guardian URL and API key.')
+          + '</div>';
+        actions.innerHTML = '<button class="btn-outline" onclick="navigator.clipboard.writeText(document.getElementById(\'cmw-cmd-code\').textContent);scToast(\'Command copied\')" style="width:auto;padding:11px 18px;font-size:12px;">Copy installation command</button>'
+          + '<a href="javascript:void(0)" onclick="scToast(\'Opening installation guide…\')" style="font-size:12px;color:var(--green1);font-weight:600;padding:11px 0;text-decoration:none;">View installation guide</a>';
         return;
-      } else {
-        actions.innerHTML = '<button class="btn-outline" onclick="cmStep(2)" style="width:auto;padding:11px 18px;">← Review install</button>'
-          + '<button class="btn-primary" onclick="cmStartConnCheck()" style="width:auto;padding:11px 28px;">Retry connection →</button>';
+      }
+
+      if (state === 'connected') {
+        cmSetupFinish();
+        return;
       }
     }
-    function cmSetupFinish(outcome) {
-      var name = ((document.getElementById('cmw-name') || {}).value || '').trim() || 'New Group';
-      var loc = (document.getElementById('cmw-loc') || {}).value || 'onprem';
-      var locLabel = { onprem:'On-prem', aws:'AWS VPC', azure:'Azure VNet', other:'Other' }[loc] || 'On-prem';
-      var host = { onprem:'10.0.9.20', aws:'10.2.4.7', azure:'10.3.1.9', other:'10.0.9.20' }[loc] || '10.0.9.20';
+    function cmSetupFinish() {
+      var name = cmSetup.groupName || 'New Group';
+      var apiKey = cmSetup.apiKey || 'grd_new';
       var newId = 'grp-' + Date.now();
-      var os = addNodeOS || 'windows';
+      var os = cmSetup.installerOS || 'windows';
       var protos = os === 'windows' ? ['WinRM'] : ['SSH'];
-      CM_GROUPS.push({ id: newId, name: name, state: 'active', apiKey: 'grd_' + newId.slice(-6) + '…masked', location: locLabel,
-        instances: [{ id:'cm-auto-'+Date.now(), reportedName:'Awaiting check-in', status:'registered_not_connected', lastContact:'—', host: host, protocols: protos }],
+      var reportedName = 'CM-' + name.replace(/[^A-Za-z0-9]/g, '-').toUpperCase().slice(0, 16) + '-01';
+      CM_GROUPS.push({ id: newId, name: name, state: 'active', apiKey: apiKey, location: 'On-prem',
+        instances: [{ id:'cm-auto-'+Date.now(), reportedName: reportedName, status:'connected', lastContact:'Just now', host:'10.0.9.20', protocols: protos }],
         assignedNodes: [], nodeCount: 0 });
-      CONNECTION_MANAGERS.push({ id: newId, name: name, host: host, os: [os], nodes: 0, status: 'connected' });
-      cmSetup.newId = newId; cmSetup.newName = name; cmSetup.result = outcome;
-      cmRenderFinish(outcome, name);
-    }
-    function cmRenderFinish(outcome, name) {
+      CONNECTION_MANAGERS.push({ id: newId, name: name, host: '10.0.9.20', os: [os], nodes: 0, status: 'connected' });
+      cmSetup.newId = newId;
+      // Render success
       var body = document.getElementById('cmw-conn-body');
       var actions = document.getElementById('cmw-conn-actions');
       if (!body || !actions) return;
-      var ready = outcome !== 'notready';
       var dk = _isDk();
-      var accent = ready ? (dk ? '#10B981' : '#047857') : (dk ? '#F59E0B' : '#b45309');
-      var accentBg = ready ? 'var(--bg-success)' : 'var(--bg-warning)';
-      var accentBd = ready ? 'var(--bg-success-border)' : 'var(--bg-warning-border)';
-      var ico = ready
-        ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + accent + '" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>'
-        : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + accent + '" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>';
-      body.innerHTML = '<div style="width:56px;height:56px;border-radius:50%;background:' + accentBg + ';border:1px solid ' + accentBd + ';display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">' + ico + '</div>'
-        + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">' + (ready ? 'Connection Manager ready' : 'Connection Manager registered') + '</div>'
-        + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;"><strong style="color:var(--text-default);">' + name + '</strong> ' + (ready ? 'is online and can scan targets.' : 'is online but not scan-ready yet — open WinRM/SSH to your targets.') + '</div>'
-        + '<div style="background:var(--bg-canvas);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:16px;text-align:left;">'
-        + '<div><strong style="color:var(--text-default);">Status:</strong> ' + (ready ? 'Connected · scan-ready' : 'Connected · not scan-ready') + '</div>'
-        + '<div><strong style="color:var(--text-default);">Next:</strong> ' + (ready ? 'return to Add Node to finish onboarding, or add credentials for your first scan.' : 'once ports are open it becomes scan-ready automatically.') + '</div></div>';
-      actions.innerHTML = '<button class="btn-outline" onclick="showView(\'settings-integrations\')" style="width:auto;padding:11px 18px;">Add credentials</button>'
+      var accent = dk ? '#10B981' : '#047857';
+      body.innerHTML = '<div style="width:56px;height:56px;border-radius:50%;background:var(--bg-success);border:1px solid var(--bg-success-border);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">'
+        + '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + accent + '" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
+        + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">Connection Manager connected successfully</div>'
+        + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;"><strong style="color:var(--text-default);">' + reportedName + '</strong> has been added to <strong style="color:var(--text-default);">' + name + '</strong>.</div>';
+      actions.innerHTML = '<button class="btn-outline" onclick="showCMDetail(\'' + newId + '\')" style="width:auto;padding:11px 18px;">View group</button>'
         + '<button class="btn-primary" onclick="cmReturnToAddNode()" style="width:auto;padding:11px 28px;">Continue to Add Node →</button>';
     }
     function cmReturnToAddNode() {
