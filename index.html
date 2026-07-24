@@ -8443,7 +8443,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       document.getElementById('cmd-sub').innerHTML = cm.location + ' · ' + statusBadge;
 
       // Action buttons
-      var acts = '<button class="btn-outline" onclick="cmAction(\'edit\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Edit group</button>';
+      var acts = '<button id="cmd-test-btn" class="btn-outline" onclick="cmTestConnection()" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test connection</button>';
+      acts += '<button class="btn-outline" onclick="cmAction(\'edit\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Edit group</button>';
       acts += '<button class="btn-outline" onclick="go(\'s-cm-setup\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Add CM to this group</button>';
       acts += '<button class="cm-actions-btn" onclick="cmDetailMenu(this)" style="margin-left:4px;">⋯</button>';
       document.getElementById('cmd-actions').innerHTML = acts;
@@ -8554,41 +8555,36 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
     function cmTestConnection() {
       var btn = document.getElementById('cmd-test-btn');
-      var statusEl = document.getElementById('cmd-test-status');
-      var lastTestEl = document.getElementById('cmd-last-test');
       if (!btn || !_currentCM) return;
 
       // Phase 1: Testing...
       btn.disabled = true;
       btn.style.opacity = '0.6';
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Testing…';
-      if (statusEl) statusEl.innerHTML = '';
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;vertical-align:-2px;margin-right:4px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Testing…';
 
-      // Phase 2: Result after delay (simulate success for connected, fail for error/offline)
-      var willSucceed = _currentCM.status === 'connected';
+      // Phase 2: Result after delay — succeed if the group has any connected instance
+      var willSucceed = _currentCM.state === 'active' && _currentCM.instances.some(function(i){ return i.status === 'connected'; });
       setTimeout(function() {
         btn.disabled = false;
         btn.style.opacity = '';
         if (willSucceed) {
-          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Connection successful';
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>Connection successful';
           btn.style.borderColor = '#059669';
           btn.style.color = '#059669';
-          if (statusEl) statusEl.innerHTML = 'Just now';
-          if (lastTestEl) lastTestEl.innerHTML = '<span style="color:#059669;font-weight:600;">Passed</span> · just now';
+          scToast('Connection test passed — CM reachable');
         } else {
-          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Connection failed';
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>No connected CM';
           btn.style.borderColor = '#FB3C44';
           btn.style.color = '#FB3C44';
-          if (statusEl) statusEl.innerHTML = '<a href="javascript:void(0)" onclick="cmAction(\'troubleshoot\')" style="color:var(--green1);font-weight:600;text-decoration:none;font-size:11px;">Troubleshoot →</a>';
-          if (lastTestEl) lastTestEl.innerHTML = '<span style="color:#FB3C44;font-weight:600;">Failed</span> · just now';
+          scToast('Connection test failed — no CM instance is connected');
         }
         // Reset button after 5s
         setTimeout(function() {
-          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Test connection';
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test connection';
           btn.style.borderColor = '';
           btn.style.color = '';
         }, 5000);
-      }, 2000);
+      }, 1400);
     }
 
     function cmAction(action, cmId) {
@@ -8603,7 +8599,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       } else if (action === 'troubleshoot') {
         scToast('Opening troubleshooting guide…');
       } else if (action === 'edit') {
-        scToast('Edit mode coming soon');
+        cmOpenEdit(cm ? cm.id : (_currentCM ? _currentCM.id : ''));
       } else if (action === 'restart') {
         scToast('Restarting ' + name + '…');
       } else if (action === 'renew') {
@@ -8691,9 +8687,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
           + '<br>Scheduled scans for these nodes will ' + (isRemove ? 'be cancelled.' : 'be paused.')
           + '</div></div>';
       }
-      if (hasAlt) {
+      if (isRemove && nodeCount > 0 && hasAlt) {
+        // Reassign picker — choose where the nodes go before removal
+        warn += '<div style="margin-bottom:12px;">'
+          + '<label for="cm-reassign-target" style="display:block;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Reassign ' + nodeCount + ' node' + (nodeCount !== 1 ? 's' : '') + ' to</label>'
+          + '<select id="cm-reassign-target" class="form-input dk-form" style="appearance:auto;-webkit-appearance:auto;cursor:pointer;font-size:12px;padding:8px 10px;">'
+          + otherCMs.map(function(c){ return '<option value="' + c.id + '">' + c.name + ' · ' + c.location + '</option>'; }).join('')
+          + '<option value="__none__">Leave unassigned (no scan coverage)</option>'
+          + '</select>'
+          + '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5;">Nodes move to the selected group and keep scanning. Choose "Leave unassigned" to remove coverage.</div>'
+          + '</div>';
+      } else if (hasAlt) {
         warn += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">'
-          + (isRemove ? 'Nodes can be reassigned to: ' : 'Alternative CMs available: ')
+          + 'Alternative CMs available: '
           + '<span style="color:var(--text-default);">' + altNames + '</span>'
           + (otherCMs.length > 3 ? ' + ' + (otherCMs.length - 3) + ' more' : '')
           + '</div>';
@@ -8744,16 +8750,82 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
 
     function cmExecRemove(cmId) {
-      closeCMWarn();
       var cm = CM_GROUPS.filter(function(g){ return g.id === cmId; })[0];
-      scToast((cm ? cm.name : 'CM Group') + ' removed');
+      var nodeCount = cm ? _cmgTotalNodes(cm) : 0;
+      var sel = document.getElementById('cm-reassign-target');
+      var targetId = sel ? sel.value : null;
+      closeCMWarn();
+      var msg = (cm ? cm.name : 'CM Group') + ' removed';
+      if (nodeCount > 0 && targetId && targetId !== '__none__') {
+        var target = CM_GROUPS.filter(function(g){ return g.id === targetId; })[0];
+        if (target) {
+          target.nodeCount = _cmgTotalNodes(target) + nodeCount;
+          msg = nodeCount + ' node' + (nodeCount !== 1 ? 's' : '') + ' reassigned to ' + target.name + ' · ' + (cm ? cm.name : 'group') + ' removed';
+        }
+      } else if (nodeCount > 0 && targetId === '__none__') {
+        msg = (cm ? cm.name : 'CM Group') + ' removed · ' + nodeCount + ' node' + (nodeCount !== 1 ? 's' : '') + ' left unassigned';
+      }
+      // Remove from data model
+      var idx = CM_GROUPS.findIndex(function(g){ return g.id === cmId; });
+      if (idx > -1) CM_GROUPS.splice(idx, 1);
+      scToast(msg);
       showView('cm-list');
     }
 
     function cmExecDisable(cmId) {
       closeCMWarn();
       var cm = CM_GROUPS.filter(function(g){ return g.id === cmId; })[0];
+      if (cm) cm.state = 'disabled';
       scToast((cm ? cm.name : 'CM Group') + ' disabled');
+      if (document.getElementById('v-cm-detail').style.display !== 'none' && _currentCM && _currentCM.id === cmId) renderCMDetail(cm);
+      else renderCMList();
+    }
+
+    var _cmEditId = null;
+    function cmOpenEdit(cmId) {
+      var cm = CM_GROUPS.filter(function(g){ return g.id === cmId; })[0];
+      if (!cm) return;
+      _cmEditId = cmId;
+      var old = document.getElementById('cm-edit-overlay');
+      if (old) old.remove();
+      var ov = document.createElement('div');
+      ov.id = 'cm-edit-overlay';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);';
+      var html = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.3);max-width:440px;width:90%;">'
+        + '<div style="padding:24px 24px 0;">'
+        + '<div style="font-size:15px;font-weight:600;color:var(--text-default);margin-bottom:4px;">Edit CM Group</div>'
+        + '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px;line-height:1.5;">Update the group name and location. CM instances and assigned nodes are unaffected.</div>'
+        + '<div class="form-group"><label class="form-label" for="cm-edit-name">Group name</label>'
+        + '<input id="cm-edit-name" type="text" class="form-input" value="' + (cm.name || '').replace(/"/g,'&quot;') + '"></div>'
+        + '<div class="form-group"><label class="form-label" for="cm-edit-loc">Location</label>'
+        + '<input id="cm-edit-loc" type="text" class="form-input" value="' + (cm.location || '').replace(/"/g,'&quot;') + '" placeholder="e.g. On-prem · London DC"></div>'
+        + '<div style="display:flex;justify-content:flex-end;gap:8px;padding:6px 0 16px;border-top:1px solid var(--border);margin-top:8px;">'
+        + '<button onclick="cmCloseEdit()" style="padding:7px 16px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Cancel</button>'
+        + '<button onclick="cmSaveEdit()" style="padding:7px 16px;font-size:12px;border:none;border-radius:6px;background:var(--green1);color:#fff;cursor:pointer;font-weight:600;">Save changes</button>'
+        + '</div></div></div>';
+      ov.innerHTML = html;
+      ov.addEventListener('click', function(e){ if (e.target === ov) cmCloseEdit(); });
+      document.body.appendChild(ov);
+      var nameEl = document.getElementById('cm-edit-name');
+      if (nameEl) { nameEl.focus(); nameEl.select(); }
+    }
+    function cmCloseEdit() {
+      var ov = document.getElementById('cm-edit-overlay');
+      if (ov) ov.remove();
+    }
+    function cmSaveEdit() {
+      var cm = CM_GROUPS.filter(function(g){ return g.id === _cmEditId; })[0];
+      if (!cm) { cmCloseEdit(); return; }
+      var nameEl = document.getElementById('cm-edit-name');
+      var locEl = document.getElementById('cm-edit-loc');
+      var name = (nameEl ? nameEl.value : '').trim();
+      if (!name) { if (nameEl) { nameEl.style.borderColor = '#FB3C44'; nameEl.focus(); } return; }
+      cm.name = name;
+      cm.location = (locEl ? locEl.value : '').trim() || cm.location;
+      cmCloseEdit();
+      scToast('Group updated');
+      if (_currentCM && _currentCM.id === cm.id) renderCMDetail(cm);
+      renderCMList();
     }
 
     function retryScan(btn) {
