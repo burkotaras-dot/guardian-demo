@@ -2065,25 +2065,14 @@ body.dark .cred-act-item.danger svg { color:#FB3C44; }
 body.dark .cred-act-item.danger:hover { background:rgba(251,60,68,0.14); }
 body.dark .cred-act-sep { background:var(--border-default); }
 
-/* ── Credential sources (Guardian Vault base + Secret Server Pro) ── */
-.cred-sources { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; }
-.cred-source-tile { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 18px; }
-.cred-source-tile.active { border-color:rgba(16,185,129,0.4); }
-.cst-head { display:flex; align-items:center; gap:10px; margin-bottom:9px; }
-.cst-ico { width:30px; height:30px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
-.cst-name { font-size:13.5px; font-weight:600; color:var(--text-default); }
-.cst-badge { margin-left:auto; font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.4px; }
-.cst-badge.included { background:rgba(16,185,129,0.12); color:#059669; }
-.cst-badge.pro { background:rgba(139,92,246,0.14); color:#7C3AED; }
-.cst-desc { font-size:12px; color:var(--text-sec); line-height:1.55; }
-.cst-cta { margin-top:12px; background:none; border:1px solid var(--border); border-radius:7px; padding:7px 14px; font-size:12px; font-weight:600; color:var(--green1); cursor:pointer; font-family:inherit; transition:all 0.12s; }
-.cst-cta:hover { border-color:var(--green1); background:rgba(5,150,105,0.06); }
-body.dark .cred-source-tile { background:var(--bg-subtle); border-color:var(--border-default); }
-body.dark .cred-source-tile.active { border-color:rgba(16,185,129,0.4); }
-body.dark .cst-badge.included { background:rgba(16,185,129,0.16); color:#10B981; }
-body.dark .cst-badge.pro { background:rgba(167,139,250,0.18); color:#A78BFA; }
-body.dark .cst-cta { color:#10B981; }
-body.dark .cst-cta:hover { border-color:rgba(16,185,129,0.5); background:rgba(16,185,129,0.1); }
+/* ── Credential source note (Guardian Vault base + Secret Server Pro) ── */
+.cred-source-note { display:flex; align-items:flex-start; gap:9px; margin-top:16px; padding:2px 2px; font-size:12px; color:var(--text-sec); line-height:1.6; }
+.cred-source-note b { color:var(--text-default); font-weight:600; }
+.cred-source-link { background:none; border:none; padding:0; font-family:inherit; font-size:12px; font-weight:600; color:var(--green1); cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
+.cred-source-link:hover { color:var(--green2); }
+.cred-source-pro { font-size:9px; font-weight:700; padding:1px 6px; border-radius:20px; text-transform:uppercase; letter-spacing:0.4px; background:rgba(139,92,246,0.14); color:#7C3AED; vertical-align:1px; }
+body.dark .cred-source-link { color:#10B981; }
+body.dark .cred-source-pro { background:rgba(167,139,250,0.18); color:#A78BFA; }
 
 #v-s-cm-setup .btn-outline { border-color:var(--green2); color:var(--green2); font-weight:600; background:rgba(5,150,105,0.06); }
 #v-s-cm-setup .btn-outline:hover { border-color:var(--green1); color:var(--green1); background:rgba(5,150,105,0.12); }
@@ -13388,28 +13377,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
         <div id="cred-rows"></div>
       </div>
 
-      <!-- Vault sources / future expansion framing -->
-      <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin:26px 0 10px;">Credential sources</div>
-      <div class="cred-sources">
-        <div class="cred-source-tile active">
-          <div class="cst-head">
-            <span class="cst-ico" style="background:rgba(16,185,129,0.12);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span>
-            <span class="cst-name">Guardian Vault</span>
-            <span class="cst-badge included">Included · Active</span>
-          </div>
-          <div class="cst-desc">Guardian's built-in encrypted store. Credentials live here by default and are used by Connection Managers at scan time — no extra setup required.</div>
-        </div>
-        <div class="cred-source-tile">
-          <div class="cst-head">
-            <span class="cst-ico" style="background:rgba(59,130,246,0.12);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-            <span class="cst-name">Secret Server</span>
-            <span class="cst-badge pro">Pro</span>
-          </div>
-          <div class="cst-desc">Already run an enterprise secret store? Connect Delinea Secret Server to reference credentials from it instead of storing secrets in Guardian.</div>
-          <button class="cst-cta" onclick="showView('settings-integrations')">Connect Secret Server →</button>
-        </div>
+      <!-- Vault source / future expansion framing -->
+      <div class="cred-source-note">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="1.8" style="flex-shrink:0;margin-top:1px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <div>Credentials are stored in the <b>Guardian Vault</b> — the built-in encrypted store, used by Connection Managers at scan time. Prefer your own store? <button class="cred-source-link" onclick="showView('settings-integrations')">Connect Delinea Secret Server</button> <span class="cred-source-pro">Pro</span> to reference credentials from it instead. CyberArk and HashiCorp Vault are on the Pro roadmap.</div>
       </div>
-      <div style="font-size:11px;color:var(--text-muted);margin-top:12px;line-height:1.6;">More external stores (CyberArk, HashiCorp Vault) are on the roadmap for the Pro tier.</div>
 
       </div>
     </div>
