@@ -2079,6 +2079,13 @@ body.dark .cred-source-pro { background:rgba(167,139,250,0.18); color:#A78BFA; }
 body.dark #v-s-cm-setup .btn-outline { background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.45); color:#10B981; }
 body.dark #v-s-cm-setup .btn-outline:hover { background:rgba(16,185,129,0.18); border-color:rgba(16,185,129,0.65); color:#34D399; }
 
+/* ── Agentless form validation ── */
+.al-field-warn { display:flex; align-items:flex-start; gap:6px; margin-top:7px; font-size:11.5px; line-height:1.45; color:#b45309; }
+.al-field-warn[data-kind="error"] { color:#b91c1c; }
+body.dark .al-field-warn { color:#F59E0B; }
+body.dark .al-field-warn[data-kind="error"] { color:#FB3C44; }
+#al-submit:disabled { opacity:0.5; cursor:not-allowed; }
+
 /* ── Test-connectivity / scan-readiness (agentless onboarding step) ── */
 .ct-demo { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:8px 12px; margin-bottom:16px; border:1px dashed var(--border); border-radius:var(--radius-md); background:var(--bg-canvas); }
 .ct-demo-lbl { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--text-muted); flex-shrink:0; }
@@ -2939,16 +2946,17 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:10px;">Target</div>
           <div class="form-group">
             <label class="form-label" for="al-name">Node name</label>
-            <input id="al-name" type="text" class="form-input" placeholder="e.g. web-prod-01">
+            <input id="al-name" type="text" class="form-input" placeholder="e.g. web-prod-01" oninput="alValidate()">
+            <div id="al-name-warn" class="al-field-warn" style="display:none;"></div>
           </div>
           <div style="display:flex;gap:12px;">
             <div class="form-group" style="flex:1;">
               <label class="form-label" for="al-host">Hostname or IP</label>
-              <input id="al-host" type="text" class="form-input" placeholder="e.g. 10.0.4.51 or web-prod-01.corp">
+              <input id="al-host" type="text" class="form-input" placeholder="e.g. 10.0.4.51 or web-prod-01.corp" oninput="alValidate()">
             </div>
             <div class="form-group" style="width:120px;">
               <label class="form-label" for="al-port">Port</label>
-              <input id="al-port" type="text" class="form-input" placeholder="5985">
+              <input id="al-port" type="text" class="form-input" placeholder="5985" oninput="alValidate()">
             </div>
           </div>
           <div id="al-port-hint" style="font-size:11px;color:var(--text-sec);margin:-8px 0 18px;line-height:1.5;"></div>
@@ -2977,16 +2985,16 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
             <div class="form-group">
               <label class="form-label" for="al-user">Username</label>
-              <input id="al-user" type="text" class="form-input" placeholder="e.g. Administrator or root">
+              <input id="al-user" type="text" class="form-input" placeholder="e.g. Administrator or root" oninput="alValidate()">
             </div>
             <div class="form-group" id="cred-password-field">
               <label class="form-label" for="al-pass">Password</label>
-              <input id="al-pass" type="password" class="form-input" placeholder="••••••••••••">
+              <input id="al-pass" type="password" class="form-input" placeholder="••••••••••••" oninput="alValidate()">
             </div>
             <div id="cred-sshkey-fields" style="display:none;">
               <div class="form-group">
                 <label class="form-label" for="al-key">Private key</label>
-                <textarea id="al-key" class="form-input" rows="3" placeholder="-----BEGIN OPENSSH PRIVATE KEY-----" style="resize:vertical;font-family:ui-monospace,monospace;font-size:12px;"></textarea>
+                <textarea id="al-key" class="form-input" rows="3" placeholder="-----BEGIN OPENSSH PRIVATE KEY-----" style="resize:vertical;font-family:ui-monospace,monospace;font-size:12px;" oninput="alValidate()"></textarea>
               </div>
               <div class="form-group">
                 <label class="form-label" for="al-key-pass">Key passphrase <span style="text-transform:none;font-weight:400;color:var(--text-sec);">(optional)</span></label>
@@ -3010,9 +3018,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
             <div id="al-cred-validity"></div>
           </div>
 
-          <div style="display:flex;gap:10px;margin-top:22px;">
+          <div id="al-req-hint" style="display:none;align-items:center;gap:7px;margin-top:20px;font-size:11.5px;color:var(--text-sec);line-height:1.5;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span id="al-req-hint-text"></span>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:14px;">
             <button class="btn-outline" onclick="go('s-method')" style="width:auto;">← Back</button>
-            <button class="btn-primary" onclick="go('s-connect-test')" style="width:auto;flex:1;">Test connection &amp; continue →</button>
+            <button class="btn-primary" id="al-submit" onclick="go('s-connect-test')" style="width:auto;flex:1;">Test connection &amp; continue →</button>
           </div>
         </div>
       </div>
@@ -8171,7 +8183,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       m.sort(function (a, b) { return b.nodes - a.nodes; });
       return m[0].id;
     }
-    function selectCM(id) { selectedCM = id; renderCMPicker(); }
+    function selectCM(id) { selectedCM = id; renderCMPicker(); alValidate(); }
     function renderCMPicker() {
       var osName = OS_LABEL[addNodeOS] || 'this';
       var recId = recommendedCMId();
@@ -8208,6 +8220,58 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var sshTab = document.getElementById('cred-type-sshkey');
       if (sshTab) sshTab.style.display = isWin ? 'none' : '';
       if (isWin) setDirectCred('password');
+      alValidate();
+    }
+
+    // ── Agentless form validation (Friday: required fields · duplicate · partial config) ──
+    var EXISTING_NODES = ['MACBOOK-TARAS', 'DEV-MACPRO-03', 'PROD-SERVER-01', 'STAGING-WIN-02', 'SARAH-LAPTOP-01', 'LISA-DESIGN-MBP'];
+    function _alVal(id) { var e = document.getElementById(id); return e ? (e.value || '').trim() : ''; }
+    function _alJoin(arr) {
+      if (arr.length === 1) return arr[0];
+      if (arr.length === 2) return arr[0] + ' and ' + arr[1];
+      return arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+    }
+    function alValidate() {
+      var submit = document.getElementById('al-submit');
+      if (!submit) return; // form not present yet
+      var name = _alVal('al-name'), host = _alVal('al-host');
+      var cmOk = (typeof selectedCM !== 'undefined') && selectedCM != null;
+      var mgrTab = document.getElementById('cred-tab-manager');
+      var manager = mgrTab && mgrTab.classList.contains('active');
+      var credOk;
+      if (manager) {
+        credOk = !!_alVal('al-secret');
+      } else {
+        var sshBtn = document.getElementById('cred-type-sshkey');
+        var sshkey = sshBtn && sshBtn.classList.contains('active') && sshBtn.style.display !== 'none';
+        var user = _alVal('al-user');
+        credOk = sshkey ? (!!user && !!_alVal('al-key')) : (!!user && !!_alVal('al-pass'));
+      }
+      // Duplicate node name
+      var dup = !!name && EXISTING_NODES.indexOf(name.toUpperCase()) !== -1;
+      var warn = document.getElementById('al-name-warn');
+      if (warn) {
+        if (dup) {
+          warn.style.display = 'flex';
+          warn.setAttribute('data-kind', 'error');
+          warn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><span>A node named &ldquo;' + name + '&rdquo; is already monitored. Choose a unique name, or open the existing node instead.</span>';
+        } else {
+          warn.style.display = 'none';
+        }
+      }
+      // Missing required fields
+      var missing = [];
+      if (!name) missing.push('a node name');
+      if (!host) missing.push('a hostname or IP');
+      if (!cmOk) missing.push('a Connection Manager');
+      if (!credOk) missing.push('credentials');
+      var valid = missing.length === 0 && !dup;
+      submit.disabled = !valid;
+      var hint = document.getElementById('al-req-hint'), htext = document.getElementById('al-req-hint-text');
+      if (hint) {
+        if (valid || dup) { hint.style.display = 'none'; }
+        else { hint.style.display = 'flex'; if (htext) htext.textContent = 'Add ' + _alJoin(missing) + ' to test the connection.'; }
+      }
     }
 
     // ── Test connectivity + scan readiness (Friday assembly) ──
@@ -8336,12 +8400,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
       document.getElementById('cred-tab-manager').classList.toggle('active', mode === 'manager');
       document.getElementById('cred-direct').style.display = mode === 'direct' ? '' : 'none';
       document.getElementById('cred-manager').style.display = mode === 'manager' ? '' : 'none';
+      alValidate();
     }
     function setDirectCred(type) {
       document.getElementById('cred-type-password').classList.toggle('active', type === 'password');
       document.getElementById('cred-type-sshkey').classList.toggle('active', type === 'sshkey');
       document.getElementById('cred-password-field').style.display = type === 'password' ? '' : 'none';
       document.getElementById('cred-sshkey-fields').style.display = type === 'sshkey' ? '' : 'none';
+      alValidate();
     }
     // ── Add-Node vault credential picker ──
     function _credStatusDef(s) { return (typeof CRED_STATUS !== 'undefined' && CRED_STATUS[s]) || { label: s, dot: '#94A3B8' }; }
@@ -8396,6 +8462,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       document.getElementById('al-cred-menu').style.display = 'none';
       document.removeEventListener('click', _alCredOutside);
       alCredValidity(c);
+      alValidate();
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
     }
     function alCredValidity(c) {
