@@ -8206,6 +8206,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       document.getElementById('al-cred-menu').style.display = 'none';
       document.removeEventListener('click', _alCredOutside);
       if (window.credOpenEditor) credOpenEditor(null);
+      _credReturnToPicker = true;
     }
     // ── Secret Server config (credential manager integration) ──
     var ssFolders = [''];
@@ -8566,6 +8567,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     ];
     var _credEditId = null;
     var _credTested = false;
+    var _credReturnToPicker = false;
     function _credTypeDef(v) { return CRED_TYPES.filter(function(t){ return t.val === v; })[0] || CRED_TYPES[0]; }
     function _esc(s) { return (s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
 
@@ -8573,6 +8575,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var c = id ? CREDENTIALS.filter(function(x){ return x.id === id; })[0] : null;
       _credEditId = c ? c.id : null;
       _credTested = false;
+      _credReturnToPicker = false;
       var typeVal = c ? c.type : CRED_TYPES[0].val;
       var old = document.getElementById('cred-edit-overlay');
       if (old) old.remove();
@@ -8660,6 +8663,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var scope = ((document.getElementById('cred-f-scope') || {}).value || '').trim();
       var nameEl = document.getElementById('cred-f-name');
       if (!name) { if (nameEl) { nameEl.style.borderColor = '#FB3C44'; nameEl.focus(); } return; }
+      var _newCred = null;
       if (_credEditId) {
         var c = CREDENTIALS.filter(function(x){ return x.id === _credEditId; })[0];
         if (c) {
@@ -8667,17 +8671,21 @@ body.dark .theme-toggle .icon-moon { display: none; }
           if (_credTested) { c.status = 'valid'; c.lastVal = 'just now'; }
         }
       } else {
-        CREDENTIALS.unshift({
+        _newCred = {
           id: 'cr' + Date.now(),
           name: name, type: typeVal, user: user || '—', scope: scope,
           status: 'valid',
           lastVal: _credTested ? 'just now' : 'not yet validated',
           usedBy: 0, source: 'vault'
-        });
+        };
+        CREDENTIALS.unshift(_newCred);
       }
+      var backToPicker = _credReturnToPicker;
       credCloseEditor();
       scToast(_credEditId ? 'Credential updated' : 'Credential saved');
       renderCredentials();
+      _credReturnToPicker = false;
+      if (backToPicker && _newCred && window.alCredPick) alCredPick(_newCred.id);
     }
 
     // ── Credential management actions (Step 4) ──
