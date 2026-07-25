@@ -2126,6 +2126,23 @@ body.dark .ct-result[data-kind="warn"] .ct-result-title { color:#F59E0B; }
 body.dark .ct-result[data-kind="fail"] { background:rgba(251,60,68,0.14); border-color:rgba(251,60,68,0.45); }
 body.dark .ct-result[data-kind="fail"] .ct-result-title { color:#FB3C44; }
 
+/* ── Node-added next-action rows ── */
+.na-summary-k { color:var(--text-sec); }
+.na-summary-v { color:var(--text-default); font-weight:600; }
+.na-action { display:flex; align-items:center; gap:13px; width:100%; text-align:left; font-family:inherit; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--bg-surface); cursor:pointer; transition:border-color 0.12s, background 0.12s; }
+.na-action:hover { border-color:var(--green2); background:rgba(5,150,105,0.04); }
+.na-action-ico { flex-shrink:0; width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--bg-canvas); color:var(--text-sec); }
+.na-action-txt { flex:1; min-width:0; }
+.na-action-title { font-size:13.5px; font-weight:700; color:var(--text-default); }
+.na-action-sub { font-size:11.5px; color:var(--text-sec); margin-top:2px; line-height:1.4; }
+.na-action-chev { flex-shrink:0; color:var(--text-muted); }
+.na-action.na-primary { border-color:var(--green1); background:rgba(5,150,105,0.06); }
+.na-action.na-primary .na-action-ico { background:var(--green1); color:#fff; }
+.na-action.na-primary:hover { border-color:var(--green1); background:rgba(5,150,105,0.12); }
+body.dark .na-action:hover { border-color:rgba(16,185,129,0.5); background:rgba(16,185,129,0.06); }
+body.dark .na-action.na-primary { border-color:rgba(16,185,129,0.6); background:rgba(16,185,129,0.1); }
+body.dark .na-action.na-primary .na-action-ico { background:#10B981; color:#04241f; }
+
 /* Reusable custom select (.csel) — unified styled dropdown replacing native <select> */
 .csel-wrap { position: relative; display: inline-block; vertical-align: middle; }
 .csel-btn { display: inline-flex; align-items: center; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 28px 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: #F9FAFC; color: var(--text-default); cursor: pointer; outline: none; white-space: nowrap; position: relative; text-align: left; }
@@ -3073,6 +3090,49 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="display:flex;gap:10px;margin-top:22px;align-items:center;" id="ct-foot">
             <button class="btn-outline" onclick="go('s-agentless')" style="width:auto;">← Back to edit</button>
             <div id="ct-foot-primary" style="flex:1;display:flex;gap:10px;justify-content:flex-end;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S-NODE-ADDED: successful creation + next actions (Week-2 Friday) -->
+    <div class="view" id="v-s-node-added" style="display: none;">
+      <div style="flex:1;overflow-y:auto;padding:24px;">
+        <div style="width:100%;max-width:540px;margin:0 auto;">
+          <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:22px;">
+            <div style="width:54px;height:54px;border-radius:50%;background:rgba(16,185,129,0.13);display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div style="font-size:21px;font-weight:700;color:var(--text-default);">Node added</div>
+            <div style="font-size:13px;color:var(--text-sec);margin-top:5px;line-height:1.5;"><b id="na-target" style="color:var(--text-default);">This node</b> is now monitored by Guardian and ready for its first scan.</div>
+          </div>
+
+          <!-- Summary -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:16px 20px;margin-bottom:20px;">
+            <div id="na-summary" style="display:grid;grid-template-columns:auto 1fr;gap:9px 16px;font-size:12.5px;"></div>
+          </div>
+
+          <!-- Next actions -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <button class="na-action na-primary" onclick="go('s07')">
+              <div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>
+              <div class="na-action-txt"><div class="na-action-title">Run first scan now</div><div class="na-action-sub">Check this node against your Compliance Policies right away</div></div>
+              <svg class="na-action-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="na-action" onclick="showView('scan-schedule')">
+              <div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+              <div class="na-action-txt"><div class="na-action-title">Schedule scan</div><div class="na-action-sub">Run it later or on a recurring cadence</div></div>
+              <svg class="na-action-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="na-action" onclick="showView('node-detail')">
+              <div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></div>
+              <div class="na-action-txt"><div class="na-action-title">View node details</div><div class="na-action-sub">See configuration, history and assigned policies</div></div>
+              <svg class="na-action-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+          <div style="text-align:center;margin-top:20px;">
+            <button onclick="go('s-method')" style="background:none;border:none;color:var(--green1);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">+ Add another node</button>
           </div>
         </div>
       </div>
@@ -8274,6 +8334,55 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }
     }
 
+    // ── Add node → success screen (Friday assembly) ──
+    var _addedNode = null;
+    function _alCredSummary() {
+      var mgrTab = document.getElementById('cred-tab-manager');
+      var manager = mgrTab && mgrTab.classList.contains('active');
+      if (manager) {
+        var id = _alVal('al-secret');
+        var c = (typeof CREDENTIALS !== 'undefined') ? CREDENTIALS.filter(function (x) { return x.id === id; })[0] : null;
+        return c ? (c.name + ' · ' + c.type) : 'Credential Vault';
+      }
+      var sshBtn = document.getElementById('cred-type-sshkey');
+      var sshkey = sshBtn && sshBtn.classList.contains('active') && sshBtn.style.display !== 'none';
+      var user = _alVal('al-user');
+      return 'Direct · ' + (sshkey ? 'SSH key' : 'Password') + (user ? ' · ' + user : '');
+    }
+    function alAddNode() {
+      var cm = (typeof CONNECTION_MANAGERS !== 'undefined') ? CONNECTION_MANAGERS.filter(function (c) { return c.id === selectedCM; })[0] : null;
+      var name = _alVal('al-name'), host = _alVal('al-host');
+      var port = _alVal('al-port') || (addNodeOS === 'windows' ? '5985' : '22');
+      var proto = addNodeOS === 'windows' ? 'WinRM' : 'SSH';
+      var osLbl = { windows: 'Windows', linux: 'Linux', macos: 'macOS' }[addNodeOS] || addNodeOS;
+      _addedNode = {
+        name: name || host || 'New node',
+        host: host || '—',
+        port: port,
+        proto: proto,
+        os: osLbl,
+        cm: cm ? cm.name : 'the Connection Manager',
+        cred: _alCredSummary()
+      };
+      if (name && EXISTING_NODES.indexOf(name.toUpperCase()) === -1) EXISTING_NODES.push(name.toUpperCase());
+      go('s-node-added');
+    }
+    function renderNodeAdded() {
+      var n = _addedNode || { name: 'This node', host: '—', port: '—', proto: '—', os: '—', cm: '—', cred: '—' };
+      var tEl = document.getElementById('na-target'); if (tEl) tEl.textContent = n.name;
+      var rows = [
+        ['Node', n.name],
+        ['Address', n.host + ':' + n.port + ' · ' + n.proto],
+        ['Operating system', n.os],
+        ['Connection Manager', n.cm],
+        ['Credential', n.cred]
+      ];
+      var grid = document.getElementById('na-summary');
+      if (grid) grid.innerHTML = rows.map(function (r) {
+        return '<div class="na-summary-k">' + r[0] + '</div><div class="na-summary-v">' + r[1] + '</div>';
+      }).join('');
+    }
+
     // ── Test connectivity + scan readiness (Friday assembly) ──
     var _ctTimers = [];
     var _ctScenario = 'ok';
@@ -8301,9 +8410,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var t = ctx.target, hp = ctx.host + ':' + ctx.port, cm = ctx.cm, proto = ctx.proto;
       return {
         'ok': { failIndex: -1, kind: 'ok', title: 'Ready to scan',
-          desc: t + ' responded, authenticated, and Guardian can read its configuration. Start the first scan now, or schedule it for later.',
-          actions: [ { label: 'Schedule scan', kind: 'secondary', click: "showView('scan-schedule')" },
-                     { label: 'Start first scan →', kind: 'primary', click: "go('s07')" } ] },
+          desc: t + ' responded, authenticated, and Guardian can read its configuration. Add the node to finish onboarding.',
+          actions: [ { label: 'Add node →', kind: 'primary', click: 'alAddNode()' } ] },
         'unreachable': { failIndex: 0, kind: 'fail', stepSub: 'No route to host',
           title: "Can't reach " + t,
           desc: 'The Connection Manager could not open a connection to ' + hp + '. Check the host is powered on, the address and port are correct, and WinRM/SSH is allowed through the firewall.',
@@ -15464,7 +15572,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 <div class="screen-lbl" id="lbl">s11 · Dashboard</div>
 
 <script>
-const ALL = ['s01','s02','s05','s07','s-method','s-agentless','s-connect-test','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports','cm-list','cm-detail','credentials'];
+const ALL = ['s01','s02','s05','s07','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports','cm-list','cm-detail','credentials'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Node',
   s05:'s05 · Install Agent',
@@ -15472,6 +15580,7 @@ const LABELS = {
   's-method':'Add Node · Scan Method',
   's-agentless':'Add Node · Agentless',
   's-connect-test':'Add Node · Test Connection',
+  's-node-added':'Add Node · Added',
   's-cm-setup':'CM Group · Setup',
   results:'s08 · CIS Results', remediation:'s09 · Remediation',
   dashboard:'s11 · Dashboard',
@@ -15500,7 +15609,7 @@ const LABELS = {
 const STEPS = {
   s02:{done:[],active:[0]}, s05:{done:[0],active:[1]},
   s07:{done:[0,1],active:[2]},
-  's-method':{done:[0],active:[1]}, 's-agentless':{done:[0],active:[1]}, 's-connect-test':{done:[0],active:[1]}, 's-cm-setup':{done:[0],active:[1]},
+  's-method':{done:[0],active:[1]}, 's-agentless':{done:[0],active:[1]}, 's-connect-test':{done:[0],active:[1]}, 's-node-added':{done:[0,1],active:[2]}, 's-cm-setup':{done:[0],active:[1]},
 };
 
 function setSteps(key) {
@@ -15654,7 +15763,7 @@ function go(key) {
   hideAuth();
   const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key);
   const isJ4Onboarding = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(key);
-  const isJ1Onboarding = ['s01','s02','s05','s07','s-method','s-agentless','s-connect-test','s-cm-setup'].includes(key);
+  const isJ1Onboarding = ['s01','s02','s05','s07','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup'].includes(key);
   const isOnboarding = isJ1Onboarding || isJ3Onboarding || isJ4Onboarding;
 
   const nav = document.querySelector('.top-nav');
@@ -15672,9 +15781,10 @@ function go(key) {
   if (isJ1Onboarding) {
     setSteps(key);
     var si1 = document.getElementById('si1');
-    if (si1) si1.innerHTML = '<div class="step-dot">2</div>&nbsp;' + ((key === 's-agentless' || key === 's-cm-setup' || key === 's-connect-test') ? 'Connect' : 'Install');
+    if (si1) si1.innerHTML = '<div class="step-dot">2</div>&nbsp;' + ((key === 's-agentless' || key === 's-cm-setup' || key === 's-connect-test' || key === 's-node-added') ? 'Connect' : 'Install');
     if (key === 's-agentless') { renderCMPicker(); renderAgentlessForm(); }
     if (key === 's-connect-test') { startConnectTest(); }
+    if (key === 's-node-added') { renderNodeAdded(); }
     if (key === 's-cm-setup') { cmSetupInit(); }
   }
   if (isJ3Onboarding) updateJ3Nav(key);
