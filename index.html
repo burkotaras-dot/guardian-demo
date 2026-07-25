@@ -2079,6 +2079,39 @@ body.dark .cred-source-pro { background:rgba(167,139,250,0.18); color:#A78BFA; }
 body.dark #v-s-cm-setup .btn-outline { background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.45); color:#10B981; }
 body.dark #v-s-cm-setup .btn-outline:hover { background:rgba(16,185,129,0.18); border-color:rgba(16,185,129,0.65); color:#34D399; }
 
+/* ── Test-connectivity / scan-readiness (agentless onboarding step) ── */
+.ct-step { display:flex; align-items:flex-start; gap:12px; padding:13px 18px; border-bottom:1px solid var(--border); }
+.ct-step:last-child { border-bottom:none; }
+.ct-ico { flex-shrink:0; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.ct-ico.pending { border:2px solid var(--border); }
+.ct-ico.pending::after { content:''; width:6px; height:6px; border-radius:50%; background:var(--text-muted); opacity:0.5; }
+.ct-ico.checking { border:2px solid var(--border); border-top-color:var(--green1); animation:spin 0.7s linear infinite; }
+.ct-ico.ok { background:rgba(16,185,129,0.14); }
+.ct-ico.fail { background:rgba(251,60,68,0.14); }
+.ct-ico.warn { background:rgba(245,158,11,0.16); }
+.ct-body { flex:1; min-width:0; }
+.ct-label { font-size:13px; font-weight:600; color:var(--text-default); }
+.ct-sub { font-size:11.5px; color:var(--text-sec); margin-top:2px; line-height:1.5; }
+.ct-step.is-pending .ct-label { color:var(--text-muted); }
+.ct-result { display:flex; align-items:flex-start; gap:12px; border-radius:var(--radius-md); padding:16px 18px; }
+.ct-result[data-kind="ok"] { background:var(--bg-success); border:1px solid var(--bg-success-border); }
+.ct-result[data-kind="warn"] { background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); }
+.ct-result[data-kind="fail"] { background:rgba(251,60,68,0.08); border:1px solid rgba(251,60,68,0.28); }
+.ct-result-title { font-size:14px; font-weight:700; }
+.ct-result[data-kind="ok"] .ct-result-title { color:#047857; }
+.ct-result[data-kind="warn"] .ct-result-title { color:#92400e; }
+.ct-result[data-kind="fail"] .ct-result-title { color:#b91c1c; }
+.ct-result-desc { font-size:12px; color:var(--text-muted); margin-top:3px; line-height:1.55; }
+body.dark .ct-ico.ok { background:rgba(16,185,129,0.2); }
+body.dark .ct-ico.fail { background:rgba(251,60,68,0.2); }
+body.dark .ct-ico.warn { background:rgba(245,158,11,0.22); }
+body.dark .ct-result[data-kind="ok"] { background:rgba(16,185,129,0.12); border-color:rgba(16,185,129,0.35); }
+body.dark .ct-result[data-kind="ok"] .ct-result-title { color:#10B981; }
+body.dark .ct-result[data-kind="warn"] { background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.4); }
+body.dark .ct-result[data-kind="warn"] .ct-result-title { color:#F59E0B; }
+body.dark .ct-result[data-kind="fail"] { background:rgba(251,60,68,0.14); border-color:rgba(251,60,68,0.45); }
+body.dark .ct-result[data-kind="fail"] .ct-result-title { color:#FB3C44; }
+
 /* Reusable custom select (.csel) — unified styled dropdown replacing native <select> */
 .csel-wrap { position: relative; display: inline-block; vertical-align: middle; }
 .csel-btn { display: inline-flex; align-items: center; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 28px 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: #F9FAFC; color: var(--text-default); cursor: pointer; outline: none; white-space: nowrap; position: relative; text-align: left; }
@@ -2972,7 +3005,42 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
           <div style="display:flex;gap:10px;margin-top:22px;">
             <button class="btn-outline" onclick="go('s-method')" style="width:auto;">← Back</button>
-            <button class="btn-primary" onclick="go('s07')" style="width:auto;flex:1;">Connect &amp; scan →</button>
+            <button class="btn-primary" onclick="go('s-connect-test')" style="width:auto;flex:1;">Test connection &amp; continue →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S-CONNECT-TEST: test connectivity + scan readiness (Week-2 Friday) -->
+    <div class="view" id="v-s-connect-test" style="display: none;">
+      <div style="flex:1;overflow-y:auto;padding:24px;">
+        <div style="width:100%;max-width:560px;margin:0 auto;">
+          <div style="font-size:20px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Testing connection</div>
+          <div style="font-size:13px;color:var(--text-sec);margin-bottom:22px;line-height:1.5;">Before the first scan, Guardian checks that <b id="ct-cm-name" style="color:var(--text-default);">the Connection Manager</b> can reach <b id="ct-target-name" style="color:var(--text-default);">this node</b> and authenticate.</div>
+
+          <!-- Check steps -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
+            <div class="ct-step is-pending" id="ct-s-reach">
+              <div class="ct-ico pending"></div>
+              <div class="ct-body"><div class="ct-label">Reach the target</div><div class="ct-sub" id="ct-sub-reach">Contacting host over the network…</div></div>
+            </div>
+            <div class="ct-step is-pending" id="ct-s-auth">
+              <div class="ct-ico pending"></div>
+              <div class="ct-body"><div class="ct-label">Authenticate</div><div class="ct-sub" id="ct-sub-auth">Signing in with the supplied credential…</div></div>
+            </div>
+            <div class="ct-step is-pending" id="ct-s-perm">
+              <div class="ct-ico pending"></div>
+              <div class="ct-body"><div class="ct-label">Verify scan permissions</div><div class="ct-sub" id="ct-sub-perm">Confirming the account can read configuration…</div></div>
+            </div>
+          </div>
+
+          <!-- Result banner -->
+          <div id="ct-result" style="display:none;margin-top:16px;"></div>
+
+          <!-- Footer -->
+          <div style="display:flex;gap:10px;margin-top:22px;align-items:center;" id="ct-foot">
+            <button class="btn-outline" onclick="go('s-agentless')" style="width:auto;">← Back to edit</button>
+            <div id="ct-foot-primary" style="flex:1;display:flex;gap:10px;justify-content:flex-end;"></div>
           </div>
         </div>
       </div>
@@ -8121,6 +8189,82 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (sshTab) sshTab.style.display = isWin ? 'none' : '';
       if (isWin) setDirectCred('password');
     }
+
+    // ── Test connectivity + scan readiness (Friday assembly) ──
+    var _ctTimers = [];
+    function _ctClearTimers() { _ctTimers.forEach(clearTimeout); _ctTimers = []; }
+    function _ctIco(state) {
+      var svg = '';
+      if (state === 'ok') svg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      return svg;
+    }
+    function _ctSet(stepId, state, subText) {
+      var step = document.getElementById(stepId);
+      if (!step) return;
+      var ico = step.querySelector('.ct-ico');
+      ico.className = 'ct-ico ' + state;
+      ico.innerHTML = _ctIco(state);
+      step.classList.toggle('is-pending', state === 'pending');
+      if (subText != null) {
+        var sub = step.querySelector('.ct-sub');
+        if (sub) sub.textContent = subText;
+      }
+    }
+    function startConnectTest() {
+      _ctClearTimers();
+      // Context labels
+      var cm = (typeof CONNECTION_MANAGERS !== 'undefined') ? CONNECTION_MANAGERS.filter(function (c) { return c.id === selectedCM; })[0] : null;
+      var cmEl = document.getElementById('ct-cm-name');
+      if (cmEl) cmEl.textContent = cm ? cm.name : 'the Connection Manager';
+      var nameVal = (document.getElementById('al-name') || {}).value || '';
+      var hostVal = (document.getElementById('al-host') || {}).value || '';
+      var tEl = document.getElementById('ct-target-name');
+      if (tEl) tEl.textContent = nameVal || hostVal || 'this node';
+      // Reset UI
+      _ctSet('ct-s-reach', 'pending', 'Contacting host over the network…');
+      _ctSet('ct-s-auth', 'pending', 'Signing in with the supplied credential…');
+      _ctSet('ct-s-perm', 'pending', 'Confirming the account can read configuration…');
+      var res = document.getElementById('ct-result');
+      if (res) res.style.display = 'none';
+      var foot = document.getElementById('ct-foot-primary');
+      if (foot) foot.innerHTML = '';
+      // Happy-path sequence
+      _ctTimers.push(setTimeout(function () { _ctSet('ct-s-reach', 'checking'); }, 200));
+      _ctTimers.push(setTimeout(function () {
+        _ctSet('ct-s-reach', 'ok', 'Host reachable · responded in 42 ms');
+        _ctSet('ct-s-auth', 'checking');
+      }, 1100));
+      _ctTimers.push(setTimeout(function () {
+        _ctSet('ct-s-auth', 'ok', 'Authenticated over ' + ((cm && cm.os && cm.os.indexOf('windows') === -1) ? 'SSH' : 'WinRM'));
+        _ctSet('ct-s-perm', 'checking');
+      }, 2100));
+      _ctTimers.push(setTimeout(function () {
+        _ctSet('ct-s-perm', 'ok', 'Account can read system configuration');
+      }, 3100));
+      _ctTimers.push(setTimeout(ctShowReady, 3500));
+    }
+    function ctShowReady() {
+      var target = (document.getElementById('ct-target-name') || {}).textContent || 'This node';
+      var res = document.getElementById('ct-result');
+      if (res) {
+        res.innerHTML =
+          '<div class="ct-result" data-kind="ok">' +
+            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' +
+            '<div style="flex:1;">' +
+              '<div class="ct-result-title">Ready to scan</div>' +
+              '<div class="ct-result-desc">' + target + ' responded, authenticated, and Guardian can read its configuration. Start the first scan now, or schedule it for later.</div>' +
+            '</div>' +
+          '</div>';
+        res.style.display = 'block';
+      }
+      var foot = document.getElementById('ct-foot-primary');
+      if (foot) {
+        foot.innerHTML =
+          '<button class="btn-secondary" onclick="showView(\'scan-schedule\')" style="width:auto;padding:11px 18px;">Schedule scan</button>' +
+          '<button class="btn-primary" onclick="go(\'s07\')" style="width:auto;padding:11px 26px;">Start first scan →</button>';
+      }
+    }
+
     function setCredMode(mode) {
       document.getElementById('cred-tab-direct').classList.toggle('active', mode === 'direct');
       document.getElementById('cred-tab-manager').classList.toggle('active', mode === 'manager');
@@ -15187,13 +15331,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
 <div class="screen-lbl" id="lbl">s11 · Dashboard</div>
 
 <script>
-const ALL = ['s01','s02','s05','s07','s-method','s-agentless','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports','cm-list','cm-detail','credentials'];
+const ALL = ['s01','s02','s05','s07','s-method','s-agentless','s-connect-test','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports','cm-list','cm-detail','credentials'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Node',
   s05:'s05 · Install Agent',
   s07:'s07 · Scan in Progress',
   's-method':'Add Node · Scan Method',
   's-agentless':'Add Node · Agentless',
+  's-connect-test':'Add Node · Test Connection',
   's-cm-setup':'CM Group · Setup',
   results:'s08 · CIS Results', remediation:'s09 · Remediation',
   dashboard:'s11 · Dashboard',
@@ -15222,7 +15367,7 @@ const LABELS = {
 const STEPS = {
   s02:{done:[],active:[0]}, s05:{done:[0],active:[1]},
   s07:{done:[0,1],active:[2]},
-  's-method':{done:[0],active:[1]}, 's-agentless':{done:[0],active:[1]}, 's-cm-setup':{done:[0],active:[1]},
+  's-method':{done:[0],active:[1]}, 's-agentless':{done:[0],active:[1]}, 's-connect-test':{done:[0],active:[1]}, 's-cm-setup':{done:[0],active:[1]},
 };
 
 function setSteps(key) {
@@ -15376,7 +15521,7 @@ function go(key) {
   hideAuth();
   const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key);
   const isJ4Onboarding = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(key);
-  const isJ1Onboarding = ['s01','s02','s05','s07','s-method','s-agentless','s-cm-setup'].includes(key);
+  const isJ1Onboarding = ['s01','s02','s05','s07','s-method','s-agentless','s-connect-test','s-cm-setup'].includes(key);
   const isOnboarding = isJ1Onboarding || isJ3Onboarding || isJ4Onboarding;
 
   const nav = document.querySelector('.top-nav');
@@ -15394,8 +15539,9 @@ function go(key) {
   if (isJ1Onboarding) {
     setSteps(key);
     var si1 = document.getElementById('si1');
-    if (si1) si1.innerHTML = '<div class="step-dot">2</div>&nbsp;' + ((key === 's-agentless' || key === 's-cm-setup') ? 'Connect' : 'Install');
+    if (si1) si1.innerHTML = '<div class="step-dot">2</div>&nbsp;' + ((key === 's-agentless' || key === 's-cm-setup' || key === 's-connect-test') ? 'Connect' : 'Install');
     if (key === 's-agentless') { renderCMPicker(); renderAgentlessForm(); }
+    if (key === 's-connect-test') { startConnectTest(); }
     if (key === 's-cm-setup') { cmSetupInit(); }
   }
   if (isJ3Onboarding) updateJ3Nav(key);
