@@ -1565,6 +1565,9 @@ body.dark span[style*="font-size:11px"][style*="font-weight:600"][style*="color:
 .radio-dot { width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center; }
 .radio-item.selected .radio-dot { border-color:var(--green1); }
 .radio-item.selected .radio-dot::after { content:'';width:8px;height:8px;border-radius:50%;background:var(--green1);display:block; }
+/* Softer selected state for the agentless CM picker (dot carries the signal) */
+.radio-item.cm-item.selected { border-color:rgba(63,200,120,0.45);background:rgba(63,200,120,0.035); }
+body.dark .radio-item.cm-item.selected { border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.06); }
 /* CM setup wizard (Week-2) */
 .cmw-demo { font-size:10px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:20px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:all 0.12s; }
 .cmw-demo:hover { border-color:var(--green1);color:var(--green2); }
@@ -2973,14 +2976,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div id="al-port-hint" style="font-size:11px;color:var(--text-sec);margin:-8px 0 18px;line-height:1.5;"></div>
 
           <!-- CM picker -->
-          <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Connection Manager Group</div>
+          <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;margin-bottom:4px;font-size:13px;font-weight:700;color:var(--text-default);">Connection Manager Group</div>
           <div id="cm-rec-hint" style="font-size:11px;color:var(--text-sec);margin-bottom:12px;line-height:1.5;"></div>
           <div id="cm-list"></div>
 
           <button onclick="go('s-cm-setup')" style="background:none;border:none;color:var(--green1);font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;font-family:inherit;">Don't see a suitable one? Create a new group →</button>
 
           <!-- Credentials -->
-          <div style="font-size:13px;font-weight:700;color:var(--text-default);margin:18px 0 4px;">Credentials</div>
+          <div style="border-top:1px solid var(--border);padding-top:20px;margin:20px 0 4px;font-size:13px;font-weight:700;color:var(--text-default);">Credentials</div>
           <div style="font-size:11px;color:var(--text-sec);margin-bottom:12px;line-height:1.5;">How the Connection Manager authenticates to this target. Enter them directly, or select a credential saved in the Guardian Credential Vault.</div>
 
           <div class="toggle-group" style="margin-bottom:16px;">
@@ -8257,7 +8260,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     function cmToggleOther() { _cmShowOther = !_cmShowOther; renderCMPicker(); }
     function _cmCard(c, isRec, isSel) {
       var osList = c.os.map(function (o) { return OS_LABEL[o] || o; }).join(', ');
-      return '<div class="radio-item' + (isSel ? ' selected' : '') + '" onclick="selectCM(\'' + c.id + '\')" style="margin-bottom:8px;">'
+      return '<div class="radio-item cm-item' + (isSel ? ' selected' : '') + '" onclick="selectCM(\'' + c.id + '\')" style="margin-bottom:8px;">'
         + '<div class="radio-dot"></div>'
         + '<div style="flex:1;">'
         + '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;font-weight:600;color:var(--text-default);">' + c.name + '</span>'
