@@ -2951,13 +2951,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       <div style="flex:1;overflow-y:auto;padding:24px;">
         <div style="width:100%;max-width:620px;margin:0 auto;">
           <div style="font-size:20px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Agentless scan setup</div>
-          <div style="font-size:13px;color:var(--text-sec);margin-bottom:18px;">Guardian scans this node remotely through a Connection Manager — no software is installed on the target.</div>
-
-          <!-- Prerequisite callout -->
-          <div style="display:flex;align-items:flex-start;gap:10px;background:var(--bg-warning);border:1px solid var(--bg-warning-border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:20px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <div style="font-size:12px;color:#78350f;line-height:1.5;"><strong>Prerequisite — Connection Manager.</strong> Agentless scanning needs a Connection Manager: a lightweight relay on your network that reaches targets over WinRM (Windows) or SSH (Linux/macOS). Pick an installed one below, or set up a new one.</div>
-          </div>
+          <div style="font-size:13px;color:var(--text-sec);margin-bottom:22px;">Guardian scans this node remotely through a Connection Manager — a lightweight relay on your network — so no software is installed on the target.</div>
 
           <!-- Target details -->
           <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:10px;">Target</div>
@@ -8227,45 +8221,81 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (reg) parts.push(reg + ' registered, not connected');
       return parts.join(' · ') || 'No CM instances';
     }
-    // Backward compat: flat list for agentless picker (maps groups to old shape)
+    // Backward compat: flat list for agentless picker (maps groups to old shape).
+    // connProtos = protocols served by CURRENTLY-CONNECTED instances (drives compatibility).
     var CONNECTION_MANAGERS = CM_GROUPS.map(function(g) {
       var protos = [];
       g.instances.forEach(function(i) { i.protocols.forEach(function(p) { if (protos.indexOf(p) === -1) protos.push(p); }); });
+      var connProtos = [];
+      g.instances.forEach(function(i) { if (i.status === 'connected') i.protocols.forEach(function(p) { if (connProtos.indexOf(p) === -1) connProtos.push(p); }); });
       var os = [];
       if (protos.indexOf('WinRM') !== -1) os.push('windows');
       if (protos.indexOf('SSH') !== -1) { os.push('linux'); os.push('macos'); }
-      return { id: g.id, name: g.name, host: g.instances[0] ? g.instances[0].host : '—', os: os, nodes: _cmgTotalNodes(g), status: g.state === 'disabled' ? 'disabled' : 'connected' };
+      return { id: g.id, name: g.name, host: g.instances[0] ? g.instances[0].host : '—', os: os,
+        connProtos: connProtos, hasConnected: connProtos.length > 0, disabled: g.state === 'disabled',
+        nodes: _cmgTotalNodes(g), status: g.state === 'disabled' ? 'disabled' : 'connected' };
     });
     var selectedCM = null;
+    var _cmShowOther = false;
+    // A group can reach the target only if a connected relay serves the target's protocol.
+    function _cmReqProto() { return addNodeOS === 'windows' ? 'WinRM' : 'SSH'; }
+    function _cmCompatible(c) { return c.connProtos.indexOf(_cmReqProto()) !== -1; }
+    function _cmOtherReason(c) {
+      if (c.disabled) return 'Group disabled';
+      if (!c.hasConnected) return 'No connected Connection Manager';
+      return _cmReqProto() === 'WinRM'
+        ? "No WinRM relay — can't reach Windows"
+        : "No SSH relay — can't reach " + (OS_LABEL[addNodeOS] || 'this OS');
+    }
     function recommendedCMId() {
-      var m = CONNECTION_MANAGERS.filter(function (c) { return c.os.indexOf(addNodeOS) !== -1; });
+      var m = CONNECTION_MANAGERS.filter(_cmCompatible);
       if (!m.length) return null;
       m.sort(function (a, b) { return b.nodes - a.nodes; });
       return m[0].id;
     }
     function selectCM(id) { selectedCM = id; renderCMPicker(); alValidate(); }
+    function cmToggleOther() { _cmShowOther = !_cmShowOther; renderCMPicker(); }
+    function _cmCard(c, isRec, isSel) {
+      var osList = c.os.map(function (o) { return OS_LABEL[o] || o; }).join(', ');
+      return '<div class="radio-item' + (isSel ? ' selected' : '') + '" onclick="selectCM(\'' + c.id + '\')" style="margin-bottom:8px;">'
+        + '<div class="radio-dot"></div>'
+        + '<div style="flex:1;">'
+        + '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;font-weight:600;color:var(--text-default);">' + c.name + '</span>'
+        + (isRec ? '<span style="font-size:10px;font-weight:700;color:#047857;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:20px;padding:1px 8px;">Recommended</span>' : '')
+        + '</div>'
+        + '<div style="font-size:11px;color:var(--text-sec);margin-top:2px;">scans ' + osList + ' · ' + c.nodes + ' nodes</div>'
+        + '</div></div>';
+    }
+    function _cmCardOther(c) {
+      var osList = c.os.map(function (o) { return OS_LABEL[o] || o; }).join(', ');
+      return '<div class="radio-item" style="margin-bottom:8px;opacity:0.55;cursor:not-allowed;pointer-events:none;">'
+        + '<div class="radio-dot" style="opacity:0.5;"></div>'
+        + '<div style="flex:1;">'
+        + '<div style="font-size:13px;font-weight:600;color:var(--text-default);">' + c.name + '</div>'
+        + '<div style="font-size:11px;color:var(--text-sec);margin-top:2px;">' + _cmOtherReason(c) + ' · scans ' + osList + '</div>'
+        + '</div></div>';
+    }
     function renderCMPicker() {
       var osName = OS_LABEL[addNodeOS] || 'this';
       var recId = recommendedCMId();
-      if (selectedCM === null) selectedCM = recId;
+      var compatible = CONNECTION_MANAGERS.filter(_cmCompatible);
+      var others = CONNECTION_MANAGERS.filter(function (c) { return !_cmCompatible(c); });
+      // Keep selection valid: fall back to recommended if current pick isn't a reachable group.
+      if (selectedCM === null || !compatible.some(function (c) { return c.id === selectedCM; })) selectedCM = recId;
       var hint = document.getElementById('cm-rec-hint');
-      if (hint) hint.textContent = recId
-        ? ('Recommended for your ' + osName + ' node — based on the OS your existing CM groups already scan. Change it below if you prefer.')
-        : ('No CM group scans ' + osName + ' yet — create one below.');
+      if (hint) hint.textContent = compatible.length
+        ? 'Select a group that can reach this target.'
+        : ('No connected group can reach this ' + osName + ' target yet — create one below.');
       var list = document.getElementById('cm-list');
       if (!list) return;
-      list.innerHTML = CONNECTION_MANAGERS.map(function (c) {
-        var isRec = c.id === recId, isSel = c.id === selectedCM;
-        var osList = c.os.map(function (o) { return OS_LABEL[o] || o; }).join(', ');
-        return '<div class="radio-item' + (isSel ? ' selected' : '') + '" onclick="selectCM(\'' + c.id + '\')" style="margin-bottom:8px;">'
-          + '<div class="radio-dot"></div>'
-          + '<div style="flex:1;">'
-          + '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;font-weight:600;color:var(--text-default);">' + c.name + '</span>'
-          + (isRec ? '<span style="font-size:10px;font-weight:700;color:#047857;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:20px;padding:1px 8px;">Recommended</span>' : '')
-          + '</div>'
-          + '<div style="font-size:11px;color:var(--text-sec);margin-top:2px;">' + c.host + ' · scans ' + osList + ' · ' + c.nodes + ' nodes</div>'
-          + '</div></div>';
-      }).join('');
+      var html = compatible.map(function (c) { return _cmCard(c, c.id === recId, c.id === selectedCM); }).join('');
+      if (others.length) {
+        html += '<button onclick="cmToggleOther()" style="background:none;border:none;color:var(--text-sec);font-size:11.5px;font-weight:600;cursor:pointer;padding:6px 0 2px;font-family:inherit;display:inline-flex;align-items:center;gap:5px;">'
+          + (_cmShowOther ? 'Hide' : 'Show') + ' ' + others.length + ' group' + (others.length !== 1 ? 's' : '') + " that can't reach this target"
+          + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(' + (_cmShowOther ? '180' : '0') + 'deg);transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg></button>';
+        if (_cmShowOther) html += '<div style="margin-top:8px;">' + others.map(_cmCardOther).join('') + '</div>';
+      }
+      list.innerHTML = html;
     }
     // Target form: OS-aware port default + SSH-key availability
     function renderAgentlessForm() {
