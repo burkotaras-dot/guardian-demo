@@ -15824,7 +15824,9 @@ function go(key) {
   if (isJ4Onboarding) updateJ4Nav(key);
   if (key === 'cmdb-credentials') renderCmdbCM();
   if (key === 'csv-import') csvClearFile();
-  document.getElementById('lbl').textContent = LABELS[key] || key;
+  var _lblEl = document.getElementById('lbl');
+  _lblEl.textContent = LABELS[key] || key;
+  _lblEl.style.display = (key === 's-agentless') ? 'none' : '';
 
   if (!isOnboarding) {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
@@ -15930,7 +15932,9 @@ function showView(name) {
   if (sb) sb.classList.add('active');
   if (isJ3Nav) updateJ3Nav(name);
   if (isJ4Nav) updateJ4Nav(name);
-  document.getElementById('lbl').textContent = LABELS[name] || name;
+  var _lblEl2 = document.getElementById('lbl');
+  _lblEl2.textContent = LABELS[name] || name;
+  _lblEl2.style.display = (name === 's-agentless') ? 'none' : '';
   if (name === 'changes') {
     applyDriftFilters();
     setTimeout(() => {
