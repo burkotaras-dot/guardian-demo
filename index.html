@@ -8310,8 +8310,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
         ? 'WinRM — default 5985 (HTTP) or 5986 (HTTPS).'
         : 'SSH — default 22.';
       // SSH-key auth only applies to SSH targets; WinRM is password-only.
+      // With one option left, hide the whole toggle (a single full-width segment reads as a stray button).
       var sshTab = document.getElementById('cred-type-sshkey');
       if (sshTab) sshTab.style.display = isWin ? 'none' : '';
+      var credTypeToggle = document.getElementById('cred-direct-type');
+      if (credTypeToggle) credTypeToggle.style.display = isWin ? 'none' : 'flex';
       if (isWin) setDirectCred('password');
       alValidate();
     }
