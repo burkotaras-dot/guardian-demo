@@ -2021,6 +2021,8 @@ body.dark .cred-row:hover { background:#012F32; }
 .cred-badge[data-s="expired"]        { background:rgba(245,158,11,0.1); color:#d97706; border:1px solid rgba(245,158,11,0.3); }
 .cred-badge[data-s="cannot-connect"] { background:rgba(251,60,68,0.1);  color:#dc2626; border:1px solid rgba(251,60,68,0.3); }
 .cred-badge[data-s="insufficient"]   { background:rgba(234,88,12,0.1);  color:#ea580c; border:1px solid rgba(234,88,12,0.3); }
+.cred-badge[data-s="not-tested"]     { background:rgba(100,116,139,0.1); color:#475569; border:1px solid rgba(100,116,139,0.3); }
+body.dark .cred-badge[data-s="not-tested"]     { background:rgba(148,163,184,0.14); color:#CBD5E1; border-color:rgba(148,163,184,0.35); }
 body.dark .cred-badge[data-s="valid"]          { background:rgba(16,185,129,0.12); color:#10B981; border-color:rgba(16,185,129,0.35); }
 body.dark .cred-badge[data-s="invalid"]        { background:rgba(251,60,68,0.12);  color:#FB3C44; border-color:rgba(251,60,68,0.35); }
 body.dark .cred-badge[data-s="expired"]        { background:rgba(245,158,11,0.12); color:#F59E0B; border-color:rgba(245,158,11,0.35); }
@@ -2051,8 +2053,10 @@ body.dark .cred-badge[data-s="insufficient"]   { background:rgba(234,88,12,0.14)
 body.dark .cvp-btn, body.dark .cvp-menu { background:var(--bg-subtle) !important; border-color:var(--border-default); }
 body.dark .cvp-opt:hover, body.dark .cvp-new:hover { background:#012F32; }
 body.dark .cvp-opt { border-bottom-color:var(--border-default); }
+.al-cred-val[data-ok="2"] { background:rgba(100,116,139,0.08); border:1px solid rgba(100,116,139,0.25); color:#475569; }
 body.dark .al-cred-val[data-ok="1"] { background:rgba(16,185,129,0.12); border-color:rgba(16,185,129,0.35); color:#10B981; }
 body.dark .al-cred-val[data-ok="0"] { background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.4); color:#F59E0B; }
+body.dark .al-cred-val[data-ok="2"] { background:rgba(148,163,184,0.12); border-color:rgba(148,163,184,0.3); color:#CBD5E1; }
 
 /* ── Credential row actions menu ── */
 .cred-act-menu { position:fixed; z-index:10001; min-width:184px; background:var(--bg-surface); border:1px solid var(--border); border-radius:9px; box-shadow:0 10px 30px rgba(0,0,0,0.16); padding:4px; }
@@ -8644,6 +8648,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
         box.innerHTML = '<div class="al-cred-val" data-ok="1">' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0;margin-top:1px;"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
           '<div>Ready — validated ' + c.lastVal + (c.usedBy ? ' · already used by ' + c.usedBy + ' node' + (c.usedBy === 1 ? '' : 's') : '') + '. Stored encrypted; the Connection Manager uses it at scan time.</div></div>';
+      } else if (c.status === 'not-tested') {
+        box.innerHTML = '<div class="al-cred-val" data-ok="2">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>' +
+          '<div>Not tested yet — Guardian validates this credential on the first scan of this node.</div></div>';
       } else {
         box.innerHTML = '<div class="al-cred-val" data-ok="0">' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>' +
@@ -8997,9 +9005,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
       { id:'cr5', name:'readonly-audit',        type:'Linux / SSH',     user:'auditor',          status:'insufficient',   lastVal:'3 hours ago',        usedBy:8,  cm:'grp1', source:'vault' },
       { id:'cr6', name:'api-vault-token',       type:'API token',       user:'—',                status:'invalid',        lastVal:'failed 2 days ago',  usedBy:0,  cm:'grp1', source:'vault' },
       { id:'cr7', name:'corp-vault / win-admin',type:'Windows / WinRM', user:'CORP\\svc-guardian',status:'valid',         lastVal:'1 hour ago',         usedBy:15, cm:'grp1', source:'secret-server' },
-      { id:'cr8', name:'spare-ssh',             type:'SSH key',         user:'backup',           status:'valid',          lastVal:'never used',         usedBy:0,  cm:'grp3', source:'vault' }
+      { id:'cr8', name:'spare-ssh',             type:'SSH key',         user:'backup',           status:'not-tested',     lastVal:'never tested',       usedBy:0,  cm:'grp3', source:'vault' }
     ];
     var CRED_STATUS = {
+      'not-tested':     { label:'Not tested',                dot:'#94A3B8' },
       'valid':          { label:'Valid',                     dot:'#10B981' },
       'invalid':        { label:'Invalid',                   dot:'#FB3C44' },
       'expired':        { label:'Expired',                   dot:'#F59E0B' },
@@ -9040,7 +9049,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         + '<div class="form-group"><label class="form-label" for="cred-f-type">Credential type</label>'
         +   '<select id="cred-f-type" class="form-input csel" onchange="credTypeChange()">'+opts+'</select></div>'
         + '<div class="form-group"><label class="form-label" for="cred-f-cm">Connection Manager Group</label>'
-        +   '<select id="cred-f-cm" class="form-input csel">'+cmOpts+'</select>'
+        +   '<select id="cred-f-cm" class="form-input csel" onchange="credCmChange()">'+cmOpts+'</select>'
         +   '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.45;">The credential is encrypted for this Connection Manager and works only with it.</div></div>'
         + '<div class="form-group"><label class="form-label" for="cred-f-name">Name</label>'
         +   '<input id="cred-f-name" type="text" class="form-input" placeholder="e.g. web-prod-01" value="'+_esc(c?c.name:'')+'"></div>'
@@ -9065,6 +9074,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var cmSelEl = document.getElementById('cred-f-cm');
       if (cmSelEl && window.enhanceSelect) enhanceSelect(cmSelEl);
       credTypeChange();
+      credCmChange();
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
       var nameEl = document.getElementById('cred-f-name');
       if (nameEl) nameEl.focus();
@@ -9090,12 +9100,45 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var res = document.getElementById('cred-test-result');
       if (res) res.style.display = 'none';
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+      if (document.getElementById('cred-f-cm')) credCmChange();
     }
     function credCloseEditor() {
       var ov = document.getElementById('cred-edit-overlay');
       if (ov) ov.remove();
     }
+    // A credential can only be tested against a node registered to a CONNECTED Connection Manager in its group.
+    function _credCmGroup(cmId) { return CM_GROUPS.filter(function(g){ return g.id === cmId; })[0]; }
+    function _credCmTestable(cmId) {
+      var g = _credCmGroup(cmId);
+      return !!(g && g.state === 'active'
+        && g.instances.some(function(i){ return i.status === 'connected'; })
+        && g.assignedNodes && g.assignedNodes.length > 0);
+    }
+    function _credCmTestNode(cmId) {
+      var g = _credCmGroup(cmId);
+      if (!g || !g.assignedNodes) return null;
+      var online = g.assignedNodes.filter(function(n){ return n.status === 'online'; })[0];
+      return (online || g.assignedNodes[0] || {}).name || null;
+    }
+    function credCmChange() {
+      var cmId = (document.getElementById('cred-f-cm') || {}).value;
+      var g = _credCmGroup(cmId) || {};
+      var btn = document.getElementById('cred-test-btn');
+      var res = document.getElementById('cred-test-result');
+      _credTested = false;
+      if (_credCmTestable(cmId)) {
+        if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; }
+        if (res) res.style.display = 'none';
+      } else {
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
+        if (res) { res.style.display = 'block'; res.style.background = 'var(--bg-canvas)'; res.style.color = 'var(--text-muted)'; res.textContent = 'No connected node is registered on ' + (g.name || 'this Connection Manager') + ' yet — save the credential and Guardian validates it on first use.'; }
+      }
+      if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+    }
     function credTest() {
+      var cmId = (document.getElementById('cred-f-cm') || {}).value;
+      if (!_credCmTestable(cmId)) { credCmChange(); return; }
+      var node = _credCmTestNode(cmId);
       var secret = (document.getElementById('cred-f-secret') || {}).value || '';
       var res = document.getElementById('cred-test-result');
       var btn = document.getElementById('cred-test-btn');
@@ -9104,10 +9147,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
         return;
       }
       if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; btn.innerHTML = 'Testing…'; }
-      if (res) { res.style.display = 'block'; res.style.background = 'var(--bg-canvas)'; res.style.color = 'var(--text-muted)'; res.textContent = 'Testing connection…'; }
+      if (res) { res.style.display = 'block'; res.style.background = 'var(--bg-canvas)'; res.style.color = 'var(--text-muted)'; res.textContent = 'Testing against ' + node + '…'; }
       setTimeout(function() {
         _credTested = true;
-        if (res) { res.style.background = 'rgba(16,185,129,0.12)'; res.style.color = '#059669'; res.innerHTML = '✓ Credential validated — connection successful'; }
+        if (res) { res.style.background = 'rgba(16,185,129,0.12)'; res.style.color = '#059669'; res.innerHTML = '✓ Validated against ' + node + ' — connection successful'; }
         if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test credentials'; }
       }, 1100);
     }
@@ -9130,8 +9173,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
         _newCred = {
           id: 'cr' + Date.now(),
           name: name, type: typeVal, user: user || '—', scope: scope, cm: cmVal,
-          status: 'valid',
-          lastVal: _credTested ? 'just now' : 'not yet validated',
+          status: _credTested ? 'valid' : 'not-tested',
+          lastVal: _credTested ? 'just now' : 'never tested',
           usedBy: 0, source: 'vault'
         };
         CREDENTIALS.unshift(_newCred);
@@ -9293,7 +9336,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (!rows) return;
       var all = CREDENTIALS;
       var valid  = all.filter(function(c){ return c.status === 'valid'; }).length;
-      var issues = all.filter(function(c){ return c.status !== 'valid'; }).length;
+      var issues = all.filter(function(c){ return ['invalid','expired','cannot-connect','insufficient'].indexOf(c.status) !== -1; }).length;
       var unused = all.filter(function(c){ return c.usedBy === 0; }).length;
 
       var s1 = document.getElementById('cred-stat-total');
