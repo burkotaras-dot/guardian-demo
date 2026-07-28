@@ -442,8 +442,10 @@ body.dark .icx-input:focus { background:rgba(255,255,255,0.07); border-color:var
 .icx-ptile { display:flex; align-items:center; gap:12px; padding:14px 16px; border:1.5px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); cursor:pointer; transition:all 0.12s; }
 .icx-ptile:hover { border-color:var(--text-muted); }
 .icx-ptile.selected { border-color:var(--green1); background:rgba(5,150,105,0.05); }
-.icx-ptile-logo { width:36px; height:36px; border-radius:8px; background:var(--bg-subtle); display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; }
-.icx-ptile-logo img { max-width:24px; max-height:18px; }
+/* Wordmark zone — natural width (no square/clip); logos are wide wordmarks now. */
+.icx-ptile-logo { display:flex; align-items:center; flex-shrink:0; }
+.icx-ptile-logo .intg-logo { min-width:0; height:24px; }
+.icx-ptile-logo .intg-logo svg { height:20px; }
 .icx-check-row { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); font-size:13px; color:var(--text-default); }
 .icx-check-row:last-child { border-bottom:none; }
 .icx-check-row .ic { width:20px; height:20px; flex-shrink:0; }
@@ -9227,11 +9229,12 @@ body.dark .theme-toggle .icon-moon { display: none; }
       box.innerHTML = INTG_PROVIDERS.map(function(p) {
         var sel = ICX.provider===p.id ? ' selected' : '';
         return '<div class="icx-ptile'+sel+'" id="icx-pt-'+p.id+'" onclick="icxSelectProvider(\''+p.id+'\')">'
-          + '<div class="icx-ptile-logo">'+intgLogo(p)+'</div>'
+          + '<div class="icx-ptile-logo">'+intgLogoTile(p)+'</div>'
           + '<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--text-default);">'+p.name+'</div><div style="font-size:11px;color:var(--text-muted);">'+p.catLabel+'</div></div>'
           + (p.status!=='notset' ? '<span class="intg-status '+p.status+'"><span class="dot"></span>'+INTG_STATUS[p.status]+'</span>' : '')
           + '</div>';
       }).join('');
+      intgInjectLogos();
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
     }
     function icxSelectProvider(id) {
