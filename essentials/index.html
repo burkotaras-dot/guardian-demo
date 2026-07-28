@@ -1181,10 +1181,94 @@ body.dark #v-dashboard .dash-main > .stat-grid > .stat-card {
   background-color:var(--p-dark-surface);
   box-shadow:0 8px 26px rgba(0,0,0,0.13);
 }
+#v-all-devices .node-kpi-card {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  min-height:154px;
+  padding:18px 20px;
+  display:flex;
+  flex-direction:column;
+  background-color:var(--bg-surface);
+  border-color:var(--border);
+  box-shadow:0 1px 2px rgba(15,23,42,0.045), 0 8px 24px rgba(15,23,42,0.035);
+  transition:border-color 420ms ease, box-shadow 520ms cubic-bezier(.22,1,.36,1);
+}
+#v-all-devices .node-kpi-card::before,
+#v-all-devices .node-kpi-card::after {
+  content:'';
+  position:absolute;
+  z-index:0;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+}
+#v-all-devices .node-kpi-card::before {
+  background:radial-gradient(circle 120px at 100% 0%, rgba(16,185,129,0.08) 0%, transparent 76%);
+  opacity:.66;
+  transition:opacity 700ms cubic-bezier(.16,1,.3,1);
+}
+#v-all-devices .node-kpi-card::after {
+  background:radial-gradient(circle 300px at 100% 0%, rgba(16,185,129,0.13) 0%, transparent 82%);
+  opacity:0;
+  transform:scale(.42);
+  transform-origin:100% 0%;
+  will-change:opacity,transform;
+  transition:opacity 700ms cubic-bezier(.16,1,.3,1), transform 850ms cubic-bezier(.16,1,.3,1);
+}
+#v-all-devices .node-kpi-card > * { position:relative; z-index:1; }
+#v-all-devices .node-kpi-card:hover {
+  border-color:rgba(16,185,129,0.30);
+  box-shadow:0 2px 4px rgba(15,23,42,0.05), 0 10px 24px rgba(15,23,42,0.06);
+}
+#v-all-devices .node-kpi-card:hover::before { opacity:.24; }
+#v-all-devices .node-kpi-card:hover::after { opacity:.92; transform:scale(1); }
+body.dark #v-all-devices .node-kpi-card {
+  background-color:var(--p-dark-surface);
+  border-color:var(--p-dark-border);
+  box-shadow:0 8px 26px rgba(0,0,0,0.13);
+}
+body.dark #v-all-devices .node-kpi-card::before {
+  background:radial-gradient(circle 120px at 100% 0%, rgba(16,185,129,0.10) 0%, transparent 76%);
+}
+body.dark #v-all-devices .node-kpi-card::after {
+  background:radial-gradient(circle 300px at 100% 0%, rgba(16,185,129,0.16) 0%, transparent 82%);
+}
+.node-kpi-head { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:20px; }
+.node-kpi-head-l { display:flex; align-items:center; gap:8px; min-width:0; }
+.node-kpi-head .stat-card-label { margin-bottom:0; }
+.node-kpi-trend { margin-left:auto; flex-shrink:0; font-size:10px; font-weight:700; white-space:nowrap; }
+.node-kpi-trend.danger { color:#E84C3D; }
+.node-kpi-trend.warning { color:#D97706; }
+.node-kpi-main { margin-top:12px; }
+.node-kpi-value { font-size:28px; font-weight:750; line-height:1; letter-spacing:-.4px; }
+.node-kpi-unit { margin-left:2px; font-size:15px; font-weight:500; color:var(--text-sec); letter-spacing:0; }
+.node-kpi-context { min-height:17px; margin-top:5px; font-size:11px; line-height:1.45; color:var(--text-sec); }
+.node-kpi-context strong { font-weight:650; }
+.node-kpi-card .stat-link { margin-top:auto; padding-top:14px; }
+.node-kpi-badge {
+  display:inline-flex;
+  align-items:center;
+  padding:2px 8px;
+  border:1px solid rgba(217,119,6,.30);
+  border-radius:999px;
+  background:rgba(217,119,6,.08);
+  color:#C56A10;
+  font-size:9px;
+  font-weight:700;
+  line-height:1.4;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+body.dark .node-kpi-badge { color:#D98A3A; background:rgba(217,138,58,.07); border-color:rgba(217,138,58,.26); }
 @media (prefers-reduced-motion: reduce) {
   #v-dashboard .dash-main > .stat-grid > .stat-card,
   #v-dashboard .dash-main > .stat-grid > .stat-card::before,
-  #v-dashboard .dash-main > .stat-grid > .stat-card::after { transition:none; }
+  #v-dashboard .dash-main > .stat-grid > .stat-card::after,
+  #v-all-devices .node-kpi-card,
+  #v-all-devices .node-kpi-card::before,
+  #v-all-devices .node-kpi-card::after { transition:none; }
 }
 .stat-card .donut-seg { stroke-linecap:round; }
 .stat-card-label { font-size:10px; font-weight:600; color:var(--text-sec); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:10px; }
@@ -4104,24 +4188,42 @@ body.dark .theme-toggle .icon-moon { display: none; }
         </div>
 
         <!-- Fleet summary cards -->
-        <div class="stat-grid" style="margin-bottom:24px;">
-          <div class="stat-card">
-            <div class="stat-card-label">Lowest Node Score</div>
-            <div class="stat-value" style="color:#E84C3D;">54<span style="font-size:16px;color:var(--text-sec);font-weight:500;">/100</span></div>
-            <div class="stat-sub" style="display:flex;align-items:center;gap:6px;">SARAH-LAPTOP-01 <span style="color:#E84C3D;font-size:10px;font-weight:600;">↓ -8 vs last scan</span></div>
-            <div class="stat-bar-wrap"><div class="stat-bar-fill" style="width:73%;"></div></div>
+        <div class="stat-grid node-kpi-grid" style="margin-bottom:24px;">
+          <div class="stat-card node-kpi-card">
+            <div class="node-kpi-head">
+              <div class="node-kpi-head-l"><div class="stat-card-label">Lowest Node Score</div></div>
+              <span class="node-kpi-trend danger">↓ 8 vs last scan</span>
+            </div>
+            <div class="node-kpi-main">
+              <div class="node-kpi-value" style="color:#E84C3D;">54<span class="node-kpi-unit">/100</span></div>
+              <div class="node-kpi-context">SARAH-LAPTOP-01</div>
+            </div>
+            <button class="stat-link" onclick="showView(&#39;node-detail&#39;)"><span class="stat-link-txt">View node</span> <span class="arr">→</span></button>
           </div>
-          <div class="stat-card">
-            <div class="stat-card-label">Total Critical Issues</div>
-            <div class="stat-value" style="color:#FB3C44;">31</div>
-            <div class="stat-sub"><span style="color:#FB3C44;font-weight:600;">2 nodes</span> need urgent attention</div>
-            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;margin-top:12px;">View issues →</button>
+          <div class="stat-card node-kpi-card">
+            <div class="node-kpi-head">
+              <div class="node-kpi-head-l"><div class="stat-card-label">Critical Issues</div></div>
+              <span class="node-kpi-trend danger">↑ 4</span>
+            </div>
+            <div class="node-kpi-main">
+              <div class="node-kpi-value" style="color:#FB3C44;">31</div>
+              <div class="node-kpi-context"><strong style="color:#FB3C44;">2 nodes</strong> need urgent attention</div>
+            </div>
+            <button class="stat-link" onclick="showView(&#39;results&#39;)"><span class="stat-link-txt">View issues</span> <span class="arr">→</span></button>
           </div>
-          <div class="stat-card">
-            <div class="stat-card-label">Unreconciled Drift</div>
-            <div class="stat-value" style="color:#d97706;">5</div>
-            <div class="stat-sub"><span style="color:#d97706;font-weight:600;">3 nodes</span> have pending changes</div>
-            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;margin-top:12px;">Review →</button>
+          <div class="stat-card node-kpi-card">
+            <div class="node-kpi-head">
+              <div class="node-kpi-head-l">
+                <div class="stat-card-label">Unreconciled Drift</div>
+                <span class="node-kpi-badge">Needs review</span>
+              </div>
+              <span class="node-kpi-trend warning">↑ 2</span>
+            </div>
+            <div class="node-kpi-main">
+              <div class="node-kpi-value" style="color:#D97706;">5</div>
+              <div class="node-kpi-context"><strong style="color:#D97706;">3 nodes</strong> have pending changes</div>
+            </div>
+            <button class="stat-link" onclick="showView(&#39;changes&#39;)"><span class="stat-link-txt">Review now</span> <span class="arr">→</span></button>
           </div>
         </div>
 
