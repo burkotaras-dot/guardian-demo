@@ -398,10 +398,13 @@ body.dark .intg-cap { background:var(--p-dark-card-strip); border-color:var(--p-
 .intg-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-sm); cursor:pointer; transition:border-color 0.15s, box-shadow 0.15s; display:flex; flex-direction:column; gap:12px; }
 .intg-card:hover { border-color:rgba(16,185,129,0.28); box-shadow:var(--shadow-md); }
 body.dark .intg-card:hover { border-color:rgba(16,185,129,0.32); }
-.intg-card-top { display:flex; align-items:center; gap:12px; }
-.intg-card-logo { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--bg-subtle); border:1px solid var(--border); overflow:hidden; }
-body.dark .intg-card-logo { background:var(--p-dark-card-strip); border-color:var(--p-dark-border-strong); }
-.intg-card-logo img { max-width:26px; max-height:20px; width:auto; height:auto; display:block; }
+.intg-card-top { display:flex; align-items:flex-start; gap:12px; }
+.intg-logo { display:inline-flex; align-items:center; height:34px; padding:0 10px; background:#fff; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+body.dark .intg-logo { border-color:var(--p-dark-border-strong); }
+.intg-logo img { height:20px; width:auto; max-width:148px; display:block; }
+.intg-logo-mono { font-weight:800; font-size:14px; }
+.intg-id-sub { display:flex; align-items:center; gap:8px; margin-top:9px; }
+.intg-id-sub .intg-card-tag { margin-top:0; }
 .intg-card-name { font-size:14px; font-weight:700; color:var(--text-default); }
 .intg-card-cat { font-size:11px; color:var(--text-muted); margin-top:1px; }
 .intg-card-meta { font-size:11px; color:var(--text-sec); }
@@ -9081,11 +9084,30 @@ body.dark .theme-toggle .icon-moon { display: none; }
         metric:{label:'Credentials',value:'24 available'} }
     ];
     function intgProvider(id) { for (var i=0;i<INTG_PROVIDERS.length;i++) if (INTG_PROVIDERS[i].id===id) return INTG_PROVIDERS[i]; return null; }
-    function intgLogo(p) { return '<span style="font-weight:800;font-size:13px;color:'+p.color+';">'+p.name.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()+'</span>'; }
+    // Official brand logos (wordmarks). Secret Server is a Delinea product, so its
+    // wordmark is the VENDOR (Delinea) — the product name is kept as text beside it.
+    var INTG_LOGO = {
+      servicenow:'ServiceNow_logo.svg',
+      aws:'Amazon_Web_Services_Logo.svg',
+      azure:'Microsoft_Azure-Logo.wine.svg',
+      freshservice:'freshservice-vector-logo.svg',
+      secretserver:'Delinea.svg'
+    };
+    function intgLogo(p) {
+      var f = INTG_LOGO[p.id];
+      if (f) return '<img src="'+f+'" alt="'+p.name+'">';
+      return '<span class="intg-logo-mono" style="color:'+p.color+';">'+p.name.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()+'</span>';
+    }
     function intgCardHead(p) {
+      // Wordmark already carries the product name → hide the redundant text label.
+      // Secret Server is the exception (Delinea wordmark ≠ product), so keep its name.
+      var showName = !INTG_LOGO[p.id] || p.id==='secretserver';
+      var sub = (showName ? '<span class="intg-card-name">'+p.name+'</span>' : '') + '<span class="intg-card-tag">'+p.catLabel+'</span>';
       return '<div class="intg-card-top">'
-        +   '<div class="intg-card-logo">'+intgLogo(p)+'</div>'
-        +   '<div style="flex:1;min-width:0;"><div class="intg-card-name">'+p.name+'</div><div class="intg-card-tag">'+p.catLabel+'</div></div>'
+        +   '<div style="flex:1;min-width:0;">'
+        +     '<div class="intg-logo">'+intgLogo(p)+'</div>'
+        +     '<div class="intg-id-sub">'+sub+'</div>'
+        +   '</div>'
         +   '<span class="intg-status '+p.status+'"><span class="dot"></span>'+INTG_STATUS[p.status]+'</span>'
         + '</div>';
     }
