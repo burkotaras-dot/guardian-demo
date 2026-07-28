@@ -376,26 +376,28 @@ body.dark .usedby-tag.is-upcoming {
 /* zones + labels for the universal connected-card skeleton */
 .intg-card-tag { display:inline-block; font-size:10px; font-weight:600; color:var(--text-muted); background:var(--bg-subtle); border:1px solid var(--border); border-radius:12px; padding:2px 9px; margin-top:4px; }
 body.dark .intg-card-tag { background:var(--p-dark-card-strip); border-color:var(--p-dark-border-strong); color:#9fb2c4; }
-.intg-card-body { display:flex; flex-direction:column; gap:13px; }
+.intg-card-body { display:flex; flex-direction:column; gap:10px; }
 .intg-zone { display:flex; flex-direction:column; gap:5px; }
 .intg-zlabel { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; color:var(--text-muted); }
 .intg-detail-val { font-size:12px; color:var(--text-default); }
-.intg-card-health { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-sec); }
-.intg-card-health .hdot { width:6px; height:6px; border-radius:50%; background:#00AF73; display:inline-block; flex-shrink:0; }
-.intg-card-health.warn .hdot { background:#F59E0B; }
-.intg-card-metric { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-default); }
-.intg-card-metric svg { flex-shrink:0; color:var(--text-muted); }
-.intg-caps { display:flex; flex-wrap:wrap; gap:6px; }
+/* Compact one-line meta: health + primary detail + usage, dot-separated. */
+.intg-meta { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--text-sec); min-width:0; }
+.intg-meta .hdot { width:6px; height:6px; border-radius:50%; background:#00AF73; display:inline-block; flex-shrink:0; }
+.intg-meta.warn .hdot { background:#F59E0B; }
+.intg-meta-txt { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.intg-caps { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
 .intg-cap { display:inline-flex; align-items:center; gap:6px; height:24px; font-size:11px; font-weight:600; color:var(--text-sec); background:var(--bg-subtle); border:1px solid var(--border-strong); border-radius:6px; padding:0 8px 0 7px; }
 .intg-cap::before { content:''; width:5px; height:5px; border-radius:50%; background:#00AF73; display:inline-block; flex-shrink:0; }
 body.dark .intg-cap { background:var(--p-dark-card-strip); border-color:var(--p-dark-border-strong); }
+.intg-cap-more { font-size:11px; font-weight:600; color:var(--text-muted); white-space:nowrap; }
 .intg-card-desc { font-size:12px; color:var(--text-sec); line-height:1.45; }
-.intg-card-foot { margin-top:auto; padding-top:2px; }
+.intg-foot-caps { display:flex; flex-direction:column; gap:5px; min-width:0; flex:1; }
+.intg-card-foot { margin-top:auto; padding-top:2px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
 .intg-cat { padding:6px 12px; font-size:12px; font-weight:600; border:1px solid var(--border); border-radius:20px; background:var(--bg-surface); color:var(--text-sec); cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.12s; white-space:nowrap; }
 .intg-cat:hover { border-color:var(--text-muted); }
 .intg-cat.active { background:var(--green1); border-color:var(--green1); color:#fff; }
 .intg-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; }
-.intg-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-sm); cursor:pointer; transition:border-color 0.15s, box-shadow 0.15s; display:flex; flex-direction:column; gap:12px; }
+.intg-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow-sm); cursor:pointer; transition:border-color 0.15s, box-shadow 0.15s; display:flex; flex-direction:column; gap:12px; }
 .intg-card:hover { border-color:rgba(16,185,129,0.28); box-shadow:var(--shadow-md); }
 body.dark .intg-card:hover { border-color:rgba(16,185,129,0.32); }
 .intg-card-top { display:flex; align-items:flex-start; gap:12px; }
@@ -9071,7 +9073,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         syncState:'ok', lastSync:'12 min ago',
         details:[{label:'Region',value:'eu-west-1'}],
         caps:['Cloud Node Acquisition'],
-        metric:{label:'Usage',value:'4 nodes monitored'} },
+        metric:{label:'Usage',value:'4 nodes monitored'}, metricShort:'4 nodes' },
       { id:'freshservice',name:'Freshservice', cat:'itsm',  catLabel:'ITSM',            color:'#25A768', status:'notset',
         desc:'Sync CMDB assets and reconcile changes from your Freshservice ITSM.',
         syncState:'ok', lastSync:'6 min ago',
@@ -9082,7 +9084,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         syncState:'ok', lastSync:'8 min ago',
         details:[{label:'Tenant',value:'Bambuk Production'}],
         caps:['Cloud Node Acquisition'],
-        metric:{label:'Usage',value:'12 resources monitored'} },
+        metric:{label:'Usage',value:'12 resources monitored'}, metricShort:'12 resources' },
       { id:'secretserver',name:'Secret Server',cat:'vault', catLabel:'Credential Vault',color:'#3B82F6', status:'notset',
         desc:'Connect Delinea Secret Server to securely reuse existing credentials.',
         connectionOnly:true, syncState:'verified',
@@ -9136,40 +9138,36 @@ body.dark .theme-toggle .icon-moon { display: none; }
         +   '<span class="intg-status '+p.status+'"><span class="dot"></span>'+INTG_STATUS[p.status]+'</span>'
         + '</div>';
     }
-    // Health line — always carries a value (never a dangling "· "); varies by integration nature.
-    function intgHealth(p) {
-      if (p.syncState==='attention') return '<div class="intg-card-health warn"><span class="hdot"></span>Sync delayed · '+(p.lastSync||'')+'</div>';
-      if (p.syncState==='verified')  return '<div class="intg-card-health"><span class="hdot"></span>Connection verified</div>';
-      if (p.syncState==='pending')   return '<div class="intg-card-health"><span class="hdot"></span>Waiting for first sync</div>';
-      if (p.lastSync)                return '<div class="intg-card-health"><span class="hdot"></span>Last sync successful · '+p.lastSync+'</div>';
-      return '<div class="intg-card-health"><span class="hdot"></span>Connected successfully</div>';
+    // Health text — always carries a value (never a dangling "· "); varies by integration nature.
+    function intgHealthText(p) {
+      if (p.syncState==='attention') return 'Sync delayed · '+(p.lastSync||'');
+      if (p.syncState==='verified')  return 'Connection verified';
+      if (p.syncState==='pending')   return 'Waiting for first sync';
+      if (p.lastSync)                return 'Synced '+p.lastSync;
+      return 'Connected successfully';
     }
     function intgConnectedCard(p) {
-      var metricIco = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>';
-      var health = intgHealth(p);
-      // Key details — one shared zone skeleton, provider-specific fields.
-      var details = (p.details||[]).map(function(d){
-        return '<div class="intg-zone"><div class="intg-zlabel">'+d.label+'</div><div class="intg-detail-val">'+d.value+'</div></div>';
-      }).join('');
-      // Capabilities (sync-based) OR purpose (connection-only) — never both.
-      var capsOrPurpose = '';
+      // Compact meta line — health + primary detail + usage, all on ONE row.
+      var bits = [intgHealthText(p)];
+      if (p.details && p.details[0]) bits.push(p.details[0].value);
+      if (p.metricShort) bits.push(p.metricShort);
+      var warn = p.syncState==='attention';
+      var meta = '<div class="intg-meta'+(warn?' warn':'')+'"><span class="hdot"></span><span class="intg-meta-txt">'+bits.join(' · ')+'</span></div>';
+      // Capabilities: first + "+N more" (full list lives on Manage) OR purpose (connection-only).
+      var capsRow = '';
       if ((p.caps||[]).length) {
-        capsOrPurpose = '<div class="intg-zone"><div class="intg-zlabel">Enabled capabilities</div><div class="intg-caps">'+p.caps.map(function(c){ return '<span class="intg-cap">'+c+'</span>'; }).join('')+'</div></div>';
+        var chips = '<span class="intg-cap">'+p.caps[0]+'</span>';
+        if (p.caps.length>1) chips += '<span class="intg-cap-more">+'+(p.caps.length-1)+' more</span>';
+        capsRow = '<div class="intg-zlabel">Enabled capabilities</div><div class="intg-caps">'+chips+'</div>';
       } else if (p.purpose) {
-        capsOrPurpose = '<div class="intg-zone"><div class="intg-zlabel">Purpose</div><div class="intg-detail-val">'+p.purpose+'</div></div>';
+        capsRow = '<div class="intg-zlabel">Purpose</div><div class="intg-detail-val">'+p.purpose+'</div>';
       }
-      var metric = p.metric
-        ? '<div class="intg-zone"><div class="intg-zlabel">'+(p.metric.label||'Usage')+'</div><div class="intg-card-metric">'+metricIco+p.metric.value+'</div></div>'
-        : '';
       return '<div class="intg-card" onclick="openIntegrationDetail(\''+p.id+'\')">'
         + intgCardHead(p)
-        + '<div class="intg-card-body">'
-        +   health
-        +   details
-        +   capsOrPurpose
-        +   metric
+        + '<div class="intg-card-body">'+meta+'</div>'
+        + '<div class="intg-card-foot"><div class="intg-foot-caps">'+capsRow+'</div>'
+        +   '<button class="action-cta" style="width:auto;" onclick="event.stopPropagation();openIntegrationDetail(\''+p.id+'\')">Manage <span class="action-arrow">→</span></button>'
         + '</div>'
-        + '<div class="intg-card-foot"><button class="action-cta" style="width:auto;" onclick="event.stopPropagation();openIntegrationDetail(\''+p.id+'\')">Manage <span class="action-arrow">→</span></button></div>'
         + '</div>';
     }
     function intgAvailableCard(p) {
