@@ -1374,6 +1374,15 @@ body.dark #stat-float-tip { background:#0f3a40; border-color:rgba(255,255,255,0.
 .stat-link:hover .stat-link-txt { text-decoration:underline; }
 .stat-link .arr { transition:transform .12s; }
 .stat-link:hover .arr { transform:translateX(2px); }
+/* Canonical inline text-link CTA — same behavior as .stat-link (green text + arrow,
+   hover underlines text and nudges arrow) but without the stat-card layout margins.
+   Use for inline "View / Review / Manage … →" navigations in page headers, banners,
+   and JS-rendered content. Structure: <button class="link-cta"><span class="lc-txt">Text</span> <span class="arr">→</span></button> */
+.link-cta { display:inline-flex; align-items:center; gap:4px; font-family:inherit; font-size:12px; font-weight:600; color:var(--green2); background:none; border:none; padding:0; cursor:pointer; text-decoration:none; transition:color .12s; }
+.link-cta:hover { color:#10B981; }
+.link-cta:hover .lc-txt { text-decoration:underline; text-underline-offset:2px; }
+.link-cta .arr { transition:transform .12s; }
+.link-cta:hover .arr { transform:translateX(2px); }
 .stat-foot { margin-top:auto; padding-top:12px; font-size:10px; color:var(--text-sec); }
 .logo-pill { display:inline-flex; align-items:center; justify-content:center; height:30px; padding:0 10px; background:#fff; border:1px solid #e3e7ed; border-radius:7px; }
 .logo-pill svg { display:block; width:auto; }
@@ -3721,7 +3730,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
           <span style="font-size:12px;font-weight:600;color:var(--text-default);">All Nodes</span>
           <span style="font-size:11px;color:var(--text-sec);">· 4 nodes · Aggregated results</span>
-          <a onclick="showView(&#39;all-devices&#39;)" style="margin-left:auto;font-size:11px;color:var(--green1);cursor:pointer;text-decoration:none;font-weight:600;">All Nodes table →</a>
+          <button class="link-cta" style="margin-left:auto;font-size:11px;" onclick="showView(&#39;all-devices&#39;)"><span class="lc-txt">All Nodes table</span> <span class="arr">→</span></button>
         </div>
 
         <div class="results-top">
@@ -10257,7 +10266,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         if (nodes.length < totalNodes) {
           tableHTML += '<div style="padding:12px 22px;font-size:12px;color:var(--text-sec);display:flex;align-items:center;justify-content:space-between;">'
             + '<span>Showing '+nodes.length+' of '+totalNodes+'</span>'
-            + '<a href="javascript:void(0)" onclick="showView(\'all-devices\')" style="color:var(--green1);font-weight:600;text-decoration:none;">View all nodes →</a>'
+            + '<button class="link-cta" onclick="showView(\'all-devices\')"><span class="lc-txt">View all nodes</span> <span class="arr">→</span></button>'
             + '</div>';
         }
         nodesEl.innerHTML = tableHTML;
@@ -10276,7 +10285,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }).join('');
       if (activity.length > maxShow) {
         actHTML += '<div style="padding:12px 22px;text-align:center;">'
-          + '<a href="javascript:void(0)" onclick="cmShowAllActivity()" style="color:var(--green1);font-weight:600;font-size:12px;text-decoration:none;">View all activity ('+activity.length+') →</a>'
+          + '<button class="link-cta" onclick="cmShowAllActivity()"><span class="lc-txt">View all activity ('+activity.length+')</span> <span class="arr">→</span></button>'
           + '</div>';
       }
       document.getElementById('cmd-activity').innerHTML = actHTML;
@@ -13809,7 +13818,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       <div style="background:rgba(37,167,96,0.08);border-bottom:1px solid rgba(37,167,96,0.2);padding:11px 24px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         <span style="font-size:12px;color:#15803d;font-weight:500;">These results have been merged into your main Scans.</span>
-        <button onclick="showView(&#39;results&#39;)" style="margin-left:auto;background:none;border:1px solid rgba(37,167,96,0.35);border-radius:var(--radius-sm);padding:4px 12px;font-size:11px;font-weight:600;color:#15803d;cursor:pointer;">View in Scans →</button>
+        <button class="link-cta" style="margin-left:auto;font-size:11px;" onclick="showView(&#39;results&#39;)"><span class="lc-txt">View in Scans</span> <span class="arr">→</span></button>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
