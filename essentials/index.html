@@ -2383,8 +2383,6 @@ body.dark #add-device-modal > div { background: var(--bg-card) !important; }
 body.dark #add-device-modal > div > div:last-child > div { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.08) !important; }
 body.dark #add-device-modal > div > div:last-child > div:nth-child(1):hover { border-color: #3FC878 !important; background: rgba(63,200,120,0.07) !important; }
 body.dark #add-device-modal > div > div:last-child > div:nth-child(2):hover { border-color: #3B82F6 !important; background: rgba(59,130,246,0.07) !important; }
-body.dark #pc-success-modal > div { background: var(--bg-card) !important; }
-body.dark #pc-success-modal > div > div { color: rgba(255,255,255,0.9) !important; }
 
 /* Search overlay */
 body.dark #search-overlay > div { background: var(--p-dark-surface) !important; border-color: #143A2F !important; }
@@ -10905,14 +10903,45 @@ body.dark .theme-toggle .icon-moon { display: none; }
       _exportFail = (fail === undefined) ? _exportDemoFail : !!fail;
       var up = kind.toUpperCase();
       var meta = _exportMeta[kind] || _exportMeta.csv;
-      document.getElementById('export-kind-g').textContent = up;
-      document.getElementById('export-kind-r').textContent = up;
-      document.getElementById('export-kind-d').textContent = up;
-      document.getElementById('export-file-badge').textContent = up;
-      document.getElementById('export-filename').textContent = 'guardian-compliance-cis-win11-2026-07-15.' + kind;
-      document.getElementById('export-filesize').textContent = meta.size + ' · generated just now';
-      document.getElementById('export-modal').style.display = 'flex';
-      _exportRun();
+      var body = ''
+        + '<div id="export-generating" style="text-align:center;padding:8px 0;">'
+        +   '<div style="width:44px;height:44px;margin:6px auto 18px;border:3px solid var(--border);border-top-color:var(--green2);border-radius:50%;animation:spin 0.8s linear infinite;"></div>'
+        +   '<div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Generating <span id="export-kind-g">' + up + '</span> report…</div>'
+        +   '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Compiling compliance data for the current scope</div>'
+        +   '<div style="font-size:11px;color:var(--text-muted);margin-top:14px;">CIS Windows 11 · 4 policies · 4 nodes · latest scan</div>'
+        + '</div>'
+        + '<div id="export-ready" style="display:none;text-align:center;padding:8px 0;">'
+        +   '<div style="width:48px;height:48px;margin:6px auto 16px;border-radius:50%;background:rgba(63,200,120,0.12);display:flex;align-items:center;justify-content:center;">'
+        +     '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+        +   '</div>'
+        +   '<div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Report ready</div>'
+        +   '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Your <span id="export-kind-r">' + up + '</span> export has been generated</div>'
+        +   '<div style="display:flex;align-items:center;gap:10px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin:18px 0 6px;text-align:left;">'
+        +     '<div id="export-file-badge" style="flex-shrink:0;width:34px;height:34px;border-radius:7px;background:rgba(63,200,120,0.1);color:var(--green1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:0.3px;">' + up + '</div>'
+        +     '<div style="min-width:0;flex:1;">'
+        +       '<div id="export-filename" style="font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">guardian-compliance-cis-win11-2026-07-15.' + kind + '</div>'
+        +       '<div id="export-filesize" style="font-size:11px;color:var(--text-sec);margin-top:1px;">' + meta.size + ' · generated just now</div>'
+        +     '</div>'
+        +   '</div>'
+        +   '<button onclick="exportDownload()" class="btn-primary" style="width:100%;padding:11px;font-size:13px;margin-top:12px;">↓ Download <span id="export-kind-d">' + up + '</span></button>'
+        + '</div>'
+        + '<div id="export-error" style="display:none;text-align:center;padding:8px 0;">'
+        +   '<div style="width:48px;height:48px;margin:6px auto 16px;border-radius:50%;background:rgba(251,60,68,0.1);display:flex;align-items:center;justify-content:center;">'
+        +     '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
+        +   '</div>'
+        +   '<div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Export failed</div>'
+        +   '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;line-height:1.5;">Couldn\'t reach the scan engine while compiling the report. No file was generated — your data is unchanged.</div>'
+        +   '<div style="display:flex;gap:8px;margin-top:20px;">'
+        +     '<button onclick="closeExportModal()" class="btn-outline" style="flex:1;padding:11px;font-size:13px;">Cancel</button>'
+        +     '<button onclick="exportRetry()" class="btn-primary" style="flex:1;padding:11px;font-size:13px;">Retry</button>'
+        +   '</div>'
+        + '</div>';
+      openModal({
+        id: 'export-modal',
+        size: 'sm',
+        bodyHtml: body,
+        afterMount: function() { _exportRun(); }
+      });
     }
     function _exportRun() {
       document.getElementById('export-generating').style.display = 'block';
@@ -10933,8 +10962,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       _exportRun();
     }
     function closeExportModal() {
-      document.getElementById('export-modal').style.display = 'none';
       clearTimeout(_exportTimer);
+      closeModal('export-modal');
     }
     function exportDownload() {
       closeExportModal();
@@ -10965,21 +10994,28 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
       // Show success modal (pre-navigate to policy-detail in background)
       showView('policy-detail');
-      var modal = document.getElementById('pc-success-modal');
-      var modalName = document.getElementById('pc-success-name');
-      if (modalName) modalName.textContent = '"' + name + '" is ready. You can view it now or go back to the policies list.';
-      if (modal) { modal.style.display = 'flex'; modal._policyName = name; }
+      var body = ''
+        + '<div style="text-align:center;">'
+        +   '<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#3FC878,#26A257);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">'
+        +     '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+        +   '</div>'
+        +   '<div style="font-size:20px;font-weight:800;color:var(--text-default);margin-bottom:8px;">Policy created!</div>'
+        +   '<div style="font-size:14px;color:var(--text-sec);margin-bottom:28px;line-height:1.5;">"' + name + '" is ready. You can view it now or go back to the policies list.</div>'
+        +   '<div style="display:flex;flex-direction:column;gap:10px;">'
+        +     '<button onclick="pcSuccessView()" style="width:100%;padding:13px;background:linear-gradient(135deg,#3FC878,#26A257);border:none;border-radius:10px;color:white;font-size:14px;font-weight:700;cursor:pointer;" onmouseover="this.style.opacity=\'.88\'" onmouseout="this.style.opacity=\'1\'">View Policy</button>'
+        +     '<button onclick="pcSuccessList()" style="width:100%;padding:13px;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:10px;color:var(--p-neutral-800);font-size:14px;font-weight:600;cursor:pointer;" onmouseover="this.style.borderColor=\'var(--green1)\';this.style.color=\'var(--green2)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--p-neutral-800)\'">Back to Policies List</button>'
+        +   '</div>'
+        + '</div>';
+      openModal({ id: 'pc-success-modal', size: 'sm', bodyHtml: body });
     }
 
     function pcSuccessView() {
-      var modal = document.getElementById('pc-success-modal');
-      if (modal) modal.style.display = 'none';
+      closeModal('pc-success-modal');
       // already on policy-detail
     }
 
     function pcSuccessList() {
-      var modal = document.getElementById('pc-success-modal');
-      if (modal) modal.style.display = 'none';
+      closeModal('pc-success-modal');
       showView('policies');
     }
 
@@ -13815,51 +13851,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     </div>
 
     <!-- Export report modal — generation → ready → download -->
-    <div id="export-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeExportModal()">
-      <div style="background:var(--bg-surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:420px;max-width:calc(100vw - 40px);padding:28px;animation:fadeUp 0.2s ease;position:relative;">
-        <button onclick="closeExportModal()" style="position:absolute;top:18px;right:18px;background:none;border:none;cursor:pointer;padding:4px;color:var(--text-sec);">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-
-        <!-- GENERATING -->
-        <div id="export-generating" style="text-align:center;padding:8px 0;">
-          <div style="width:44px;height:44px;margin:6px auto 18px;border:3px solid var(--border);border-top-color:var(--green2);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-          <div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Generating <span id="export-kind-g">CSV</span> report…</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Compiling compliance data for the current scope</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:14px;">CIS Windows 11 · 4 policies · 4 nodes · latest scan</div>
-        </div>
-
-        <!-- READY -->
-        <div id="export-ready" style="display:none;text-align:center;padding:8px 0;">
-          <div style="width:48px;height:48px;margin:6px auto 16px;border-radius:50%;background:rgba(63,200,120,0.12);display:flex;align-items:center;justify-content:center;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          </div>
-          <div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Report ready</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Your <span id="export-kind-r">CSV</span> export has been generated</div>
-          <div style="display:flex;align-items:center;gap:10px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin:18px 0 6px;text-align:left;">
-            <div id="export-file-badge" style="flex-shrink:0;width:34px;height:34px;border-radius:7px;background:rgba(63,200,120,0.1);color:var(--green1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:0.3px;">CSV</div>
-            <div style="min-width:0;flex:1;">
-              <div id="export-filename" style="font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">guardian-compliance.csv</div>
-              <div id="export-filesize" style="font-size:11px;color:var(--text-sec);margin-top:1px;">18 KB · generated just now</div>
-            </div>
-          </div>
-          <button onclick="exportDownload()" class="btn-primary" style="width:100%;padding:11px;font-size:13px;margin-top:12px;">↓ Download <span id="export-kind-d">CSV</span></button>
-        </div>
-
-        <!-- ERROR -->
-        <div id="export-error" style="display:none;text-align:center;padding:8px 0;">
-          <div style="width:48px;height:48px;margin:6px auto 16px;border-radius:50%;background:rgba(251,60,68,0.1);display:flex;align-items:center;justify-content:center;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          </div>
-          <div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Export failed</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-top:6px;line-height:1.5;">Couldn't reach the scan engine while compiling the report. No file was generated — your data is unchanged.</div>
-          <div style="display:flex;gap:8px;margin-top:20px;">
-            <button onclick="closeExportModal()" class="btn-outline" style="flex:1;padding:11px;font-size:13px;">Cancel</button>
-            <button onclick="exportRetry()" class="btn-primary" style="flex:1;padding:11px;font-size:13px;">Retry</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- export-modal migrated to unified openModal shell (see openExport) -->
 
     <!-- ═══════════════════════════════════════════════════
          SETTINGS: INTEGRATIONS
@@ -19525,20 +19517,7 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
 </div><!-- /auth-ov -->
 
 <!-- Policy created success modal -->
-<div id="pc-success-modal" style="display:none;position:fixed;inset:0;z-index:9990;background:rgba(15,29,45,0.55);backdrop-filter:blur(3px);align-items:center;justify-content:center;">
-  <div style="background:var(--bg-surface);border-radius:16px;padding:40px 44px;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.18);">
-    <!-- Icon -->
-    <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#3FC878,#26A257);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-    </div>
-    <div style="font-size:20px;font-weight:800;color:var(--text-default);margin-bottom:8px;">Policy created!</div>
-    <div id="pc-success-name" style="font-size:14px;color:var(--text-sec);margin-bottom:28px;line-height:1.5;">Your policy is ready. You can view it now or go back to the policies list.</div>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <button onclick="pcSuccessView()" style="width:100%;padding:13px;background:linear-gradient(135deg,#3FC878,#26A257);border:none;border-radius:10px;color:white;font-size:14px;font-weight:700;cursor:pointer;" onmouseover="this.style.opacity=&#39;.88&#39;" onmouseout="this.style.opacity=&#39;1&#39;">View Policy</button>
-      <button onclick="pcSuccessList()" style="width:100%;padding:13px;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:10px;color:var(--p-neutral-800);font-size:14px;font-weight:600;cursor:pointer;" onmouseover="this.style.borderColor=&#39;var(--green1)&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;var(--p-neutral-800)&#39;">Back to Policies List</button>
-    </div>
-  </div>
-</div>
+<!-- pc-success-modal migrated to unified openModal shell (see pcFinishCreate) -->
 
 <!-- Global success toast -->
 
