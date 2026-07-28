@@ -449,6 +449,11 @@ body.dark .icx-input:focus { background:rgba(255,255,255,0.07); border-color:var
 .icx-check-row { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); font-size:13px; color:var(--text-default); }
 .icx-check-row:last-child { border-bottom:none; }
 .icx-check-row .ic { width:20px; height:20px; flex-shrink:0; }
+.icx-res { border-radius:var(--radius-md); padding:12px 14px; font-size:12px; font-weight:600; }
+.icx-res.ok  { background:rgba(0,175,115,0.08); border:1px solid rgba(0,175,115,0.35); color:#00875a; }
+.icx-res.err { background:var(--bg-error); border:1px solid var(--bg-error-border); color:#c81e2a; }
+body.dark .icx-res.ok  { background:rgba(0,175,115,0.12); border-color:rgba(0,175,115,0.45); color:#5ED79B; }
+body.dark .icx-res.err { color:#FF8A90; }
 
 /* Diff before/after cards */
 .diff-card { padding:14px 16px; border-radius:10px; }
@@ -9307,7 +9312,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         setTimeout(function(){
           if (fail) {
             set('2', _icxErr);
-            if (res) res.innerHTML = '<div style="background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:var(--radius-md);padding:12px 14px;font-size:12px;color:#c81e2a;">Authentication failed — the credential was rejected. Check the client ID / secret and try again.</div>';
+            if (res) res.innerHTML = '<div class="icx-res err">Authentication failed — the credential was rejected. Check the client ID / secret and try again.</div>';
             if (act) act.innerHTML = '<button class="btn-outline" style="font-size:11px;padding:9px 14px;" onclick="icxGoStep(3)">Edit credentials</button>'
               + '<button class="btn-primary" style="width:auto;padding:9px 18px;font-size:12px;" onclick="icxRunTest(false)">Retry test</button>';
             return;
@@ -9315,7 +9320,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           set('2', _icxOk); set('3', _icxSpin);
           setTimeout(function(){
             set('3', _icxOk);
-            if (res) res.innerHTML = '<div style="background:rgba(0,175,115,0.08);border:1px solid rgba(0,175,115,0.35);border-radius:var(--radius-md);padding:12px 14px;font-size:12px;color:#00875a;font-weight:600;">Connection verified — ready to save.</div>';
+            if (res) res.innerHTML = '<div class="icx-res ok">Connection verified — ready to save.</div>';
             if (act) act.innerHTML = '<button class="btn-primary" style="width:auto;padding:9px 20px;font-size:12px;" onclick="icxFinish()">Save integration →</button>';
           }, 650);
         }, 650);
