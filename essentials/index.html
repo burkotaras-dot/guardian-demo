@@ -399,9 +399,15 @@ body.dark .intg-cap { background:var(--p-dark-card-strip); border-color:var(--p-
 .intg-card:hover { border-color:rgba(16,185,129,0.28); box-shadow:var(--shadow-md); }
 body.dark .intg-card:hover { border-color:rgba(16,185,129,0.32); }
 .intg-card-top { display:flex; align-items:flex-start; gap:12px; }
-.intg-logo { display:inline-flex; align-items:center; height:34px; padding:0 10px; background:#fff; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-body.dark .intg-logo { border-color:var(--p-dark-border-strong); }
-.intg-logo img { height:20px; width:auto; max-width:148px; display:block; }
+/* Logo tile matches the dashboard .logo-pill backgrounds (light: white, dark: canvas navy)
+   and reuses its dark path-inversion so dark wordmarks stay legible on the navy pill. */
+.intg-logo { display:inline-flex; align-items:center; height:34px; padding:0 10px; background:#fff; border:1px solid #e3e7ed; border-radius:8px; overflow:hidden; }
+body.dark .intg-logo { background:var(--bg-canvas); border-color:var(--border); }
+.intg-logo svg { height:20px; width:auto; max-width:148px; display:block; }
+body.dark .intg-logo svg path[fill="black"],
+body.dark .intg-logo svg path[fill="#252F3E"],
+body.dark .intg-logo svg path[fill="#231556"],
+body.dark .intg-logo svg path[fill="#4D4D4D"] { fill:#e6e9ef; }
 .intg-logo-mono { font-weight:800; font-size:14px; }
 .intg-id-sub { display:flex; align-items:center; gap:8px; margin-top:9px; }
 .intg-id-sub .intg-card-tag { margin-top:0; }
@@ -9093,10 +9099,28 @@ body.dark .theme-toggle .icon-moon { display: none; }
       freshservice:'freshservice-vector-logo.svg',
       secretserver:'Delinea.svg'
     };
-    function intgLogo(p) {
+    // Brand logos are injected as INLINE svg (not <img>) so the dashboard-style dark
+    // path-inversion CSS can recolour dark wordmarks on the navy pill.
+    var _intgLogoCache = {};
+    function intgInjectLogos() {
+      var slots = document.querySelectorAll('.intg-logo[data-logo]');
+      for (var i=0;i<slots.length;i++) {
+        (function(el){
+          if (el.getAttribute('data-loaded')) return;
+          var f = el.getAttribute('data-logo');
+          if (_intgLogoCache[f]) { el.innerHTML = _intgLogoCache[f]; el.setAttribute('data-loaded','1'); return; }
+          fetch(f).then(function(r){ return r.text(); }).then(function(t){
+            _intgLogoCache[f] = t;
+            var same = document.querySelectorAll('.intg-logo[data-logo="'+f+'"]');
+            for (var j=0;j<same.length;j++) if (!same[j].getAttribute('data-loaded')) { same[j].innerHTML = t; same[j].setAttribute('data-loaded','1'); }
+          }).catch(function(){});
+        })(slots[i]);
+      }
+    }
+    function intgLogoTile(p) {
       var f = INTG_LOGO[p.id];
-      if (f) return '<img src="'+f+'" alt="'+p.name+'">';
-      return '<span class="intg-logo-mono" style="color:'+p.color+';">'+p.name.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()+'</span>';
+      if (f) return '<div class="intg-logo" data-logo="'+f+'"></div>';
+      return '<div class="intg-logo"><span class="intg-logo-mono" style="color:'+p.color+';">'+p.name.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()+'</span></div>';
     }
     function intgCardHead(p) {
       // Wordmark already carries the product name → hide the redundant text label.
@@ -9105,7 +9129,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var sub = (showName ? '<span class="intg-card-name">'+p.name+'</span>' : '') + '<span class="intg-card-tag">'+p.catLabel+'</span>';
       return '<div class="intg-card-top">'
         +   '<div style="flex:1;min-width:0;">'
-        +     '<div class="intg-logo">'+intgLogo(p)+'</div>'
+        +     intgLogoTile(p)
         +     '<div class="intg-id-sub">'+sub+'</div>'
         +   '</div>'
         +   '<span class="intg-status '+p.status+'"><span class="dot"></span>'+INTG_STATUS[p.status]+'</span>'
@@ -9172,6 +9196,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         html += '</div>';
       }
       list.innerHTML = html || '<div class="intg-empty">No integrations yet.</div>';
+      intgInjectLogos();
       // Footer adapts: when every provider is connected, explain the missing Available section.
       var ft = document.getElementById('intg-foot-title'), fs = document.getElementById('intg-foot-sub');
       if (ft && fs) {
