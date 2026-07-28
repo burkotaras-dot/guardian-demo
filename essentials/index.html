@@ -2621,6 +2621,27 @@ body.dark .theme-toggle .icon-moon { display: none; }
   .auth-effect-stage.is-scanning .auth-inspection-field { opacity: 0.48; }
   .auth-effect-stage::before { background-size: 44px 44px; }
 }
+/* ── Unified modal shell (openModal / closeModal) ── */
+.gm-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); padding: 20px; }
+.gm-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.3); width: 100%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+.gm-sm { max-width: 420px; }
+.gm-md { max-width: 480px; }
+.gm-lg { max-width: 600px; }
+.gm-head { display: flex; align-items: flex-start; gap: 12px; padding: 22px 24px 0; }
+.gm-titles { flex: 1; min-width: 0; }
+.gm-title { font-size: 15px; font-weight: 600; color: var(--text-default); line-height: 1.3; }
+.gm-sub { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 4px; }
+.gm-x { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 20px; line-height: 1; margin: -4px -6px 0 0; padding: 0; }
+.gm-x:hover { background: var(--bg-canvas); color: var(--text-default); }
+.gm-body { padding: 14px 24px 4px; overflow-y: auto; flex: 1 1 auto; }
+.gm-foot { display: flex; align-items: center; gap: 8px; padding: 14px 24px 18px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; }
+.gm-foot-right { display: flex; gap: 8px; margin-left: auto; }
+.gm-btn { padding: 7px 16px; font-size: 12px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.gm-btn-secondary { border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-default); }
+.gm-btn-primary { border: none; background: var(--green1); color: #fff; }
+.gm-btn-warning { border: none; background: #F59E0B; color: #fff; font-weight: 500; }
+.gm-btn-destructive { border: none; background: #dc2626; color: #fff; }
+.gm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -9121,25 +9142,93 @@ body.dark .theme-toggle .icon-moon { display: none; }
     function _credTypeDef(v) { return CRED_TYPES.filter(function(t){ return t.val === v; })[0] || CRED_TYPES[0]; }
     function _esc(s) { return (s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
 
+    // ── Unified modal shell ──────────────────────────────────────────────
+    // opts: { id, size:'sm'|'md'|'lg', title, subtitle, bodyHtml,
+    //         footerLeftHtml, buttons:[{label,kind,onClick(e,close),id,disabled}],
+    //         dismissable:bool (Esc/backdrop/X, default true),
+    //         confirmDirty:bool (ask before discarding edits),
+    //         afterMount(overlayEl), onClose() }
+    function openModal(opts) {
+      var id = opts.id;
+      var old = document.getElementById(id);
+      if (old) { if (old._gmCleanup) old._gmCleanup(); old.remove(); }
+      var prevFocus = document.activeElement;
+      var dismissable = opts.dismissable !== false;
+      var ov = document.createElement('div');
+      ov.className = 'gm-overlay';
+      ov.id = id;
+      var footHtml = '';
+      if (opts.buttons && opts.buttons.length) {
+        var right = opts.buttons.map(function(b, i) {
+          return '<button type="button" class="gm-btn gm-btn-' + (b.kind || 'secondary') + '"'
+            + (b.id ? ' id="' + b.id + '"' : '') + ' data-gm-btn="' + i + '"'
+            + (b.disabled ? ' disabled' : '') + '>' + b.label + '</button>';
+        }).join('');
+        footHtml = '<div class="gm-foot">' + (opts.footerLeftHtml || '')
+          + '<div class="gm-foot-right">' + right + '</div></div>';
+      }
+      ov.innerHTML = '<div class="gm-card gm-' + (opts.size || 'md') + '" role="dialog" aria-modal="true">'
+        + '<div class="gm-head"><div class="gm-titles"><div class="gm-title">' + (opts.title || '') + '</div>'
+        + (opts.subtitle ? '<div class="gm-sub">' + opts.subtitle + '</div>' : '') + '</div>'
+        + '<button type="button" class="gm-x" aria-label="Close" data-gm-x="1">&times;</button></div>'
+        + '<div class="gm-body">' + (opts.bodyHtml || '') + '</div>'
+        + footHtml
+        + '</div>';
+      document.body.appendChild(ov);
+      var card = ov.querySelector('.gm-card');
+      function requestClose() {
+        if (!dismissable) return;
+        if (opts.confirmDirty && ov._gmDirty && !window.confirm('Discard unsaved changes?')) return;
+        closeModal(id);
+      }
+      if (opts.buttons) {
+        opts.buttons.forEach(function(b, i) {
+          var el = ov.querySelector('[data-gm-btn="' + i + '"]');
+          if (el && b.onClick) el.addEventListener('click', function(e) { b.onClick(e, function() { closeModal(id); }); });
+        });
+      }
+      ov.querySelector('[data-gm-x]').addEventListener('click', requestClose);
+      ov.addEventListener('mousedown', function(e) { if (e.target === ov) requestClose(); });
+      if (opts.confirmDirty) {
+        ov.querySelector('.gm-body').addEventListener('input', function() { ov._gmDirty = true; });
+      }
+      var onKey = function(e) {
+        if (e.key === 'Escape') { e.stopPropagation(); requestClose(); return; }
+        if (e.key === 'Tab') {
+          var f = card.querySelectorAll('a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])');
+          if (!f.length) return;
+          var first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      };
+      document.addEventListener('keydown', onKey, true);
+      ov._gmCleanup = function() {
+        document.removeEventListener('keydown', onKey, true);
+        if (prevFocus && prevFocus.focus) { try { prevFocus.focus(); } catch (e) {} }
+        if (opts.onClose) opts.onClose();
+      };
+      if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+      if (opts.afterMount) opts.afterMount(ov);
+      return ov;
+    }
+    function closeModal(id) {
+      var ov = document.getElementById(id);
+      if (!ov) return;
+      if (ov._gmCleanup) ov._gmCleanup();
+      ov.remove();
+    }
+
     function credOpenEditor(id) {
       var c = id ? CREDENTIALS.filter(function(x){ return x.id === id; })[0] : null;
       _credEditId = c ? c.id : null;
       _credTested = false;
       _credReturnToPicker = false;
       var typeVal = c ? c.type : CRED_TYPES[0].val;
-      var old = document.getElementById('cred-edit-overlay');
-      if (old) old.remove();
-      var ov = document.createElement('div');
-      ov.id = 'cred-edit-overlay';
-      ov.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);padding:20px;';
       var opts = CRED_TYPES.map(function(t){ return '<option value="'+t.val+'"'+(t.val===typeVal?' selected':'')+'>'+t.val+'</option>'; }).join('');
       var cmSel = c ? c.cm : CM_GROUPS.filter(function(g){ return g.state === 'active'; })[0].id;
       var cmOpts = CM_GROUPS.filter(function(g){ return g.state === 'active'; }).map(function(g){ return '<option value="'+g.id+'"'+(g.id===cmSel?' selected':'')+'>'+g.name+'</option>'; }).join('');
-      var html = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.3);max-width:460px;width:100%;max-height:90vh;overflow-y:auto;">'
-        + '<div style="padding:22px 24px 0;">'
-        + '<div style="font-size:15px;font-weight:600;color:var(--text-default);margin-bottom:4px;">'+(c ? 'Edit credential' : 'New credential')+'</div>'
-        + '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px;line-height:1.5;">Stored encrypted in the Guardian Credential Vault and used by Connection Managers at scan time.</div>'
-        + '<div class="form-group"><label class="form-label" for="cred-f-type">Credential type</label>'
+      var body = '<div class="form-group"><label class="form-label" for="cred-f-type">Credential type</label>'
         +   '<select id="cred-f-type" class="form-input csel" onchange="credTypeChange()">'+opts+'</select></div>'
         + '<div class="form-group"><label class="form-label" for="cred-f-cm">Connection Manager Group</label>'
         +   '<select id="cred-f-cm" class="form-input csel" onchange="credCmChange()">'+cmOpts+'</select>'
@@ -9151,26 +9240,32 @@ body.dark .theme-toggle .icon-moon { display: none; }
         + '<div class="form-group" id="cred-secret-wrap"></div>'
         + '<div class="form-group"><label class="form-label" for="cred-f-scope">Scope / intended use <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>'
         +   '<input id="cred-f-scope" type="text" class="form-input" placeholder="e.g. Production Windows servers" value="'+_esc(c?c.scope:'')+'"></div>'
-        + '<div id="cred-test-result" style="display:none;font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:14px;"></div>'
-        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0 16px;border-top:1px solid var(--border);margin-top:6px;">'
-        +   '<button id="cred-test-btn" onclick="credTest()" class="btn-outline" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test credentials</button>'
-        +   '<div style="display:flex;gap:8px;">'
-        +     '<button onclick="credCloseEditor()" style="padding:7px 16px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Cancel</button>'
-        +     '<button onclick="credSave()" style="padding:7px 16px;font-size:12px;border:none;border-radius:6px;background:var(--green1);color:#fff;cursor:pointer;font-weight:600;">'+(c?'Save changes':'Save credential')+'</button>'
-        +   '</div>'
-        + '</div></div></div>';
-      ov.innerHTML = html;
-      ov.addEventListener('click', function(e){ if (e.target === ov) credCloseEditor(); });
-      document.body.appendChild(ov);
-      var typeSel = document.getElementById('cred-f-type');
-      if (typeSel && window.enhanceSelect) enhanceSelect(typeSel);
-      var cmSelEl = document.getElementById('cred-f-cm');
-      if (cmSelEl && window.enhanceSelect) enhanceSelect(cmSelEl);
-      credTypeChange();
-      credCmChange();
-      if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
-      var nameEl = document.getElementById('cred-f-name');
-      if (nameEl) nameEl.focus();
+        + '<div id="cred-test-result" style="display:none;font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:4px;"></div>';
+      var testBtn = '<button id="cred-test-btn" onclick="credTest()" class="btn-outline" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test credentials</button>';
+      openModal({
+        id: 'cred-edit-overlay',
+        size: 'md',
+        title: c ? 'Edit credential' : 'New credential',
+        subtitle: 'Stored encrypted in the Guardian Credential Vault and used by Connection Managers at scan time.',
+        bodyHtml: body,
+        footerLeftHtml: testBtn,
+        confirmDirty: true,
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+          { label: c ? 'Save changes' : 'Save credential', kind: 'primary', onClick: function(){ credSave(); } }
+        ],
+        afterMount: function() {
+          var typeSel = document.getElementById('cred-f-type');
+          if (typeSel && window.enhanceSelect) enhanceSelect(typeSel);
+          var cmSelEl = document.getElementById('cred-f-cm');
+          if (cmSelEl && window.enhanceSelect) enhanceSelect(cmSelEl);
+          credTypeChange();
+          credCmChange();
+          if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+          var nameEl = document.getElementById('cred-f-name');
+          if (nameEl) nameEl.focus();
+        }
+      });
     }
     function credTypeChange() {
       var t = _credTypeDef((document.getElementById('cred-f-type') || {}).value);
@@ -9196,8 +9291,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (document.getElementById('cred-f-cm')) credCmChange();
     }
     function credCloseEditor() {
-      var ov = document.getElementById('cred-edit-overlay');
-      if (ov) ov.remove();
+      closeModal('cred-edit-overlay');
     }
     // A credential can only be tested against a node registered to a CONNECTED Connection Manager in its group.
     function _credCmGroup(cmId) { return CM_GROUPS.filter(function(g){ return g.id === cmId; })[0]; }
@@ -9361,11 +9455,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var c = _credById(id);
       if (!c) return;
       var nodes = _credUsageNodes(c);
-      var old = document.getElementById('cred-usage-overlay');
-      if (old) old.remove();
-      var ov = document.createElement('div');
-      ov.id = 'cred-usage-overlay';
-      ov.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);padding:20px;';
       var body = nodes.length
         ? '<div style="max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;">'
           + nodes.map(function(n, idx) {
@@ -9376,51 +9465,44 @@ body.dark .theme-toggle .icon-moon { display: none; }
             }).join('')
           + '</div>'
         : '<div style="padding:22px;text-align:center;color:var(--text-muted);font-size:12.5px;border:1px dashed var(--border);border-radius:8px;">Not used by any node yet. Safe to delete.</div>';
-      ov.innerHTML = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.3);max-width:440px;width:100%;max-height:90vh;overflow-y:auto;padding:22px 24px;">'
-        + '<div style="font-size:15px;font-weight:600;color:var(--text-default);margin-bottom:3px;">Usage — ' + c.name + '</div>'
-        + '<div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">' + (nodes.length ? nodes.length + ' node' + (nodes.length !== 1 ? 's' : '') + ' authenticate with this credential at scan time.' : 'This credential is not assigned to any node.') + '</div>'
-        + body
-        + '<div style="display:flex;justify-content:flex-end;margin-top:18px;"><button onclick="document.getElementById(\'cred-usage-overlay\').remove()" style="padding:7px 16px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Close</button></div>'
-        + '</div>';
-      ov.addEventListener('click', function(e){ if (e.target === ov) ov.remove(); });
-      document.body.appendChild(ov);
-      if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+      openModal({
+        id: 'cred-usage-overlay',
+        size: 'sm',
+        title: 'Usage — ' + c.name,
+        subtitle: nodes.length ? nodes.length + ' node' + (nodes.length !== 1 ? 's' : '') + ' authenticate with this credential at scan time.' : 'This credential is not assigned to any node.',
+        bodyHtml: body,
+        buttons: [ { label: 'Close', kind: 'secondary', onClick: function(e, close){ close(); } } ]
+      });
     }
     function credDelete(id) {
       var c = _credById(id);
       if (!c) return;
       var nodes = _credUsageNodes(c);
-      var old = document.getElementById('cred-del-overlay');
-      if (old) old.remove();
-      var ov = document.createElement('div');
-      ov.id = 'cred-del-overlay';
-      ov.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);padding:20px;';
       var impact = nodes.length
-        ? '<div style="display:flex;align-items:flex-start;gap:9px;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.28);border-radius:8px;padding:11px 13px;margin-bottom:14px;">'
+        ? '<div style="display:flex;align-items:flex-start;gap:9px;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.28);border-radius:8px;padding:11px 13px;">'
           + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.1" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
           + '<div style="font-size:12px;color:var(--text-default);line-height:1.5;"><b>' + nodes.length + ' node' + (nodes.length !== 1 ? 's' : '') + ' rely on this credential.</b> Their next scheduled scans will fail authentication until you assign a replacement.'
           + '<div style="margin-top:7px;color:var(--text-sec);font-size:11px;">' + nodes.slice(0, 6).join(', ') + (nodes.length > 6 ? ' +' + (nodes.length - 6) + ' more' : '') + '</div></div></div>'
-        : '<div style="display:flex;align-items:flex-start;gap:9px;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:8px;padding:11px 13px;margin-bottom:14px;">'
+        : '<div style="display:flex;align-items:flex-start;gap:9px;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:8px;padding:11px 13px;">'
           + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.1" style="flex-shrink:0;margin-top:1px;"><polyline points="20 6 9 17 4 12"></polyline></svg>'
           + '<div style="font-size:12px;color:#065f46;line-height:1.5;">Not assigned to any node — safe to delete with no impact on scans.</div></div>';
-      ov.innerHTML = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.3);max-width:440px;width:100%;padding:22px 24px;">'
-        + '<div style="font-size:15px;font-weight:600;color:var(--text-default);margin-bottom:4px;">Delete “' + c.name + '”?</div>'
-        + '<div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.5;">This permanently removes the credential from the Guardian Credential Vault. This cannot be undone.</div>'
-        + impact
-        + '<div style="display:flex;justify-content:flex-end;gap:8px;">'
-        + '<button onclick="document.getElementById(\'cred-del-overlay\').remove()" style="padding:7px 16px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Cancel</button>'
-        + '<button onclick="credConfirmDelete(\'' + id + '\')" style="padding:7px 16px;font-size:12px;border:none;border-radius:6px;background:#dc2626;color:#fff;cursor:pointer;font-weight:600;">Delete credential</button>'
-        + '</div></div>';
-      ov.addEventListener('click', function(e){ if (e.target === ov) ov.remove(); });
-      document.body.appendChild(ov);
-      if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+      openModal({
+        id: 'cred-del-overlay',
+        size: 'sm',
+        title: 'Delete “' + c.name + '”?',
+        subtitle: 'This permanently removes the credential from the Guardian Credential Vault. This cannot be undone.',
+        bodyHtml: impact,
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+          { label: 'Delete credential', kind: 'destructive', onClick: function(){ credConfirmDelete(id); } }
+        ]
+      });
     }
     function credConfirmDelete(id) {
       var c = _credById(id);
       var idx = CREDENTIALS.map(function(x){ return x.id; }).indexOf(id);
       if (idx !== -1) CREDENTIALS.splice(idx, 1);
-      var ov = document.getElementById('cred-del-overlay');
-      if (ov) ov.remove();
+      closeModal('cred-del-overlay');
       scToast('Credential ' + (c ? '“' + c.name + '” ' : '') + 'deleted');
       renderCredentials();
     }
@@ -9760,12 +9842,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }).join('');
     }
 
-    function _cmWarningHTML(cm, action) {
+    function _cmWarnBody(cm, action) {
       var isRemove = action === 'remove';
-      var title = isRemove ? 'Remove CM Group' : 'Disable CM Group';
-      var desc = isRemove
-        ? 'This will permanently remove <b>' + cm.name + '</b> and unassign all its nodes.'
-        : 'Disabling <b>' + cm.name + '</b> will pause all scanning for its assigned nodes.';
       var nodeCount = _cmgTotalNodes(cm);
       var otherCMs = CM_GROUPS.filter(function(g){ return g.id !== cm.id && g.state === 'active'; });
       var hasAlt = otherCMs.length > 0;
@@ -9782,7 +9860,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }
       if (isRemove && nodeCount > 0 && hasAlt) {
         // Reassign picker — choose where the nodes go before removal
-        warn += '<div style="margin-bottom:12px;">'
+        warn += '<div style="margin-bottom:4px;">'
           + '<label for="cm-reassign-target" style="display:block;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Reassign ' + nodeCount + ' node' + (nodeCount !== 1 ? 's' : '') + ' to</label>'
           + '<select id="cm-reassign-target" class="form-input dk-form" style="appearance:auto;-webkit-appearance:auto;cursor:pointer;font-size:12px;padding:8px 10px;">'
           + otherCMs.map(function(c){ return '<option value="' + c.id + '">' + c.name + ' · ' + c.location + '</option>'; }).join('')
@@ -9791,55 +9869,53 @@ body.dark .theme-toggle .icon-moon { display: none; }
           + '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5;">Nodes move to the selected group and keep scanning. Choose "Leave unassigned" to remove coverage.</div>'
           + '</div>';
       } else if (hasAlt) {
-        warn += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">'
+        warn += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">'
           + 'Alternative CMs available: '
           + '<span style="color:var(--text-default);">' + altNames + '</span>'
           + (otherCMs.length > 3 ? ' + ' + (otherCMs.length - 3) + ' more' : '')
           + '</div>';
       } else if (nodeCount > 0) {
-        warn += '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.25);border-radius:8px;margin-bottom:12px;">'
+        warn += '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.25);border-radius:8px;margin-bottom:4px;">'
           + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
           + '<div style="font-size:12px;color:var(--text-default);line-height:1.5;">'
           + 'No other CM Groups available — these nodes will have <b>no scan coverage</b>.'
           + '</div></div>';
       }
-      var btnColor = isRemove ? '#FB3C44' : '#F59E0B';
-      var btnLabel = isRemove ? 'Remove' : 'Disable';
-      return '<div style="padding:24px 24px 0;"><div style="font-size:15px;font-weight:600;color:var(--text-default);margin-bottom:4px;">' + title + '</div>'
-        + '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px;line-height:1.5;">' + desc + '</div>'
-        + warn
-        + '<div style="display:flex;justify-content:flex-end;gap:8px;padding:16px 0;border-top:1px solid var(--border);">'
-        + '<button onclick="closeCMWarn()" style="padding:7px 16px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Cancel</button>'
-        + '<button onclick="cmExec' + (isRemove ? 'Remove' : 'Disable') + '(\'' + cm.id + '\')" style="padding:7px 16px;font-size:12px;border:none;border-radius:6px;background:' + btnColor + ';color:#fff;cursor:pointer;font-weight:500;">' + btnLabel + '</button>'
-        + '</div></div>';
+      return warn;
     }
 
-    function _showCMWarn(html) {
-      var old = document.getElementById('cm-warn-overlay');
-      if (old) old.remove();
-      var ov = document.createElement('div');
-      ov.id = 'cm-warn-overlay';
-      ov.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);';
-      ov.innerHTML = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.3);max-width:420px;width:90%;">' + html + '</div>';
-      ov.addEventListener('click', function(e){ if (e.target === ov) closeCMWarn(); });
-      document.body.appendChild(ov);
-    }
-
-    function closeCMWarn() {
-      var ov = document.getElementById('cm-warn-overlay');
-      if (ov) ov.remove();
-    }
+    function closeCMWarn() { closeModal('cm-warn-overlay'); }
 
     function cmConfirmRemove(cmId) {
       var cm = cmId ? CM_GROUPS.filter(function(g){ return g.id === cmId; })[0] : _currentCM;
       if (!cm) return;
-      _showCMWarn(_cmWarningHTML(cm, 'remove'));
+      openModal({
+        id: 'cm-warn-overlay',
+        size: 'sm',
+        title: 'Remove CM Group',
+        subtitle: 'This will permanently remove <b>' + cm.name + '</b> and unassign all its nodes.',
+        bodyHtml: _cmWarnBody(cm, 'remove'),
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+          { label: 'Remove', kind: 'destructive', onClick: function(){ cmExecRemove(cm.id); } }
+        ]
+      });
     }
 
     function cmConfirmDisable(cmId) {
       var cm = cmId ? CM_GROUPS.filter(function(g){ return g.id === cmId; })[0] : _currentCM;
       if (!cm) return;
-      _showCMWarn(_cmWarningHTML(cm, 'disable'));
+      openModal({
+        id: 'cm-warn-overlay',
+        size: 'sm',
+        title: 'Disable CM Group',
+        subtitle: 'Disabling <b>' + cm.name + '</b> will pause all scanning for its assigned nodes.',
+        bodyHtml: _cmWarnBody(cm, 'disable'),
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+          { label: 'Disable', kind: 'warning', onClick: function(){ cmExecDisable(cm.id); } }
+        ]
+      });
     }
 
     function cmExecRemove(cmId) {
@@ -9879,33 +9955,28 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var cm = CM_GROUPS.filter(function(g){ return g.id === cmId; })[0];
       if (!cm) return;
       _cmEditId = cmId;
-      var old = document.getElementById('cm-edit-overlay');
-      if (old) old.remove();
-      var ov = document.createElement('div');
-      ov.id = 'cm-edit-overlay';
-      ov.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);';
-      var html = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.3);max-width:440px;width:90%;">'
-        + '<div style="padding:24px 24px 0;">'
-        + '<div style="font-size:15px;font-weight:600;color:var(--text-default);margin-bottom:4px;">Edit CM Group</div>'
-        + '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px;line-height:1.5;">Update the group name and location. CM instances and assigned nodes are unaffected.</div>'
-        + '<div class="form-group"><label class="form-label" for="cm-edit-name">Group name</label>'
+      var body = '<div class="form-group"><label class="form-label" for="cm-edit-name">Group name</label>'
         + '<input id="cm-edit-name" type="text" class="form-input" value="' + (cm.name || '').replace(/"/g,'&quot;') + '"></div>'
         + '<div class="form-group"><label class="form-label" for="cm-edit-loc">Location</label>'
-        + '<input id="cm-edit-loc" type="text" class="form-input" value="' + (cm.location || '').replace(/"/g,'&quot;') + '" placeholder="e.g. On-prem · London DC"></div>'
-        + '<div style="display:flex;justify-content:flex-end;gap:8px;padding:6px 0 16px;border-top:1px solid var(--border);margin-top:8px;">'
-        + '<button onclick="cmCloseEdit()" style="padding:7px 16px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Cancel</button>'
-        + '<button onclick="cmSaveEdit()" style="padding:7px 16px;font-size:12px;border:none;border-radius:6px;background:var(--green1);color:#fff;cursor:pointer;font-weight:600;">Save changes</button>'
-        + '</div></div></div>';
-      ov.innerHTML = html;
-      ov.addEventListener('click', function(e){ if (e.target === ov) cmCloseEdit(); });
-      document.body.appendChild(ov);
-      var nameEl = document.getElementById('cm-edit-name');
-      if (nameEl) { nameEl.focus(); nameEl.select(); }
+        + '<input id="cm-edit-loc" type="text" class="form-input" value="' + (cm.location || '').replace(/"/g,'&quot;') + '" placeholder="e.g. On-prem · London DC"></div>';
+      openModal({
+        id: 'cm-edit-overlay',
+        size: 'sm',
+        title: 'Edit CM Group',
+        subtitle: 'Update the group name and location. CM instances and assigned nodes are unaffected.',
+        bodyHtml: body,
+        confirmDirty: true,
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+          { label: 'Save changes', kind: 'primary', onClick: function(){ cmSaveEdit(); } }
+        ],
+        afterMount: function() {
+          var nameEl = document.getElementById('cm-edit-name');
+          if (nameEl) { nameEl.focus(); nameEl.select(); }
+        }
+      });
     }
-    function cmCloseEdit() {
-      var ov = document.getElementById('cm-edit-overlay');
-      if (ov) ov.remove();
-    }
+    function cmCloseEdit() { closeModal('cm-edit-overlay'); }
     function cmSaveEdit() {
       var cm = CM_GROUPS.filter(function(g){ return g.id === _cmEditId; })[0];
       if (!cm) { cmCloseEdit(); return; }
