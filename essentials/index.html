@@ -2728,6 +2728,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <div class="step-item" id="j4-si3" onclick="go(&#39;j4-active&#39;)" style="cursor:pointer;"><div class="step-dot">3</div>&nbsp;Recon Active</div>
     <button onclick="showView(&#39;settings-integrations&#39;)" style="margin-left:18px;background:none;border:none;font-size:11px;color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.color=&#39;#1a2a3a&#39;;this.style.background=&#39;rgba(0,0,0,0.05)&#39;" onmouseout="this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;none&#39;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Exit</button>
   </div>
+  <div class="nav-steps" id="cm-step-nav" style="display:none;">
+    <div class="step-item" id="cm-si0"><div class="step-dot">1</div>&nbsp;Create group</div>
+    <div class="step-line"></div>
+    <div class="step-item" id="cm-si1"><div class="step-dot">2</div>&nbsp;Install</div>
+    <div class="step-line"></div>
+    <div class="step-item" id="cm-si2"><div class="step-dot">3</div>&nbsp;Connected</div>
+    <button onclick="cmSetupExit()" style="margin-left:18px;background:none;border:none;font-size:11px;color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.color=&#39;#1a2a3a&#39;;this.style.background=&#39;rgba(0,0,0,0.05)&#39;" onmouseout="this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;none&#39;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Exit</button>
+  </div>
   <div id="nav-breadcrumb" style="display:none;flex:1;padding:0 20px;align-items:center;gap:5px;font-size:12px;"></div>
   <div id="navUser" class="nav-user" style="display: flex;">
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
@@ -3004,7 +3012,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div id="cm-rec-hint" style="font-size:11px;color:var(--text-sec);margin-bottom:12px;line-height:1.5;"></div>
           <div id="cm-list"></div>
 
-          <button onclick="go('s-cm-setup')" style="background:none;border:none;color:var(--green1);font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;font-family:inherit;">Don't see a suitable one? Create a new group →</button>
+          <button onclick="openCmSetup('agentless')" style="background:none;border:none;color:var(--green1);font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;font-family:inherit;">Don't see a suitable one? Create a new group →</button>
 
           <!-- Credentials -->
           <div style="border-top:1px solid var(--border);padding-top:20px;margin:20px 0 4px;font-size:13px;font-weight:700;color:var(--text-default);">Credentials</div>
@@ -3236,7 +3244,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
 
             <div style="display:flex;gap:10px;margin-top:20px;align-items:center;justify-content:space-between;">
-              <button class="btn-outline" onclick="go('s-agentless')" style="width:auto;padding:11px 18px;">← Back</button>
+              <button class="btn-outline" onclick="cmSetupBack()" style="width:auto;padding:11px 18px;">← Back</button>
               <button class="btn-primary" onclick="cmCreateGroup()" style="width:auto;padding:11px 28px;">Create group →</button>
             </div>
           </div>
@@ -8849,6 +8857,24 @@ body.dark .theme-toggle .icon-moon { display: none; }
     //  CM SETUP WIZARD — single flow: create group → install & wait (same screen)
     // ══════════════════════════════════════════════════════════════
     var cmSetup = { result: null, installerOS: 'windows' };
+    // Where the CM-setup wizard was opened from — drives Back and the completion CTAs.
+    var _cmSetupOrigin = 'agentless'; // 'agentless' | 'cm-list' | 'cm-detail'
+    function openCmSetup(origin) { _cmSetupOrigin = origin || 'agentless'; go('s-cm-setup'); }
+    function cmSetupBack() {
+      if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') showView('cm-list');
+      else go('s-agentless');
+    }
+    function cmSetupExit() { cmSetupBack(); }
+    // Local 3-step progress: 0 Create group · 1 Install · 2 Connected.
+    function cmSetStep(n) {
+      for (var i = 0; i < 3; i++) {
+        var el = document.getElementById('cm-si' + i);
+        if (!el) continue;
+        el.classList.remove('active', 'done');
+        if (i < n) el.classList.add('done');
+        else if (i === n) el.classList.add('active');
+      }
+    }
     function cmSetupInit() {
       cmSetup = { result: null, installerOS: 'windows' };
       var createBlk = document.getElementById('cmw-create-block');
@@ -8859,6 +8885,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (installBlk) installBlk.style.display = 'none';
       var nameEl = document.getElementById('cmw-name');
       if (nameEl) nameEl.value = '';
+      cmSetStep(0);
     }
     function cmCreateGroup() {
       var nameEl = document.getElementById('cmw-name');
@@ -8883,6 +8910,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (installBlk) installBlk.style.display = '';
       cmwPickOS(cmSetup.installerOS);
       cmConnResult('checking');
+      cmSetStep(1);
     }
     function cmwPickOS(os) {
       cmSetup.installerOS = os;
@@ -8935,7 +8963,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       CM_GROUPS.push({ id: newId, name: name, state: 'active', apiKey: apiKey, location: 'On-prem',
         instances: [{ id:'cm-auto-'+Date.now(), reportedName: reportedName, status:'connected', lastContact:'Just now', host:'10.0.9.20', protocols: protos }],
         assignedNodes: [], nodeCount: 0 });
-      CONNECTION_MANAGERS.push({ id: newId, name: name, host: '10.0.9.20', os: [os], nodes: 0, status: 'connected' });
+      CONNECTION_MANAGERS.push({ id: newId, name: name, host: '10.0.9.20', os: [os], connProtos: protos, hasConnected: true, disabled: false, nodes: 0, status: 'connected' });
       cmSetup.newId = newId;
       // Render success
       var body = document.getElementById('cmw-conn-body');
@@ -8947,8 +8975,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
         + '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + accent + '" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
         + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">Connection Manager connected successfully</div>'
         + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;"><strong style="color:var(--text-default);">' + reportedName + '</strong> has been added to <strong style="color:var(--text-default);">' + name + '</strong>.</div>';
-      actions.innerHTML = '<button class="btn-outline" onclick="showCMDetail(\'' + newId + '\')" style="width:auto;padding:11px 18px;">View group</button>'
-        + '<button class="btn-primary" onclick="cmReturnToAddNode()" style="width:auto;padding:11px 28px;">Continue to Add Node →</button>';
+      if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
+        actions.innerHTML = '<button class="btn-outline" onclick="showView(\'cm-list\')" style="width:auto;padding:11px 18px;">Back to groups</button>'
+          + '<button class="btn-primary" onclick="showCMDetail(\'' + newId + '\')" style="width:auto;padding:11px 28px;">View group →</button>';
+      } else {
+        actions.innerHTML = '<button class="btn-outline" onclick="showCMDetail(\'' + newId + '\')" style="width:auto;padding:11px 18px;">View group</button>'
+          + '<button class="btn-primary" onclick="cmReturnToAddNode()" style="width:auto;padding:11px 28px;">Continue to Add Node →</button>';
+      }
+      cmSetStep(2);
     }
     function cmReturnToAddNode() {
       selectedCM = cmSetup.newId || selectedCM;
@@ -9518,7 +9552,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
       // Action buttons
       var acts = '<button id="cmd-test-btn" class="btn-outline" onclick="cmTestConnection()" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test connection</button>';
       acts += '<button class="btn-outline" onclick="cmAction(\'edit\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Edit group</button>';
-      acts += '<button class="btn-outline" onclick="go(\'s-cm-setup\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Add CM to this group</button>';
+      acts += '<button class="btn-outline" onclick="openCmSetup(\'cm-detail\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Add CM to this group</button>';
       acts += '<button class="cm-actions-btn" onclick="cmDetailMenu(this)" style="margin-left:4px;">⋯</button>';
       document.getElementById('cmd-actions').innerHTML = acts;
 
@@ -13814,7 +13848,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="page-title">Connection Manager Groups</div>
           <div class="page-sub">Organise lightweight relays that reach your nodes over WinRM / SSH</div>
         </div>
-        <button class="btn-primary" onclick="go('s-cm-setup')" style="width:auto;padding:10px 20px;">+ Create Group</button>
+        <button class="btn-primary" onclick="openCmSetup('cm-list')" style="width:auto;padding:10px 20px;">+ Create Group</button>
       </div>
 
       <!-- Summary cards -->
@@ -14976,7 +15010,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
           <div style="font-size:11px;color:var(--text-sec);margin-bottom:12px;line-height:1.5;">The relay that reaches these nodes on your network.</div>
           <div id="cmdb-cm-list"></div>
-          <button onclick="go(&#39;s-cm-setup&#39;)" style="background:none;border:none;color:var(--green1);font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;font-family:inherit;">Don't see a suitable one? Set up a new Connection Manager →</button>
+          <button onclick="openCmSetup(&#39;agentless&#39;)" style="background:none;border:none;color:var(--green1);font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;font-family:inherit;">Don't see a suitable one? Set up a new Connection Manager →</button>
 
           <!-- Bulk credentials -->
           <div style="font-size:13px;font-weight:700;color:var(--text-default);margin:20px 0 4px;">Default credentials</div>
@@ -15965,8 +15999,9 @@ function go(key) {
   const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key)
     && !(key === 'j3-results' && _awsDetailMode);
   const isJ4Onboarding = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(key);
-  const isJ1Onboarding = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup'].includes(key);
-  const isOnboarding = isJ1Onboarding || isJ3Onboarding || isJ4Onboarding;
+  const isJ1Onboarding = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added'].includes(key);
+  const isCmSetup = key === 's-cm-setup';
+  const isOnboarding = isJ1Onboarding || isJ3Onboarding || isJ4Onboarding || isCmSetup;
 
   const nav = document.querySelector('.top-nav');
   if (nav) nav.style.background = isOnboarding ? '#062A2E' : 'linear-gradient(to right, #062A2E 220px, transparent 220px)';
@@ -15975,6 +16010,7 @@ function go(key) {
   document.getElementById('navSteps').style.display    = isJ1Onboarding ? 'flex' : 'none';
   document.getElementById('j3-step-nav').style.display = isJ3Onboarding ? 'flex' : 'none';
   document.getElementById('j4-step-nav').style.display = isJ4Onboarding ? 'flex' : 'none';
+  document.getElementById('cm-step-nav').style.display = isCmSetup ? 'flex' : 'none';
   document.getElementById('navUser').style.display     = isOnboarding ? 'none' : 'flex';
   var _goBc = document.getElementById('nav-breadcrumb');
   if (_goBc) _goBc.style.display = 'none';
@@ -15983,13 +16019,13 @@ function go(key) {
   if (isJ1Onboarding) {
     setSteps(key);
     var si1 = document.getElementById('si1');
-    if (si1) si1.innerHTML = '<div class="step-dot">2</div>&nbsp;' + ((key === 's-agentless' || key === 's-cm-setup' || key === 's-connect-test' || key === 's-node-added' || key === 's-scan-complete') ? 'Connect' : 'Install');
+    if (si1) si1.innerHTML = '<div class="step-dot">2</div>&nbsp;' + ((key === 's-agentless' || key === 's-connect-test' || key === 's-node-added' || key === 's-scan-complete') ? 'Connect' : 'Install');
     if (key === 's-agentless') { renderCMPicker(); renderAgentlessForm(); }
     if (key === 's-connect-test') { startConnectTest(); }
     if (key === 's-node-added') { renderNodeAdded(); }
     if (key === 's-scan-complete') { renderScanComplete(); }
-    if (key === 's-cm-setup') { cmSetupInit(); }
   }
+  if (isCmSetup) { cmSetupInit(); }
   if (isJ3Onboarding) updateJ3Nav(key);
   if (isJ4Onboarding) updateJ4Nav(key);
   if (key === 'cmdb-credentials') renderCmdbCM();
@@ -16049,6 +16085,7 @@ function showView(name) {
   const isJ4 = isJ4Nav;
   document.getElementById('sidebar').classList.toggle('visible', !isJ3Nav && !isJ4Nav);
   document.getElementById('navSteps').style.display = 'none';
+  document.getElementById('cm-step-nav').style.display = 'none';
   document.getElementById('j3-step-nav').style.display = isJ3Nav ? 'flex' : 'none';
   document.getElementById('j4-step-nav').style.display = isJ4Nav ? 'flex' : 'none';
   document.getElementById('navUser').style.display = (isJ3 || isJ4) ? 'none' : 'flex';
