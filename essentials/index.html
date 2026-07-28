@@ -7265,7 +7265,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <button onclick="showView(&#39;policies&#39;)" style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-size:12px;color:#FB3C44;padding:6px 8px;border-radius:6px;white-space:nowrap;" onmouseover="this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.background=&#39;none&#39;">
+          <button onclick="policyEditDelete()" style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-size:12px;color:#FB3C44;padding:6px 8px;border-radius:6px;white-space:nowrap;" onmouseover="this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.background=&#39;none&#39;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
             Delete policy
           </button>
@@ -10414,6 +10414,21 @@ body.dark .theme-toggle .icon-moon { display: none; }
         buttons: [
           { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
           { label: 'Delete policy', kind: 'destructive', onClick: function(){ closeModal('policy-del-overlay'); if (card) card.remove(); showToast('Policy deleted · ' + name); } }
+        ]
+      });
+    }
+
+    function policyEditDelete() {
+      var nameEl = document.getElementById('pe-name');
+      var name = nameEl ? nameEl.value.trim() : 'this policy';
+      openModal({
+        id: 'policy-del-overlay',
+        size: 'sm',
+        title: 'Delete “' + name + '”?',
+        subtitle: 'This action cannot be undone. The policy will be removed and un-applied from every node it is currently assigned to.',
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+          { label: 'Delete policy', kind: 'destructive', onClick: function(){ closeModal('policy-del-overlay'); showView('policies'); showToast('Policy deleted · ' + name); } }
         ]
       });
     }
