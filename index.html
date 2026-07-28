@@ -7950,7 +7950,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                 <div style="font-size:13px;font-weight:600;color:var(--text-default);">Delete this check</div>
                 <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">This action cannot be undone. The check will be permanently removed from this policy.</div>
               </div>
-              <button onclick="if(confirm(&#39;Delete this check?&#39;)){showView(&#39;policy-edit&#39;)}" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-md);border:1.5px solid #FB3C44;background:var(--bg-surface);color:#FB3C44;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
+              <button onclick="checkDelete()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-md);border:1.5px solid #FB3C44;background:var(--bg-surface);color:#FB3C44;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
                 Delete check
               </button>
@@ -10386,6 +10386,18 @@ body.dark .theme-toggle .icon-moon { display: none; }
     function checkDone() {
       if (_checkReturn === 'policy-create') { _pcResumeStep = 2; showView('policy-create'); }
       else { showView('policy-edit'); }
+    }
+    function checkDelete() {
+      openModal({
+        id: 'check-del-overlay',
+        size: 'sm',
+        title: 'Delete this check?',
+        subtitle: 'This action cannot be undone. The check will be permanently removed from this policy.',
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+          { label: 'Delete check', kind: 'destructive', onClick: function(){ closeModal('check-del-overlay'); checkDone(); } }
+        ]
+      });
     }
 
     // Create Policy helpers
@@ -13858,42 +13870,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     </div>
 
     <!-- Edit-schedule modal -->
-    <div id="schedule-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeScheduleModal()">
-      <div style="background:var(--bg-surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:440px;max-width:calc(100vw - 40px);padding:28px;animation:fadeUp 0.2s ease;">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
-          <div id="sched-modal-title" style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Edit scan schedule</div>
-          <button onclick="closeScheduleModal()" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text-sec);">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
-        </div>
-        <div id="sched-modal-group" style="font-size:12px;color:var(--text-sec);margin-bottom:20px;">Node group</div>
-
-        <div style="margin-bottom:14px;">
-          <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Frequency</div>
-          <select id="sched-freq" class="form-input" onchange="onScheduleFreqChange()" style="cursor:pointer;">
-            <option>Daily</option>
-            <option>Weekly</option>
-            <option>Monthly</option>
-          </select>
-        </div>
-        <div id="sched-day-row" style="margin-bottom:14px;display:none;">
-          <div id="sched-day-label" style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Day of week</div>
-          <select id="sched-day" class="form-input" style="cursor:pointer;"></select>
-        </div>
-        <div style="margin-bottom:14px;">
-          <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Time (UTC)</div>
-          <input id="sched-time" type="time" class="form-input" value="02:00">
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:22px;">
-          <input id="sched-enabled" type="checkbox" style="accent-color:var(--green2);cursor:pointer;">
-          <label for="sched-enabled" style="font-size:12px;color:var(--text-default);cursor:pointer;">Schedule active</label>
-        </div>
-        <div style="display:flex;justify-content:flex-end;gap:8px;">
-          <button onclick="closeScheduleModal()" class="btn-outline" style="padding:8px 16px;font-size:12px;width:auto;">Cancel</button>
-          <button onclick="saveSchedule()" class="btn-primary" style="padding:8px 18px;font-size:12px;width:auto;">Save schedule</button>
-        </div>
-      </div>
-    </div>
+    <!-- schedule-modal migrated to unified openModal shell (see openScheduleModal) -->
 
     <!-- ── CONNECTION MANAGERS LIST ── -->
     <div class="view" id="v-cm-list" style="display: none;">
@@ -15805,49 +15782,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 </div>
 
 <!-- Create incident modal (#3 — drift detail) -->
-<div id="incident-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeIncidentModal()">
-  <div style="background:var(--bg-surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:480px;max-width:calc(100vw - 40px);padding:28px;animation:fadeUp 0.2s ease;">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
-      <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Create incident</div>
-      <button onclick="closeIncidentModal()" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text-sec);">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>
-    <div style="font-size:12px;color:var(--text-sec);margin-bottom:20px;">Create an incident for this unreconciled drift event.</div>
-
-    <div style="margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Title</div>
-      <input id="incident-title" class="form-input" type="text" value="Windows Defender real-time protection disabled on MACBOOK-TARAS">
-    </div>
-    <div style="margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Description</div>
-      <textarea id="incident-desc" class="form-input" rows="3" style="resize:vertical;">Real-time protection was disabled on MACBOOK-TARAS, breaking CIS control 8.1. Detected in the latest scan with no matching change request.</textarea>
-    </div>
-    <div style="margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Linked drift event</div>
-      <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">Windows Defender — Real-time protection · Control 8.1</div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;">
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Node</div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">MACBOOK-TARAS</div>
-      </div>
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Severity</div>
-        <select id="incident-severity" class="form-input" style="cursor:pointer;">
-          <option>Critical</option>
-          <option selected="">High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button onclick="closeIncidentModal()" style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:8px 16px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-sec);font-family:inherit;" onmouseover="this.style.background=&#39;var(--bg-subtle)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">Cancel</button>
-      <button onclick="createIncident()" class="btn-primary" style="padding:8px 18px;font-size:12px;width:auto;">Create incident</button>
-    </div>
-  </div>
-</div>
+<!-- incident-modal migrated to unified openModal shell (see openIncidentModal) -->
 
 <div class="screen-lbl" id="lbl">s11 · Dashboard</div>
 
@@ -17139,12 +17074,43 @@ function skipChange() {
 
 // Incident creation (#3) — manual incident from an unreconciled drift event (change-detail)
 function openIncidentModal() {
-  const m = document.getElementById('incident-modal');
-  if (m) m.style.display = 'flex';
+  const body = ''
+    + '<div style="margin-bottom:14px;">'
+    +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Title</div>'
+    +   '<input id="incident-title" class="form-input" type="text" value="Windows Defender real-time protection disabled on MACBOOK-TARAS">'
+    + '</div>'
+    + '<div style="margin-bottom:14px;">'
+    +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Description</div>'
+    +   '<textarea id="incident-desc" class="form-input" rows="3" style="resize:vertical;">Real-time protection was disabled on MACBOOK-TARAS, breaking CIS control 8.1. Detected in the latest scan with no matching change request.</textarea>'
+    + '</div>'
+    + '<div style="margin-bottom:14px;">'
+    +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Linked drift event</div>'
+    +   '<div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">Windows Defender — Real-time protection · Control 8.1</div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    +   '<div>'
+    +     '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Node</div>'
+    +     '<div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">MACBOOK-TARAS</div>'
+    +   '</div>'
+    +   '<div>'
+    +     '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Severity</div>'
+    +     '<select id="incident-severity" class="form-input" style="cursor:pointer;"><option>Critical</option><option selected="">High</option><option>Medium</option><option>Low</option></select>'
+    +   '</div>'
+    + '</div>';
+  openModal({
+    id: 'incident-modal',
+    size: 'md',
+    title: 'Create incident',
+    subtitle: 'Create an incident for this unreconciled drift event.',
+    bodyHtml: body,
+    buttons: [
+      { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+      { label: 'Create incident', kind: 'primary', onClick: function(){ createIncident(); } }
+    ]
+  });
 }
 function closeIncidentModal() {
-  const m = document.getElementById('incident-modal');
-  if (m) m.style.display = 'none';
+  closeModal('incident-modal');
 }
 function createIncident() {
   closeIncidentModal();
@@ -17243,17 +17209,46 @@ function openScheduleModal(g) {
   _schedEditGroup = g;
   const s = schedSet()[g] || {};
   const creating = !s.set;
-  document.getElementById('sched-modal-title').textContent = creating ? 'Set scan schedule' : 'Edit scan schedule';
-  document.getElementById('sched-modal-group').textContent = g + ' · ' + (schedCounts()[g] || 0) + ' nodes';
-  document.getElementById('sched-freq').value = creating ? 'Daily' : s.freq;
-  document.getElementById('sched-time').value = creating ? '02:00' : s.time;
-  document.getElementById('sched-enabled').checked = creating ? true : s.enabled;
-  onScheduleFreqChange();
-  if (!creating && s.freq !== 'Daily') document.getElementById('sched-day').value = s.day;
-  document.getElementById('schedule-modal').style.display = 'flex';
+  const body = ''
+    + '<div style="margin-bottom:14px;">'
+    +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Frequency</div>'
+    +   '<select id="sched-freq" class="form-input" onchange="onScheduleFreqChange()" style="cursor:pointer;">'
+    +     '<option>Daily</option><option>Weekly</option><option>Monthly</option>'
+    +   '</select>'
+    + '</div>'
+    + '<div id="sched-day-row" style="margin-bottom:14px;display:none;">'
+    +   '<div id="sched-day-label" style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Day of week</div>'
+    +   '<select id="sched-day" class="form-input" style="cursor:pointer;"></select>'
+    + '</div>'
+    + '<div style="margin-bottom:14px;">'
+    +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Time (UTC)</div>'
+    +   '<input id="sched-time" type="time" class="form-input" value="02:00">'
+    + '</div>'
+    + '<div style="display:flex;align-items:center;gap:8px;">'
+    +   '<input id="sched-enabled" type="checkbox" style="accent-color:var(--green2);cursor:pointer;">'
+    +   '<label for="sched-enabled" style="font-size:12px;color:var(--text-default);cursor:pointer;">Schedule active</label>'
+    + '</div>';
+  openModal({
+    id: 'schedule-modal',
+    size: 'sm',
+    title: creating ? 'Set scan schedule' : 'Edit scan schedule',
+    subtitle: g + ' · ' + (schedCounts()[g] || 0) + ' nodes',
+    bodyHtml: body,
+    buttons: [
+      { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+      { label: 'Save schedule', kind: 'primary', onClick: function(){ saveSchedule(); } }
+    ],
+    afterMount: function() {
+      document.getElementById('sched-freq').value = creating ? 'Daily' : s.freq;
+      document.getElementById('sched-time').value = creating ? '02:00' : s.time;
+      document.getElementById('sched-enabled').checked = creating ? true : s.enabled;
+      onScheduleFreqChange();
+      if (!creating && s.freq !== 'Daily') document.getElementById('sched-day').value = s.day;
+    }
+  });
 }
 function closeScheduleModal() {
-  document.getElementById('schedule-modal').style.display = 'none';
+  closeModal('schedule-modal');
 }
 function saveSchedule() {
   if (!_schedEditGroup) return;
