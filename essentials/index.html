@@ -13068,7 +13068,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <div class="view" id="v-j3-results" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" onclick="go(&#39;j3-scan-complete&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="btn-outline" onclick="j3ResultsBack()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
           <div>
             <div class="page-title">Compliance Policy Results — AWS</div>
             <div class="page-sub">12 nodes · Level 1 · Scanned just now</div>
@@ -14051,7 +14051,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   </div>
                 </div>
               </div>
-              <button class="btn-outline" style="font-size:11px;padding:6px 14px;flex-shrink:0;" onclick="go(&#39;j3-results&#39;)">View Details</button>
+              <button class="btn-outline" style="font-size:11px;padding:6px 14px;flex-shrink:0;" onclick="viewAwsDetails()">View Details</button>
             </div>
           </div>
 
@@ -15951,9 +15951,19 @@ function filterNodes() {
   empty.style.display = visible === 0 ? '' : 'none';
 }
 
+// AWS "View Details" (Integrations) reuses the j3-results view as a READ-ONLY
+// detail page — no wizard chrome, Back returns to Integrations (not the onboarding steps).
+var _awsDetailMode = false;
+function viewAwsDetails() { _awsDetailMode = true; go('j3-results'); }
+function j3ResultsBack() {
+  if (_awsDetailMode) { _awsDetailMode = false; showView('settings-integrations'); }
+  else { go('j3-scan-complete'); }
+}
 function go(key) {
   hideAuth();
-  const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key);
+  if (key !== 'j3-results') _awsDetailMode = false;
+  const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key)
+    && !(key === 'j3-results' && _awsDetailMode);
   const isJ4Onboarding = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(key);
   const isJ1Onboarding = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup'].includes(key);
   const isOnboarding = isJ1Onboarding || isJ3Onboarding || isJ4Onboarding;
@@ -15995,7 +16005,8 @@ function go(key) {
       'change-unapprove':'sb-changes','cr-audit':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
       'node-detail':'sb-all-devices','j3-connect-failed':'sb-all-devices','scan-failed':'sb-all-devices','reports':'sb-reports',
       'policies':'sb-policies','policy-create':'sb-policies','policy-detail':'sb-policies','policy-edit':'sb-policies',
-      'policy-assign':'sb-policies','add-check':'sb-policies','edit-check':'sb-policies' };
+      'policy-assign':'sb-policies','add-check':'sb-policies','edit-check':'sb-policies',
+      'j3-results':'sb-integrations' };
     const sb = document.getElementById(map[key]);
     if (sb) sb.classList.add('active');
   }
