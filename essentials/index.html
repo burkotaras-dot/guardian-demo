@@ -1201,7 +1201,7 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
   border-bottom:1px solid var(--border);
   flex-shrink:0;
 }
-.page-title { font-size:15px; font-weight:700; color:var(--text-default); letter-spacing:-0.3px; }
+.page-title { font-size:18px; font-weight:700; color:var(--text-default); letter-spacing:-0.4px; }
 .page-sub   { font-size:11px; color:var(--text-sec); margin-top:2px; }
 
 /* ── DASHBOARD ── */
@@ -5964,7 +5964,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:11px;background:var(--bg-success);border:1px solid var(--bg-success-border);color:#15803d;border-radius:4px;padding:2px 8px;font-weight:500;">10 min</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                   <span style="font-size:11px;background:var(--bg-warning);border:1px solid var(--bg-warning-border);color:#92400e;border-radius:4px;padding:2px 8px;font-weight:500;">30 min</span>
-                  <span style="font-size:10px;font-weight:700;color:#92400e;background:rgba(245,158,11,0.15);border-radius:4px;padding:2px 7px;margin-left:4px;">Minor</span>
+                  <span class="badge badge-medium" style="font-size:10px;padding:2px 7px;margin-left:4px;">Minor</span>
                 </div>
               </div>
               <div class="nd-tooltip" style="display:none;position:absolute;right:16px;top:-38px;background:#0F172A;color:white;font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:10;">Lock timeout: 10 min → 30 min<div style="position:absolute;bottom:-4px;right:14px;width:8px;height:8px;background:#0F172A;transform:rotate(45deg);"></div></div>
@@ -5984,7 +5984,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
                   <span style="font-size:11px;background:var(--bg-success);border:1px solid var(--bg-success-border);color:#15803d;border-radius:4px;padding:2px 8px;font-weight:500;">2 users</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                   <span style="font-size:11px;background:var(--bg-warning);border:1px solid var(--bg-warning-border);color:#92400e;border-radius:4px;padding:2px 8px;font-weight:500;">3 users</span>
-                  <span style="font-size:10px;font-weight:700;color:#92400e;background:rgba(245,158,11,0.15);border-radius:4px;padding:2px 7px;margin-left:4px;">Minor</span>
+                  <span class="badge badge-medium" style="font-size:10px;padding:2px 7px;margin-left:4px;">Minor</span>
                 </div>
               </div>
               <div class="nd-tooltip" style="display:none;position:absolute;right:16px;top:-38px;background:#0F172A;color:white;font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:10;">New admin added: user_temp<div style="position:absolute;bottom:-4px;right:14px;width:8px;height:8px;background:#0F172A;transform:rotate(45deg);"></div></div>
@@ -7424,6 +7424,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
     <div class="view" id="v-policy-detail" style="display: none;">
 
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
+
+        <!-- Back to Policies -->
+        <div style="margin-bottom:12px;">
+          <button class="btn-outline" onclick="showView(&#39;policies&#39;)" style="width:auto;padding:7px 14px;font-size:12px;">← Back to Policies</button>
+        </div>
 
         <!-- Header card -->
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:12px;">
@@ -12689,6 +12694,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="page-title">Approve Change</div>
           <div class="page-sub">Windows Defender — Real-time protection</div>
         </div>
+        <button class="btn-outline" onclick="showView(&#39;changes&#39;)">← Back</button>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;align-items:center;display:flex;flex-direction:column;">
         <div style="width:100%;max-width:560px;">
@@ -14297,8 +14303,14 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
           </div>
           <div style="width:1px;height:26px;background:var(--border);"></div>
-          <button id="rep-export-csv" class="btn-outline" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="openExport(&#39;csv&#39;)">↓ Download CSV</button>
-          <button id="rep-export-pdf" class="btn-outline" style="width:auto;padding:8px 16px;font-size:13px;white-space:nowrap;" onclick="openExport(&#39;pdf&#39;)">↓ Download PDF</button>
+          <div style="position:relative;">
+            <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('rep-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div id="rep-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
+              <button onclick="document.getElementById('rep-export-drop').style.display='none';openExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
+              <button onclick="document.getElementById('rep-export-drop').style.display='none';openExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+            </div>
+          </div>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
