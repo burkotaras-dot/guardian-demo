@@ -951,6 +951,10 @@ body.dark #v-s-agentless .btn-outline { background:transparent; }
 .score-num   { font-size:20px; font-weight:700; color:var(--text-default); line-height:1; }
 .score-label { font-size:8px; color:var(--text-sec); margin-top:1px; }
 
+.sev-num-critical { color:#FB3C44; }
+.sev-num-medium   { color:#D97706; }
+.sev-num-low      { color:#3B82F6; }
+.sev-num-pass     { color:#25A760; }
 .results-divider { width:1px; height:52px; background:var(--border); flex-shrink:0; }
 
 .severity-row {
@@ -1642,6 +1646,8 @@ body.dark .csel-btn,
 body.dark .ms-btn,
 body.dark .pe-sev-btn,
 body.dark select.form-input { background:var(--bg-subtle) !important; }
+.nd-scan-sel { background:var(--bg-surface); }
+body.dark .nd-scan-sel { background:var(--bg-subtle) !important; border-color:var(--border-default) !important; }
 body.dark .hh-toggle { background:rgba(255,255,255,0.07) !important; }
 /* Dropdowns INSIDE surface-bg frames need a lighter fill so they don't merge with the container.
    --bg-inset: #0A3035 (1 step above surface #062528). border stays #04363A. */
@@ -1950,6 +1956,11 @@ body.dark .badge-pass     { background:rgba(16,185,129,0.16); color:#10B981;    
 body.dark .node-row > div:nth-child(6) { color: var(--p-neutral-50) !important; }
 body.dark #nf-local, body.dark #nf-aws, body.dark #nf-all { color: var(--p-neutral-50) !important; }
 body.dark .score-svg circle:first-child { stroke: #335255; }
+body.dark .score-track { stroke: #335255 !important; }
+body.dark .sev-num-critical { color:#FF4646; }
+body.dark .sev-num-medium   { color:#F59E0B; }
+body.dark .sev-num-low      { color:#3B82F6; }
+body.dark .sev-num-pass     { color:#10B981; }
 body.dark .btn-primary, body.dark .btn-primary:hover { box-shadow: none; }
 body.dark .issue-row          { background: var(--issue-row-bg); border-color: transparent; border-left-color: var(--sev-critical); }
 body.dark .issue-row:hover    { background: var(--issue-row-bg-hover); }
@@ -3738,7 +3749,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="score-wrap">
             <svg class="score-svg" viewBox="0 0 120 120">
               <g transform="rotate(-90 60 60)">
-                <circle cx="60" cy="60" r="48" fill="none" stroke="#E2E6EA" stroke-width="8"></circle>
+                <circle class="score-track" cx="60" cy="60" r="48" fill="none" stroke="#E2E6EA" stroke-width="8"></circle>
                 <circle cx="60" cy="60" r="48" fill="none" stroke="#25A760" stroke-width="8" stroke-linecap="round" stroke-dasharray="235.24 301.59"></circle>
               </g>
             </svg>
@@ -3760,10 +3771,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
           <!-- Severity stats -->
           <div style="display:flex;gap:24px;flex:1;">
-            <div><div style="font-size:22px;font-weight:700;color:#E92D38;line-height:1;">9</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Critical</div></div>
-            <div><div style="font-size:22px;font-weight:700;color:#d97706;line-height:1;">12</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Medium</div></div>
-            <div><div style="font-size:22px;font-weight:700;color:#8ABFF8;line-height:1;">6</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Low</div></div>
-            <div><div style="font-size:22px;font-weight:700;color:#25A760;line-height:1;">78</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Passed</div></div>
+            <div><div class="sev-num sev-num-critical" style="font-size:22px;font-weight:700;line-height:1;">9</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Critical</div></div>
+            <div><div class="sev-num sev-num-medium" style="font-size:22px;font-weight:700;line-height:1;">12</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Medium</div></div>
+            <div><div class="sev-num sev-num-low" style="font-size:22px;font-weight:700;line-height:1;">6</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Low</div></div>
+            <div><div class="sev-num sev-num-pass" style="font-size:22px;font-weight:700;line-height:1;">78</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Passed</div></div>
           </div>
 
           <!-- CTA -->
@@ -5776,7 +5787,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div style="display:flex;align-items:center;gap:7px;">
             <span style="font-size:11px;font-weight:600;color:var(--text-sec);">Scan:</span>
             <div style="position:relative;">
-              <select id="nd-scan-select" class="csel" onchange="ndSelectScan(this.value);ndUpdateBaselineUI()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
+              <select id="nd-scan-select" class="csel nd-scan-sel" onchange="ndSelectScan(this.value);ndUpdateBaselineUI()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
                 <option value="now">Now · 2 min ago</option>
                 <option value="yest">Yesterday · 18:02</option>
                 <option value="3d">3 days ago · 09:14</option>
@@ -14460,7 +14471,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
 
         <!-- Schedule table -->
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-          <div style="display:grid;grid-template-columns:2fr 0.9fr 0.8fr 1.1fr 1.1fr 110px 84px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+          <div class="col-thead" style="display:grid;grid-template-columns:2fr 0.9fr 0.8fr 1.1fr 1.1fr 110px 84px;padding:10px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
             <div id="sched-col-scope">Node group</div>
             <div>Frequency</div>
             <div>Time</div>
@@ -14703,13 +14714,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
             <!-- Config details grid -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:16px;">
-              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:#fafafa;">Instance</div>
+              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:var(--bg-canvas);">Instance</div>
               <div style="padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-default);font-weight:600;">company.service-now.com</div>
-              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:#fafafa;">Auth</div>
+              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:var(--bg-canvas);">Auth</div>
               <div style="padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-default);font-weight:600;">OAuth 2.0 · guardian-accelerator-client</div>
-              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:#fafafa;">Permissions</div>
+              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:var(--bg-canvas);">Permissions</div>
               <div style="padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;color:#00AF73;font-weight:600;">change_request.read ✓ · sys_user.read ✓</div>
-              <div style="padding:9px 14px;border-right:1px solid var(--border);font-size:11px;color:var(--text-sec);background:#fafafa;">Table mapping</div>
+              <div style="padding:9px 14px;border-right:1px solid var(--border);font-size:11px;color:var(--text-sec);background:var(--bg-canvas);">Table mapping</div>
               <div style="padding:9px 14px;font-size:11px;color:var(--text-default);font-weight:600;">cmdb_ci_server → Guardian Nodes · sys_change_request → Change Requests</div>
             </div>
             <!-- Used by -->
@@ -14780,13 +14791,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
             <!-- Config details grid -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:16px;">
-              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:#fafafa;">Instance URL</div>
+              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:var(--bg-canvas);">Instance URL</div>
               <div id="settings-ss-url" style="padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-default);font-weight:600;">https://corp-vault.cloudhouse.com/secretserver</div>
-              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:#fafafa;">Service account</div>
+              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:var(--bg-canvas);">Service account</div>
               <div id="settings-ss-user" style="padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-default);font-weight:600;">svc-guardian</div>
-              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:#fafafa;">Auth</div>
+              <div style="padding:9px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);background:var(--bg-canvas);">Auth</div>
               <div style="padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-default);font-weight:600;">OAuth2 password grant</div>
-              <div style="padding:9px 14px;border-right:1px solid var(--border);font-size:11px;color:var(--text-sec);background:#fafafa;">Secret folders</div>
+              <div style="padding:9px 14px;border-right:1px solid var(--border);font-size:11px;color:var(--text-sec);background:var(--bg-canvas);">Secret folders</div>
               <div id="settings-ss-folders" style="padding:9px 14px;font-size:11px;color:var(--text-default);font-weight:600;">\Personal Folders\Guardian</div>
             </div>
             <!-- Used by -->
