@@ -2938,6 +2938,22 @@ body.dark .theme-toggle .icon-moon { display: none; }
 .gm-sm { max-width: 420px; }
 .gm-md { max-width: 480px; }
 .gm-lg { max-width: 600px; }
+.gm-xl { max-width: 960px; }
+.gm-stepper { display: flex; gap: 0; padding: 16px 24px 0; counter-reset: gm-step; }
+.gm-step { flex: 1; display: flex; align-items: center; gap: 8px; position: relative; padding-bottom: 14px; border-bottom: 2px solid var(--border); cursor: default; transition: border-color .15s; }
+.gm-step.is-done { border-color: var(--green1); cursor: pointer; }
+.gm-step.is-active { border-color: var(--green1); }
+.gm-step-num { width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1.5px solid var(--border); color: var(--text-muted); background: var(--bg-canvas); transition: all .15s; }
+.gm-step.is-active .gm-step-num { border-color: var(--green1); background: var(--green1); color: #fff; }
+.gm-step.is-done .gm-step-num { border-color: var(--green1); background: var(--green1); color: #fff; }
+.gm-step-label { font-size: 12px; font-weight: 500; color: var(--text-muted); transition: color .15s; white-space: nowrap; }
+.gm-step.is-active .gm-step-label { color: var(--text-default); font-weight: 600; }
+.gm-step.is-done .gm-step-label { color: var(--text-default); }
+.gm-step.is-done .gm-step-num::after { content: '\2713'; }
+.gm-step.is-done .gm-step-numval { display: none; }
+.gm-panel { display: none; }
+.gm-panel.is-visible { display: block; }
+.gm-overlay .pc-inline-nav { display: none !important; }
 .gm-head { display: flex; align-items: flex-start; gap: 12px; padding: 22px 24px 0; }
 .gm-titles { flex: 1; min-width: 0; }
 .gm-title { font-size: 15px; font-weight: 600; color: var(--text-default); line-height: 1.3; }
@@ -3593,7 +3609,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
               </div>
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:20px;align-items:center;justify-content:space-between;">
+            <div class="pc-inline-nav" style="display:flex;gap:10px;margin-top:20px;align-items:center;justify-content:space-between;">
               <button class="btn-outline" onclick="cmSetupBack()" style="width:auto;padding:11px 18px;">← Back</button>
               <button class="btn-primary" onclick="cmCreateGroup()" style="width:auto;padding:11px 28px;">Create group →</button>
             </div>
@@ -7008,7 +7024,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
           <div class="page-title">Policies</div>
           <div class="page-sub">Manage compliance policies across your infrastructure</div>
         </div>
-        <button class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;" onclick="showView(&#39;policy-create&#39;)">
+        <button class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;" onclick="openPolicyCreate()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Create Policy
         </button>
@@ -7350,8 +7366,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
             </div>
 
           </div>
-          <!-- Next button -->
-          <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+          <!-- Next button (hidden when inside modal wizard) -->
+          <div class="pc-inline-nav" style="display:flex;justify-content:flex-end;margin-top:16px;">
             <button class="btn-primary" style="width:auto;padding:10px 22px;font-size:13px;" onclick="pcGoStep(2)">
               Next: Add Checks
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -7416,8 +7432,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
           </div>
-          <!-- Navigation -->
-          <div style="display:flex;justify-content:space-between;margin-top:16px;">
+          <!-- Navigation (hidden when inside modal wizard) -->
+          <div class="pc-inline-nav" style="display:flex;justify-content:space-between;margin-top:16px;">
             <button class="btn-outline" onclick="pcGoStep(1)" style="display:flex;align-items:center;gap:6px;padding:10px 18px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
               Back
@@ -7466,8 +7482,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
               <span style="font-size:12px;color:var(--text-sec);">Or assign to specific nodes later from the Nodes view</span>
             </div>
           </div>
-          <!-- Navigation -->
-          <div style="display:flex;justify-content:space-between;margin-top:16px;">
+          <!-- Navigation (hidden when inside modal wizard) -->
+          <div class="pc-inline-nav" style="display:flex;justify-content:space-between;margin-top:16px;">
             <button class="btn-outline" onclick="pcGoStep(2)" style="display:flex;align-items:center;gap:6px;padding:10px 18px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
               Back
@@ -9402,21 +9418,93 @@ body.dark .theme-toggle .icon-moon { display: none; }
       }
     }
 
-    // ── Core setup wizard (icx) ──
+    // ── Core setup wizard (icx) — modal-based ──
     var ICX = { step:1, provider:null, auth:'oauth' };
+    var _ICX_MODAL = 'icx-wizard';
+
+    function _icxBodyHtml() {
+      return ''
+        /* Panel 1: choose provider */
+        + '<div class="gm-panel" data-icx="1">'
+        +   '<div class="icx-label" style="margin-bottom:12px;">Which provider do you want to connect?</div>'
+        +   '<div id="icx-providers" style="display:flex;flex-direction:column;gap:10px;"></div>'
+        + '</div>'
+        /* Panel 2: connection details */
+        + '<div class="gm-panel" data-icx="2">'
+        +   '<div class="icx-field"><label class="icx-label">Display name</label>'
+        +     '<input class="icx-input" id="icx-name" placeholder="e.g. Production ServiceNow">'
+        +     '<div class="icx-hint">How this connection appears across Guardian.</div></div>'
+        +   '<div class="icx-field"><label class="icx-label">Instance URL</label>'
+        +     '<input class="icx-input" id="icx-url" placeholder="company.service-now.com">'
+        +     '<div class="icx-hint">The base address of your provider instance.</div></div>'
+        + '</div>'
+        /* Panel 3: credentials */
+        + '<div class="gm-panel" data-icx="3">'
+        +   '<div class="icx-field"><label class="icx-label">Authentication</label>'
+        +     '<div style="display:flex;gap:8px;">'
+        +       '<button class="intg-cat active" id="icx-auth-oauth" onclick="icxSetAuth(\'oauth\')">OAuth 2.0</button>'
+        +       '<button class="intg-cat" id="icx-auth-basic" onclick="icxSetAuth(\'basic\')">Basic auth</button>'
+        +     '</div></div>'
+        +   '<div id="icx-auth-oauth-fields">'
+        +     '<div class="icx-field"><label class="icx-label">Client ID</label>'
+        +       '<input class="icx-input" id="icx-cid" placeholder="guardian-client"></div>'
+        +     '<div class="icx-field"><label class="icx-label">Client secret</label>'
+        +       '<input class="icx-input" id="icx-csecret" type="password" placeholder="••••••••••••"></div>'
+        +   '</div>'
+        +   '<div id="icx-auth-basic-fields" style="display:none;">'
+        +     '<div class="icx-field"><label class="icx-label">Username</label>'
+        +       '<input class="icx-input" id="icx-user" placeholder="svc-guardian"></div>'
+        +     '<div class="icx-field"><label class="icx-label">Password</label>'
+        +       '<input class="icx-input" id="icx-pass" type="password" placeholder="••••••••••••"></div>'
+        +   '</div>'
+        +   '<div class="icx-hint" style="margin-top:4px;">Credentials are stored in the Guardian Credential Vault and reused by any capability on this integration.</div>'
+        + '</div>'
+        /* Panel 4: test connection */
+        + '<div class="gm-panel" data-icx="4">'
+        +   '<div class="icx-label" style="margin-bottom:4px;">Test the core connection</div>'
+        +   '<div class="icx-hint" style="margin-bottom:16px;">Guardian verifies it can reach and authenticate with the provider before saving.</div>'
+        +   '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">'
+        +     '<div class="ct-step is-pending" id="icx-s-reach"><div class="ct-ico pending"></div><div class="ct-body"><div class="ct-label">Reachability</div><div class="ct-sub" id="icx-sub-reach">Resolve and reach the instance</div></div></div>'
+        +     '<div class="ct-step is-pending" id="icx-s-auth"><div class="ct-ico pending"></div><div class="ct-body"><div class="ct-label">Authentication</div><div class="ct-sub" id="icx-sub-auth">Sign in with the credential</div></div></div>'
+        +     '<div class="ct-step is-pending" id="icx-s-api"><div class="ct-ico pending"></div><div class="ct-body"><div class="ct-label">API access</div><div class="ct-sub" id="icx-sub-api">Read provider metadata</div></div></div>'
+        +   '</div>'
+        +   '<div id="icx-test-result" style="display:none;margin-top:16px;"></div>'
+        +   '<div id="icx-test-actions" style="display:flex;gap:10px;margin-top:16px;"></div>'
+        + '</div>';
+    }
+
     function openIntegrationSetup(pid) {
       ICX = { step:1, provider:pid||null, auth:'oauth' };
-      showView('integration-connect');
-      icxRenderProviders();
-      icxSetAuth('oauth');
-      if (pid) { icxSelectProvider(pid); icxGoStep(2); } else { icxGoStep(1); }
+      openModal({
+        id: _ICX_MODAL,
+        size: 'lg',
+        title: 'Add integration',
+        subtitle: 'Set up the core connection to a provider. Once connected, enable capabilities separately.',
+        steps: [
+          { label: 'Choose provider' },
+          { label: 'Connection details' },
+          { label: 'Credentials' },
+          { label: 'Test connection' }
+        ],
+        bodyHtml: _icxBodyHtml(),
+        confirmDirty: true,
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close) { _icxClearTimers(); close(); } },
+          { label: 'Continue', kind: 'primary', id: 'icx-next', onClick: function() { icxNext(); } }
+        ],
+        afterMount: function(ov) {
+          icxRenderProviders();
+          icxSetAuth('oauth');
+          if (pid) { icxSelectProvider(pid); icxGoStep(2); } else { icxGoStep(1); }
+        },
+        onClose: function() { _icxClearTimers(); }
+      });
     }
+
     function icxRenderProviders() {
       var box = document.getElementById('icx-providers'); if (!box) return;
       box.innerHTML = INTG_PROVIDERS.map(function(p) {
         var sel = ICX.provider===p.id ? ' selected' : '';
-        // Wordmark already shows the product name → skip the redundant text label
-        // (except Secret Server, whose wordmark is the vendor Delinea, not the product).
         var showName = !INTG_LOGO[p.id] || p.id==='secretserver';
         var nameHtml = showName ? '<div style="font-size:13px;font-weight:700;color:var(--text-default);">'+p.name+'</div>' : '';
         return '<div class="icx-ptile'+sel+'" id="icx-pt-'+p.id+'" onclick="icxSelectProvider(\''+p.id+'\')">'
@@ -9430,7 +9518,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
     function icxSelectProvider(id) {
       ICX.provider = id;
-      var tiles = document.querySelectorAll('#icx-providers .icx-ptile');
+      var ov = document.getElementById(_ICX_MODAL); if (!ov) return;
+      var tiles = ov.querySelectorAll('.icx-ptile');
       for (var i=0;i<tiles.length;i++) tiles[i].classList.toggle('selected', tiles[i].id==='icx-pt-'+id);
       var p = intgProvider(id);
       var nm = document.getElementById('icx-name'); if (nm && !nm.value) nm.value = p ? p.name : '';
@@ -9446,23 +9535,13 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
     function icxGoStep(n) {
       ICX.step = n;
-      [1,2,3,4].forEach(function(i) {
-        var panel = document.getElementById('icx-p'+i); if (panel) panel.style.display = i===n ? '' : 'none';
-      });
-      // top nav-steps (0-based icx-si0..3), same pattern as pcGoStep
-      for (var i=0;i<4;i++) {
-        var s = document.getElementById('icx-si'+i);
-        if (!s) continue;
-        s.classList.remove('active','done');
-        if (i < n-1) s.classList.add('done');
-        else if (i === n-1) s.classList.add('active');
-      }
-      var back = document.getElementById('icx-back'), next = document.getElementById('icx-next');
-      if (back) back.style.visibility = n===1 ? 'hidden' : 'visible';
-      if (next) next.style.display = n===4 ? 'none' : '';
+      gmGoStep(_ICX_MODAL, n - 1);
+      /* hide/show footer buttons: Continue visible on steps 1-3, hidden on step 4 */
+      var next = document.getElementById('icx-next');
+      if (next) next.style.display = n < 4 ? '' : 'none';
       var acts = document.getElementById('icx-test-actions');
-      if (acts) acts.style.display = n===4 ? 'flex' : 'none';
-      if (n===4) icxResetTest();
+      if (acts) acts.style.display = n === 4 ? 'flex' : 'none';
+      if (n === 4) icxResetTest();
     }
     function icxNext() {
       if (ICX.step===1) {
@@ -9477,7 +9556,6 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (ICX.step===3) { icxGoStep(4); return; }
     }
     function icxBack() { if (ICX.step>1) icxGoStep(ICX.step-1); }
-    // Reuses the agentless connect-test visual system (.ct-step/.ct-ico/.ct-result + _ctIco).
     var _icxTimers = [];
     function _icxClearTimers() { _icxTimers.forEach(clearTimeout); _icxTimers = []; }
     function _icxSet(stepId, state, sub) {
@@ -9545,6 +9623,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
         var url = (document.getElementById('icx-url')||{}).value||'';
         if (url.trim()) p.meta = url.replace(/^https?:\/\//,'').replace(/\/.*$/,'') + ' · core connected · add a capability';
       }
+      closeModal(_ICX_MODAL);
       showView('settings-integrations');
       if (typeof scToast==='function') scToast((p?p.name:'Integration')+' connected'); else showToast((p?p.name:'Integration')+' connected');
     }
@@ -9613,8 +9692,47 @@ body.dark .theme-toggle .icon-moon { display: none; }
     var cmSetup = { result: null, installerOS: 'windows' };
     // Where the CM-setup wizard was opened from — drives Back and the completion CTAs.
     var _cmSetupOrigin = 'agentless'; // 'agentless' | 'cm-list' | 'cm-detail'
-    function openCmSetup(origin) { _cmSetupOrigin = origin || 'agentless'; go('s-cm-setup'); }
+    var _CM_MODAL = 'cm-wizard';
+    function openCmSetup(origin) {
+      _cmSetupOrigin = origin || 'agentless';
+      openModal({
+        id: _CM_MODAL,
+        size: 'lg',
+        title: 'Create Connection Manager Group',
+        subtitle: 'Organise lightweight relays on your network for agentless scans via WinRM or SSH.',
+        steps: [
+          { label: 'Create group' },
+          { label: 'Install & connect' }
+        ],
+        bodyHtml: '<div class="gm-panel" id="cm-wrap-1"></div><div class="gm-panel" id="cm-wrap-2"></div>',
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close) { close(); } },
+          { label: 'Create group', kind: 'primary', id: 'cm-next-btn', onClick: function() { cmCreateGroup(); } }
+        ],
+        afterMount: function(ov) {
+          var src1 = document.getElementById('cmw-create-block');
+          var src2a = document.getElementById('cmw-created-summary');
+          var src2b = document.getElementById('cmw-install-block');
+          var dst1 = document.getElementById('cm-wrap-1');
+          var dst2 = document.getElementById('cm-wrap-2');
+          if (src1 && dst1) { dst1.appendChild(src1); src1.style.display = ''; }
+          if (src2a && dst2) dst2.appendChild(src2a);
+          if (src2b && dst2) { dst2.appendChild(src2b); }
+          cmSetupInit();
+          if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+        },
+        onClose: function() {
+          var host = document.querySelector('#v-s-cm-setup > div > div');
+          if (!host) return;
+          ['cmw-create-block','cmw-created-summary','cmw-install-block'].forEach(function(id) {
+            var node = document.getElementById(id);
+            if (node) host.appendChild(node);
+          });
+        }
+      });
+    }
     function cmSetupBack() {
+      closeModal(_CM_MODAL);
       if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') showView('cm-list');
       else go('s-agentless');
     }
@@ -9665,6 +9783,10 @@ body.dark .theme-toggle .icon-moon { display: none; }
       cmwPickOS(cmSetup.installerOS);
       cmConnResult('checking');
       cmSetStep(1);
+      /* Advance modal stepper to step 2 */
+      gmGoStep(_CM_MODAL, 1);
+      var btn = document.getElementById('cm-next-btn');
+      if (btn) btn.style.display = 'none';
     }
     function cmwPickOS(os) {
       cmSetup.installerOS = os;
@@ -9730,11 +9852,11 @@ body.dark .theme-toggle .icon-moon { display: none; }
         + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">Connection Manager connected successfully</div>'
         + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;"><strong style="color:var(--text-default);">' + reportedName + '</strong> has been added to <strong style="color:var(--text-default);">' + name + '</strong>.</div>';
       if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
-        actions.innerHTML = '<button class="btn-outline" onclick="showView(\'cm-list\')" style="width:auto;padding:11px 18px;">Back to groups</button>'
-          + '<button class="btn-primary" onclick="showCMDetail(\'' + newId + '\')" style="width:auto;padding:11px 28px;">View group →</button>';
+        actions.innerHTML = '<button class="btn-outline" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')" style="width:auto;padding:11px 18px;">Back to groups</button>'
+          + '<button class="btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')" style="width:auto;padding:11px 28px;">View group →</button>';
       } else {
-        actions.innerHTML = '<button class="btn-outline" onclick="showCMDetail(\'' + newId + '\')" style="width:auto;padding:11px 18px;">View group</button>'
-          + '<button class="btn-primary" onclick="cmReturnToAddNode()" style="width:auto;padding:11px 28px;">Continue to Add Node →</button>';
+        actions.innerHTML = '<button class="btn-outline" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')" style="width:auto;padding:11px 18px;">View group</button>'
+          + '<button class="btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');cmReturnToAddNode()" style="width:auto;padding:11px 28px;">Continue to Add Node →</button>';
       }
       cmSetStep(2);
     }
@@ -9914,10 +10036,19 @@ body.dark .theme-toggle .icon-moon { display: none; }
         footHtml = '<div class="gm-foot">' + (opts.footerLeftHtml || '')
           + '<div class="gm-foot-right">' + right + '</div></div>';
       }
+      var stepperHtml = '';
+      if (opts.steps && opts.steps.length) {
+        stepperHtml = '<div class="gm-stepper">' + opts.steps.map(function(s, i) {
+          return '<div class="gm-step' + (i === 0 ? ' is-active' : '') + '" data-gm-step="' + i + '">'
+            + '<span class="gm-step-num"><span class="gm-step-numval">' + (i + 1) + '</span></span>'
+            + '<span class="gm-step-label">' + s.label + '</span></div>';
+        }).join('') + '</div>';
+      }
       ov.innerHTML = '<div class="gm-card gm-' + (opts.size || 'md') + '" role="dialog" aria-modal="true">'
         + '<div class="gm-head"><div class="gm-titles"><div class="gm-title">' + (opts.title || '') + '</div>'
         + (opts.subtitle ? '<div class="gm-sub">' + opts.subtitle + '</div>' : '') + '</div>'
         + '<button type="button" class="gm-x" aria-label="Close" data-gm-x="1">&times;</button></div>'
+        + stepperHtml
         + '<div class="gm-body">' + (opts.bodyHtml || '') + '</div>'
         + footHtml
         + '</div>';
@@ -9955,6 +10086,20 @@ body.dark .theme-toggle .icon-moon { display: none; }
         if (prevFocus && prevFocus.focus) { try { prevFocus.focus(); } catch (e) {} }
         if (opts.onClose) opts.onClose();
       };
+      /* stepper: store steps & wire click-to-go-back on done steps */
+      if (opts.steps && opts.steps.length) {
+        ov._gmSteps = opts.steps;
+        ov._gmCurrentStep = 0;
+        ov.querySelectorAll('.gm-step').forEach(function(el) {
+          el.addEventListener('click', function() {
+            var idx = +el.getAttribute('data-gm-step');
+            if (el.classList.contains('is-done')) gmGoStep(opts.id, idx);
+          });
+        });
+        /* activate first panel */
+        var firstPanel = ov.querySelector('.gm-panel');
+        if (firstPanel) firstPanel.classList.add('is-visible');
+      }
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
       if (opts.afterMount) opts.afterMount(ov);
       return ov;
@@ -9964,6 +10109,25 @@ body.dark .theme-toggle .icon-moon { display: none; }
       if (!ov) return;
       if (ov._gmCleanup) ov._gmCleanup();
       ov.remove();
+    }
+
+    /* ── Modal wizard step navigation ── */
+    function gmGoStep(modalId, stepIdx) {
+      var ov = document.getElementById(modalId);
+      if (!ov) return;
+      var panels = ov.querySelectorAll('.gm-panel');
+      var steps  = ov.querySelectorAll('.gm-step');
+      panels.forEach(function(p, i) { p.classList.toggle('is-visible', i === stepIdx); });
+      steps.forEach(function(s, i) {
+        s.classList.remove('is-active', 'is-done');
+        if (i < stepIdx) s.classList.add('is-done');
+        if (i === stepIdx) s.classList.add('is-active');
+      });
+      /* fire step callback if provided */
+      if (ov._gmSteps && ov._gmSteps[stepIdx] && ov._gmSteps[stepIdx].onEnter) {
+        ov._gmSteps[stepIdx].onEnter(ov, stepIdx);
+      }
+      ov._gmCurrentStep = stepIdx;
     }
 
     function credOpenEditor(id) {
@@ -11109,29 +11273,125 @@ body.dark .theme-toggle .icon-moon { display: none; }
     // Add Policy wizard step nav: 0-based top stepper pc-si0..2; content pc-step-1..3 (1-based).
     var _pcResumeStep = null;   // set to 2 when returning from Add/Edit Check → resume on Checks
     var _checkReturn = 'policy-create'; // origin for add-check / edit-check sub-pages
-    function pcGoStep(n) {
-      [1,2,3].forEach(function(i) {
-        var s = document.getElementById('pc-step-'+i);
-        if (s) s.style.display = i === n ? 'block' : 'none';
+    var _PC_MODAL = 'pc-wizard';
+    var _pcCurrentStep = 1;
+
+    function openPolicyCreate() {
+      _pcCurrentStep = 1;
+      /* Move the 3 step containers from hidden v-policy-create into a modal */
+      var ov = openModal({
+        id: _PC_MODAL,
+        size: 'xl',
+        title: 'Create New Policy',
+        subtitle: 'Build a custom compliance policy step by step',
+        steps: [
+          { label: 'Basic info' },
+          { label: 'Add checks' },
+          { label: 'Assign' }
+        ],
+        bodyHtml: '<div class="gm-panel" id="pc-wrap-1"></div><div class="gm-panel" id="pc-wrap-2"></div><div class="gm-panel" id="pc-wrap-3"></div>',
+        confirmDirty: true,
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close) { close(); } },
+          { label: 'Next: Add Checks', kind: 'primary', id: 'pc-next-btn', onClick: function() { pcNextModal(); } }
+        ],
+        afterMount: function(ov) {
+          /* Transplant step DOM nodes into modal panels */
+          for (var i = 1; i <= 3; i++) {
+            var src = document.getElementById('pc-step-' + i);
+            var dst = document.getElementById('pc-wrap-' + i);
+            if (src && dst) { dst.appendChild(src); src.style.display = 'block'; }
+          }
+          pcGoStep(1);
+          if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+        },
+        onClose: function() {
+          /* Return step nodes back to v-policy-create */
+          var host = document.querySelector('#v-policy-create > div:last-child > div');
+          for (var i = 1; i <= 3; i++) {
+            var node = document.getElementById('pc-step-' + i);
+            if (node && host) { host.appendChild(node); node.style.display = i === 1 ? 'block' : 'none'; }
+          }
+        }
       });
-      for (var i = 0; i < 3; i++) {
-        var el = document.getElementById('pc-si' + i);
-        if (!el) continue;
-        el.classList.remove('active', 'done');
-        if (i < n - 1) el.classList.add('done');
-        else if (i === n - 1) el.classList.add('active');
-      }
-      var cont = document.getElementById('v-policy-create');
-      if (cont) cont.querySelector('[style*="overflow-y"]')?.scrollTo(0,0);
     }
-    function pcExit() { showView('policies'); }
+
+    function pcNextModal() {
+      if (_pcCurrentStep === 1) { pcGoStep(2); return; }
+      if (_pcCurrentStep === 2) { pcGoStep(3); return; }
+      if (_pcCurrentStep === 3) { pcFinishCreate(); return; }
+    }
+
+    function pcGoStep(n) {
+      _pcCurrentStep = n;
+      gmGoStep(_PC_MODAL, n - 1);
+      /* Update the primary button label */
+      var btn = document.getElementById('pc-next-btn');
+      if (btn) {
+        if (n === 1) btn.textContent = 'Next: Add Checks';
+        else if (n === 2) btn.textContent = 'Next: Assign';
+        else if (n === 3) btn.textContent = 'Create Policy';
+      }
+      /* Scroll modal body to top */
+      var ov = document.getElementById(_PC_MODAL);
+      if (ov) { var b = ov.querySelector('.gm-body'); if (b) b.scrollTo(0,0); }
+    }
+    function pcExit() {
+      closeModal(_PC_MODAL);
+      showView('policies');
+    }
     // Add/Edit Check sub-pages: open, then return to the origin (Create-Policy Checks step).
+    var _AC_MODAL = 'ac-wizard';
     function openCheck(kind, origin) {
       _checkReturn = origin || 'policy-create';
-      showView(kind === 'edit' ? 'edit-check' : 'add-check');
+      var viewId = kind === 'edit' ? 'v-edit-check' : 'v-add-check';
+      var isEdit = kind === 'edit';
+      var srcView = document.getElementById(viewId);
+      /* Extract the scrollable content area (the div after .page-header) */
+      var content = srcView ? srcView.querySelector('[style*="overflow-y"]') : null;
+      var contentInner = content ? content.querySelector('div') : null;
+
+      openModal({
+        id: _AC_MODAL,
+        size: 'xl',
+        title: isEdit ? 'Edit Check' : 'Add New Check',
+        subtitle: isEdit ? 'Modify the compliance check definition' : 'Define a new compliance check for this policy',
+        bodyHtml: '<div id="ac-modal-body"></div>',
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function(e, close) { _acReturnContent(viewId); close(); } },
+          isEdit
+            ? { label: 'Save changes', kind: 'primary', onClick: function() { checkDone(); } }
+            : { label: 'Add Check', kind: 'primary', onClick: function() { checkDone(); } }
+        ],
+        afterMount: function(ov) {
+          var dst = document.getElementById('ac-modal-body');
+          if (contentInner && dst) {
+            /* Move all children into modal */
+            while (contentInner.firstChild) dst.appendChild(contentInner.firstChild);
+          }
+          if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+        },
+        onClose: function() { _acReturnContent(viewId); }
+      });
+    }
+    function _acReturnContent(viewId) {
+      var dst = document.querySelector('#' + viewId + ' [style*="overflow-y"] > div');
+      var src = document.getElementById('ac-modal-body');
+      if (src && dst) {
+        while (src.firstChild) dst.appendChild(src.firstChild);
+      }
     }
     function checkDone() {
-      if (_checkReturn === 'policy-create') { _pcResumeStep = 2; showView('policy-create'); }
+      closeModal(_AC_MODAL);
+      if (_checkReturn === 'policy-create') {
+        /* Re-open Policy Create wizard at step 2 */
+        var pcOpen = document.getElementById(_PC_MODAL);
+        if (!pcOpen) {
+          showView('policies');
+          openPolicyCreate();
+          setTimeout(function(){ pcGoStep(2); }, 50);
+        }
+      }
       else { showView('policy-edit'); }
     }
     function checkDelete() {
@@ -11185,7 +11445,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var cisDiv = document.getElementById('pc-cis-dropdown');
       if (cisDiv) cisDiv.style.display = radio.value === 'cis' ? 'block' : 'none';
       // update card highlight
-      document.querySelectorAll('#v-policy-create label[style*="border-radius"]').forEach(function(lbl){
+      var _pcRoot = document.getElementById(_PC_MODAL) || document.getElementById('v-policy-create');
+      (_pcRoot || document).querySelectorAll('label[style*="border-radius"]').forEach(function(lbl){
         var inp = lbl.querySelector('input[type=radio]');
         if (!inp) return;
         lbl.style.borderColor = inp.checked ? 'var(--green1)' : 'var(--border)';
@@ -11283,7 +11544,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
     }
     function resultsCtxNew() {
       hideResultsCtx();
-      showView('policy-create');
+      openPolicyCreate();
     }
     document.addEventListener('click', function(e) {
       var menu = document.getElementById('results-ctx');
@@ -11741,7 +12002,8 @@ body.dark .theme-toggle .icon-moon { display: none; }
       var peName = document.getElementById('pe-name');
       if (peName) peName.value = name;
 
-      // Show success modal (pre-navigate to policy-detail in background)
+      // Close wizard modal, show success on policy-detail
+      closeModal(_PC_MODAL);
       showView('policy-detail');
       var body = ''
         + '<div style="text-align:center;">'
@@ -15160,89 +15422,7 @@ body.dark .theme-toggle .icon-moon { display: none; }
          INTEGRATION-CONNECT — generic core provider setup
     ═══════════════════════════════════════════════════ -->
     <!-- INTEGRATION-CONNECT — core provider setup wizard (canonical full-page, top nav-steps) -->
-    <div class="view" id="v-integration-connect" style="display: none;">
-      <div style="flex:1;display:flex;justify-content:center;padding:24px;overflow-y:auto;">
-        <div style="width:100%;max-width:660px;">
-
-          <div style="font-size:20px;font-weight:700;color:var(--text-default);margin-bottom:6px;">Add integration</div>
-          <div style="font-size:13px;color:var(--text-sec);margin-bottom:18px;line-height:1.5;">Set up the core connection to a provider. Once connected, enable capabilities (CMDB, change reconciliation) separately — the base setup stays lightweight.</div>
-
-          <div class="icx-card">
-            <!-- Panel 1: choose provider -->
-            <div id="icx-p1">
-              <div class="icx-label" style="margin-bottom:12px;">Which provider do you want to connect?</div>
-              <div id="icx-providers" style="display:flex;flex-direction:column;gap:10px;"></div>
-            </div>
-
-            <!-- Panel 2: connection details -->
-            <div id="icx-p2" style="display:none;">
-              <div class="icx-field">
-                <label class="icx-label">Display name</label>
-                <input class="icx-input" id="icx-name" placeholder="e.g. Production ServiceNow">
-                <div class="icx-hint">How this connection appears across Guardian.</div>
-              </div>
-              <div class="icx-field">
-                <label class="icx-label">Instance URL</label>
-                <input class="icx-input" id="icx-url" placeholder="company.service-now.com">
-                <div class="icx-hint">The base address of your provider instance.</div>
-              </div>
-            </div>
-
-            <!-- Panel 3: credentials -->
-            <div id="icx-p3" style="display:none;">
-              <div class="icx-field">
-                <label class="icx-label">Authentication</label>
-                <div style="display:flex;gap:8px;">
-                  <button class="intg-cat active" id="icx-auth-oauth" onclick="icxSetAuth('oauth')">OAuth 2.0</button>
-                  <button class="intg-cat" id="icx-auth-basic" onclick="icxSetAuth('basic')">Basic auth</button>
-                </div>
-              </div>
-              <div id="icx-auth-oauth-fields">
-                <div class="icx-field"><label class="icx-label">Client ID</label>
-                  <input class="icx-input" id="icx-cid" placeholder="guardian-client"></div>
-                <div class="icx-field"><label class="icx-label">Client secret</label>
-                  <input class="icx-input" id="icx-csecret" type="password" placeholder="••••••••••••"></div>
-              </div>
-              <div id="icx-auth-basic-fields" style="display:none;">
-                <div class="icx-field"><label class="icx-label">Username</label>
-                  <input class="icx-input" id="icx-user" placeholder="svc-guardian"></div>
-                <div class="icx-field"><label class="icx-label">Password</label>
-                  <input class="icx-input" id="icx-pass" type="password" placeholder="••••••••••••"></div>
-              </div>
-              <div class="icx-hint" style="margin-top:4px;">Credentials are stored in the Guardian Credential Vault and reused by any capability on this integration.</div>
-            </div>
-
-            <!-- Panel 4: test connection -->
-            <div id="icx-p4" style="display:none;">
-              <div class="icx-label" style="margin-bottom:4px;">Test the core connection</div>
-              <div class="icx-hint" style="margin-bottom:16px;">Guardian verifies it can reach and authenticate with the provider before saving.</div>
-              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
-                <div class="ct-step is-pending" id="icx-s-reach">
-                  <div class="ct-ico pending"></div>
-                  <div class="ct-body"><div class="ct-label">Reachability</div><div class="ct-sub" id="icx-sub-reach">Resolve and reach the instance</div></div>
-                </div>
-                <div class="ct-step is-pending" id="icx-s-auth">
-                  <div class="ct-ico pending"></div>
-                  <div class="ct-body"><div class="ct-label">Authentication</div><div class="ct-sub" id="icx-sub-auth">Sign in with the credential</div></div>
-                </div>
-                <div class="ct-step is-pending" id="icx-s-api">
-                  <div class="ct-ico pending"></div>
-                  <div class="ct-body"><div class="ct-label">API access</div><div class="ct-sub" id="icx-sub-api">Read provider metadata</div></div>
-                </div>
-              </div>
-              <div id="icx-test-result" style="display:none;margin-top:16px;"></div>
-            </div>
-
-            <!-- Footer (dynamic Back/Next/test-actions, managed by icxGoStep) -->
-            <div id="icx-foot" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--border);">
-              <button class="btn-outline" id="icx-back" style="font-size:12px;" onclick="icxBack()">← Back</button>
-              <button class="btn-primary" id="icx-next" style="width:auto;padding:9px 20px;font-size:12px;" onclick="icxNext()">Continue</button>
-              <div id="icx-test-actions" style="display:none;gap:10px;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- v-integration-connect removed: now uses openModal wizard (icx-wizard) -->
 
     <!-- ═══════════════════════════════════════════════════
          SECRET-SERVER-CONFIG — credential manager setup
@@ -17137,17 +17317,15 @@ function showView(name) {
   const isJ3Sidebar = ['j3-no-resources','j3-manual-match','j3-scan-failed'].includes(name);
   const isJ3 = isJ3Nav || isJ3Sidebar;
   const isJ4 = isJ4Nav;
-  const isPolicyWizard = name === 'policy-create';
-  const isIntgWizard = name === 'integration-connect';
-  const isWizardChrome = isJ3Nav || isJ4Nav || isPolicyWizard || isIntgWizard;
+  const isWizardChrome = isJ3Nav || isJ4Nav;
   document.getElementById('sidebar').classList.toggle('visible', !isWizardChrome);
   document.getElementById('navSteps').style.display = 'none';
   document.getElementById('cm-step-nav').style.display = 'none';
   document.getElementById('j3-step-nav').style.display = isJ3Nav ? 'flex' : 'none';
   document.getElementById('j4-step-nav').style.display = isJ4Nav ? 'flex' : 'none';
-  document.getElementById('pc-step-nav').style.display = isPolicyWizard ? 'flex' : 'none';
-  document.getElementById('icx-step-nav').style.display = isIntgWizard ? 'flex' : 'none';
-  document.getElementById('navUser').style.display = (isJ3 || isJ4 || isPolicyWizard || isIntgWizard) ? 'none' : 'flex';
+  var _pcNav = document.getElementById('pc-step-nav'); if (_pcNav) _pcNav.style.display = 'none';
+  var _icxNav = document.getElementById('icx-step-nav'); if (_icxNav) _icxNav.style.display = 'none';
+  document.getElementById('navUser').style.display = (isJ3 || isJ4) ? 'none' : 'flex';
   const _nav = document.querySelector('.top-nav');
   if (_nav) _nav.style.background = isWizardChrome ? '#062A2E' : 'linear-gradient(to right, #062A2E 220px, transparent 220px)';
   showOnly(name);
@@ -17208,11 +17386,6 @@ function showView(name) {
   }
   if (name === 'policy-edit') {
     setTimeout(() => peInitB(), 50);
-  }
-  if (name === 'policy-create') {
-    const _st = _pcResumeStep || 1;
-    _pcResumeStep = null;
-    setTimeout(() => pcGoStep(_st), 10);
   }
   _currentView = name;
 }
