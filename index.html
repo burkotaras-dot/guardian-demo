@@ -3603,12 +3603,10 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
 
           <!-- ── Create Group (always visible until submitted) ── -->
           <div id="cmw-create-block">
-            <div style="padding:0;">
-              <div class="form-group">
-                <label class="form-label" for="cmw-name">Connection Manager Group name</label>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="cmw-name">Group name</label>
                 <input id="cmw-name" type="text" class="form-input" placeholder="e.g. London DC Group">
               </div>
-            </div>
 
             <div class="pc-inline-nav" style="display:flex;gap:10px;margin-top:20px;align-items:center;justify-content:space-between;">
               <button class="btn-outline" onclick="cmSetupBack()" style="width:auto;padding:11px 18px;">← Back</button>
@@ -3616,57 +3614,52 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
             </div>
           </div>
 
-          <!-- ── Created confirmation (revealed after submit) ── -->
-          <div id="cmw-created-summary" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:16px 20px;margin-bottom:16px;align-items:center;gap:12px;">
-            <div style="width:28px;height:28px;border-radius:50%;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <!-- ── Created confirmation (compact status row) ── -->
+          <div id="cmw-created-summary" style="display:none;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-md);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);margin-bottom:16px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             <div style="flex:1;min-width:0;">
-              <div style="font-size:14px;font-weight:700;color:var(--text-default);"><span id="cmw-created-name">Group</span> created</div>
-              <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">Install a Connection Manager below to activate this group.</div>
+              <span style="font-size:13px;font-weight:600;color:var(--text-default);"><span id="cmw-created-name">Group</span> created</span>
+              <span style="font-size:12px;color:var(--text-sec);margin-left:6px;">Install a Connection Manager to activate it.</span>
             </div>
           </div>
 
-          <!-- ── Install & wait for check-in (revealed on same screen) ── -->
+          <!-- ── Install & wait for check-in ── -->
           <div id="cmw-install-block" style="display:none;">
-            <!-- API key + Guardian URL -->
-            <div style="padding:0;margin-bottom:16px;">
-              <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:12px;">Group created — use these credentials to install</div>
-              <div class="code-row" style="margin-bottom:8px;"><span class="code-label">API key:</span><span class="code-value" id="cmw-api-key">grd_k8x…generated</span><button class="code-btn" onclick="navigator.clipboard.writeText(document.getElementById('cmw-api-key').textContent);scToast('API key copied')">Copy</button></div>
-              <div class="code-row"><span class="code-label">Guardian URL:</span><span class="code-value">https://guardian.cloudhouse.com</span><button class="code-btn" onclick="navigator.clipboard.writeText('https://guardian.cloudhouse.com');scToast('URL copied')">Copy</button></div>
+            <!-- Installation details: API key + URL compact -->
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Installation details</div>
+            <div class="code-row" style="margin-bottom:6px;"><span class="code-label">API key:</span><span class="code-value" id="cmw-api-key">grd_k8x…generated</span><button class="code-btn" onclick="navigator.clipboard.writeText(document.getElementById('cmw-api-key').textContent);scToast('API key copied')">Copy</button></div>
+            <div class="code-row" style="margin-bottom:16px;"><span class="code-label">Guardian URL:</span><span class="code-value">https://guardian.cloudhouse.com</span><button class="code-btn" onclick="navigator.clipboard.writeText('https://guardian.cloudhouse.com');scToast('URL copied')">Copy</button></div>
+
+            <!-- Installer choice + command (one block) -->
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Choose installer</div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <button id="cmw-os-win" class="btn-outline cmw-os-btn" onclick="cmwPickOS('windows')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Windows</button>
+              <button id="cmw-os-linux" class="btn-outline cmw-os-btn" onclick="cmwPickOS('linux')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Linux</button>
+            </div>
+            <div id="cmw-install-cmd">
+              <div class="oneliner-box"><div class="oneliner-header"><span class="oneliner-lang" id="cmw-cmd-lang">powershell</span><button class="oneliner-copy" onclick="navigator.clipboard.writeText(document.getElementById('cmw-cmd-code').textContent);scToast('Command copied')">Copy</button></div><code class="oneliner-code" id="cmw-cmd-code">irm https://guardian.cloudhouse.com/cm/install.ps1 | iex</code></div>
             </div>
 
-            <!-- Installer choice -->
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px 22px;margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:10px;">Choose installer</div>
-              <div style="display:flex;gap:8px;margin-bottom:14px;">
-                <button id="cmw-os-win" class="btn-outline cmw-os-btn" onclick="cmwPickOS('windows')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Windows</button>
-                <button id="cmw-os-linux" class="btn-outline cmw-os-btn" onclick="cmwPickOS('linux')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Linux</button>
-              </div>
-              <div id="cmw-install-cmd">
-                <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;line-height:1.5;">Run this command on the host where you want to install the Connection Manager:</div>
-                <div class="oneliner-box"><div class="oneliner-header"><span class="oneliner-lang" id="cmw-cmd-lang">powershell</span><button class="oneliner-copy" onclick="navigator.clipboard.writeText(document.getElementById('cmw-cmd-code').textContent);scToast('Command copied')">Copy</button></div><code class="oneliner-code" id="cmw-cmd-code">irm https://guardian.cloudhouse.com/cm/install.ps1 | iex</code></div>
-              </div>
-            </div>
-
-            <!-- Requirements (guidance, not a step) -->
-            <div class="cmw-req">
-              <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Installation requirements</div>
-              <div style="font-size:12px;color:var(--text-sec);line-height:1.7;">
+            <!-- Requirements (collapsible) -->
+            <details class="cmw-req" style="margin-top:14px;">
+              <summary style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;user-select:none;">Installation requirements</summary>
+              <div style="font-size:12px;color:var(--text-sec);line-height:1.7;margin-top:6px;padding-left:2px;">
                 • Supported OS: Windows Server 2019+ or Linux (RHEL/Ubuntu) 64-bit<br>
                 • Admin permissions: local admin or sudo<br>
                 • Network: outbound HTTPS 443 to Guardian, WinRM 5985/5986 or SSH 22 to targets<br>
                 • Guardian URL must be reachable from the host
               </div>
-            </div>
+            </details>
 
-            <!-- Waiting / result area -->
-            <div style="padding:28px 0;text-align:center;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <!-- Compact inline waiting status -->
+            <div style="display:flex;align-items:center;gap:10px;padding:16px 0;margin-top:14px;border-top:1px solid var(--border);">
               <div id="cmw-conn-body"></div>
             </div>
 
-            <div id="cmw-conn-actions" style="display:flex;gap:10px;margin-top:20px;justify-content:space-between;"></div>
+            <div id="cmw-conn-actions" style="display:flex;gap:10px;justify-content:flex-end;"></div>
 
-            <div style="text-align:center;margin-top:12px;">
-              <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Demo: simulate check-in</div>
+            <div style="text-align:center;margin-top:8px;">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Demo: simulate check-in</div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
                 <button class="cmw-demo" onclick="cmConnResult('connected')">CM checks in</button>
                 <button class="cmw-demo" onclick="cmConnResult('waiting')">still waiting</button>
@@ -9788,6 +9781,12 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
       gmGoStep(_CM_MODAL, 1);
       var btn = document.getElementById('cm-next-btn');
       if (btn) btn.style.display = 'none';
+      /* Change Cancel → Close */
+      var ov = document.getElementById(_CM_MODAL);
+      if (ov) {
+        var cancelBtn = ov.querySelector('.gm-foot .gm-btn-secondary');
+        if (cancelBtn) cancelBtn.textContent = 'Close';
+      }
     }
     function cmwPickOS(os) {
       cmSetup.installerOS = os;
@@ -9815,13 +9814,14 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
 
       if (state === 'checking' || state === 'waiting') {
         var isFirst = state === 'checking';
-        body.innerHTML = '<div class="connecting-ring"></div>'
-          + '<div style="font-size:16px;font-weight:700;color:var(--text-default);">Waiting for a Connection Manager to check in…</div>'
-          + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:400px;line-height:1.55;">'
-          + (isFirst ? 'Run the installation command above, then this page updates automatically when the CM connects.' : 'No Connection Manager has checked in yet. Confirm that the installer was run with the correct Guardian URL and API key.')
-          + '</div>';
-        actions.innerHTML = '<button class="btn-outline" onclick="navigator.clipboard.writeText(document.getElementById(\'cmw-cmd-code\').textContent);scToast(\'Command copied\')" style="width:auto;padding:11px 18px;font-size:12px;">Copy installation command</button>'
-          + '<a href="javascript:void(0)" onclick="scToast(\'Opening installation guide…\')" style="font-size:12px;color:var(--green1);font-weight:600;padding:11px 0;text-decoration:none;">View installation guide</a>';
+        body.innerHTML = '<div style="display:flex;align-items:center;gap:10px;width:100%;">'
+          + '<div class="connecting-ring" style="width:20px;height:20px;flex-shrink:0;"></div>'
+          + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Waiting for a Connection Manager to check in…</div>'
+          + '<div style="font-size:11px;color:var(--text-sec);margin-top:2px;">'
+          + (isFirst ? 'This page updates automatically when the CM connects.' : 'No CM checked in yet. Verify the Guardian URL and API key.')
+          + '</div></div></div>';
+        actions.innerHTML = '';
         return;
       }
 
