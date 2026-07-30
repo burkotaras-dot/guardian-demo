@@ -482,6 +482,47 @@ body.dark .id-cap-badge.issue { color:#ff9ba0; background:rgba(217,74,82,0.15); 
 .id-danger-label { font-size:12px; color:var(--text-sec); }
 .id-danger-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
 
+/* ── ITSM Data Mapping (reusable) ── */
+.fm-table { width:100%; border-collapse:collapse; font-size:12px; }
+.fm-table th { text-align:left; font-size:10px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; padding:8px 10px; border-bottom:1px solid var(--border); background:var(--bg-canvas); }
+.fm-table td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:middle; color:var(--text-default); }
+.fm-table tr:last-child td { border-bottom:none; }
+.fm-table tr:hover td { background:rgba(0,175,115,0.03); }
+body.dark .fm-table th { background:#063135; }
+.fm-source { font-weight:600; font-family:'DM Mono',monospace; font-size:11px; color:var(--text-default); }
+.fm-arrow { color:var(--text-muted); font-size:14px; }
+.fm-guardian { font-weight:600; color:var(--green1); }
+.fm-req { display:inline-flex; align-items:center; font-size:10px; font-weight:600; padding:2px 7px; border-radius:4px; }
+.fm-req.required { color:#b45309; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); }
+.fm-req.optional { color:var(--text-muted); background:var(--bg-subtle); border:1px solid var(--border); }
+body.dark .fm-req.required { color:#fbbf24; background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.3); }
+.fm-transform { font-size:11px; color:var(--text-sec); font-style:italic; }
+.fm-default { font-size:11px; color:var(--text-muted); }
+.fm-validation { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600; }
+.fm-validation.ok { color:#059669; }
+.fm-validation.warn { color:#d97706; }
+.fm-validation.err { color:#dc2626; }
+.fm-unmapped { opacity:0.5; }
+.fm-unmapped td { color:var(--text-muted); }
+.fm-check { width:16px; height:16px; accent-color:var(--green1); cursor:pointer; }
+.fm-section { margin-bottom:16px; }
+.fm-section-title { font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+.fm-section-title .fm-count { font-weight:600; color:var(--text-muted); text-transform:none; letter-spacing:0; }
+.fm-preview-card { background:var(--bg-subtle); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 14px; font-size:11px; }
+body.dark .fm-preview-card { background:rgba(255,255,255,0.04); }
+.fm-preview-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border); }
+.fm-preview-row:last-child { border-bottom:none; }
+.fm-preview-label { color:var(--text-muted); }
+.fm-preview-val { color:var(--text-default); font-weight:600; }
+.fm-status-bar { display:flex; gap:16px; padding:10px 14px; background:var(--bg-subtle); border-radius:var(--radius-md); font-size:11px; margin-bottom:14px; }
+body.dark .fm-status-bar { background:rgba(255,255,255,0.04); }
+.fm-stat { display:flex; align-items:center; gap:5px; }
+.fm-stat-dot { width:6px; height:6px; border-radius:50%; }
+.fm-edit-select { padding:4px 8px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); color:var(--text-default); font-family:'DM Sans',sans-serif; cursor:pointer; }
+body.dark .fm-edit-select { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.2); }
+.fm-edit-input { padding:4px 8px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); color:var(--text-default); font-family:'DM Sans',sans-serif; width:80px; }
+body.dark .fm-edit-input { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.2); }
+
 /* ── Core integration setup wizard (icx) — canonical full-page, steps in top nav-steps ── */
 .icx-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; }
 .icx-field { margin-bottom:16px; }
@@ -9442,6 +9483,300 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       }
     }
 
+    // ══════════ ITSM Data Mapping (reusable) ══════════
+    var _FM_MODAL = 'fm-mapping-wizard';
+    var _fmConfig = null; // current mapping config
+    var _fmSelected = [];  // selected field indices (step 1)
+
+    // Mapping schemas — reusable across integrations
+    var FM_SCHEMAS = {
+      cmdb: {
+        title: 'CMDB Node Acquisition',
+        subtitle: 'Map ServiceNow CMDB fields to Guardian node properties',
+        sourceLabel: 'ServiceNow CMDB',
+        targetLabel: 'Guardian',
+        fields: [
+          { source:'cmdb_ci_server.name',        guardian:'Node Name',         req:true,  transform:'none',    default:'',           validation:'ok',  desc:'Server display name' },
+          { source:'cmdb_ci_server.ip_address',   guardian:'IP Address',        req:true,  transform:'none',    default:'',           validation:'ok',  desc:'Primary IP address' },
+          { source:'cmdb_ci_server.os',           guardian:'Operating System',  req:true,  transform:'normalize', default:'',         validation:'ok',  desc:'OS name and version' },
+          { source:'cmdb_ci_server.serial_number',guardian:'Serial Number',     req:false, transform:'none',    default:'N/A',        validation:'ok',  desc:'Hardware serial' },
+          { source:'cmdb_ci_server.sys_class_name',guardian:'Node Type',        req:true,  transform:'map_values', default:'Server',  validation:'ok',  desc:'CI class → Guardian type' },
+          { source:'cmdb_ci_server.location',     guardian:'Location',          req:false, transform:'lookup',  default:'Unassigned', validation:'ok',  desc:'Location reference → name' },
+          { source:'cmdb_ci_server.environment',  guardian:'Environment',       req:false, transform:'map_values', default:'Production', validation:'ok', desc:'Env label mapping' },
+          { source:'cmdb_ci_server.u_guardian_id', guardian:'Guardian ID',      req:false, transform:'none',    default:'auto-generate', validation:'warn', desc:'Custom field — may not exist' },
+        ],
+        unmapped: [
+          { source:'cmdb_ci_server.sys_id',       desc:'ServiceNow unique ID' },
+          { source:'cmdb_ci_server.sys_updated_on', desc:'Last modified timestamp' },
+          { source:'cmdb_ci_server.manufacturer',  desc:'Hardware manufacturer' },
+          { source:'cmdb_ci_server.model_id',      desc:'Hardware model reference' },
+        ],
+        sampleData: {
+          'cmdb_ci_server.name': 'PROD-WEB-01',
+          'cmdb_ci_server.ip_address': '10.0.1.42',
+          'cmdb_ci_server.os': 'Windows Server 2022 Standard',
+          'cmdb_ci_server.serial_number': 'SN-2024-0042',
+          'cmdb_ci_server.sys_class_name': 'cmdb_ci_win_server',
+          'cmdb_ci_server.location': 'ref:loc_london_dc',
+          'cmdb_ci_server.environment': 'production',
+          'cmdb_ci_server.u_guardian_id': ''
+        }
+      },
+      recon: {
+        title: 'Change Reconciliation',
+        subtitle: 'Map ServiceNow Change Request fields for drift reconciliation',
+        sourceLabel: 'ServiceNow CR',
+        targetLabel: 'Guardian',
+        fields: [
+          { source:'change_request.number',         guardian:'CR Number',        req:true,  transform:'none',       default:'',           validation:'ok',  desc:'Change request ID' },
+          { source:'change_request.short_description', guardian:'Summary',      req:true,  transform:'truncate',   default:'',           validation:'ok',  desc:'CR title / description' },
+          { source:'change_request.start_date',     guardian:'Change Window Start', req:true, transform:'datetime', default:'',           validation:'ok',  desc:'Planned start date/time' },
+          { source:'change_request.end_date',       guardian:'Change Window End',   req:true, transform:'datetime', default:'',           validation:'ok',  desc:'Planned end date/time' },
+          { source:'change_request.state',          guardian:'CR Status',        req:true,  transform:'map_values', default:'Open',       validation:'ok',  desc:'State → Guardian status' },
+          { source:'change_request.cmdb_ci',        guardian:'Target Node',      req:true,  transform:'lookup',     default:'',           validation:'ok',  desc:'CI reference → node name' },
+          { source:'change_request.assigned_to',    guardian:'Assignee',         req:false, transform:'lookup',     default:'Unassigned', validation:'ok',  desc:'User ref → display name' },
+          { source:'change_request.risk',           guardian:'Risk Level',       req:false, transform:'map_values', default:'Medium',     validation:'ok',  desc:'Risk assessment mapping' },
+          { source:'change_request.u_drift_category', guardian:'Drift Category', req:false, transform:'none',      default:'',           validation:'warn', desc:'Custom field — may not exist' },
+        ],
+        unmapped: [
+          { source:'change_request.sys_id',          desc:'ServiceNow unique ID' },
+          { source:'change_request.approval',        desc:'Approval status' },
+          { source:'change_request.priority',        desc:'Priority level' },
+        ],
+        sampleData: {
+          'change_request.number': 'CHG0041523',
+          'change_request.short_description': 'Monthly security patching — Windows fleet',
+          'change_request.start_date': '2026-07-30 02:00:00',
+          'change_request.end_date': '2026-07-30 06:00:00',
+          'change_request.state': 'implement',
+          'change_request.cmdb_ci': 'ref:ci_prod_web_01',
+          'change_request.assigned_to': 'ref:user_john_smith',
+          'change_request.risk': 'moderate',
+          'change_request.u_drift_category': ''
+        }
+      }
+    };
+
+    var FM_TRANSFORMS = {
+      none: 'None (pass-through)',
+      normalize: 'Normalize text',
+      map_values: 'Value mapping',
+      lookup: 'Reference lookup',
+      truncate: 'Truncate (120 chars)',
+      datetime: 'DateTime format',
+      uppercase: 'Uppercase',
+      lowercase: 'Lowercase'
+    };
+
+    function openFieldMapping(schemaKey) {
+      var schema = FM_SCHEMAS[schemaKey];
+      if (!schema) return;
+      _fmConfig = { key:schemaKey, schema:schema };
+      _fmSelected = schema.fields.map(function(_, i) { return i; }); // all selected by default
+
+      openModal({
+        id: _FM_MODAL,
+        title: 'Data Mapping — ' + schema.title,
+        subtitle: schema.subtitle,
+        size: 'xl',
+        steps: [
+          { label: 'Select fields',      onEnter: _fmRenderStep1 },
+          { label: 'Configure mapping',   onEnter: _fmRenderStep2 },
+          { label: 'Review & activate',   onEnter: _fmRenderStep3 }
+        ],
+        buttons: [
+          { label: 'Save draft', kind: 'secondary', id: 'fm-btn-draft', onClick: function(e, close) { showToast('Draft saved'); close(); } },
+          { label: 'Next →', kind: 'primary', id: 'fm-btn-next', onClick: _fmNext }
+        ],
+        afterMount: function(ov) { _fmRenderStep1(ov, 0); }
+      });
+    }
+
+    function _fmNext(e, close) {
+      var ov = document.getElementById(_FM_MODAL);
+      if (!ov) return;
+      var cur = ov._gmCurrentStep || 0;
+      if (cur === 0) {
+        // Validate at least one field selected
+        _fmCollectSelected(ov);
+        if (!_fmSelected.length) { showToast('Select at least one field'); return; }
+        gmGoStep(_FM_MODAL, 1);
+        // Update button label
+        var btn = document.getElementById('fm-btn-next');
+        if (btn) btn.textContent = 'Review →';
+      } else if (cur === 1) {
+        gmGoStep(_FM_MODAL, 2);
+        var btn = document.getElementById('fm-btn-next');
+        if (btn) btn.textContent = 'Activate mapping';
+      } else if (cur === 2) {
+        showToast('Mapping activated successfully');
+        close();
+      }
+    }
+
+    function _fmCollectSelected(ov) {
+      var checks = ov.querySelectorAll('.fm-field-check');
+      _fmSelected = [];
+      checks.forEach(function(ch, i) { if (ch.checked) _fmSelected.push(i); });
+    }
+
+    // ── Step 1: Select fields ──
+    function _fmRenderStep1(ov) {
+      var schema = _fmConfig.schema;
+      var body = ov.querySelector('.gm-body');
+      var allChecked = _fmSelected.length === schema.fields.length;
+
+      var html = '<div class="fm-status-bar">'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + schema.fields.length + '</b> available fields</div>'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#3B82F6;"></span><b>' + schema.fields.filter(function(f){return f.req;}).length + '</b> required</div>'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#94a3b8;"></span><b>' + schema.unmapped.length + '</b> unmapped</div>'
+        + '</div>';
+
+      html += '<div class="fm-section"><div class="fm-section-title">Source fields <span class="fm-count">(' + schema.sourceLabel + ')</span></div>'
+        + '<table class="fm-table"><thead><tr>'
+        + '<th style="width:32px;"><input type="checkbox" class="fm-check" id="fm-check-all" ' + (allChecked ? 'checked' : '') + ' onchange="fmToggleAll(this)"></th>'
+        + '<th>Source field</th><th>Guardian field</th><th>Required</th><th>Description</th>'
+        + '</tr></thead><tbody>';
+
+      schema.fields.forEach(function(f, i) {
+        var checked = _fmSelected.indexOf(i) !== -1;
+        var reqClass = f.req ? 'required' : 'optional';
+        html += '<tr' + (f.req ? ' style="font-weight:500;"' : '') + '>'
+          + '<td><input type="checkbox" class="fm-check fm-field-check" data-idx="'+i+'" ' + (checked ? 'checked' : '') + (f.req ? ' checked disabled title="Required field"' : '') + '></td>'
+          + '<td><span class="fm-source">' + f.source + '</span></td>'
+          + '<td><span class="fm-guardian">' + f.guardian + '</span></td>'
+          + '<td><span class="fm-req ' + reqClass + '">' + (f.req ? 'Required' : 'Optional') + '</span></td>'
+          + '<td style="color:var(--text-muted);font-size:11px;">' + f.desc + '</td>'
+          + '</tr>';
+      });
+      html += '</tbody></table></div>';
+
+      // Unmapped fields
+      if (schema.unmapped.length) {
+        html += '<div class="fm-section"><div class="fm-section-title">Unmapped source fields <span class="fm-count">(' + schema.unmapped.length + ' skipped)</span></div>'
+          + '<table class="fm-table"><thead><tr><th style="width:32px;"></th><th>Source field</th><th colspan="3">Description</th></tr></thead><tbody>';
+        schema.unmapped.forEach(function(u) {
+          html += '<tr class="fm-unmapped"><td></td><td><span class="fm-source">' + u.source + '</span></td><td colspan="3" style="color:var(--text-muted);font-size:11px;">' + u.desc + '</td></tr>';
+        });
+        html += '</tbody></table></div>';
+      }
+
+      body.innerHTML = '<div class="gm-panel is-visible">' + html + '</div>'
+        + '<div class="gm-panel" data-fm="2"></div>'
+        + '<div class="gm-panel" data-fm="3"></div>';
+
+      // Reset button label
+      var btn = document.getElementById('fm-btn-next');
+      if (btn) btn.textContent = 'Next →';
+    }
+
+    function fmToggleAll(master) {
+      var ov = document.getElementById(_FM_MODAL);
+      if (!ov) return;
+      ov.querySelectorAll('.fm-field-check').forEach(function(ch) {
+        if (!ch.disabled) ch.checked = master.checked;
+      });
+    }
+
+    // ── Step 2: Configure mapping ──
+    function _fmRenderStep2(ov) {
+      var schema = _fmConfig.schema;
+      _fmCollectSelected(ov);
+      var body = ov.querySelector('[data-fm="2"]');
+      if (!body) body = ov.querySelectorAll('.gm-panel')[1];
+
+      var selFields = _fmSelected.map(function(i) { return schema.fields[i]; });
+
+      var html = '<div class="fm-status-bar">'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> mapped fields</div>'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#F59E0B;"></span><b>' + selFields.filter(function(f){return f.validation==='warn';}).length + '</b> warnings</div>'
+        + '</div>';
+
+      // Build transform options
+      var txOpts = Object.keys(FM_TRANSFORMS).map(function(k) {
+        return '<option value="'+k+'">'+FM_TRANSFORMS[k]+'</option>';
+      }).join('');
+
+      html += '<table class="fm-table"><thead><tr>'
+        + '<th>' + schema.sourceLabel + '</th><th></th><th>' + schema.targetLabel + '</th>'
+        + '<th>Transform</th><th>Default value</th><th>Validation</th>'
+        + '</tr></thead><tbody>';
+
+      selFields.forEach(function(f, idx) {
+        var valIcon = f.validation === 'ok'
+          ? '<span class="fm-validation ok"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Pass</span>'
+          : '<span class="fm-validation warn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Warning</span>';
+
+        html += '<tr>'
+          + '<td><span class="fm-source">' + f.source + '</span></td>'
+          + '<td class="fm-arrow">→</td>'
+          + '<td><span class="fm-guardian">' + f.guardian + '</span> '
+          +   '<span class="fm-req ' + (f.req ? 'required' : 'optional') + '">' + (f.req ? 'Req' : 'Opt') + '</span></td>'
+          + '<td><select class="fm-edit-select" data-field="transform">' + txOpts.replace('value="'+f.transform+'"', 'value="'+f.transform+'" selected') + '</select></td>'
+          + '<td><input class="fm-edit-input" value="' + (f.default||'') + '" placeholder="—"></td>'
+          + '<td>' + valIcon + '</td>'
+          + '</tr>';
+      });
+      html += '</tbody></table>';
+
+      body.innerHTML = html;
+    }
+
+    // ── Step 3: Review & activate ──
+    function _fmRenderStep3(ov) {
+      var schema = _fmConfig.schema;
+      var body = ov.querySelector('[data-fm="3"]');
+      if (!body) body = ov.querySelectorAll('.gm-panel')[2];
+
+      var selFields = _fmSelected.map(function(i) { return schema.fields[i]; });
+      var reqCount = selFields.filter(function(f){return f.req;}).length;
+      var optCount = selFields.length - reqCount;
+      var warnCount = selFields.filter(function(f){return f.validation==='warn';}).length;
+
+      var html = '<div class="fm-status-bar" style="flex-direction:column;gap:8px;">'
+        + '<div style="font-size:13px;font-weight:700;color:var(--text-default);">Mapping summary</div>'
+        + '<div style="display:flex;gap:16px;">'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span>' + selFields.length + ' fields mapped</div>'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#3B82F6;"></span>' + reqCount + ' required</div>'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#94a3b8;"></span>' + optCount + ' optional</div>'
+        + (warnCount ? '<div class="fm-stat"><span class="fm-stat-dot" style="background:#F59E0B;"></span>' + warnCount + ' warnings</div>' : '')
+        + '</div></div>';
+
+      // Preview with sample data
+      html += '<div class="fm-section"><div class="fm-section-title">Preview — sample record</div>'
+        + '<div class="fm-preview-card">';
+
+      selFields.forEach(function(f) {
+        var val = schema.sampleData[f.source] || f.default || '<em style="color:var(--text-muted);">empty</em>';
+        if (f.transform === 'lookup' && val.indexOf('ref:') === 0) val = val.replace('ref:', '') .replace(/_/g, ' ').replace(/\b\w/g, function(c){return c.toUpperCase();});
+        if (f.transform === 'normalize' && typeof val === 'string') val = val;
+        if (f.transform === 'map_values') {
+          if (val === 'cmdb_ci_win_server') val = 'Windows Server';
+          if (val === 'production') val = 'Production';
+          if (val === 'implement') val = 'In Progress';
+          if (val === 'moderate') val = 'Medium';
+        }
+        if (f.transform === 'datetime' && val) val = val.replace(' ', 'T').substring(0,16);
+        html += '<div class="fm-preview-row"><span class="fm-preview-label">' + f.guardian + '</span><span class="fm-preview-val">' + val + '</span></div>';
+      });
+      html += '</div></div>';
+
+      // Mapping table compact
+      html += '<div class="fm-section"><div class="fm-section-title">Field mappings</div>'
+        + '<table class="fm-table"><thead><tr><th>' + schema.sourceLabel + '</th><th></th><th>' + schema.targetLabel + '</th><th>Transform</th><th>Status</th></tr></thead><tbody>';
+
+      selFields.forEach(function(f) {
+        var valIcon = f.validation === 'ok'
+          ? '<span class="fm-validation ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>'
+          : '<span class="fm-validation warn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>';
+        html += '<tr><td class="fm-source">' + f.source + '</td><td class="fm-arrow">→</td><td class="fm-guardian">' + f.guardian + '</td>'
+          + '<td class="fm-transform">' + FM_TRANSFORMS[f.transform] + '</td><td>' + valIcon + '</td></tr>';
+      });
+      html += '</tbody></table></div>';
+
+      body.innerHTML = html;
+    }
+
     // ── Core setup wizard (icx) — modal-based ──
     var ICX = { step:1, provider:null, auth:'oauth' };
     var _ICX_MODAL = 'icx-wizard';
@@ -15516,7 +15851,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
                   </div>
                 </div>
                 <div class="id-cap-actions">
-                  <button class="btn-outline" style="padding:6px 14px;font-size:11px;" onclick="showToast('CMDB Node Acquisition configuration')">Configure</button>
+                  <button class="btn-outline" style="padding:6px 14px;font-size:11px;" onclick="openFieldMapping('cmdb')">Configure mapping</button>
                 </div>
               </div>
 
@@ -15545,7 +15880,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
                   </div>
                 </div>
                 <div class="id-cap-actions">
-                  <button class="btn-outline" style="padding:6px 14px;font-size:11px;" onclick="showToast('Change Reconciliation configuration')">Configure</button>
+                  <button class="btn-outline" style="padding:6px 14px;font-size:11px;" onclick="openFieldMapping('recon')">Configure mapping</button>
                   <button class="btn-outline" style="padding:6px 14px;font-size:11px;" onclick="showView('changes')">View drift events →</button>
                 </div>
               </div>
