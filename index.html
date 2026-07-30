@@ -3652,19 +3652,18 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
             </details>
 
             <!-- Compact inline waiting status -->
+            <!-- Waiting / result + demo controls in one row -->
             <div style="display:flex;align-items:center;gap:10px;padding:16px 0;margin-top:14px;border-top:1px solid var(--border);">
-              <div id="cmw-conn-body"></div>
-            </div>
-
-            <div id="cmw-conn-actions" style="display:flex;gap:10px;justify-content:flex-end;"></div>
-
-            <div style="text-align:center;margin-top:8px;">
-              <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Demo: simulate check-in</div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
-                <button class="cmw-demo" onclick="cmConnResult('connected')">CM checks in</button>
-                <button class="cmw-demo" onclick="cmConnResult('waiting')">still waiting</button>
+              <div id="cmw-conn-body" style="flex:1;min-width:0;"></div>
+              <div id="cmw-demo-btns" style="flex-shrink:0;text-align:right;">
+                <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px;">Demo: simulate check-in</div>
+                <div style="display:flex;gap:5px;">
+                  <button class="cmw-demo" onclick="cmConnResult('connected')">CM checks in</button>
+                  <button class="cmw-demo" onclick="cmConnResult('waiting')">still waiting</button>
+                </div>
               </div>
             </div>
+            <div id="cmw-conn-actions" style="display:none;"></div>
           </div>
 
 
@@ -9781,12 +9780,6 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
       gmGoStep(_CM_MODAL, 1);
       var btn = document.getElementById('cm-next-btn');
       if (btn) btn.style.display = 'none';
-      /* Change Cancel → Close */
-      var ov = document.getElementById(_CM_MODAL);
-      if (ov) {
-        var cancelBtn = ov.querySelector('.gm-foot .gm-btn-secondary');
-        if (cancelBtn) cancelBtn.textContent = 'Close';
-      }
     }
     function cmwPickOS(os) {
       cmSetup.installerOS = os;
@@ -9822,6 +9815,19 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
           + (isFirst ? 'This page updates automatically when the CM connects.' : 'No CM checked in yet. Verify the Guardian URL and API key.')
           + '</div></div></div>';
         actions.innerHTML = '';
+        /* Set footer to Back/View during waiting */
+        var ov = document.getElementById(_CM_MODAL);
+        if (ov) {
+          var foot = ov.querySelector('.gm-foot');
+          if (foot) {
+            if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
+              foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>'
+                + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">View group →</button>';
+            } else {
+              foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>';
+            }
+          }
+        }
         return;
       }
 
