@@ -492,18 +492,32 @@ body.dark .fm-table th { background:#063135; }
 .fm-source { font-weight:600; font-family:'DM Mono',monospace; font-size:11px; color:var(--text-default); }
 .fm-arrow { color:var(--text-muted); font-size:14px; }
 .fm-guardian { font-weight:600; color:var(--green1); }
-.fm-req { display:inline-flex; align-items:center; font-size:10px; font-weight:600; padding:2px 7px; border-radius:4px; }
-.fm-req.required { color:#b45309; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); }
+.fm-req { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600; padding:2px 7px; border-radius:4px; white-space:nowrap; }
+.fm-req.required { color:var(--text-sec); background:var(--bg-subtle); border:1px solid var(--border); }
+.fm-req.required svg { flex-shrink:0; }
 .fm-req.optional { color:var(--text-muted); background:var(--bg-subtle); border:1px solid var(--border); }
-body.dark .fm-req.required { color:#fbbf24; background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.3); }
+body.dark .fm-req.required { color:var(--text-sec); background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.12); }
+.fm-source-cell { display:flex; flex-direction:column; gap:1px; }
+.fm-source-label { font-weight:600; font-size:12px; color:var(--text-default); }
+.fm-source-path { font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); }
+.fm-hint { font-size:11px; color:var(--text-muted); line-height:1.4; margin-bottom:14px; }
+.fm-quick-actions { display:flex; gap:12px; font-size:11px; }
+.fm-quick-actions button { background:none; border:none; color:var(--green1); cursor:pointer; font-size:11px; font-family:'DM Sans',sans-serif; padding:0; }
+.fm-quick-actions button:hover { text-decoration:underline; }
+.fm-collapsed-toggle { display:flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; padding:8px 0; user-select:none; }
+.fm-collapsed-toggle svg { transition:transform 0.2s; }
+.fm-collapsed-toggle.is-open svg { transform:rotate(90deg); }
+.fm-collapsed-body { display:none; }
+.fm-collapsed-toggle.is-open + .fm-collapsed-body { display:block; }
 .fm-transform { font-size:11px; color:var(--text-sec); font-style:italic; }
 .fm-default { font-size:11px; color:var(--text-muted); }
 .fm-validation { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600; }
 .fm-validation.ok { color:#059669; }
 .fm-validation.warn { color:#d97706; }
 .fm-validation.err { color:#dc2626; }
-.fm-unmapped { opacity:0.5; }
-.fm-unmapped td { color:var(--text-muted); }
+.fm-unmapped td { color:var(--text-sec); }
+.fm-unmapped .fm-source-label { color:var(--text-sec); }
+.fm-unmapped .fm-source-path { color:var(--text-muted); }
 .fm-check { -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:6px; border:1.5px solid #cbd5e1; background:#fff; cursor:pointer; position:relative; flex-shrink:0; transition:all 0.15s; margin:0; }
 .fm-check:checked { background:#22c55e; border-color:#22c55e; }
 .fm-check:checked::after { content:''; position:absolute; top:3px; left:6px; width:5px; height:9px; border:solid #fff; border-width:0 2px 2px 0; transform:rotate(45deg); }
@@ -9503,20 +9517,20 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         sourceLabel: 'ServiceNow CMDB',
         targetLabel: 'Guardian',
         fields: [
-          { source:'cmdb_ci_server.name',        guardian:'Node Name',         req:true,  transform:'none',    default:'',           validation:'ok',  desc:'Server display name' },
-          { source:'cmdb_ci_server.ip_address',   guardian:'IP Address',        req:true,  transform:'none',    default:'',           validation:'ok',  desc:'Primary IP address' },
-          { source:'cmdb_ci_server.os',           guardian:'Operating System',  req:true,  transform:'normalize', default:'',         validation:'ok',  desc:'OS name and version' },
-          { source:'cmdb_ci_server.serial_number',guardian:'Serial Number',     req:false, transform:'none',    default:'N/A',        validation:'ok',  desc:'Hardware serial' },
-          { source:'cmdb_ci_server.sys_class_name',guardian:'Node Type',        req:true,  transform:'map_values', default:'Server',  validation:'ok',  desc:'CI class → Guardian type' },
-          { source:'cmdb_ci_server.location',     guardian:'Location',          req:false, transform:'lookup',  default:'Unassigned', validation:'ok',  desc:'Location reference → name' },
-          { source:'cmdb_ci_server.environment',  guardian:'Environment',       req:false, transform:'map_values', default:'Production', validation:'ok', desc:'Env label mapping' },
-          { source:'cmdb_ci_server.u_guardian_id', guardian:'Guardian ID',      req:false, transform:'none',    default:'auto-generate', validation:'warn', desc:'Custom field — may not exist' },
+          { source:'cmdb_ci_server.name',        label:'Name',           guardian:'Node Name',         req:true,  transform:'none',    default:'',           validation:'ok',  desc:'Server display name' },
+          { source:'cmdb_ci_server.ip_address',  label:'IP Address',     guardian:'IP Address',        req:true,  transform:'none',    default:'',           validation:'ok',  desc:'Primary IP address' },
+          { source:'cmdb_ci_server.os',          label:'OS',             guardian:'Operating System',  req:true,  transform:'normalize', default:'',         validation:'ok',  desc:'OS name and version' },
+          { source:'cmdb_ci_server.serial_number',label:'Serial Number',guardian:'Serial Number',     req:false, transform:'none',    default:'N/A',        validation:'ok',  desc:'Hardware serial' },
+          { source:'cmdb_ci_server.sys_class_name',label:'Class Name',  guardian:'Node Type',        req:true,  transform:'map_values', default:'Server',  validation:'ok',  desc:'CI class → Guardian type' },
+          { source:'cmdb_ci_server.location',    label:'Location',       guardian:'Location',          req:false, transform:'lookup',  default:'Unassigned', validation:'ok',  desc:'Location reference → name' },
+          { source:'cmdb_ci_server.environment', label:'Environment',    guardian:'Environment',       req:false, transform:'map_values', default:'Production', validation:'ok', desc:'Env label mapping' },
+          { source:'cmdb_ci_server.u_guardian_id',label:'Guardian ID',   guardian:'Guardian ID',      req:false, transform:'none',    default:'auto-generate', validation:'warn', desc:'Custom field — may not exist' },
         ],
         unmapped: [
-          { source:'cmdb_ci_server.sys_id',       desc:'ServiceNow unique ID' },
-          { source:'cmdb_ci_server.sys_updated_on', desc:'Last modified timestamp' },
-          { source:'cmdb_ci_server.manufacturer',  desc:'Hardware manufacturer' },
-          { source:'cmdb_ci_server.model_id',      desc:'Hardware model reference' },
+          { source:'cmdb_ci_server.sys_id',        label:'Sys ID',       desc:'ServiceNow unique ID' },
+          { source:'cmdb_ci_server.sys_updated_on',label:'Updated On',   desc:'Last modified timestamp' },
+          { source:'cmdb_ci_server.manufacturer',  label:'Manufacturer', desc:'Hardware manufacturer' },
+          { source:'cmdb_ci_server.model_id',      label:'Model',        desc:'Hardware model reference' },
         ],
         sampleData: {
           'cmdb_ci_server.name': 'PROD-WEB-01',
@@ -9535,20 +9549,20 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         sourceLabel: 'ServiceNow CR',
         targetLabel: 'Guardian',
         fields: [
-          { source:'change_request.number',         guardian:'CR Number',        req:true,  transform:'none',       default:'',           validation:'ok',  desc:'Change request ID' },
-          { source:'change_request.short_description', guardian:'Summary',      req:true,  transform:'truncate',   default:'',           validation:'ok',  desc:'CR title / description' },
-          { source:'change_request.start_date',     guardian:'Change Window Start', req:true, transform:'datetime', default:'',           validation:'ok',  desc:'Planned start date/time' },
-          { source:'change_request.end_date',       guardian:'Change Window End',   req:true, transform:'datetime', default:'',           validation:'ok',  desc:'Planned end date/time' },
-          { source:'change_request.state',          guardian:'CR Status',        req:true,  transform:'map_values', default:'Open',       validation:'ok',  desc:'State → Guardian status' },
-          { source:'change_request.cmdb_ci',        guardian:'Target Node',      req:true,  transform:'lookup',     default:'',           validation:'ok',  desc:'CI reference → node name' },
-          { source:'change_request.assigned_to',    guardian:'Assignee',         req:false, transform:'lookup',     default:'Unassigned', validation:'ok',  desc:'User ref → display name' },
-          { source:'change_request.risk',           guardian:'Risk Level',       req:false, transform:'map_values', default:'Medium',     validation:'ok',  desc:'Risk assessment mapping' },
-          { source:'change_request.u_drift_category', guardian:'Drift Category', req:false, transform:'none',      default:'',           validation:'warn', desc:'Custom field — may not exist' },
+          { source:'change_request.number',          label:'Number',          guardian:'CR Number',        req:true,  transform:'none',       default:'',           validation:'ok',  desc:'Change request ID' },
+          { source:'change_request.short_description',label:'Description',   guardian:'Summary',      req:true,  transform:'truncate',   default:'',           validation:'ok',  desc:'CR title / description' },
+          { source:'change_request.start_date',     label:'Start Date',      guardian:'Change Window Start', req:true, transform:'datetime', default:'',           validation:'ok',  desc:'Planned start date/time' },
+          { source:'change_request.end_date',       label:'End Date',        guardian:'Change Window End',   req:true, transform:'datetime', default:'',           validation:'ok',  desc:'Planned end date/time' },
+          { source:'change_request.state',          label:'State',           guardian:'CR Status',        req:true,  transform:'map_values', default:'Open',       validation:'ok',  desc:'State → Guardian status' },
+          { source:'change_request.cmdb_ci',        label:'CI',              guardian:'Target Node',      req:true,  transform:'lookup',     default:'',           validation:'ok',  desc:'CI reference → node name' },
+          { source:'change_request.assigned_to',    label:'Assigned To',     guardian:'Assignee',         req:false, transform:'lookup',     default:'Unassigned', validation:'ok',  desc:'User ref → display name' },
+          { source:'change_request.risk',           label:'Risk',            guardian:'Risk Level',       req:false, transform:'map_values', default:'Medium',     validation:'ok',  desc:'Risk assessment mapping' },
+          { source:'change_request.u_drift_category',label:'Drift Category', guardian:'Drift Category', req:false, transform:'none',      default:'',           validation:'warn', desc:'Custom field — may not exist' },
         ],
         unmapped: [
-          { source:'change_request.sys_id',          desc:'ServiceNow unique ID' },
-          { source:'change_request.approval',        desc:'Approval status' },
-          { source:'change_request.priority',        desc:'Priority level' },
+          { source:'change_request.sys_id',          label:'Sys ID',      desc:'ServiceNow unique ID' },
+          { source:'change_request.approval',        label:'Approval',    desc:'Approval status' },
+          { source:'change_request.priority',        label:'Priority',    desc:'Priority level' },
         ],
         sampleData: {
           'change_request.number': 'CHG0041523',
@@ -9593,8 +9607,9 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         ],
         buttons: [
           { label: 'Save draft', kind: 'secondary', id: 'fm-btn-draft', onClick: function(e, close) { showToast('Draft saved'); close(); } },
-          { label: 'Next →', kind: 'primary', id: 'fm-btn-next', onClick: _fmNext }
+          { label: 'Next: Configure mapping', kind: 'primary', id: 'fm-btn-next', onClick: _fmNext }
         ],
+        footerLeftHtml: '<button type="button" class="gm-btn gm-btn-secondary" id="fm-btn-back" style="display:none;" onclick="fmBack()">← Back</button>',
         afterMount: function(ov) { _fmRenderStep1(ov, 0); }
       });
     }
@@ -9603,21 +9618,36 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       var ov = document.getElementById(_FM_MODAL);
       if (!ov) return;
       var cur = ov._gmCurrentStep || 0;
+      var backBtn = document.getElementById('fm-btn-back');
+      var nextBtn = document.getElementById('fm-btn-next');
       if (cur === 0) {
-        // Validate at least one field selected
         _fmCollectSelected(ov);
         if (!_fmSelected.length) { showToast('Select at least one field'); return; }
         gmGoStep(_FM_MODAL, 1);
-        // Update button label
-        var btn = document.getElementById('fm-btn-next');
-        if (btn) btn.textContent = 'Review →';
+        if (nextBtn) nextBtn.textContent = 'Next: Review & activate';
+        if (backBtn) backBtn.style.display = '';
       } else if (cur === 1) {
         gmGoStep(_FM_MODAL, 2);
-        var btn = document.getElementById('fm-btn-next');
-        if (btn) btn.textContent = 'Activate mapping';
+        if (nextBtn) nextBtn.textContent = 'Activate mapping';
       } else if (cur === 2) {
         showToast('Mapping activated successfully');
         close();
+      }
+    }
+
+    function fmBack() {
+      var ov = document.getElementById(_FM_MODAL);
+      if (!ov) return;
+      var cur = ov._gmCurrentStep || 0;
+      var backBtn = document.getElementById('fm-btn-back');
+      var nextBtn = document.getElementById('fm-btn-next');
+      if (cur === 1) {
+        gmGoStep(_FM_MODAL, 0);
+        if (nextBtn) nextBtn.textContent = 'Next: Configure mapping';
+        if (backBtn) backBtn.style.display = 'none';
+      } else if (cur === 2) {
+        gmGoStep(_FM_MODAL, 1);
+        if (nextBtn) nextBtn.textContent = 'Next: Review & activate';
       }
     }
 
@@ -9631,50 +9661,73 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
     function _fmRenderStep1(ov) {
       var schema = _fmConfig.schema;
       var body = ov.querySelector('.gm-body');
-      var allChecked = _fmSelected.length === schema.fields.length;
+      var reqCount = schema.fields.filter(function(f){return f.req;}).length;
+      var optCount = schema.fields.length - reqCount;
+      var selOptCount = _fmSelected.filter(function(i){ return !schema.fields[i].req; }).length;
+      var totalSel = reqCount + selOptCount;
+      var totalAll = schema.fields.length + schema.unmapped.length;
 
-      var html = '<div class="fm-status-bar">'
-        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + schema.fields.length + '</b> available fields</div>'
-        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#3B82F6;"></span><b>' + schema.fields.filter(function(f){return f.req;}).length + '</b> required</div>'
-        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#94a3b8;"></span><b>' + schema.unmapped.length + '</b> unmapped</div>'
+      // Hint text
+      var html = '<div class="fm-hint">Select the ' + schema.sourceLabel + ' fields you want to import. Required fields are selected automatically and cannot be removed.</div>';
+
+      // Summary bar + quick actions
+      html += '<div class="fm-status-bar">'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + totalSel + '</b> of ' + totalAll + ' selected</div>'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#3B82F6;"></span><b>' + reqCount + '</b> required</div>'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#94a3b8;"></span><b>' + selOptCount + '</b> optional</div>'
         + '</div>';
 
-      html += '<div class="fm-section"><div class="fm-section-title">Source fields <span class="fm-count">(' + schema.sourceLabel + ')</span></div>'
-        + '<table class="fm-table"><thead><tr>'
-        + '<th style="width:32px;"><input type="checkbox" class="fm-check" id="fm-check-all" ' + (allChecked ? 'checked' : '') + ' onchange="fmToggleAll(this)"></th>'
-        + '<th>Source field</th><th>Guardian field</th><th>Required</th><th>Description</th>'
+      // Main table — no Guardian field column on Step 1
+      html += '<table class="fm-table"><thead><tr>'
+        + '<th style="width:32px;"><input type="checkbox" class="fm-check" id="fm-check-all" ' + (totalSel === schema.fields.length ? 'checked' : '') + ' onchange="fmToggleAll(this)"></th>'
+        + '<th>Source field</th><th>Description</th><th style="width:80px;">Requirement</th>'
         + '</tr></thead><tbody>';
 
       schema.fields.forEach(function(f, i) {
         var checked = _fmSelected.indexOf(i) !== -1;
-        var reqClass = f.req ? 'required' : 'optional';
-        html += '<tr' + (f.req ? ' style="font-weight:500;"' : '') + '>'
-          + '<td><input type="checkbox" class="fm-check fm-field-check" data-idx="'+i+'" ' + (checked ? 'checked' : '') + (f.req ? ' checked disabled title="Required field"' : '') + '></td>'
-          + '<td><span class="fm-source">' + f.source + '</span></td>'
-          + '<td><span class="fm-guardian">' + f.guardian + '</span></td>'
-          + '<td><span class="fm-req ' + reqClass + '">' + (f.req ? 'Required' : 'Optional') + '</span></td>'
-          + '<td style="color:var(--text-muted);font-size:11px;">' + f.desc + '</td>'
+        var reqBadge = f.req
+          ? '<span class="fm-req required"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Required</span>'
+          : '<span class="fm-req optional">Optional</span>';
+        html += '<tr>'
+          + '<td><input type="checkbox" class="fm-check fm-field-check" data-idx="'+i+'" ' + (checked ? 'checked' : '') + (f.req ? ' checked disabled title="Required — cannot be removed"' : '') + '></td>'
+          + '<td><div class="fm-source-cell"><span class="fm-source-label">' + (f.label||f.source) + '</span><span class="fm-source-path">' + f.source + '</span></div></td>'
+          + '<td style="color:var(--text-sec);font-size:11px;">' + f.desc + '</td>'
+          + '<td>' + reqBadge + '</td>'
           + '</tr>';
       });
-      html += '</tbody></table></div>';
+      html += '</tbody></table>';
 
-      // Unmapped fields
+      // Skipped fields — collapsible
       if (schema.unmapped.length) {
-        html += '<div class="fm-section"><div class="fm-section-title">Unmapped source fields <span class="fm-count">(' + schema.unmapped.length + ' skipped)</span></div>'
+        html += '<div style="margin-top:16px;">'
+          + '<div class="fm-collapsed-toggle" onclick="this.classList.toggle(\'is-open\')">'
+          + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>'
+          + schema.unmapped.length + ' skipped fields'
+          + '</div>'
+          + '<div class="fm-collapsed-body">'
           + '<table class="fm-table"><thead><tr><th>Source field</th><th>Description</th></tr></thead><tbody>';
         schema.unmapped.forEach(function(u) {
-          html += '<tr class="fm-unmapped"><td><span class="fm-source">' + u.source + '</span></td><td style="color:var(--text-muted);font-size:11px;">' + u.desc + '</td></tr>';
+          html += '<tr class="fm-unmapped"><td><div class="fm-source-cell"><span class="fm-source-label">' + (u.label||u.source) + '</span><span class="fm-source-path">' + u.source + '</span></div></td><td style="color:var(--text-muted);font-size:11px;">' + u.desc + '</td></tr>';
         });
-        html += '</tbody></table></div>';
+        html += '</tbody></table></div></div>';
       }
 
       body.innerHTML = '<div class="gm-panel is-visible">' + html + '</div>'
         + '<div class="gm-panel" data-fm="2"></div>'
         + '<div class="gm-panel" data-fm="3"></div>';
 
-      // Reset button label
       var btn = document.getElementById('fm-btn-next');
-      if (btn) btn.textContent = 'Next →';
+      if (btn) btn.textContent = 'Next: Configure mapping';
+      var backBtn = document.getElementById('fm-btn-back');
+      if (backBtn) backBtn.style.display = 'none';
+    }
+
+    function _fmUpdateSummary() {
+      var ov = document.getElementById(_FM_MODAL);
+      if (!ov || !_fmConfig) return;
+      _fmCollectSelected(ov);
+      // Re-render to update counts
+      _fmRenderStep1(ov);
     }
 
     function fmToggleAll(master) {
@@ -9683,6 +9736,23 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       ov.querySelectorAll('.fm-field-check').forEach(function(ch) {
         if (!ch.disabled) ch.checked = master.checked;
       });
+      _fmCollectSelected(ov);
+    }
+
+    function fmSelectAllOpt() {
+      var ov = document.getElementById(_FM_MODAL);
+      if (!ov) return;
+      ov.querySelectorAll('.fm-field-check').forEach(function(ch) { if (!ch.disabled) ch.checked = true; });
+      var all = ov.querySelector('#fm-check-all'); if (all) all.checked = true;
+      _fmCollectSelected(ov);
+    }
+
+    function fmClearOpt() {
+      var ov = document.getElementById(_FM_MODAL);
+      if (!ov) return;
+      ov.querySelectorAll('.fm-field-check').forEach(function(ch) { if (!ch.disabled) ch.checked = false; });
+      var all = ov.querySelector('#fm-check-all'); if (all) all.checked = false;
+      _fmCollectSelected(ov);
     }
 
     // ── Step 2: Configure mapping ──
@@ -9693,10 +9763,17 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       if (!body) body = ov.querySelectorAll('.gm-panel')[1];
 
       var selFields = _fmSelected.map(function(i) { return schema.fields[i]; });
+      var warnCount = selFields.filter(function(f){return f.validation==='warn';}).length;
+      var passCount = selFields.length - warnCount;
 
-      var html = '<div class="fm-status-bar">'
-        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> mapped fields</div>'
-        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#F59E0B;"></span><b>' + selFields.filter(function(f){return f.validation==='warn';}).length + '</b> warnings</div>'
+      // Hint
+      var html = '<div class="fm-hint">Review the suggested mappings and configure transforms where needed. Guardian fields are auto-matched from source names.</div>';
+
+      // Summary
+      html += '<div class="fm-status-bar">'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> fields mapped</div>'
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#059669;"></span><b>' + passCount + '</b> passed</div>'
+        + (warnCount ? '<div class="fm-stat"><span class="fm-stat-dot" style="background:#F59E0B;"></span><b>' + warnCount + '</b> warning' + (warnCount !== 1 ? 's' : '') + '</div>' : '')
         + '</div>';
 
       // Build transform options
@@ -9704,25 +9781,55 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         return '<option value="'+k+'">'+FM_TRANSFORMS[k]+'</option>';
       }).join('');
 
+      // Transforms that use a default/fallback value
+      var txNeedsDefault = { map_values:1, lookup:1, normalize:1 };
+
       html += '<table class="fm-table"><thead><tr>'
-        + '<th>' + schema.sourceLabel + '</th><th></th><th>' + schema.targetLabel + '</th>'
-        + '<th>Transform</th><th>Default value</th><th>Validation</th>'
+        + '<th>Source field</th><th>Mapped to</th>'
+        + '<th>Transform</th><th>Default value</th><th>Status</th>'
         + '</tr></thead><tbody>';
 
-      selFields.forEach(function(f, idx) {
-        var valIcon = f.validation === 'ok'
-          ? '<span class="fm-validation ok"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Pass</span>'
-          : '<span class="fm-validation warn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Warning</span>';
+      selFields.forEach(function(f) {
+        // Validation icon
+        var valHtml;
+        if (f.validation === 'ok') {
+          valHtml = '<span class="fm-validation ok"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Pass</span>';
+        } else {
+          valHtml = '<span class="fm-validation warn" title="' + f.desc + '"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Warning</span>';
+        }
+
+        // Default value — only editable for transforms that use it
+        var defaultHtml;
+        if (txNeedsDefault[f.transform] && f.default) {
+          defaultHtml = '<input class="fm-edit-input" value="' + f.default + '">';
+        } else if (f.transform === 'none' || f.transform === 'uppercase' || f.transform === 'lowercase') {
+          defaultHtml = '<span style="font-size:11px;color:var(--text-muted);">—</span>';
+        } else {
+          defaultHtml = '<input class="fm-edit-input" value="' + (f.default||'') + '" placeholder="—">';
+        }
+
+        // Transform dropdown — muted style for pass-through
+        var txStyle = f.transform === 'none' ? ' style="color:var(--text-muted);"' : '';
+
+        // Requirement badge
+        var reqBadge = f.req
+          ? '<span class="fm-req required">Required</span>'
+          : '<span class="fm-req optional">Optional</span>';
 
         html += '<tr>'
-          + '<td><span class="fm-source">' + f.source + '</span></td>'
-          + '<td class="fm-arrow">→</td>'
-          + '<td><span class="fm-guardian">' + f.guardian + '</span> '
-          +   '<span class="fm-req ' + (f.req ? 'required' : 'optional') + '">' + (f.req ? 'Req' : 'Opt') + '</span></td>'
-          + '<td><select class="fm-edit-select" data-field="transform">' + txOpts.replace('value="'+f.transform+'"', 'value="'+f.transform+'" selected') + '</select></td>'
-          + '<td><input class="fm-edit-input" value="' + (f.default||'') + '" placeholder="—"></td>'
-          + '<td>' + valIcon + '</td>'
+          + '<td><div class="fm-source-cell"><span class="fm-source-label">' + (f.label||f.source) + '</span><span class="fm-source-path">' + f.source + '</span></div></td>'
+          + '<td><span class="fm-guardian">' + f.guardian + '</span> ' + reqBadge + '</td>'
+          + '<td><select class="fm-edit-select"' + txStyle + '>' + txOpts.replace('value="'+f.transform+'"', 'value="'+f.transform+'" selected') + '</select></td>'
+          + '<td>' + defaultHtml + '</td>'
+          + '<td>' + valHtml + '</td>'
           + '</tr>';
+
+        // Warning explanation row
+        if (f.validation === 'warn') {
+          html += '<tr><td colspan="5" style="padding:0 10px 8px;border-bottom:1px solid var(--border);"><div style="font-size:10px;color:#b45309;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:4px 8px;display:inline-flex;align-items:center;gap:4px;">'
+            + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12.01" y2="16"/><line x1="12" y1="8" x2="12" y2="12"/></svg>'
+            + f.desc + ' — value will be auto-generated if source is empty.</div></td></tr>';
+        }
       });
       html += '</tbody></table>';
 
