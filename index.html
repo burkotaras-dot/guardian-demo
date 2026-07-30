@@ -1899,7 +1899,8 @@ body.dark .radio-item.cm-item.selected { background:#0C2123;border-color:rgba(16
 .cmw-demo { font-size:10px;font-weight:600;color:var(--text-sec);background:var(--bg-canvas);border:1px solid var(--border);border-radius:20px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:all 0.12s; }
 .cmw-demo:hover { border-color:var(--green1);color:var(--green2); }
 body.dark .cmw-demo { background:rgba(255,255,255,0.05);color:var(--p-neutral-300); }
-.cmw-req { background:#F1F5F9;border-radius:var(--radius-md);padding:14px 18px;margin-bottom:16px; }
+.cmw-req { background:#F1F5F9;border-radius:var(--radius-md);padding:10px 14px;margin-bottom:0;margin-top:14px; }
+.cmw-req[open] { padding:14px 18px; }
 body.dark .cmw-req { background:var(--bg-subtle); }
 /* helper text */
 .helper-text { font-size:11px;color:var(--text-sec);margin-top:6px; }
@@ -2964,7 +2965,7 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
 .gm-x { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 20px; line-height: 1; margin: -4px -6px 0 0; padding: 0; }
 .gm-x:hover { background: var(--bg-canvas); color: var(--text-default); }
 .gm-body { padding: 14px 24px 4px; overflow-y: auto; flex: 1 1 auto; }
-.gm-foot { display: flex; align-items: center; gap: 8px; padding: 14px 24px 18px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; justify-content: flex-end; }
+.gm-foot { display: flex; align-items: center; gap: 8px; padding: 10px 24px 12px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; justify-content: flex-end; }
 .gm-foot-right { display: flex; gap: 8px; margin-left: auto; }
 .gm-btn { padding: 7px 16px; font-size: 12px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 .gm-btn-secondary { border: 1px solid var(--border); background: #F1F5F9; color: var(--text-default); }
@@ -3618,20 +3619,21 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           </div>
 
           <!-- ── Created confirmation (compact status row) ── -->
-          <div id="cmw-created-summary" style="display:none;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-md);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);margin-bottom:16px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <div style="flex:1;min-width:0;">
-              <span style="font-size:13px;font-weight:600;color:var(--text-default);"><span id="cmw-created-name">Group</span> created</span>
-              <span style="font-size:12px;color:var(--text-sec);margin-left:6px;">Install a Connection Manager to activate it.</span>
+          <div id="cmw-created-summary" style="display:none;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--radius-md);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);margin-bottom:14px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <div style="flex:1;min-width:0;font-size:12px;line-height:1.4;">
+              <strong style="color:var(--text-default);">Group created</strong>
+              <span style="color:var(--text-sec);margin-left:4px;">Install a Connection Manager to activate it.</span>
+              <span style="color:var(--text-muted);margin-left:4px;" id="cmw-created-name"></span>
             </div>
           </div>
 
           <!-- ── Install & wait for check-in ── -->
           <div id="cmw-install-block" style="display:none;">
-            <!-- Installation details: API key + URL compact -->
+            <!-- Installation details: API key + URL in one block -->
             <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Installation details</div>
-            <div class="code-row" style="margin-bottom:6px;"><span class="code-label">API key:</span><span class="code-value" id="cmw-api-key">grd_k8x…generated</span><button class="code-btn" onclick="navigator.clipboard.writeText(document.getElementById('cmw-api-key').textContent);scToast('API key copied')">Copy</button></div>
-            <div class="code-row" style="margin-bottom:16px;"><span class="code-label">Guardian URL:</span><span class="code-value">https://guardian.cloudhouse.com</span><button class="code-btn" onclick="navigator.clipboard.writeText('https://guardian.cloudhouse.com');scToast('URL copied')">Copy</button></div>
+            <div class="code-row" style="margin:0 0 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border-bottom:none;"><span class="code-label">API key:</span><span class="code-value" id="cmw-api-key">grd_k8x…generated</span><button class="code-btn" onclick="cmwCopy(this,document.getElementById('cmw-api-key').textContent)">Copy</button></div>
+            <div class="code-row" style="margin:0 0 16px;border-radius:0 0 var(--radius-md) var(--radius-md);border-top:1px solid var(--border);"><span class="code-label">Guardian URL:</span><span class="code-value">https://guardian.cloudhouse.com</span><button class="code-btn" onclick="cmwCopy(this,'https://guardian.cloudhouse.com')">Copy</button></div>
 
             <!-- Installer choice + command (one block) -->
             <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Choose installer</div>
@@ -3640,11 +3642,11 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
               <button id="cmw-os-linux" class="btn-outline cmw-os-btn" onclick="cmwPickOS('linux')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Linux</button>
             </div>
             <div id="cmw-install-cmd">
-              <div class="oneliner-box"><div class="oneliner-header"><span class="oneliner-lang" id="cmw-cmd-lang">powershell</span><button class="oneliner-copy" onclick="navigator.clipboard.writeText(document.getElementById('cmw-cmd-code').textContent);scToast('Command copied')">Copy</button></div><code class="oneliner-code" id="cmw-cmd-code">irm https://guardian.cloudhouse.com/cm/install.ps1 | iex</code></div>
+              <div class="oneliner-box"><div class="oneliner-header"><span class="oneliner-lang" id="cmw-cmd-lang">powershell</span><button class="oneliner-copy" onclick="cmwCopy(this,document.getElementById('cmw-cmd-code').textContent)">Copy</button></div><code class="oneliner-code" id="cmw-cmd-code">irm https://guardian.cloudhouse.com/cm/install.ps1 | iex</code></div>
             </div>
 
             <!-- Requirements (collapsible) -->
-            <details class="cmw-req" style="margin-top:14px;">
+            <details class="cmw-req">
               <summary style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;user-select:none;">Installation requirements</summary>
               <div style="font-size:12px;color:var(--text-sec);line-height:1.7;margin-top:6px;padding-left:2px;">
                 • Supported OS: Windows Server 2019+ or Linux (RHEL/Ubuntu) 64-bit<br>
@@ -3656,13 +3658,13 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
 
             <!-- Compact inline waiting status -->
             <!-- Waiting / result + demo controls in one row -->
-            <div style="display:flex;align-items:center;gap:10px;padding:16px 0;margin-top:14px;border-top:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:10px;padding:14px 0 0;margin-top:14px;border-top:1px solid var(--border);">
               <div id="cmw-conn-body" style="flex:1;min-width:0;"></div>
-              <div id="cmw-demo-btns" style="flex-shrink:0;text-align:right;">
-                <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px;">Demo: simulate check-in</div>
-                <div style="display:flex;gap:5px;">
-                  <button class="cmw-demo" onclick="cmConnResult('connected')">CM checks in</button>
-                  <button class="cmw-demo" onclick="cmConnResult('waiting')">still waiting</button>
+              <div id="cmw-demo-btns" style="flex-shrink:0;text-align:right;opacity:0.3;transition:opacity .15s;" onmouseenter="this.style.opacity='0.7'" onmouseleave="this.style.opacity='0.3'">
+                <div style="font-size:9px;color:var(--text-muted);margin-bottom:2px;font-style:italic;">demo</div>
+                <div style="display:flex;gap:4px;">
+                  <button class="cmw-demo" onclick="cmConnResult('connected')" style="font-size:10px;padding:3px 8px;">check in</button>
+                  <button class="cmw-demo" onclick="cmConnResult('waiting')" style="font-size:10px;padding:3px 8px;">waiting</button>
                 </div>
               </div>
             </div>
@@ -9772,7 +9774,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       var summary = document.getElementById('cmw-created-summary');
       var installBlk = document.getElementById('cmw-install-block');
       var nameSpan = document.getElementById('cmw-created-name');
-      if (nameSpan) nameSpan.textContent = cmSetup.groupName;
+      if (nameSpan) nameSpan.textContent = '· ' + cmSetup.groupName;
       if (createBlk) createBlk.style.display = 'none';
       if (summary) summary.style.display = 'flex';
       if (installBlk) installBlk.style.display = '';
@@ -9815,20 +9817,15 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           + '<div style="flex:1;min-width:0;">'
           + '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Waiting for a Connection Manager to check in…</div>'
           + '<div style="font-size:11px;color:var(--text-sec);margin-top:2px;">'
-          + (isFirst ? 'This page updates automatically when the CM connects.' : 'No CM checked in yet. Verify the Guardian URL and API key.')
+          + (isFirst ? 'This page will update automatically when the connection is detected.' : 'No CM checked in yet. Verify the Guardian URL and API key.')
           + '</div></div></div>';
         actions.innerHTML = '';
-        /* Set footer to Back/View during waiting */
+        /* Set footer during waiting — single Close that returns to list */
         var ov = document.getElementById(_CM_MODAL);
         if (ov) {
           var foot = ov.querySelector('.gm-foot');
           if (foot) {
-            if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
-              foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>'
-                + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">View group →</button>';
-            } else {
-              foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>';
-            }
+            foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>';
           }
         }
         return;
@@ -9860,7 +9857,8 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       body.innerHTML = '<div style="display:flex;align-items:center;gap:10px;width:100%;">'
         + '<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(16,185,129,0.12);flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="' + accent + '" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></span>'
         + '<div style="flex:1;min-width:0;">'
-        + '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Connected — <strong>' + reportedName + '</strong> added to <strong>' + name + '</strong></div>'
+        + '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Connected successfully</div>'
+        + '<div style="font-size:11px;color:var(--text-sec);margin-top:2px;">' + reportedName + ' was added to ' + name + '.</div>'
         + '</div></div>';
       actions.innerHTML = '';
       /* Replace footer buttons with contextual actions */
@@ -9870,15 +9868,33 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         if (foot) {
           if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
             foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>'
-              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group →</button>';
+              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">Done</button>';
           } else {
             foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group</button>'
               + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');cmReturnToAddNode()">Continue to Add Node →</button>';
           }
         }
       }
-      cmSetStep(2);
+      /* Mark both stepper steps as done */
+      var ov = document.getElementById(_CM_MODAL);
+      if (ov) {
+        var steps = ov.querySelectorAll('.gm-step');
+        steps.forEach(function(s) { s.classList.remove('is-active'); s.classList.add('is-done'); });
+      }
     }
+    function cmwCopy(btn, text) {
+      navigator.clipboard.writeText(text);
+      var orig = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      setTimeout(function() { btn.textContent = orig; }, 1500);
+    }
+    /* Shift+D toggles demo controls inside the CM wizard */
+    document.addEventListener('keydown', function(e) {
+      if (e.shiftKey && e.key === 'D') {
+        var d = document.getElementById('cmw-demo-btns');
+        if (d) d.style.display = d.style.display === 'none' ? '' : 'none';
+      }
+    });
     function cmReturnToAddNode() {
       selectedCM = cmSetup.newId || selectedCM;
       if (typeof scToast === 'function') scToast('Connection Manager added — continuing agentless setup');
