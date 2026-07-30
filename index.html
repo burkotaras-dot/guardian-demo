@@ -9853,12 +9853,20 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
         + '<div style="flex:1;min-width:0;">'
         + '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Connected — <strong>' + reportedName + '</strong> added to <strong>' + name + '</strong></div>'
         + '</div></div>';
-      if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
-        actions.innerHTML = '<button class="btn-outline" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')" style="width:auto;padding:9px 16px;font-size:12px;">Back to groups</button>'
-          + '<button class="btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')" style="width:auto;padding:9px 20px;font-size:12px;">View group →</button>';
-      } else {
-        actions.innerHTML = '<button class="btn-outline" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')" style="width:auto;padding:9px 16px;font-size:12px;">View group</button>'
-          + '<button class="btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');cmReturnToAddNode()" style="width:auto;padding:9px 20px;font-size:12px;">Continue to Add Node →</button>';
+      actions.innerHTML = '';
+      /* Replace footer buttons with contextual actions */
+      var ov = document.getElementById(_CM_MODAL);
+      if (ov) {
+        var foot = ov.querySelector('.gm-foot');
+        if (foot) {
+          if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
+            foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>'
+              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group →</button>';
+          } else {
+            foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group</button>'
+              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');cmReturnToAddNode()">Continue to Add Node →</button>';
+          }
+        }
       }
       cmSetStep(2);
     }
