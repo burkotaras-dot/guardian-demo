@@ -2306,11 +2306,26 @@ body.dark [style*="grid-template-columns:16px 20px 1fr 148px"] { border-bottom-c
 body.dark .policy-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
 body.dark .policy-menu > div { color: #C0C0C0 !important; }
 /* ── Connection Managers list ── */
-.stat-mini { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 14px; }
-.stat-mini .sm-label { font-size:9px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
-.stat-mini .sm-val { font-size:20px; font-weight:800; color:var(--text-default); }
-.stat-mini .sm-sub { font-size:10px; color:var(--text-muted); margin-top:1px; }
-.cm-row { display:grid; grid-template-columns:1.4fr 0.8fr 1.6fr 1.2fr 0.7fr 50px; min-width:700px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
+.stat-mini { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 18px; position:relative; overflow:hidden; transition:box-shadow .15s,border-color .15s; box-shadow:0 1px 2px rgba(15,23,42,0.04); }
+.stat-mini:hover { box-shadow:0 2px 8px rgba(15,23,42,0.08); }
+.stat-mini::before { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0.5; }
+.stat-mini .sm-label { font-size:10px; font-weight:600; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.stat-mini .sm-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.stat-mini .sm-val { font-size:24px; font-weight:800; color:var(--text-default); line-height:1.1; }
+.stat-mini .sm-sub { font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.4; }
+.stat-mini .sm-extra { font-size:10px; color:var(--text-muted); margin-top:2px; }
+.stat-mini[data-accent="green"]::before { background:radial-gradient(circle 100px at 100% 0%,rgba(16,185,129,0.10),transparent 70%); }
+.stat-mini[data-accent="amber"]::before { background:radial-gradient(circle 100px at 100% 0%,rgba(245,158,11,0.10),transparent 70%); }
+.stat-mini[data-accent="blue"]::before  { background:radial-gradient(circle 100px at 100% 0%,rgba(59,130,246,0.10),transparent 70%); }
+body.dark .stat-mini { box-shadow:0 2px 8px rgba(0,0,0,0.12); }
+body.dark .stat-mini[data-accent="green"]::before { background:radial-gradient(circle 100px at 100% 0%,rgba(16,185,129,0.14),transparent 70%); }
+body.dark .stat-mini[data-accent="amber"]::before { background:radial-gradient(circle 100px at 100% 0%,rgba(245,158,11,0.14),transparent 70%); }
+body.dark .stat-mini[data-accent="blue"]::before  { background:radial-gradient(circle 100px at 100% 0%,rgba(59,130,246,0.14),transparent 70%); }
+.cm-row { display:grid; grid-template-columns:1.5fr 0.8fr 1.4fr 1fr 0.6fr 0.8fr 42px; min-width:760px; padding:14px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
+.cm-row .cm-name { font-weight:600; color:var(--text-default); transition:color .12s; }
+.cm-row:hover .cm-name { color:var(--green1); }
+.cm-row-dim { opacity:0.55; }
+.cm-row-dim:hover { opacity:0.8; }
 .cm-row:hover, .cm-row-node:hover { background:var(--bg-canvas); }
 body.dark .cm-row:hover, body.dark .cm-row-node:hover { background:#012F32; }
 .cmd-chip { display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:var(--bg-subtle);color:var(--text-default); }
@@ -2318,6 +2333,17 @@ body.dark .cmd-chip { background:rgba(255,255,255,0.07) !important;border-color:
 .cmd-mono { font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:var(--bg-subtle); }
 body.dark .cmd-mono { background:rgba(255,255,255,0.07) !important;border-color:rgba(255,255,255,0.15) !important; }
 .cm-row:last-child { border-bottom:none; }
+.cm-attn { background:var(--bg-surface); border:1px solid var(--border); border-left:3px solid #F59E0B; border-radius:var(--radius-md); padding:12px 16px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:background .12s; }
+.cm-attn:hover { background:var(--bg-canvas); }
+.cm-attn + .cm-attn { margin-top:8px; }
+.cm-attn-icon { flex-shrink:0; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.cm-attn-icon.warn { background:rgba(245,158,11,0.10); }
+.cm-attn-icon.off  { background:rgba(100,116,139,0.10); }
+.cm-attn-body { flex:1; min-width:0; }
+.cm-attn-title { font-size:13px; font-weight:600; color:var(--text-default); }
+.cm-attn-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
+.cm-attn-cta { flex-shrink:0; font-size:11px; font-weight:600; padding:5px 14px; border-radius:6px; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-default); cursor:pointer; }
+.cm-attn-cta:hover { border-color:var(--green1); color:var(--green1); }
 .cm-status { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; }
 .cm-status[data-s="connected"], .cm-status[data-s="active"] { background:rgba(16,185,129,0.1); color:#059669; border:1px solid rgba(16,185,129,0.3); }
 .cm-status[data-s="offline"]   { background:rgba(100,116,139,0.1); color:#64748b; border:1px solid rgba(100,116,139,0.3); }
@@ -9969,10 +9995,47 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       var s2=document.getElementById('cm-stat-connected');
       var s3=document.getElementById('cm-stat-offline');
       var s4=document.getElementById('cm-stat-nodes');
-      if(s1) s1.innerHTML='<div class="sm-label">Total</div><div class="sm-val">'+groups.length+'</div><div class="sm-sub">CM Groups</div>';
-      if(s2) s2.innerHTML='<div class="sm-label">Active</div><div class="sm-val" style="color:#059669;">'+activeCount+'</div><div class="sm-sub">'+connInst+' CM instances connected</div>';
-      if(s3) s3.innerHTML='<div class="sm-label">Disabled</div><div class="sm-val" style="color:'+(disabledCount?'#64748b':'#059669')+';">'+disabledCount+'</div><div class="sm-sub">'+(disabledCount ? disabledCount+' group'+(disabledCount!==1?'s':'')+' paused' : 'None disabled')+'</div>';
-      if(s4) s4.innerHTML='<div class="sm-label">Assigned nodes</div><div class="sm-val">'+totalNodes+'</div><div class="sm-sub">Across '+totalInstances+' CM instances</div>';
+      // Needs attention = disconnected instances + disabled groups
+      var attentionCount = issueInst + disabledCount;
+      var attentionDetails = [];
+      if (issueInst) attentionDetails.push(issueInst + ' disconnected');
+      if (disabledCount) attentionDetails.push(disabledCount + ' disabled');
+      if(s1) s1.innerHTML='<div class="sm-label">Total groups</div><div class="sm-val">'+groups.length+'</div><div class="sm-sub">Connection Manager groups</div><div class="sm-extra">'+totalInstances+' CM instances</div>';
+      if(s2) s2.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:#10B981;"></span>Active</div><div class="sm-val" style="color:#059669;">'+activeCount+'</div><div class="sm-sub">Active groups</div><div class="sm-extra">'+connInst+' connected instances</div>';
+      if(s3) s3.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:'+(attentionCount?'#F59E0B':'#10B981')+'"></span>Needs attention</div><div class="sm-val" style="color:'+(attentionCount?'#D97706':'#059669')+';">'+attentionCount+'</div><div class="sm-sub">'+(attentionCount ? attentionDetails.join(' · ') : 'All healthy')+'</div>';
+      if(s4) s4.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:#3B82F6;"></span>Assigned nodes</div><div class="sm-val">'+totalNodes+'</div><div class="sm-sub">Across '+activeCount+' active groups</div><div class="sm-extra">'+totalInstances+' CM instances</div>';
+
+      // Render attention block
+      var attnEl = document.getElementById('cm-attention');
+      if (attnEl) {
+        var attnItems = [];
+        groups.forEach(function(g) {
+          if (g.state === 'disabled') {
+            attnItems.push({ id:g.id, title:g.name + ' is disabled', sub:(_cmgTotalNodes(g)||'No') + ' assigned nodes', cta:'Enable', kind:'off' });
+          } else if (g.state === 'active') {
+            var disc = g.instances.filter(function(i){ return i.status !== 'connected'; });
+            if (disc.length === g.instances.length) {
+              attnItems.push({ id:g.id, title:g.name + ' has no connected Connection Manager', sub:g.instances.length + ' registered instance' + (g.instances.length!==1?'s':'') + ' · No active connection', cta:'Review', kind:'warn' });
+            } else if (disc.length > 0) {
+              attnItems.push({ id:g.id, title:g.name + ' — ' + disc.length + ' of ' + g.instances.length + ' instances offline', sub:disc.map(function(i){return i.reportedName;}).join(', ') + ' not responding', cta:'Review', kind:'warn' });
+            }
+          }
+        });
+        if (attnItems.length) {
+          attnEl.style.display = '';
+          attnEl.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>Needs your attention</div>'
+            + attnItems.map(function(a) {
+              return '<div class="cm-attn" onclick="showCMDetail(\''+a.id+'\')">'
+                + '<div class="cm-attn-icon '+a.kind+'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="'+(a.kind==='warn'?'#D97706':'#64748B')+'" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>'
+                + '<div class="cm-attn-body"><div class="cm-attn-title">'+a.title+'</div><div class="cm-attn-sub">'+a.sub+'</div></div>'
+                + '<button class="cm-attn-cta" onclick="event.stopPropagation();showCMDetail(\''+a.id+'\')">'+a.cta+'</button>'
+                + '</div>';
+            }).join('');
+        } else {
+          attnEl.style.display = 'none';
+          attnEl.innerHTML = '';
+        }
+      }
 
       // Update sidebar count
       var sbCount = document.querySelector('#sb-cm-list span');
@@ -9995,21 +10058,47 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         return true;
       });
 
+      // Update count label
+      var countEl = document.getElementById('cm-count-label');
+      if (countEl) countEl.textContent = filtered.length + ' group' + (filtered.length !== 1 ? 's' : '') + (filtered.length !== groups.length ? ' of ' + groups.length : '');
+
       rows.innerHTML = filtered.map(function(g) {
         var st = g.state;
         var stLabel = CMG_STATE_LABEL[st] || st;
         var stDot = CMG_STATE_DOT[st] || '#94a3b8';
-        var health = _cmgHealthSummary(g);
         var nodes = _cmgTotalNodes(g);
-        return '<div class="cm-row" onclick="showCMDetail(\''+g.id+'\')">'
+        // Rich health with color highlights
+        var healthHtml = '';
+        if (g.state === 'disabled') {
+          healthHtml = '<span style="color:var(--text-muted);">—</span>';
+        } else {
+          var conn=0, off=0, reg=0;
+          g.instances.forEach(function(i){ if(i.status==='connected') conn++; else if(i.status==='offline') off++; else reg++; });
+          var hp=[];
+          if(conn) hp.push('<span style="color:#059669;">'+conn+' connected</span>');
+          if(off) hp.push('<span style="color:#D97706;">'+off+' offline</span>');
+          if(reg) hp.push('<span style="color:#D97706;">not connected</span>');
+          healthHtml = hp.join(' · ') || '<span style="color:var(--text-muted);">No instances</span>';
+        }
+        // Last activity from most recent instance contact
+        var lastAct = '—';
+        if (g.instances.length) {
+          var contacts = g.instances.map(function(i){ return i.lastContact || '—'; }).filter(function(c){return c!=='Never' && c!=='—';});
+          lastAct = contacts.length ? contacts[0] : 'Never';
+        }
+        // Row warning style for problem groups
+        var rowClass = 'cm-row';
+        if (g.state === 'disabled') rowClass += ' cm-row-dim';
+        return '<div class="'+rowClass+'" onclick="showCMDetail(\''+g.id+'\')">'
           + '<div style="display:flex;align-items:flex-start;gap:8px;padding-top:2px;">'
-          +   '<svg style="flex-shrink:0;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>'
-          +   '<div><div style="font-weight:600;color:var(--text-default);">'+g.name+'</div><div style="font-size:10px;color:var(--text-sec);margin-top:1px;">'+g.instances.length+' instance'+(g.instances.length!==1?'s':'')+'</div></div>'
+          +   '<svg style="flex-shrink:0;margin-top:1px;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>'
+          +   '<div><div class="cm-name">'+g.name+'</div><div style="font-size:10px;color:var(--text-muted);margin-top:1px;">'+g.instances.length+' instance'+(g.instances.length!==1?'s':'')+'</div></div>'
           + '</div>'
-          + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="cm-status" data-s="'+st+'"><span class="cm-dot" style="background:'+stDot+'"></span> '+stLabel+'</span></div>'
-          + '<div style="color:var(--text-sec);font-size:11px;">'+health+'</div>'
-          + '<div style="color:var(--text-sec);">'+(g.location || '—')+'</div>'
-          + '<div style="font-weight:600;color:var(--text-default);">'+nodes+'</div>'
+          + '<div><span class="cm-status" data-s="'+st+'"><span class="cm-dot" style="background:'+stDot+'"></span> '+stLabel+'</span></div>'
+          + '<div style="font-size:11px;">'+healthHtml+'</div>'
+          + '<div style="color:var(--text-sec);font-size:11px;">'+(g.location || '—')+'</div>'
+          + '<div style="font-weight:700;color:var(--text-default);">'+nodes+'</div>'
+          + '<div style="font-size:11px;color:var(--text-muted);">'+lastAct+'</div>'
           + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="event.stopPropagation();cmRowMenu(this,\''+g.id+'\')">⋯</button></div>'
           + '</div>';
       }).join('');
@@ -14953,50 +15042,56 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
     <!-- ── CONNECTION MANAGERS LIST ── -->
     <div class="view" id="v-cm-list" style="display: none;">
       <div class="dash-main" style="max-width:100%;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
         <div>
           <div class="page-title">Connection Manager Groups</div>
-          <div class="page-sub">Organise lightweight relays that reach your nodes over WinRM / SSH</div>
+          <div class="page-sub" style="color:var(--text-muted);">Organise lightweight relays that reach your nodes over WinRM / SSH</div>
         </div>
         <button class="btn-primary" onclick="openCmSetup('cm-list')" style="width:auto;padding:10px 20px;">+ Create Group</button>
       </div>
 
       <!-- Summary cards -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
         <div id="cm-stat-total" class="stat-mini"></div>
-        <div id="cm-stat-connected" class="stat-mini"></div>
-        <div id="cm-stat-offline" class="stat-mini" style="cursor:pointer;" onclick="cmQuickFilterAttention()"></div>
-        <div id="cm-stat-nodes" class="stat-mini"></div>
+        <div id="cm-stat-connected" class="stat-mini" data-accent="green"></div>
+        <div id="cm-stat-offline" class="stat-mini" data-accent="amber" style="cursor:pointer;" onclick="cmQuickFilterAttention()"></div>
+        <div id="cm-stat-nodes" class="stat-mini" data-accent="blue"></div>
       </div>
 
-      <!-- Search + Status filter -->
-      <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;">
-        <div style="position:relative;flex:1 1 180px;min-width:140px;max-width:280px;">
+      <!-- Attention block -->
+      <div id="cm-attention" style="display:none;margin-bottom:16px;"></div>
+
+      <!-- Toolbar: search + filters + count -->
+      <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap;">
+        <div style="position:relative;flex:0 1 240px;min-width:140px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-          <input id="cm-search" type="text" placeholder="Search connection managers…" oninput="filterCMList()" style="width:100%;padding:9px 12px 9px 36px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;">
+          <input id="cm-search" type="text" placeholder="Search groups…" oninput="filterCMList()" style="width:100%;padding:8px 12px 8px 36px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;">
         </div>
         <div style="position:relative;flex-shrink:0;">
           <div id="cm-status-btn" class="dk-form" onclick="toggleCMStatusDrop()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-            <span id="cm-status-label">All groups</span>
+            <span style="color:var(--text-muted);font-weight:500;">Status:</span>
+            <span id="cm-status-label" style="font-weight:600;">All</span>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </div>
           <div id="cm-status-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:200px;z-index:100;">
             <div style="padding:4px 12px 6px;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">State</div>
-            <div class="cms-opt cms-opt-active" data-val="all" onclick="pickCMStatus(this,'All groups')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All groups</div>
+            <div class="cms-opt cms-opt-active" data-val="all" onclick="pickCMStatus(this,'All')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All groups</div>
             <div class="cms-opt" data-val="active" onclick="pickCMStatus(this,'Active')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Active</div>
             <div class="cms-opt" data-val="disabled" onclick="pickCMStatus(this,'Disabled')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Disabled</div>
             <div style="height:1px;background:var(--border);margin:4px 0;"></div>
             <div style="padding:4px 12px 6px;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Availability</div>
-            <div class="cms-opt" data-val="has-connected" onclick="pickCMStatus(this,'Has connected managers')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Has connected managers</div>
-            <div class="cms-opt" data-val="no-connected" onclick="pickCMStatus(this,'No connected managers')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>No connected managers</div>
+            <div class="cms-opt" data-val="has-connected" onclick="pickCMStatus(this,'Connected')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Has connected managers</div>
+            <div class="cms-opt" data-val="no-connected" onclick="pickCMStatus(this,'Disconnected')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>No connected managers</div>
           </div>
         </div>
+        <div style="flex:1;"></div>
+        <div id="cm-count-label" style="font-size:11px;color:var(--text-muted);white-space:nowrap;"></div>
       </div>
 
       <!-- Table -->
-      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;">
-        <div class="col-thead" style="display:grid;grid-template-columns:1.4fr 0.8fr 1.6fr 1.2fr 0.7fr 50px;min-width:700px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
-          <div>Group</div><div>State</div><div>CM Health</div><div>Location</div><div>Nodes</div><div></div>
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+        <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 0.8fr 1.4fr 1fr 0.6fr 0.8fr 42px;min-width:760px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
+          <div>Group</div><div>Status</div><div>Connection health</div><div>Location</div><div>Nodes</div><div>Last activity</div><div></div>
         </div>
         <div id="cm-rows"></div>
       </div>
