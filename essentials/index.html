@@ -9927,6 +9927,21 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       go('s-agentless');
     }
 
+    // Demo: toggle empty state on CM Groups page
+    var _cmBackup = null;
+    function cmToggleEmpty() {
+      var btn = document.getElementById('cm-demo-empty');
+      if (_cmBackup) {
+        CM_GROUPS.push.apply(CM_GROUPS, _cmBackup);
+        _cmBackup = null;
+        if (btn) btn.textContent = 'Empty state';
+      } else {
+        _cmBackup = CM_GROUPS.splice(0);
+        if (btn) btn.textContent = 'Restore data';
+      }
+      renderCMList();
+    }
+
     // ── Connection Manager Group List ──
     // CMG state colours
     var CMG_STATE_LABEL = { active:'Active', disabled:'Disabled' };
@@ -10000,10 +10015,18 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       var attentionDetails = [];
       if (issueInst) attentionDetails.push(issueInst + ' disconnected');
       if (disabledCount) attentionDetails.push(disabledCount + ' disabled');
+      if (!groups.length) {
+        // Empty KPI state
+        if(s1) s1.innerHTML='<div class="sm-label">Total groups</div><div class="sm-val" style="color:var(--text-muted);">0</div><div class="sm-sub" style="color:var(--text-muted);">No groups created</div>';
+        if(s2) s2.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:var(--border);"></span>Active</div><div class="sm-val" style="color:var(--text-muted);">—</div><div class="sm-sub" style="color:var(--text-muted);">No active groups</div>';
+        if(s3) s3.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:var(--border);"></span>Needs attention</div><div class="sm-val" style="color:var(--text-muted);">—</div><div class="sm-sub" style="color:var(--text-muted);">Nothing to report</div>';
+        if(s4) s4.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:var(--border);"></span>Assigned nodes</div><div class="sm-val" style="color:var(--text-muted);">0</div><div class="sm-sub" style="color:var(--text-muted);">No nodes assigned</div>';
+      } else {
       if(s1) s1.innerHTML='<div class="sm-label">Total groups</div><div class="sm-val">'+groups.length+'</div><div class="sm-sub">Connection Manager groups</div><div class="sm-extra">'+totalInstances+' CM instances</div>';
       if(s2) s2.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:#10B981;"></span>Active</div><div class="sm-val" style="color:#059669;">'+activeCount+'</div><div class="sm-sub">Active groups</div><div class="sm-extra">'+connInst+' connected instances</div>';
       if(s3) s3.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:'+(attentionCount?'#F59E0B':'#10B981')+'"></span>Needs attention</div><div class="sm-val" style="color:'+(attentionCount?'#D97706':'#059669')+';">'+attentionCount+'</div><div class="sm-sub">'+(attentionCount ? attentionDetails.join(' · ') : 'All healthy')+'</div>';
       if(s4) s4.innerHTML='<div class="sm-label"><span class="sm-dot" style="background:#3B82F6;"></span>Assigned nodes</div><div class="sm-val">'+totalNodes+'</div><div class="sm-sub">Across '+activeCount+' active groups</div><div class="sm-extra">'+totalInstances+' CM instances</div>';
+      }
 
       // Render attention block
       var attnEl = document.getElementById('cm-attention');
@@ -10062,6 +10085,25 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       var countEl = document.getElementById('cm-count-label');
       if (countEl) countEl.textContent = filtered.length + ' group' + (filtered.length !== 1 ? 's' : '') + (filtered.length !== groups.length ? ' of ' + groups.length : '');
 
+      // Empty state for table
+      if (!filtered.length) {
+        var emptyMsg = groups.length
+          ? 'No groups match your filters'
+          : 'No CM groups yet';
+        var emptySub = groups.length
+          ? 'Try adjusting your search or status filter'
+          : 'Create your first Connection Manager group to start managing nodes';
+        var emptyCta = groups.length
+          ? ''
+          : '<button class="btn btn-primary" style="margin-top:12px;font-size:12px;padding:7px 20px;display:inline-block;width:auto;" onclick="openCmSetup(\'cm-list\')">+ Create Group</button>';
+        rows.innerHTML = '<div style="text-align:center;padding:48px 24px;color:var(--text-muted);">'
+          + '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.2" style="margin-bottom:12px;opacity:0.5;"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="var(--text-muted)" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="var(--text-muted)" stroke="none"></circle></svg>'
+          + '<div style="font-size:13px;font-weight:600;color:var(--text-sec);margin-bottom:4px;">'+emptyMsg+'</div>'
+          + '<div style="font-size:11px;">'+emptySub+'</div>'
+          + emptyCta
+          + '</div>';
+        return;
+      }
       rows.innerHTML = filtered.map(function(g) {
         var st = g.state;
         var stLabel = CMG_STATE_LABEL[st] || st;
@@ -15083,6 +15125,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         </div>
         <div style="flex:1;"></div>
         <div id="cm-count-label" style="font-size:11px;color:var(--text-muted);white-space:nowrap;"></div>
+        <button id="cm-demo-empty" onclick="cmToggleEmpty()" style="font-size:9px;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-surface);color:var(--text-muted);cursor:pointer;opacity:0.3;margin-left:8px;">Empty state</button>
       </div>
 
       <!-- Table -->
