@@ -516,7 +516,12 @@ body.dark .fm-req.required { color:var(--text-sec); background:rgba(255,255,255,
 .fm-validation.ok { color:#059669; }
 .fm-validation.warn { color:#d97706; }
 .fm-validation.err { color:#dc2626; }
-.fm-row-err { }
+.fm-row-warn { background:rgba(245,158,11,0.04); }
+.fm-row-warn td { border-bottom-color:transparent !important; }
+.fm-row-err { background:rgba(220,38,38,0.04); }
+.fm-row-err td { border-bottom-color:transparent !important; }
+body.dark .fm-row-warn { background:rgba(245,158,11,0.06); }
+body.dark .fm-row-err { background:rgba(220,38,38,0.06); }
 .fm-unmapped td { color:var(--text-sec); }
 .fm-unmapped .fm-source-label { color:var(--text-sec); }
 .fm-unmapped .fm-source-path { color:var(--text-muted); }
@@ -9797,14 +9802,12 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       var passCount = selFields.length - warnCount;
 
       // Hint
-      var html = '<div class="fm-hint">Review the suggested mappings and configure transforms where needed. Guardian fields are auto-matched from source names.</div>';
+      var html = '<div class="fm-hint">Review the mappings and test them against a sample record before continuing.</div>';
 
-      // Summary + test result panel
-      html += '<div id="fm-test-result"></div>';
-
+      // Unified summary / result block
       html += '<div class="fm-status-bar" id="fm-step2-bar">'
-        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> fields mapped</div>'
-        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:var(--text-muted);"></span>Not tested</div>'
+        + '<div class="fm-stat"><b>' + selFields.length + '</b> fields mapped</div>'
+        + '<div class="fm-stat" style="color:var(--text-muted);">· Not tested</div>'
         + '</div>';
 
       // Build transform options
@@ -9870,8 +9873,6 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       _fmTestState = null;
       var testBtn = document.getElementById('fm-btn-test');
       if (testBtn) { testBtn.textContent = 'Test mapping'; testBtn.disabled = false; testBtn.style.color = ''; testBtn.style.borderColor = ''; }
-      var resultEl = document.getElementById('fm-test-result');
-      if (resultEl) resultEl.innerHTML = '';
       // Reset status cells
       document.querySelectorAll('[data-fm-status]').forEach(function(el) {
         el.className = 'fm-validation';
@@ -9880,17 +9881,21 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       });
       // Remove warning explanation rows
       document.querySelectorAll('.fm-test-warn-row').forEach(function(el) { el.remove(); });
-      // Re-enable Next
+      // Re-enable Next + remove error hint
       var nextBtn = document.getElementById('fm-btn-next');
       if (nextBtn) { nextBtn.disabled = false; nextBtn.style.opacity = ''; }
+      var errHint = document.getElementById('fm-err-hint');
+      if (errHint) errHint.remove();
+      // Remove row tints
+      document.querySelectorAll('.fm-row-warn, .fm-row-err').forEach(function(tr){ tr.classList.remove('fm-row-warn','fm-row-err'); });
       // Update summary bar
       var ov = document.getElementById(_FM_MODAL);
       if (ov) {
         var bar = document.getElementById('fm-step2-bar');
         var schema = _fmConfig.schema;
         var selFields = _fmSelected.map(function(i) { return schema.fields[i]; });
-        if (bar) bar.innerHTML = '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> fields mapped</div>'
-          + '<div class="fm-stat"><span class="fm-stat-dot" style="background:var(--text-muted);"></span>Not tested</div>';
+        if (bar) bar.innerHTML = '<div class="fm-stat"><b>' + selFields.length + '</b> fields mapped</div>'
+          + '<div class="fm-stat" style="color:var(--text-muted);">· Not tested</div>';
       }
     }
 
@@ -9925,12 +9930,12 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           statusEl.className = 'fm-validation warn';
           statusEl.style.color = '#D97706';
           statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Conflict';
+          tr.classList.add('fm-row-warn');
           warnCount++;
           var cRow = document.createElement('tr');
-          cRow.className = 'fm-test-warn-row';
+          cRow.className = 'fm-test-warn-row fm-row-warn';
           var others = guardianMap[conflictIdxs[idx]].filter(function(i){return i!==idx;}).map(function(i){return selFields[i].label||selFields[i].source;}).join(', ');
-          cRow.innerHTML = '<td colspan="5" style="padding:2px 10px 10px;border:none;"><div style="font-size:10px;color:#b45309;display:inline-flex;align-items:center;gap:4px;">'
-            + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12.01" y2="16"/><line x1="12" y1="8" x2="12" y2="12"/></svg>'
+          cRow.innerHTML = '<td colspan="5" style="padding:0 10px 8px;border:none;"><div style="font-size:10px;color:#b45309;display:inline-flex;align-items:center;gap:4px;">'
             + 'Conflicts with ' + others + ' — only one field can map to ' + conflictIdxs[idx] + '.</div></td>';
           tr.parentNode.insertBefore(cRow, tr.nextSibling);
         } else if (f.validation === 'err') {
@@ -9940,20 +9945,19 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           tr.classList.add('fm-row-err');
           errCount++;
           var eRow = document.createElement('tr');
-          eRow.className = 'fm-test-warn-row';
-          eRow.innerHTML = '<td colspan="5" style="padding:2px 10px 10px;border:none;"><div style="font-size:10px;color:#dc2626;display:inline-flex;align-items:center;gap:4px;">'
-            + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12.01" y2="16"/><line x1="12" y1="8" x2="12" y2="12"/></svg>'
-            + f.desc + '</div></td>';
+          eRow.className = 'fm-test-warn-row fm-row-err';
+          eRow.innerHTML = '<td colspan="5" style="padding:0 10px 8px;border:none;"><div style="font-size:10px;color:#dc2626;display:inline-flex;align-items:center;gap:4px;">'
+            + '<b>' + f.desc + '.</b> Choose another source field or remove this mapping.</div></td>';
           tr.parentNode.insertBefore(eRow, tr.nextSibling);
         } else if (f.validation === 'warn') {
           statusEl.className = 'fm-validation warn';
           statusEl.style.color = '';
           statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Warning';
+          tr.classList.add('fm-row-warn');
           warnCount++;
           var warnRow = document.createElement('tr');
-          warnRow.className = 'fm-test-warn-row';
-          warnRow.innerHTML = '<td colspan="5" style="padding:2px 10px 10px;border:none;"><div style="font-size:10px;color:#b45309;display:inline-flex;align-items:center;gap:4px;">'
-            + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12.01" y2="16"/><line x1="12" y1="8" x2="12" y2="12"/></svg>'
+          warnRow.className = 'fm-test-warn-row fm-row-warn';
+          warnRow.innerHTML = '<td colspan="5" style="padding:0 10px 8px;border:none;"><div style="font-size:10px;color:#b45309;display:inline-flex;align-items:center;gap:4px;">'
             + f.desc + ' — value will be auto-generated if source is empty.</div></td>';
           tr.parentNode.insertBefore(warnRow, tr.nextSibling);
         } else {
@@ -9986,41 +9990,40 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         }
       }
 
-      // Update result panel
-      var resultEl = document.getElementById('fm-test-result');
-      if (resultEl) {
-        var parts = passCount + ' passed';
-        if (warnCount) parts += ' · ' + warnCount + ' warning' + (warnCount !== 1 ? 's' : '');
-        if (errCount) parts += ' · ' + errCount + ' error' + (errCount !== 1 ? 's' : '');
-
-        if (_fmTestState === 'passed') {
-          resultEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:var(--radius-md);font-size:12px;color:#059669;margin-bottom:12px;font-weight:600;">'
-            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
-            + 'Test passed — all ' + selFields.length + ' fields mapped successfully</div>';
-        } else if (_fmTestState === 'warning') {
-          resultEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-md);font-size:12px;color:#b45309;margin-bottom:12px;font-weight:600;">'
-            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
-            + 'Test completed — ' + parts + '</div>';
-        } else if (_fmTestState === 'error') {
-          resultEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-subtle);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;color:#dc2626;margin-bottom:12px;font-weight:600;">'
-            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
-            + 'Test failed — ' + parts + '</div>';
-        }
-      }
-
-      // Update summary bar
+      // Update unified summary bar
       var bar = document.getElementById('fm-step2-bar');
       if (bar) {
-        bar.innerHTML = '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> fields mapped</div>'
-          + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#059669;"></span><b>' + passCount + '</b> passed</div>'
-          + (warnCount ? '<div class="fm-stat"><span class="fm-stat-dot" style="background:#F59E0B;"></span><b>' + warnCount + '</b> warning' + (warnCount !== 1 ? 's' : '') + '</div>' : '')
-          + (errCount ? '<div class="fm-stat"><span class="fm-stat-dot" style="background:#dc2626;"></span><b>' + errCount + '</b> error' + (errCount !== 1 ? 's' : '') + '</div>' : '');
+        var parts = selFields.length + ' fields tested · ' + passCount + ' passed';
+        if (warnCount) parts += ' · ' + warnCount + ' warning' + (warnCount !== 1 ? 's' : '');
+        if (errCount) parts += ' · ' + errCount + ' error' + (errCount !== 1 ? 's' : '');
+        var stateIcon, stateLabel, stateColor;
+        if (_fmTestState === 'passed') {
+          stateIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+          stateLabel = 'Test passed'; stateColor = '#059669';
+        } else if (_fmTestState === 'warning') {
+          stateIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+          stateLabel = 'Test completed'; stateColor = '#b45309';
+        } else {
+          stateIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+          stateLabel = 'Test failed'; stateColor = '#dc2626';
+        }
+        bar.innerHTML = '<div class="fm-stat" style="color:' + stateColor + ';font-weight:600;display:inline-flex;align-items:center;gap:5px;">' + stateIcon + stateLabel + '</div>'
+          + '<div class="fm-stat">' + parts + '</div>';
       }
 
-      // Block Next if errors
+      // Block Next if errors + add hint
       if (errCount > 0) {
         var nextBtn = document.getElementById('fm-btn-next');
-        if (nextBtn) { nextBtn.disabled = true; nextBtn.style.opacity = '0.5'; }
+        if (nextBtn) {
+          nextBtn.disabled = true; nextBtn.style.opacity = '0.5';
+          if (!document.getElementById('fm-err-hint')) {
+            var hint = document.createElement('span');
+            hint.id = 'fm-err-hint';
+            hint.style.cssText = 'font-size:11px;color:#dc2626;margin-right:8px;';
+            hint.textContent = 'Resolve ' + errCount + ' error' + (errCount !== 1 ? 's' : '') + ' before continuing';
+            nextBtn.parentNode.insertBefore(hint, nextBtn);
+          }
+        }
       }
     }
 
