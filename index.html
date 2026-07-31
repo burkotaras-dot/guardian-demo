@@ -516,6 +516,8 @@ body.dark .fm-req.required { color:var(--text-sec); background:rgba(255,255,255,
 .fm-validation.ok { color:#059669; }
 .fm-validation.warn { color:#d97706; }
 .fm-validation.err { color:#dc2626; }
+.fm-row-err { background:rgba(220,38,38,0.04); }
+body.dark .fm-row-err { background:rgba(220,38,38,0.08); }
 .fm-unmapped td { color:var(--text-sec); }
 .fm-unmapped .fm-source-label { color:var(--text-sec); }
 .fm-unmapped .fm-source-path { color:var(--text-muted); }
@@ -9575,6 +9577,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           { source:'change_request.assigned_to',    label:'Assigned To',     guardian:'Assignee',         req:false, transform:'lookup',     default:'Unassigned', validation:'ok',  desc:'User ref → display name' },
           { source:'change_request.risk',           label:'Risk',            guardian:'Risk Level',       req:false, transform:'map_values', default:'Medium',     validation:'ok',  desc:'Risk assessment mapping' },
           { source:'change_request.u_drift_category',label:'Drift Category', guardian:'Drift Category', req:false, transform:'none',      default:'',           validation:'warn', desc:'Custom field — may not exist' },
+          { source:'change_request.u_rollback_plan', label:'Rollback Plan',  guardian:'Rollback Plan',   req:false, transform:'none',      default:'',           validation:'err',  desc:'Source field not found in ServiceNow schema' },
         ],
         unmapped: [
           { source:'change_request.sys_id',          label:'Sys ID',      desc:'ServiceNow unique ID' },
@@ -9606,11 +9609,14 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       lowercase: 'Lowercase'
     };
 
+    var _fmTestState = null; // null | 'passed' | 'warning' | 'error'
+
     function openFieldMapping(schemaKey) {
       var schema = FM_SCHEMAS[schemaKey];
       if (!schema) return;
       _fmConfig = { key:schemaKey, schema:schema };
       _fmSelected = schema.fields.map(function(_, i) { return i; }); // all selected by default
+      _fmTestState = null;
 
       openModal({
         id: _FM_MODAL,
@@ -9626,7 +9632,8 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           { label: 'Save draft', kind: 'secondary', id: 'fm-btn-draft', onClick: function(e, close) { showToast('Draft saved'); close(); } },
           { label: 'Next: Configure mapping', kind: 'primary', id: 'fm-btn-next', onClick: _fmNext }
         ],
-        footerLeftHtml: '<button type="button" class="gm-btn gm-btn-secondary" id="fm-btn-back" style="display:none;" onclick="fmBack()">← Back</button>',
+        footerLeftHtml: '<button type="button" class="gm-btn gm-btn-secondary" id="fm-btn-back" style="display:none;" onclick="fmBack()">← Back</button>'
+          + '<button type="button" class="gm-btn gm-btn-secondary" id="fm-btn-test" style="display:none;" onclick="fmRunTest()">Test mapping</button>',
         afterMount: function(ov) { _fmRenderStep1(ov, 0); }
       });
     }
@@ -9637,15 +9644,19 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       var cur = ov._gmCurrentStep || 0;
       var backBtn = document.getElementById('fm-btn-back');
       var nextBtn = document.getElementById('fm-btn-next');
+      var testBtn = document.getElementById('fm-btn-test');
       if (cur === 0) {
         _fmCollectSelected(ov);
         if (!_fmSelected.length) { showToast('Select at least one field'); return; }
         gmGoStep(_FM_MODAL, 1);
         if (nextBtn) nextBtn.textContent = 'Next: Review & activate';
         if (backBtn) backBtn.style.display = '';
+        if (testBtn) testBtn.style.display = '';
       } else if (cur === 1) {
+        if (_fmTestState === 'error') { showToast('Fix blocking errors before proceeding'); return; }
         gmGoStep(_FM_MODAL, 2);
         if (nextBtn) nextBtn.textContent = 'Activate mapping';
+        if (testBtn) testBtn.style.display = 'none';
       } else if (cur === 2) {
         showToast('Mapping activated successfully');
         close();
@@ -9658,13 +9669,16 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       var cur = ov._gmCurrentStep || 0;
       var backBtn = document.getElementById('fm-btn-back');
       var nextBtn = document.getElementById('fm-btn-next');
+      var testBtn = document.getElementById('fm-btn-test');
       if (cur === 1) {
         gmGoStep(_FM_MODAL, 0);
         if (nextBtn) nextBtn.textContent = 'Next: Configure mapping';
         if (backBtn) backBtn.style.display = 'none';
+        if (testBtn) testBtn.style.display = 'none';
       } else if (cur === 2) {
         gmGoStep(_FM_MODAL, 1);
         if (nextBtn) nextBtn.textContent = 'Next: Review & activate';
+        if (testBtn) testBtn.style.display = '';
       }
     }
 
@@ -9786,11 +9800,12 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       // Hint
       var html = '<div class="fm-hint">Review the suggested mappings and configure transforms where needed. Guardian fields are auto-matched from source names.</div>';
 
-      // Summary
-      html += '<div class="fm-status-bar">'
+      // Summary + test result panel
+      html += '<div id="fm-test-result"></div>';
+
+      html += '<div class="fm-status-bar" id="fm-step2-bar">'
         + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> fields mapped</div>'
-        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#059669;"></span><b>' + passCount + '</b> passed</div>'
-        + (warnCount ? '<div class="fm-stat"><span class="fm-stat-dot" style="background:#F59E0B;"></span><b>' + warnCount + '</b> warning' + (warnCount !== 1 ? 's' : '') + '</div>' : '')
+        + '<div class="fm-stat"><span class="fm-stat-dot" style="background:var(--text-muted);"></span>Not tested</div>'
         + '</div>';
 
       // Build transform options
@@ -9806,14 +9821,9 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         + '<th>Transform</th><th>Default value</th><th>Status</th>'
         + '</tr></thead><tbody>';
 
-      selFields.forEach(function(f) {
-        // Validation icon
-        var valHtml;
-        if (f.validation === 'ok') {
-          valHtml = '<span class="fm-validation ok"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Pass</span>';
-        } else {
-          valHtml = '<span class="fm-validation warn" title="' + f.desc + '"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Warning</span>';
-        }
+      selFields.forEach(function(f, idx) {
+        // Status — depends on test state
+        var valHtml = '<span class="fm-validation" style="color:var(--text-muted);" data-fm-status="' + idx + '">Not tested</span>';
 
         // Default value — only editable for transforms that use it
         var defaultHtml;
@@ -9838,12 +9848,6 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           + '<td>' + valHtml + '</td>'
           + '</tr>';
 
-        // Warning explanation row
-        if (f.validation === 'warn') {
-          html += '<tr><td colspan="5" style="padding:2px 10px 10px;border:none;"><div style="font-size:10px;color:#b45309;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:4px 8px;display:inline-flex;align-items:center;gap:4px;">'
-            + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12.01" y2="16"/><line x1="12" y1="8" x2="12" y2="12"/></svg>'
-            + f.desc + ' — value will be auto-generated if source is empty.</div></td></tr>';
-        }
       });
       html += '</tbody></table>';
 
@@ -9853,8 +9857,172 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         if (sel.value === 'none') sel._csel.btn.classList.add('muted');
         sel.addEventListener('change', function() {
           sel._csel.btn.classList.toggle('muted', sel.value === 'none');
+          _fmResetTest();
         });
       });
+      // Reset test on any input change
+      body.querySelectorAll('.fm-edit-input').forEach(function(inp) {
+        inp.addEventListener('input', _fmResetTest);
+      });
+    }
+
+    function _fmResetTest() {
+      if (_fmTestState === null) return;
+      _fmTestState = null;
+      var testBtn = document.getElementById('fm-btn-test');
+      if (testBtn) { testBtn.textContent = 'Test mapping'; testBtn.disabled = false; testBtn.style.color = ''; testBtn.style.borderColor = ''; }
+      var resultEl = document.getElementById('fm-test-result');
+      if (resultEl) resultEl.innerHTML = '';
+      // Reset status cells
+      document.querySelectorAll('[data-fm-status]').forEach(function(el) {
+        el.className = 'fm-validation';
+        el.style.color = 'var(--text-muted)';
+        el.innerHTML = 'Not tested';
+      });
+      // Remove warning explanation rows
+      document.querySelectorAll('.fm-test-warn-row').forEach(function(el) { el.remove(); });
+      // Re-enable Next
+      var nextBtn = document.getElementById('fm-btn-next');
+      if (nextBtn) { nextBtn.disabled = false; nextBtn.style.opacity = ''; }
+      // Update summary bar
+      var ov = document.getElementById(_FM_MODAL);
+      if (ov) {
+        var bar = document.getElementById('fm-step2-bar');
+        var schema = _fmConfig.schema;
+        var selFields = _fmSelected.map(function(i) { return schema.fields[i]; });
+        if (bar) bar.innerHTML = '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> fields mapped</div>'
+          + '<div class="fm-stat"><span class="fm-stat-dot" style="background:var(--text-muted);"></span>Not tested</div>';
+      }
+    }
+
+    function fmRunTest() {
+      var ov = document.getElementById(_FM_MODAL);
+      if (!ov) return;
+      var schema = _fmConfig.schema;
+      var selFields = _fmSelected.map(function(i) { return schema.fields[i]; });
+      var warnCount = 0, errCount = 0, passCount = 0;
+
+      // Conflict detection: find duplicate guardian targets
+      var guardianMap = {};
+      selFields.forEach(function(f, idx) {
+        if (!guardianMap[f.guardian]) guardianMap[f.guardian] = [];
+        guardianMap[f.guardian].push(idx);
+      });
+      var conflictIdxs = {};
+      Object.keys(guardianMap).forEach(function(g) {
+        if (guardianMap[g].length > 1) {
+          guardianMap[g].forEach(function(i) { conflictIdxs[i] = g; });
+        }
+      });
+
+      selFields.forEach(function(f, idx) {
+        var statusEl = ov.querySelector('[data-fm-status="' + idx + '"]');
+        if (!statusEl) return;
+        var tr = statusEl.closest('tr');
+        tr.classList.remove('fm-row-err');
+
+        // Conflict takes priority
+        if (conflictIdxs[idx] !== undefined) {
+          statusEl.className = 'fm-validation warn';
+          statusEl.style.color = '#D97706';
+          statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Conflict';
+          warnCount++;
+          var cRow = document.createElement('tr');
+          cRow.className = 'fm-test-warn-row';
+          var others = guardianMap[conflictIdxs[idx]].filter(function(i){return i!==idx;}).map(function(i){return selFields[i].label||selFields[i].source;}).join(', ');
+          cRow.innerHTML = '<td colspan="5" style="padding:2px 10px 10px;border:none;"><div style="font-size:10px;color:#b45309;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:4px 8px;display:inline-flex;align-items:center;gap:4px;">'
+            + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12.01" y2="16"/><line x1="12" y1="8" x2="12" y2="12"/></svg>'
+            + 'Conflicts with ' + others + ' — only one field can map to ' + conflictIdxs[idx] + '.</div></td>';
+          tr.parentNode.insertBefore(cRow, tr.nextSibling);
+        } else if (f.validation === 'err') {
+          statusEl.className = 'fm-validation err';
+          statusEl.style.color = '';
+          statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Error';
+          tr.classList.add('fm-row-err');
+          errCount++;
+          var eRow = document.createElement('tr');
+          eRow.className = 'fm-test-warn-row';
+          eRow.innerHTML = '<td colspan="5" style="padding:2px 10px 10px;border:none;"><div style="font-size:10px;color:#dc2626;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.15);border-radius:4px;padding:4px 8px;display:inline-flex;align-items:center;gap:4px;">'
+            + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12.01" y2="16"/><line x1="12" y1="8" x2="12" y2="12"/></svg>'
+            + f.desc + '</div></td>';
+          tr.parentNode.insertBefore(eRow, tr.nextSibling);
+        } else if (f.validation === 'warn') {
+          statusEl.className = 'fm-validation warn';
+          statusEl.style.color = '';
+          statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Warning';
+          warnCount++;
+          var warnRow = document.createElement('tr');
+          warnRow.className = 'fm-test-warn-row';
+          warnRow.innerHTML = '<td colspan="5" style="padding:2px 10px 10px;border:none;"><div style="font-size:10px;color:#b45309;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:4px 8px;display:inline-flex;align-items:center;gap:4px;">'
+            + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12.01" y2="16"/><line x1="12" y1="8" x2="12" y2="12"/></svg>'
+            + f.desc + ' — value will be auto-generated if source is empty.</div></td>';
+          tr.parentNode.insertBefore(warnRow, tr.nextSibling);
+        } else {
+          statusEl.className = 'fm-validation ok';
+          statusEl.style.color = '';
+          statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Pass';
+        }
+      });
+
+      passCount = selFields.length - warnCount - errCount;
+
+      // Update test state
+      if (errCount > 0) {
+        _fmTestState = 'error';
+      } else if (warnCount > 0) {
+        _fmTestState = 'warning';
+      } else {
+        _fmTestState = 'passed';
+      }
+
+      // Update test button
+      var testBtn = document.getElementById('fm-btn-test');
+      if (testBtn) {
+        if (_fmTestState === 'passed') {
+          testBtn.innerHTML = '✓ Tested';
+          testBtn.style.color = '#059669';
+          testBtn.style.borderColor = '#059669';
+        } else {
+          testBtn.textContent = 'Retest';
+        }
+      }
+
+      // Update result panel
+      var resultEl = document.getElementById('fm-test-result');
+      if (resultEl) {
+        var parts = passCount + ' passed';
+        if (warnCount) parts += ' · ' + warnCount + ' warning' + (warnCount !== 1 ? 's' : '');
+        if (errCount) parts += ' · ' + errCount + ' error' + (errCount !== 1 ? 's' : '');
+
+        if (_fmTestState === 'passed') {
+          resultEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:var(--radius-md);font-size:12px;color:#059669;margin-bottom:12px;font-weight:600;">'
+            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+            + 'Test passed — all ' + selFields.length + ' fields mapped successfully</div>';
+        } else if (_fmTestState === 'warning') {
+          resultEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-md);font-size:12px;color:#b45309;margin-bottom:12px;font-weight:600;">'
+            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+            + 'Test completed — ' + parts + '</div>';
+        } else if (_fmTestState === 'error') {
+          resultEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.2);border-radius:var(--radius-md);font-size:12px;color:#dc2626;margin-bottom:12px;font-weight:600;">'
+            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+            + 'Test failed — ' + parts + '</div>';
+        }
+      }
+
+      // Update summary bar
+      var bar = document.getElementById('fm-step2-bar');
+      if (bar) {
+        bar.innerHTML = '<div class="fm-stat"><span class="fm-stat-dot" style="background:#10B981;"></span><b>' + selFields.length + '</b> fields mapped</div>'
+          + '<div class="fm-stat"><span class="fm-stat-dot" style="background:#059669;"></span><b>' + passCount + '</b> passed</div>'
+          + (warnCount ? '<div class="fm-stat"><span class="fm-stat-dot" style="background:#F59E0B;"></span><b>' + warnCount + '</b> warning' + (warnCount !== 1 ? 's' : '') + '</div>' : '')
+          + (errCount ? '<div class="fm-stat"><span class="fm-stat-dot" style="background:#dc2626;"></span><b>' + errCount + '</b> error' + (errCount !== 1 ? 's' : '') + '</div>' : '');
+      }
+
+      // Block Next if errors
+      if (errCount > 0) {
+        var nextBtn = document.getElementById('fm-btn-next');
+        if (nextBtn) { nextBtn.disabled = true; nextBtn.style.opacity = '0.5'; }
+      }
     }
 
     // ── Step 3: Review & activate ──
