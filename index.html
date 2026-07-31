@@ -9520,6 +9520,20 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       }
     }
 
+    function idTestConnection() {
+      var btn = event.target;
+      var orig = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Testing…';
+      setTimeout(function(){
+        btn.textContent = '✓ Connection successful';
+        btn.style.color = '#059669'; btn.style.borderColor = '#059669';
+        setTimeout(function(){
+          btn.textContent = orig; btn.disabled = false;
+          btn.style.color = ''; btn.style.borderColor = '';
+        }, 2500);
+      }, 1200);
+    }
+
     // ══════════ ITSM Data Mapping (reusable) ══════════
     var _FM_MODAL = 'fm-mapping-wizard';
     var _fmConfig = null; // current mapping config
@@ -16127,9 +16141,12 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
 
           <!-- Section 1: Connection -->
           <div class="id-section">
-            <div class="id-section-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-              Connection
+            <div class="id-section-title" style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                Connection
+              </div>
+              <button class="btn-outline" style="padding:5px 12px;font-size:11px;" onclick="showToast('Edit connection settings')">Edit</button>
             </div>
             <div class="id-kv" id="id-conn-kv">
               <div class="id-kv-label">Instance</div>
@@ -16141,13 +16158,19 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
               <div class="id-kv-label">Table mapping</div>
               <div class="id-kv-val">cmdb_ci_server → Guardian Nodes · sys_change_request → Change Requests</div>
             </div>
+            <div style="margin-top:12px;">
+              <button class="btn-outline" style="padding:6px 14px;font-size:11px;" onclick="idTestConnection()">Test connection</button>
+            </div>
           </div>
 
           <!-- Section 2: Credentials -->
           <div class="id-section">
-            <div class="id-section-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              Credentials
+            <div class="id-section-title" style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Credentials
+              </div>
+              <button class="btn-outline" style="padding:5px 12px;font-size:11px;" onclick="showToast('Edit credentials')">Edit</button>
             </div>
             <div class="id-kv" id="id-cred-kv">
               <div class="id-kv-label">Credential</div>
@@ -16278,7 +16301,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
             <div class="id-danger-zone" style="border-top:none;padding-top:0;">
               <div>
                 <div class="id-danger-label">Disconnect this integration</div>
-                <div class="id-danger-sub">This will disable all capabilities and remove synced data references.</div>
+                <div class="id-danger-sub">All capabilities and future syncs will be disabled. Previously imported nodes will not be deleted.</div>
               </div>
               <button class="btn-danger" style="padding:7px 16px;font-size:12px;white-space:nowrap;" onclick="showToast('Disconnect — confirmation dialog would appear here')">Disconnect</button>
             </div>
