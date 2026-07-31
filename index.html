@@ -475,6 +475,18 @@ body.dark .id-kv-label { background:#063135; }
 .id-cap-menu-item.danger { color:#DC2626; }
 .id-cap-menu-item.danger svg { color:#DC2626; }
 body.dark .id-cap-menu-item.danger, body.dark .id-cap-menu-item.danger svg { color:#FB7185; }
+/* Capability attention row (unmatched drift, etc.) */
+.id-cap-attention { display:flex; align-items:center; gap:10px; margin-top:12px; padding:9px 12px; border-radius:8px; background:rgba(245,158,11,0.09); border:1px solid rgba(245,158,11,0.35); }
+.id-cap-attention > svg { color:#F59E0B; flex-shrink:0; }
+.id-cap-attention-text { flex:1; min-width:0; font-size:12px; font-weight:600; color:#b45309; }
+.id-cap-attention-text span { font-weight:400; color:var(--text-muted); }
+.id-cap-attention-btn { display:inline-flex; align-items:center; gap:5px; flex-shrink:0; padding:5px 12px; border-radius:7px; border:1px solid rgba(245,158,11,0.45); background:transparent; font-family:inherit; font-size:11px; font-weight:600; color:#b45309; cursor:pointer; transition:background .15s; }
+.id-cap-attention-btn .action-arrow { color:inherit; transition:transform .15s; }
+.id-cap-attention-btn:hover { background:rgba(245,158,11,0.14); }
+.id-cap-attention-btn:hover .action-arrow { transform:translateX(2px); }
+body.dark .id-cap-attention { background:rgba(245,158,11,0.13); border-color:rgba(245,158,11,0.42); }
+body.dark .id-cap-attention-text { color:#F9C46B; }
+body.dark .id-cap-attention-btn { color:#F9C46B; border-color:rgba(245,158,11,0.5); }
 /* Capability cards */
 .id-cap { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:12px; }
 .id-cap:last-child { margin-bottom:0; }
@@ -503,8 +515,13 @@ body.dark .id-cap-badge.enabled { color:#5ee9b5; background:rgba(37,167,96,0.18)
 body.dark .id-cap-badge.disabled { color:#9fb2c4; background:var(--p-dark-card-strip); border-color:#3a5566; }
 body.dark .id-cap-badge.issue { color:#ff9ba0; background:rgba(217,74,82,0.15); border-color:rgba(217,74,82,0.35); }
 .id-danger-zone { margin-top:8px; padding-top:16px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:16px; }
-.id-danger-label { font-size:12px; color:var(--text-sec); }
+.id-danger-label { font-size:12px; font-weight:600; color:var(--text-default); }
 .id-danger-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.id-danger-panel { margin-top:4px; padding:16px 20px; border:1px solid rgba(251,60,68,0.35); border-radius:var(--radius-lg); background:rgba(251,60,68,0.04); }
+.id-danger-head { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#DC2626; margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+.id-danger-head svg { color:#DC2626; }
+body.dark .id-danger-panel { background:rgba(251,60,68,0.08); border-color:rgba(251,60,68,0.4); }
+body.dark .id-danger-head, body.dark .id-danger-head svg { color:#FB7185; }
 /* Compact integration summary strip (top of detail page) */
 .id-summary { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 20px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); margin-bottom:16px; }
 .id-summary-metrics { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px; color:var(--text-sec); min-width:0; }
@@ -9460,18 +9477,18 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
     var INTG_CAPS = {
       servicenow: [
         { id:'cmdb', name:'CMDB Node Acquisition', enabled:true,
-          desc:'Automatically import server and infrastructure nodes from the ServiceNow CMDB into Guardian\'s managed inventory. Keeps node lists synchronised without manual CSV imports.',
+          desc:'Import servers and infrastructure from the ServiceNow CMDB into Guardian — no manual CSV uploads.',
           lastSync:'4 min ago', metric:'142 nodes imported', issues:null },
         { id:'recon', name:'Automated Change Reconciliation', enabled:true,
-          desc:'Match detected configuration drift events against approved ServiceNow Change Requests. Automatically reconciles drift when a matching CR is found, reducing manual review effort.',
+          desc:'Match drift events to approved ServiceNow Change Requests and auto-reconcile on a match.',
           lastSync:'4 min ago', metric:'38 open CRs · 12 auto-reconciled', issues:'2 unmatched drift events' },
         { id:'incident', name:'Incident Creation', enabled:false,
-          desc:'Automatically create ServiceNow incidents when Guardian detects critical compliance failures or unreconciled drift. Routes incidents to the correct assignment group based on node ownership.',
+          desc:'Raise ServiceNow incidents for critical failures or unreconciled drift, routed by node ownership.',
           lastSync:null, metric:null, issues:null }
       ],
       aws: [
         { id:'cloud-nodes', name:'Cloud Node Acquisition', enabled:true,
-          desc:'Discover and import AWS EC2 instances, RDS databases, and other compute resources into Guardian. Monitors resource lifecycle and keeps inventory current.',
+          desc:'Discover and import AWS EC2, RDS, and other compute resources, keeping inventory current.',
           lastSync:'12 min ago', metric:'4 nodes monitored', issues:null }
       ]
     };
@@ -9541,16 +9558,21 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           var meta = '<div class="id-cap-meta">';
           meta += '<div class="id-cap-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+(c.lastSync?'Last sync: '+c.lastSync:'Never synced')+'</div>';
           if (c.metric) meta += '<div class="id-cap-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'+c.metric+'</div>';
-          if (c.issues) meta += '<div class="id-cap-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span style="color:#b45309;">'+c.issues+'</span></div>';
-          else if (c.enabled) meta += '<div class="id-cap-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>No issues</div>';
+          if (!c.issues && c.enabled) meta += '<div class="id-cap-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>No issues</div>';
           meta += '</div>';
+          var attention = '';
+          if (c.issues) attention = '<div class="id-cap-attention"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div class="id-cap-attention-text">'+c.issues+'<span> · no matching Change Request found</span></div><button class="id-cap-attention-btn" onclick="showView(\'changes\')">Review <span class="action-arrow">→</span></button></div>';
           var actions = '<div class="id-cap-actions">';
-          if (c.enabled && (c.id==='cmdb'||c.id==='recon')) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping(\''+c.id+'\')">Configure mapping</button>';
-          else if (c.enabled) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showToast(\''+c.name+' configuration\')">Configure</button>';
-          else actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showToast(\'Enable '+c.name+' to configure\')">Enable to configure</button>';
-          if (c.id==='recon') actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView(\'changes\')">View drift events <span class="action-arrow">→</span></button>';
+          if (c.enabled) {
+            if (c.id==='cmdb' || c.id==='recon') actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping(\''+c.id+'\')">Manage mapping</button>';
+            var actView = (c.id==='recon') ? 'changes' : (c.id==='cmdb'||c.id==='cloud-nodes') ? 'all-devices' : '';
+            if (actView) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView(\''+actView+'\')">View activity <span class="action-arrow">→</span></button>';
+            else actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showToast(\''+c.name+' activity\')">View activity <span class="action-arrow">→</span></button>';
+          } else {
+            actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="idSetCap(\''+c.id+'\',true)">Enable</button>';
+          }
           actions += '</div>';
-          return '<div class="id-cap"'+opac+'><div class="id-cap-head"><div class="id-cap-title-row"><div class="id-cap-name">'+c.name+'</div>'+badge+'</div>'+menu+'</div><div class="id-cap-desc">'+c.desc+'</div>'+meta+actions+'</div>';
+          return '<div class="id-cap"'+opac+'><div class="id-cap-head"><div class="id-cap-title-row"><div class="id-cap-name">'+c.name+'</div>'+badge+'</div>'+menu+'</div><div class="id-cap-desc">'+c.desc+'</div>'+meta+attention+actions+'</div>';
         }
         var enCaps = caps.filter(function(c){ return c.enabled; });
         var avCaps = caps.filter(function(c){ return !c.enabled; });
@@ -16284,7 +16306,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
                   </div>
                   <div class="id-cap-menu"><button class="id-cap-menu-btn" onclick="idCapMenu(this,event)" aria-label="Capability options"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button><div class="id-cap-menu-pop"><button class="id-cap-menu-item danger" onclick="idSetCap('cmdb',false)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg>Disable capability</button></div></div>
                 </div>
-                <div class="id-cap-desc">Automatically import server and infrastructure nodes from the ServiceNow CMDB into Guardian's managed inventory. Keeps node lists synchronised without manual CSV imports.</div>
+                <div class="id-cap-desc">Import servers and infrastructure from the ServiceNow CMDB into Guardian — no manual CSV uploads.</div>
                 <div class="id-cap-meta">
                   <div class="id-cap-meta-item">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -16300,7 +16322,8 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
                   </div>
                 </div>
                 <div class="id-cap-actions">
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping('cmdb')">Configure mapping</button>
+                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping('cmdb')">Manage mapping</button>
+                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('all-devices')">View activity <span class="action-arrow">→</span></button>
                 </div>
               </div>
 
@@ -16313,7 +16336,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
                   </div>
                   <div class="id-cap-menu"><button class="id-cap-menu-btn" onclick="idCapMenu(this,event)" aria-label="Capability options"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button><div class="id-cap-menu-pop"><button class="id-cap-menu-item danger" onclick="idSetCap('recon',false)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg>Disable capability</button></div></div>
                 </div>
-                <div class="id-cap-desc">Match detected configuration drift events against approved ServiceNow Change Requests. Automatically reconciles drift when a matching CR is found, reducing manual review effort.</div>
+                <div class="id-cap-desc">Match drift events to approved ServiceNow Change Requests and auto-reconcile on a match.</div>
                 <div class="id-cap-meta">
                   <div class="id-cap-meta-item">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -16323,14 +16346,15 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     38 open CRs · 12 auto-reconciled
                   </div>
-                  <div class="id-cap-meta-item">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    <span style="color:#b45309;">2 unmatched drift events</span>
-                  </div>
+                </div>
+                <div class="id-cap-attention">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div class="id-cap-attention-text">2 unmatched drift events<span> · no matching Change Request found</span></div>
+                  <button class="id-cap-attention-btn" onclick="showView('changes')">Review <span class="action-arrow">→</span></button>
                 </div>
                 <div class="id-cap-actions">
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping('recon')">Configure mapping</button>
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('changes')">View drift events <span class="action-arrow">→</span></button>
+                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping('recon')">Manage mapping</button>
+                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('changes')">View activity <span class="action-arrow">→</span></button>
                 </div>
               </div>
               </div>
@@ -16346,7 +16370,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
                   </div>
                   <div class="id-cap-menu"><button class="id-cap-menu-btn" onclick="idCapMenu(this,event)" aria-label="Capability options"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button><div class="id-cap-menu-pop"><button class="id-cap-menu-item" onclick="idSetCap('incident',true)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Enable capability</button></div></div>
                 </div>
-                <div class="id-cap-desc">Automatically create ServiceNow incidents when Guardian detects critical compliance failures or unreconciled drift. Routes incidents to the correct assignment group based on node ownership.</div>
+                <div class="id-cap-desc">Raise ServiceNow incidents for critical failures or unreconciled drift, routed by node ownership.</div>
                 <div class="id-cap-meta">
                   <div class="id-cap-meta-item">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -16354,7 +16378,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
                   </div>
                 </div>
                 <div class="id-cap-actions">
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="idSetCap('incident',true)">Enable capability</button>
+                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="idSetCap('incident',true)">Enable</button>
                 </div>
               </div>
               </div>
@@ -16362,8 +16386,9 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
           </div>
 
           <!-- Danger zone -->
-          <div class="id-section">
-            <div class="id-danger-zone" style="border-top:none;padding-top:0;">
+          <div class="id-danger-panel">
+            <div class="id-danger-head"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Danger zone</div>
+            <div class="id-danger-zone" style="border-top:none;padding-top:0;margin-top:0;">
               <div>
                 <div class="id-danger-label">Disconnect this integration</div>
                 <div class="id-danger-sub">All capabilities and future syncs will be disabled. Previously imported nodes will not be deleted.</div>
