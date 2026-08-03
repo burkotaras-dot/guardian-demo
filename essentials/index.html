@@ -428,6 +428,7 @@ body.dark .intg-status.attention { color:#fcd34d; background:rgba(245,158,11,0.1
 body.dark .intg-status.error { color:#ff9ba0; background:rgba(217,74,82,0.18); border-color:rgba(217,74,82,0.4); }
 body.dark .intg-status.notset { color:#9fb2c4; background:var(--p-dark-card-strip); border-color:#3a5566; } body.dark .intg-status.notset .dot { background:#7d94a8; }
 .intg-empty { text-align:center; color:var(--text-muted); font-size:12px; padding:40px 0; }
+.id-caps-empty { color:var(--text-muted); font-size:12px; line-height:1.5; padding:14px 2px; }
 
 /* ── Integration Detail page (id-*) ── */
 .id-head { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
@@ -9540,24 +9541,33 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         smParts.forEach(function(t){ smHtml += '<span class="id-sm-sep">·</span><span>'+t+'</span>'; });
         sm.innerHTML = smHtml;
       }
-      // Connection section
+      // Connection section — INTG_CONN (seeded providers) or p.baseConfig (freshly connected via wizard).
       var cd = INTG_CONN[id];
-      if (cd) {
-        var bk = document.getElementById('id-base-kv');
-        if (bk) {
+      var bk = document.getElementById('id-base-kv');
+      if (bk) {
+        var baseRows = null;
+        if (cd) {
           // Merge Connection + Credentials → one Base configuration block.
           // Order (works for ServiceNow + AWS): Instance/Region · Authentication · Credential · Permissions · Last verified.
-          var baseRows = [cd.conn[0], cd.conn[1], cd.cred[0], cd.conn[2], cd.cred[cd.cred.length-1]].filter(Boolean);
-          bk.innerHTML = baseRows.map(function(r){ return '<div class="id-kv-label">'+r.l+'</div><div class="id-kv-val"'+(r.green?' style="color:#00AF73;"':'')+'>'+r.v+'</div>'; }).join('');
+          baseRows = [cd.conn[0], cd.conn[1], cd.cred[0], cd.conn[2], cd.cred[cd.cred.length-1]].filter(Boolean);
+        } else if (p.baseConfig) {
+          baseRows = p.baseConfig;
         }
-        var sb = document.getElementById('id-sync-body');
-        if (sb) {
+        bk.innerHTML = baseRows
+          ? baseRows.map(function(r){ return '<div class="id-kv-label">'+r.l+'</div><div class="id-kv-val"'+(r.green?' style="color:#00AF73;"':'')+'>'+r.v+'</div>'; }).join('')
+          : '<div class="id-caps-empty" style="grid-column:1/-1;">No connection details available.</div>';
+      }
+      var sb = document.getElementById('id-sync-body');
+      if (sb) {
+        if (cd) {
           var sy = cd.sync;
           var dotCls = sy.state==='ok'?'ok':sy.state==='warn'?'warn':'err';
           sb.innerHTML = '<div class="id-sync-bar">'
             + '<div class="id-sync-cell"><div class="id-sync-cell-val"><span class="id-sync-dot '+dotCls+'"></span>'+sy.text+'</div><div class="id-sync-cell-lbl">'+sy.sub.split(' · ').pop()+'</div></div>'
             + sy.kv.map(function(r){ return '<div class="id-sync-cell"><div class="id-sync-cell-val">'+r.v+'</div><div class="id-sync-cell-lbl">'+r.l+'</div></div>'; }).join('')
             + '</div>';
+        } else {
+          sb.innerHTML = '<div class="id-caps-empty">No syncs yet — enable a capability below to start syncing data from '+p.name+'.</div>';
         }
       }
       // Capabilities
@@ -9596,7 +9606,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         var capsHtml = '';
         if (enCaps.length) capsHtml += '<div class="id-cap-group"><div class="id-cap-group-head">Enabled <span class="id-cap-group-count">'+enCaps.length+'</span></div>'+enCaps.map(renderCap).join('')+'</div>';
         if (avCaps.length) capsHtml += '<div class="id-cap-group"><div class="id-cap-group-head">Available <span class="id-cap-group-count">'+avCaps.length+'</span></div>'+avCaps.map(renderCap).join('')+'</div>';
-        cl.innerHTML = capsHtml;
+        cl.innerHTML = capsHtml || '<div class="id-caps-empty">No capabilities configured yet. Capabilities for '+p.name+' will appear here once set up.</div>';
       }
       showView('integration-detail');
       intgInjectLogos();
@@ -9615,6 +9625,16 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       var caps = INTG_CAPS[id] || [];
       var c = caps.filter(function(x){ return x.id === capId; })[0];
       if (!c) return;
+      // Enabling a capability that needs field mapping runs the mapping flow first — the
+      // capability only switches on once the mapping is activated (enable → map → activate → monitor).
+      if (enable && !c.enabled && FM_SCHEMAS[capId]) {
+        openFieldMapping(capId, function() {
+          c.enabled = true;
+          openIntegrationDetail(id);
+          showToast(c.name + ' enabled');
+        });
+        return;
+      }
       c.enabled = enable;
       openIntegrationDetail(id);
       showToast(enable ? c.name + ' enabled' : c.name + ' disabled');
@@ -9722,10 +9742,10 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 
     var _fmTestState = null; // null | 'passed' | 'warning' | 'error'
 
-    function openFieldMapping(schemaKey) {
+    function openFieldMapping(schemaKey, onActivate) {
       var schema = FM_SCHEMAS[schemaKey];
       if (!schema) return;
-      _fmConfig = { key:schemaKey, schema:schema };
+      _fmConfig = { key:schemaKey, schema:schema, onActivate: onActivate || null };
       _fmSelected = schema.fields.map(function(_, i) { return i; }); // all selected by default
       _fmTestState = null;
 
@@ -9769,8 +9789,9 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         if (nextBtn) nextBtn.textContent = 'Activate mapping';
         if (testBtn) testBtn.style.display = 'none';
       } else if (cur === 2) {
-        showToast('Mapping activated successfully');
+        var cb = _fmConfig && _fmConfig.onActivate;
         close();
+        if (cb) cb(); else showToast('Mapping activated successfully');
       }
     }
 
@@ -10454,14 +10475,26 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       else icxSetP4('Save integration', 'save', false);
     }
     function icxFinish() {
-      var p = intgProvider(ICX.provider);
+      var pid = ICX.provider;
+      var p = intgProvider(pid);
       if (p) {
         p.status = 'connected';
         var url = (document.getElementById('icx-url')||{}).value||'';
         if (url.trim()) p.meta = url.replace(/^https?:\/\//,'').replace(/\/.*$/,'') + ' · core connected · add a capability';
+        // Persist wizard input so the detail page reflects real values (no stale data from a prior provider).
+        var auth = (ICX.auth==='basic') ? 'Basic auth' : 'OAuth 2.0';
+        var credId = (ICX.auth==='basic') ? ((document.getElementById('icx-user')||{}).value||'') : ((document.getElementById('icx-cid')||{}).value||'');
+        var rows = [];
+        if (url.trim()) rows.push({l:'Instance', v:url.replace(/^https?:\/\//,'')});
+        rows.push({l:'Authentication', v:auth + (credId?' · '+credId:'')});
+        rows.push({l:'Credential', v:'Guardian Credential Vault (Guardian-managed)'});
+        rows.push({l:'Last verified', v:'just now — passed', green:true});
+        p.baseConfig = rows;
+        p.lastSync = null;
       }
       closeModal(_ICX_MODAL);
-      showView('settings-integrations');
+      // Continue the flow straight into the new integration's detail (connect → detail → add capability).
+      openIntegrationDetail(pid);
       if (typeof scToast==='function') scToast((p?p.name:'Integration')+' connected'); else showToast((p?p.name:'Integration')+' connected');
     }
     // ── CMDB bulk import: Connection Manager picker + per-OS credentials ──
