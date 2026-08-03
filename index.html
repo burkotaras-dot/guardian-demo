@@ -9508,6 +9508,14 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         { id:'cloud-nodes', name:'Cloud Node Acquisition', enabled:true,
           desc:'Discover and import AWS EC2, RDS, and other compute resources, keeping inventory current.',
           lastSync:'12 min ago', metric:'4 nodes monitored', issues:null }
+      ],
+      freshservice: [
+        { id:'cmdb', schema:'fs-cmdb', name:'CMDB Asset Acquisition', enabled:false,
+          desc:'Import assets and infrastructure from the Freshservice CMDB into Guardian — no manual CSV uploads.',
+          lastSync:null, metric:null, issues:null },
+        { id:'recon', schema:'fs-recon', name:'Automated Change Reconciliation', enabled:false,
+          desc:'Match drift events to approved Freshservice Changes and auto-reconcile on a match.',
+          lastSync:null, metric:null, issues:null }
       ]
     };
     var INTG_CONN = {
@@ -9535,7 +9543,9 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       var sm = document.getElementById('id-summary-metrics');
       if (sm) {
         var smParts = [];
-        if (p.lastSync) smParts.push('Last sync ' + p.lastSync);
+        // Only surface "Last sync" when there is real sync data (seeded connection) — a freshly
+        // connected provider has no sync yet, so the summary must not show a phantom timestamp.
+        if (INTG_CONN[id] && p.lastSync) smParts.push('Last sync ' + p.lastSync);
         (INTG_CAPS[id]||[]).forEach(function(c){ if (c.enabled && c.metric) smParts.push(c.metric.split(' · ')[0]); });
         var smHtml = '<span class="id-sm-status '+(p.status||'connected')+'"><span class="dot"></span>'+(INTG_STATUS[p.status]||'Connected')+'</span>';
         smParts.forEach(function(t){ smHtml += '<span class="id-sm-sep">·</span><span>'+t+'</span>'; });
@@ -9591,7 +9601,8 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           if (c.issues) attention = '<div class="id-cap-attention"><div class="id-cap-attention-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="id-cap-attention-text">'+c.issues+'<span> · no matching Change Request found</span></div><button class="id-cap-attention-btn" onclick="showView(\'changes\')">Review <span class="action-arrow">→</span></button></div>';
           var actions = '<div class="id-cap-actions">';
           if (c.enabled) {
-            if (c.id==='cmdb' || c.id==='recon') actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping(\''+c.id+'\')">Manage mapping</button>';
+            var _mk = c.schema || c.id;
+            if (FM_SCHEMAS[_mk]) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping(\''+_mk+'\')">Manage mapping</button>';
             var actView = (c.id==='recon') ? 'changes' : (c.id==='cmdb'||c.id==='cloud-nodes') ? 'all-devices' : '';
             if (actView) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView(\''+actView+'\')">View activity <span class="action-arrow">→</span></button>';
             else actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showToast(\''+c.name+' activity\')">View activity <span class="action-arrow">→</span></button>';
@@ -9627,8 +9638,9 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       if (!c) return;
       // Enabling a capability that needs field mapping runs the mapping flow first — the
       // capability only switches on once the mapping is activated (enable → map → activate → monitor).
-      if (enable && !c.enabled && FM_SCHEMAS[capId]) {
-        openFieldMapping(capId, function() {
+      var mapKey = c.schema || capId;
+      if (enable && !c.enabled && FM_SCHEMAS[mapKey]) {
+        openFieldMapping(mapKey, function() {
           c.enabled = true;
           openIntegrationDetail(id);
           showToast(c.name + ' enabled');
@@ -9725,6 +9737,71 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           'change_request.assigned_to': 'ref:user_john_smith',
           'change_request.risk': 'moderate',
           'change_request.u_drift_category': ''
+        }
+      },
+      'fs-cmdb': {
+        title: 'CMDB Asset Acquisition',
+        subtitle: 'Map Freshservice asset fields to Guardian node properties',
+        sourceLabel: 'Freshservice Assets',
+        targetLabel: 'Guardian',
+        fields: [
+          { source:'asset.name',              label:'Name',          guardian:'Node Name',        req:true,  transform:'none',       default:'',            validation:'ok',  desc:'Asset display name' },
+          { source:'asset.ip_address',        label:'IP Address',    guardian:'IP Address',       req:true,  transform:'none',       default:'',            validation:'ok',  desc:'Primary IP address' },
+          { source:'asset.type_fields.os',    label:'OS',            guardian:'Operating System', req:true,  transform:'normalize',  default:'',            validation:'ok',  desc:'OS name and version' },
+          { source:'asset.serial_number',     label:'Serial Number', guardian:'Serial Number',    req:false, transform:'none',       default:'N/A',         validation:'ok',  desc:'Hardware serial' },
+          { source:'asset.asset_type',        label:'Asset Type',    guardian:'Node Type',        req:true,  transform:'map_values', default:'Server',      validation:'ok',  desc:'Asset type → Guardian type' },
+          { source:'asset.location_id',       label:'Location',      guardian:'Location',         req:false, transform:'lookup',     default:'Unassigned',  validation:'ok',  desc:'Location reference → name' },
+          { source:'asset.usage_type',        label:'Usage Type',    guardian:'Environment',      req:false, transform:'map_values', default:'Production',   validation:'ok',  desc:'Usage type → environment' },
+          { source:'asset.display_id',        label:'Display ID',    guardian:'Guardian ID',      req:false, transform:'none',       default:'auto-generate', validation:'warn', desc:'Freshservice display ID — may not map cleanly' },
+        ],
+        unmapped: [
+          { source:'asset.id',            label:'Asset ID',     desc:'Freshservice internal ID' },
+          { source:'asset.updated_at',    label:'Updated At',   desc:'Last modified timestamp' },
+          { source:'asset.impact',        label:'Impact',       desc:'Business impact level' },
+          { source:'asset.asset_tag',     label:'Asset Tag',    desc:'Inventory asset tag' },
+        ],
+        sampleData: {
+          'asset.name': 'PROD-WEB-01',
+          'asset.ip_address': '10.0.1.42',
+          'asset.type_fields.os': 'Windows Server 2022 Standard',
+          'asset.serial_number': 'SN-2024-0042',
+          'asset.asset_type': 'Server',
+          'asset.location_id': 'ref:loc_london_dc',
+          'asset.usage_type': 'permanent',
+          'asset.display_id': '10042'
+        }
+      },
+      'fs-recon': {
+        title: 'Change Reconciliation',
+        subtitle: 'Map Freshservice Change fields for drift reconciliation',
+        sourceLabel: 'Freshservice Change',
+        targetLabel: 'Guardian',
+        fields: [
+          { source:'change.id',                 label:'Change ID',   guardian:'CR Number',           req:true,  transform:'none',       default:'',           validation:'ok',  desc:'Freshservice change ID' },
+          { source:'change.subject',            label:'Subject',     guardian:'Summary',             req:true,  transform:'truncate',   default:'',           validation:'ok',  desc:'Change title / subject' },
+          { source:'change.planned_start_date', label:'Start Date',  guardian:'Change Window Start',  req:true,  transform:'datetime',   default:'',           validation:'ok',  desc:'Planned start date/time' },
+          { source:'change.planned_end_date',   label:'End Date',    guardian:'Change Window End',    req:true,  transform:'datetime',   default:'',           validation:'ok',  desc:'Planned end date/time' },
+          { source:'change.status',             label:'Status',      guardian:'CR Status',           req:true,  transform:'map_values', default:'Open',       validation:'ok',  desc:'Status → Guardian status' },
+          { source:'change.impacted_assets',    label:'Impacted CI', guardian:'Target Node',         req:true,  transform:'lookup',     default:'',           validation:'ok',  desc:'Impacted asset → node name' },
+          { source:'change.agent_id',           label:'Agent',       guardian:'Assignee',            req:false, transform:'lookup',     default:'Unassigned', validation:'ok',  desc:'Agent ID → display name' },
+          { source:'change.risk',               label:'Risk',        guardian:'Risk Level',          req:false, transform:'map_values', default:'Medium',     validation:'ok',  desc:'Risk assessment mapping' },
+          { source:'change.custom_fields.drift_category', label:'Drift Category', guardian:'Drift Category', req:false, transform:'none', default:'', validation:'warn', desc:'Custom field — may not exist' },
+        ],
+        unmapped: [
+          { source:'change.id',          label:'Internal ID',  desc:'Freshservice internal ID' },
+          { source:'change.approval_status', label:'Approval', desc:'Approval status' },
+          { source:'change.priority',    label:'Priority',     desc:'Priority level' },
+        ],
+        sampleData: {
+          'change.id': 'CHG-1523',
+          'change.subject': 'Monthly security patching — Windows fleet',
+          'change.planned_start_date': '2026-07-30T02:00:00Z',
+          'change.planned_end_date': '2026-07-30T06:00:00Z',
+          'change.status': 'implementation',
+          'change.impacted_assets': 'ref:asset_prod_web_01',
+          'change.agent_id': 'ref:agent_john_smith',
+          'change.risk': 'medium',
+          'change.custom_fields.drift_category': ''
         }
       }
     };
