@@ -641,6 +641,9 @@ body.dark .icx-p2-provider { background:rgba(255,255,255,0.04); }
 .icx-p2-tag { font-size:11px; color:var(--text-muted); }
 .icx-p2-badge { flex-shrink:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--green1); background:rgba(5,150,105,0.1); border:1px solid rgba(5,150,105,0.3); padding:3px 9px; border-radius:999px; }
 body.dark .icx-p2-badge { color:#34D399; }
+/* Quiet text-link (e.g. Simulate failure / Edit credentials) */
+.icx-linkbtn { background:none; border:none; padding:0; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-muted); cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
+.icx-linkbtn:hover { color:var(--text-default); }
 
 /* Diff before/after cards */
 .diff-card { padding:14px 16px; border-radius:10px; }
@@ -10283,7 +10286,6 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         +     '<div class="ct-step is-pending" id="icx-s-api"><div class="ct-ico pending"></div><div class="ct-body"><div class="ct-label">API access</div><div class="ct-sub" id="icx-sub-api">Read provider metadata</div></div></div>'
         +   '</div>'
         +   '<div id="icx-test-result" style="display:none;margin-top:16px;"></div>'
-        +   '<div id="icx-test-actions" style="display:flex;gap:10px;margin-top:16px;"></div>'
         + '</div>';
     }
 
@@ -10302,6 +10304,7 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         ],
         bodyHtml: _icxBodyHtml(),
         confirmDirty: true,
+        footerLeftHtml: '<button type="button" class="icx-linkbtn" id="icx-sim-link" style="display:none;" onclick="icxRunTest(true)">Simulate a failure</button>',
         buttons: [
           { label: 'Cancel', kind: 'secondary', onClick: function(e, close) { _icxClearTimers(); close(); } },
           { label: 'Continue', kind: 'primary', id: 'icx-next', onClick: function() { icxNext(); } }
@@ -10364,12 +10367,16 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       ICX.step = n;
       gmGoStep(_ICX_MODAL, n - 1);
       if (n === 2) icxRenderP2Provider();
-      /* hide/show footer buttons: Continue visible on steps 1-3, hidden on step 4 */
+      /* footer primary: "Continue" on steps 1-3; step 4 drives it via icxResetTest/_icxTestResult */
       var next = document.getElementById('icx-next');
-      if (next) next.style.display = n < 4 ? '' : 'none';
-      var acts = document.getElementById('icx-test-actions');
-      if (acts) acts.style.display = n === 4 ? 'flex' : 'none';
-      if (n === 4) icxResetTest();
+      var sl = document.getElementById('icx-sim-link');
+      if (n < 4) { if (next) { next.textContent = 'Continue'; next.disabled = false; next.style.display = ''; } if (sl) sl.style.display = 'none'; }
+      else { icxResetTest(); }
+    }
+    function icxSetP4(label, mode, disabled) {
+      ICX.p4mode = mode;
+      var b = document.getElementById('icx-next');
+      if (b) { b.textContent = label; b.disabled = !!disabled; b.style.display = ''; }
     }
     function icxNext() {
       if (ICX.step===1) {
@@ -10382,6 +10389,10 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
         icxGoStep(3); return;
       }
       if (ICX.step===3) { icxGoStep(4); return; }
+      if (ICX.step===4) {
+        if ((ICX.p4mode||'test')==='save') { icxFinish(); return; }
+        icxRunTest(false); return;
+      }
     }
     function icxBack() { if (ICX.step>1) icxGoStep(ICX.step-1); }
     var _icxTimers = [];
@@ -10400,13 +10411,13 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       _icxSet('icx-s-auth',  'pending', 'Sign in with the credential');
       _icxSet('icx-s-api',   'pending', 'Read provider metadata');
       var res = document.getElementById('icx-test-result'); if (res) { res.innerHTML=''; res.style.display='none'; }
-      var act = document.getElementById('icx-test-actions');
-      if (act) act.innerHTML = '<button class="btn-primary" style="width:auto;padding:9px 18px;font-size:12px;" onclick="icxRunTest(false)">Test connection</button>'
-        + '<button class="btn-outline" style="font-size:11px;padding:9px 14px;" onclick="icxRunTest(true)">Simulate failure</button>';
+      var sim = document.getElementById('icx-sim-link'); if (sim) sim.style.display = '';
+      icxSetP4('Test connection', 'test', false);
     }
     function icxRunTest(fail) {
       _icxClearTimers();
-      var act = document.getElementById('icx-test-actions'); if (act) act.innerHTML = '';
+      var sim = document.getElementById('icx-sim-link'); if (sim) sim.style.display = 'none';
+      icxSetP4('Testing…', 'testing', true);
       var res = document.getElementById('icx-test-result'); if (res) { res.innerHTML=''; res.style.display='none'; }
       var order = ['icx-s-reach', 'icx-s-auth', 'icx-s-api'];
       var okSubs = ['Instance reachable · responded in 48 ms', 'Authenticated with the provider', 'Metadata read successfully'];
@@ -10430,19 +10441,15 @@ body.dark .gm-btn-secondary { background: var(--bg-subtle) !important; }
       if (res) {
         if (fail) {
           var errIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-          res.innerHTML = '<div class="ct-result" data-kind="fail">' + errIcon + '<div style="flex:1;"><div class="ct-result-title">Authentication failed</div><div class="ct-result-desc">The credential was rejected. Check the client ID / secret and try again.</div></div></div>';
+          res.innerHTML = '<div class="ct-result" data-kind="fail">' + errIcon + '<div style="flex:1;"><div class="ct-result-title">Authentication failed</div><div class="ct-result-desc">The credential was rejected. Check the client ID / secret and try again.</div><button type="button" class="icx-linkbtn" style="margin-top:8px;" onclick="icxGoStep(3)">Edit credentials</button></div></div>';
         } else {
           var okIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
           res.innerHTML = '<div class="ct-result" data-kind="ok">' + okIcon + '<div style="flex:1;"><div class="ct-result-title">Connection verified</div><div class="ct-result-desc">Guardian reached the provider, authenticated, and can read its metadata. Save to finish setup.</div></div></div>';
         }
         res.style.display = 'block';
       }
-      var act = document.getElementById('icx-test-actions');
-      if (act) {
-        if (fail) act.innerHTML = '<button class="btn-outline" style="font-size:11px;padding:9px 14px;" onclick="icxGoStep(3)">Edit credentials</button>'
-          + '<button class="btn-primary" style="width:auto;padding:9px 18px;font-size:12px;" onclick="icxRunTest(false)">Retry test</button>';
-        else act.innerHTML = '<button class="btn-primary" style="width:auto;padding:9px 20px;font-size:12px;" onclick="icxFinish()">Save integration</button>';
-      }
+      if (fail) icxSetP4('Retry test', 'retry', false);
+      else icxSetP4('Save integration', 'save', false);
     }
     function icxFinish() {
       var p = intgProvider(ICX.provider);
