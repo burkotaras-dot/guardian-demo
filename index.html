@@ -1194,6 +1194,32 @@ body.dark .check-menu-btn:hover { background:rgba(16,185,129,0.18); border-color
 .check-row   { display:flex; align-items:center; gap:8px; }
 .check-title { font-size:12.5px; font-weight:600; color:var(--text-default); flex:1; }
 .check-desc  { font-size:11px; color:var(--text-sec); margin-top:4px; }
+#v-results .check-card { display:flex; align-items:center; gap:13px; padding:13px 66px 13px 16px; }
+#v-results .check-card:hover { background:rgba(16,185,129,0.025); border-color:rgba(16,185,129,0.28); box-shadow:var(--shadow-md); transform:translateY(-1px); }
+body.dark #v-results .check-card:hover { background:#0A2E31; border-color:rgba(16,185,129,0.32); }
+#v-results .check-card > svg { position:absolute; right:14px; top:50%; transform:translateY(-50%); stroke:var(--green1); }
+body.dark #v-results .check-card > svg { stroke:#34D399; }
+.check-main { min-width:0; flex:1; }
+.check-meta { font-size:11.5px; color:var(--text-sec); margin-top:4px; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.check-ico { width:34px; height:34px; padding:8px; box-sizing:border-box; border-radius:9px; display:flex; align-items:center; justify-content:center; background:var(--bg-subtle); flex-shrink:0; }
+.check-ico svg { width:17px; height:17px; stroke:currentColor; }
+.check-card[data-sev="critical"] .check-ico { color:#D94A52; }
+.check-card[data-sev="medium"]   .check-ico { color:#C56A10; }
+.check-card[data-sev="low"]      .check-ico { color:#2563EB; }
+.check-card[data-sev="passed"]   .check-ico { color:#15803d; }
+body.dark .check-ico { background:rgba(148,163,184,0.09); }
+body.dark .check-card[data-sev="critical"] .check-ico { color:#E66A71; }
+body.dark .check-card[data-sev="medium"]   .check-ico { color:#D98A3A; }
+body.dark .check-card[data-sev="low"]      .check-ico { color:#5B8DEF; }
+body.dark .check-card[data-sev="passed"]   .check-ico { color:#34D399; }
+.type-pill--critical { color:#CF454D; background:rgba(217,74,82,0.055); border-color:rgba(217,74,82,0.24); }
+.type-pill--medium { color:#B86410; background:rgba(197,106,16,0.055); border-color:rgba(197,106,16,0.24); }
+.type-pill--low { color:#2563EB; background:rgba(37,99,235,0.055); border-color:rgba(37,99,235,0.24); }
+.type-pill--pass { color:#15803d; background:rgba(21,128,61,0.06); border-color:rgba(21,128,61,0.24); }
+body.dark .type-pill--critical { color:#E66A71; background:rgba(230,106,113,0.07); border-color:rgba(230,106,113,0.26); }
+body.dark .type-pill--medium { color:#D98A3A; background:rgba(217,138,58,0.07); border-color:rgba(217,138,58,0.26); }
+body.dark .type-pill--low { color:#5B8DEF; background:rgba(91,141,239,0.07); border-color:rgba(91,141,239,0.26); }
+body.dark .type-pill--pass { color:#34D399; background:rgba(52,211,153,0.07); border-color:rgba(52,211,153,0.26); }
 
 /* ── INSTALL ── */
 .install-wrap { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--bg-page); padding:32px; }
@@ -2471,6 +2497,8 @@ body.dark .stat-mini[data-accent="blue"]::before  { background:radial-gradient(c
 .cm-row:hover .cm-name { color:var(--green1); }
 .cm-ico { width:34px; height:34px; border-radius:10px; background:var(--bg-subtle); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 body.dark .cm-ico { background:rgba(255,255,255,0.05); }
+.node-ico { width:32px; height:32px; border-radius:8px; background:var(--bg-subtle); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+body.dark .node-ico { background:rgba(255,255,255,0.05); }
 .cm-row-dim .cm-ico svg { stroke:var(--text-muted); }
 .cm-row-dim { opacity:0.55; }
 .cm-row-dim:hover { opacity:0.8; }
@@ -4081,36 +4109,44 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             </div>
           </div>
           <div class="check-card" data-sev="critical" onclick="openRemediation(0)" oncontextmenu="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Windows Defender real-time protection is disabled</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
-            <div class="check-desc">Control 8.1 · Current: Disabled · Expected: Enabled</div>
+            <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+            <div class="check-main"><div class="check-title">Windows Defender real-time protection is disabled</div><div class="check-meta"><span class="type-pill type-pill--critical">Critical</span><span>Control 8.1 · Current: Disabled · Expected: Enabled</span></div></div>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </div>
           <div class="check-card" data-sev="critical" onclick="openRemediation(1)" oncontextmenu="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">BitLocker encryption not enabled on system drive</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
-            <div class="check-desc">Control 3.6 · Current: Not encrypted · Expected: AES-256</div>
+            <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+            <div class="check-main"><div class="check-title">BitLocker encryption not enabled on system drive</div><div class="check-meta"><span class="type-pill type-pill--critical">Critical</span><span>Control 3.6 · Current: Not encrypted · Expected: AES-256</span></div></div>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </div>
           <div class="check-card" data-sev="critical" onclick="openRemediation(2)" oncontextmenu="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)">
-            <div class="check-row"><span class="badge badge-critical">Critical</span><div class="check-title">Remote Desktop enabled without Network Level Auth</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
-            <div class="check-desc">Control 9.2 · Current: No NLA · Expected: NLA required</div>
+            <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+            <div class="check-main"><div class="check-title">Remote Desktop enabled without Network Level Auth</div><div class="check-meta"><span class="type-pill type-pill--critical">Critical</span><span>Control 9.2 · Current: No NLA · Expected: NLA required</span></div></div>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </div>
           <div class="check-card" data-sev="medium" onclick="openRemediation(3)" oncontextmenu="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)">
-            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Windows Firewall disabled for Domain profile</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
-            <div class="check-desc">Control 9.1 · Current: Disabled · Expected: Enabled</div>
+            <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+            <div class="check-main"><div class="check-title">Windows Firewall disabled for Domain profile</div><div class="check-meta"><span class="type-pill type-pill--medium">Medium</span><span>Control 9.1 · Current: Disabled · Expected: Enabled</span></div></div>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </div>
           <div class="check-card" data-sev="medium" onclick="openRemediation(4)" oncontextmenu="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)">
-            <div class="check-row"><span class="badge badge-medium">Medium</span><div class="check-title">Screen lock timeout exceeds 15 minutes</div><button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
-            <div class="check-desc">Control 1.2 · Current: 30 min · Expected: ≤15 min</div>
+            <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+            <div class="check-main"><div class="check-title">Screen lock timeout exceeds 15 minutes</div><div class="check-meta"><span class="type-pill type-pill--medium">Medium</span><span>Control 1.2 · Current: 30 min · Expected: ≤15 min</span></div></div>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </div>
           <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;Automatic Windows Update is enabled&#39;,&#39;update.auto_enabled&#39;)">
-            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">Automatic Windows Update is enabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;Automatic Windows Update is enabled&#39;,&#39;update.auto_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></div>
-            <div class="check-desc">Control 7.3 · Current: Enabled · Expected: Enabled</div>
+            <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
+            <div class="check-main"><div class="check-title">Automatic Windows Update is enabled</div><div class="check-meta"><span class="type-pill type-pill--pass">Pass</span><span>Control 7.3 · Current: Enabled · Expected: Enabled</span></div></div>
+            <button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;Automatic Windows Update is enabled&#39;,&#39;update.auto_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
           </div>
           <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;Built-in Guest account is disabled&#39;,&#39;account.guest_disabled&#39;)">
-            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">Built-in Guest account is disabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;Built-in Guest account is disabled&#39;,&#39;account.guest_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></div>
-            <div class="check-desc">Control 5.1 · Current: Disabled · Expected: Disabled</div>
+            <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
+            <div class="check-main"><div class="check-title">Built-in Guest account is disabled</div><div class="check-meta"><span class="type-pill type-pill--pass">Pass</span><span>Control 5.1 · Current: Disabled · Expected: Disabled</span></div></div>
+            <button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;Built-in Guest account is disabled&#39;,&#39;account.guest_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
           </div>
           <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;SMBv1 protocol is disabled&#39;,&#39;smb.v1_disabled&#39;)">
-            <div class="check-row"><span class="badge badge-pass">Pass</span><div class="check-title">SMBv1 protocol is disabled</div><button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;SMBv1 protocol is disabled&#39;,&#39;smb.v1_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></div>
-            <div class="check-desc">Control 9.4 · Current: Disabled · Expected: Disabled</div>
+            <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
+            <div class="check-main"><div class="check-title">SMBv1 protocol is disabled</div><div class="check-meta"><span class="type-pill type-pill--pass">Pass</span><span>Control 9.4 · Current: Disabled · Expected: Disabled</span></div></div>
+            <button class="check-menu-btn" title="Add to policy" style="right:14px;" onclick="resultsCtx(event,&#39;SMBv1 protocol is disabled&#39;,&#39;smb.v1_disabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
           </div>
           <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec);"><span id="results-footer-text">+ 22 more issues</span> · <span style="color:var(--issues-link);cursor:pointer;">View all</span></div>
         </div><!-- /results-body -->
@@ -4688,7 +4724,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="node-row" data-name="MACBOOK-TARAS Windows 11 This node" data-type="local" data-group="Windows Laptops" data-env="production" data-sort-score="78" data-sort-issues="9" data-sort-drift="3" data-sort-lastscan="2" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:32px;height:32px;border-radius:8px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div class="node-ico">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.5"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg>
               </div>
               <div>
@@ -4713,7 +4749,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="node-row" data-name="SARAH-LAPTOP-01 Windows 11 Pro" data-type="local" data-group="Windows Laptops" data-env="production" data-sort-score="54" data-sort-issues="14" data-sort-drift="1" data-sort-lastscan="60" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:32px;height:32px;border-radius:8px;background:rgba(251,60,68,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div class="node-ico">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.5"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg>
               </div>
               <div>
@@ -4738,7 +4774,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" data-group="Developer Macs" data-env="development" data-sort-score="91" data-sort-issues="2" data-sort-drift="0" data-sort-lastscan="120" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:32px;height:32px;border-radius:8px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div class="node-ico">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
               </div>
               <div>
@@ -4763,7 +4799,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" data-group="Windows Desktops" data-env="staging" data-sort-score="999" data-sort-issues="0" data-sort-drift="1" data-sort-lastscan="0" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div class="node-ico">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
               </div>
               <div>
@@ -4797,7 +4833,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="node-row" data-name="web-prod-01 EC2 Amazon Linux us-east-1" data-type="aws" data-group="AWS Web Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div class="node-ico">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
                 </div>
                 <div>
@@ -4815,7 +4851,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="node-row" data-name="web-prod-02 EC2 Amazon Linux us-east-1" data-type="aws" data-group="AWS Web Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div class="node-ico">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
                 </div>
                 <div>
@@ -4833,7 +4869,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="node-row" data-name="api-server-01 EC2 Ubuntu eu-west-1" data-type="aws" data-group="AWS API Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div class="node-ico">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
                 </div>
                 <div>
@@ -4851,7 +4887,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="node-row" data-name="ecs-cluster-prod ECS us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:8px;background:rgba(124,58,237,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div class="node-ico">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
                 </div>
                 <div>
@@ -4869,7 +4905,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="node-row" data-name="eks-prod-cluster EKS Kubernetes us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div class="node-ico">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg>
                 </div>
                 <div>
@@ -4904,7 +4940,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 
           <!-- Info banner -->
           <div style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.25);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;">
-            <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,119,6,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div class="node-ico">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>
             </div>
             <div style="flex:1;">
@@ -4951,7 +4987,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="detected-row" data-name="new-ec2-prod-04 EC2 Amazon Linux us-east-1" data-source="aws" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 200px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div class="node-ico">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
                 </div>
                 <div>
@@ -4975,7 +5011,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="detected-row" data-name="DESKTOP-LH92K Windows 11 Pro" data-source="agent" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 200px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div class="node-ico">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
                 </div>
                 <div>
@@ -4999,7 +5035,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="detected-row" data-name="srv-db-replica Linux CMDB" data-source="cmdb" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 200px;padding:14px 20px;align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:8px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div class="node-ico">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
                 </div>
                 <div>
