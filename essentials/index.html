@@ -13427,17 +13427,21 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       }
       reportWhenChange();
     }
-    function openExport(kind, fail) {
+    function openExport(kind, fail, ctx) {
       _exportKind = kind;
       _exportFail = (fail === undefined) ? _exportDemoFail : !!fail;
       var up = kind.toUpperCase();
       var meta = _exportMeta[kind] || _exportMeta.csv;
+      ctx = ctx || {};
+      var ctxScope = ctx.scope || 'Compiling compliance data for the current scope';
+      var ctxMeta  = ctx.meta  || 'CIS Windows 11 · 4 policies · 4 nodes · latest scan';
+      var ctxFile  = ctx.file  || 'guardian-compliance-cis-win11-2026-07-15';
       var body = ''
         + '<div id="export-generating" style="text-align:center;padding:8px 0;">'
         +   '<div style="width:44px;height:44px;margin:6px auto 18px;border:3px solid var(--border);border-top-color:var(--green2);border-radius:50%;animation:spin 0.8s linear infinite;"></div>'
         +   '<div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Generating <span id="export-kind-g">' + up + '</span> report…</div>'
-        +   '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Compiling compliance data for the current scope</div>'
-        +   '<div style="font-size:11px;color:var(--text-muted);margin-top:14px;">CIS Windows 11 · 4 policies · 4 nodes · latest scan</div>'
+        +   '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;">' + ctxScope + '</div>'
+        +   '<div style="font-size:11px;color:var(--text-muted);margin-top:14px;">' + ctxMeta + '</div>'
         + '</div>'
         + '<div id="export-ready" style="display:none;text-align:center;padding:8px 0;">'
         +   '<div style="width:48px;height:48px;margin:6px auto 16px;border-radius:50%;background:rgba(63,200,120,0.12);display:flex;align-items:center;justify-content:center;">'
@@ -13448,7 +13452,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         +   '<div style="display:flex;align-items:center;gap:10px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin:18px 0 6px;text-align:left;">'
         +     '<div id="export-file-badge" style="flex-shrink:0;width:34px;height:34px;border-radius:7px;background:rgba(63,200,120,0.1);color:var(--green1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:0.3px;">' + up + '</div>'
         +     '<div style="min-width:0;flex:1;">'
-        +       '<div id="export-filename" style="font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">guardian-compliance-cis-win11-2026-07-15.' + kind + '</div>'
+        +       '<div id="export-filename" style="font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + ctxFile + '.' + kind + '</div>'
         +       '<div id="export-filesize" style="font-size:11px;color:var(--text-sec);margin-top:1px;">' + meta.size + ' · generated just now</div>'
         +     '</div>'
         +   '</div>'
@@ -13497,6 +13501,25 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     function exportDownload() {
       closeExportModal();
       showToast(_exportKind.toUpperCase() + ' report downloaded');
+    }
+
+    // Preview-report export — reuse the compliance export modal with report-specific context
+    function _rowsVisible(tableId) {
+      return Array.prototype.filter.call(
+        document.querySelectorAll('#' + tableId + ' .rc-row'),
+        function(r) { return r.style.display !== 'none'; }
+      ).length;
+    }
+    function openReportExport(reportKey, kind) {
+      var ctx = null;
+      if (reportKey === 'changed') {
+        ctx = { scope: 'Compiling detected changes for the current scope', meta: _rowsVisible('rc-table') + ' changes · since last scan · sample data', file: 'guardian-what-changed-2026-07-15' };
+      } else if (reportKey === 'baseline') {
+        ctx = { scope: 'Compiling baseline deviations for the current scope', meta: _rowsVisible('rb-table') + ' deviations · vs baseline 15 Jul 02:00 · sample data', file: 'guardian-baseline-deviation-2026-07-15' };
+      } else if (reportKey === 'investigation') {
+        ctx = { scope: 'Compiling attention items for the current scope', meta: _rowsVisible('ri-table') + ' items · as of 15 Jul 14:22 · sample data', file: 'guardian-needs-investigation-2026-07-15' };
+      }
+      openExport(kind, undefined, ctx);
     }
 
     function pcFinishCreate() {
@@ -16330,7 +16353,14 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           </div>
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
-          <button class="dk-form" disabled title="Export becomes available when this report type ships" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;color:var(--text-muted);white-space:nowrap;background:var(--bg-canvas);cursor:not-allowed;font-family:inherit;opacity:0.7;">↓ Export</button>
+          <div style="position:relative;">
+            <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('rc-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div id="rc-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
+              <button onclick="document.getElementById('rc-export-drop').style.display='none';openReportExport('changed','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
+              <button onclick="document.getElementById('rc-export-drop').style.display='none';openReportExport('changed','pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+            </div>
+          </div>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -16339,7 +16369,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" style="flex-shrink:0;"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-            <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data shown · Export unavailable</span>
+            <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data · CSV / PDF export</span>
           </div>
           <span style="width:1px;height:16px;background:var(--border);flex-shrink:0;"></span>
           <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Filter</span>
@@ -16572,7 +16602,14 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           </div>
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
-          <button class="dk-form" disabled title="Export becomes available when this report type ships" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;color:var(--text-muted);white-space:nowrap;background:var(--bg-canvas);cursor:not-allowed;font-family:inherit;opacity:0.7;">↓ Export</button>
+          <div style="position:relative;">
+            <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('rb-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div id="rb-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
+              <button onclick="document.getElementById('rb-export-drop').style.display='none';openReportExport('baseline','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
+              <button onclick="document.getElementById('rb-export-drop').style.display='none';openReportExport('baseline','pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+            </div>
+          </div>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -16581,7 +16618,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-            <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data shown · Export unavailable</span>
+            <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data · CSV / PDF export</span>
           </div>
           <span style="width:1px;height:16px;background:var(--border);flex-shrink:0;"></span>
           <span class="rc-scope-pill" id="rb-scope-baseline">Baseline · Windows 11 · 15 Jul 02:00</span>
@@ -16816,7 +16853,14 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           </div>
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
-          <button class="dk-form" disabled title="Export becomes available when this report type ships" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;color:var(--text-muted);white-space:nowrap;background:var(--bg-canvas);cursor:not-allowed;font-family:inherit;opacity:0.7;">↓ Export</button>
+          <div style="position:relative;">
+            <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('ri-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div id="ri-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
+              <button onclick="document.getElementById('ri-export-drop').style.display='none';openReportExport('investigation','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
+              <button onclick="document.getElementById('ri-export-drop').style.display='none';openReportExport('investigation','pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+            </div>
+          </div>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -16825,7 +16869,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data shown · Export unavailable</span>
+            <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data · CSV / PDF export</span>
           </div>
           <span style="width:1px;height:16px;background:var(--border);flex-shrink:0;"></span>
           <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Filter</span>
