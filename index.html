@@ -7440,10 +7440,16 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="page-title">Policies</div>
           <div class="page-sub">Manage compliance policies across your infrastructure</div>
         </div>
-        <button class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;" onclick="openPolicyCreate()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Create Policy
-        </button>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn-outline" style="width:auto;padding:9px 16px;font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap;" onclick="openReportFromPolicies()" title="Generate a compliance report across all managed nodes">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            Compliance report
+          </button>
+          <button class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;" onclick="openPolicyCreate()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Create Policy
+          </button>
+        </div>
       </div>
 
       <div style="flex:1;background:var(--bg-page);display:flex;flex-direction:column;overflow:hidden;min-width:0;">
@@ -13065,7 +13071,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     // Reports List → Generate report. Compliance opens the full detail;
     // the other three types get their detail content in a later step.
     function generateReport(type) {
-      if (type === 'compliance') { showView('reports'); return; }
+      if (type === 'compliance') { openReport('compliance', 'Policy and check compliance across the selected scope', 'reports-list'); return; }
       if (type === 'changed') { openReport('changed', 'Configuration changes detected between two scans'); return; }
       showToast('This report type is coming soon');
     }
@@ -13080,7 +13086,14 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         showView('report-changed');
         return;
       }
-      if (type === 'compliance') { showView('reports'); return; }
+      if (type === 'compliance') {
+        var rel = document.getElementById('rep-scope-desc');
+        if (rel && scopeDesc) rel.textContent = scopeDesc;
+        var rback = document.getElementById('rep-back');
+        if (rback) rback.setAttribute('onclick', "showView('" + (backView || 'reports-list') + "')");
+        showView('reports');
+        return;
+      }
     }
 
     // Entry point from Detected Drift → What changed report, scoped to current drift view
@@ -13105,6 +13118,11 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       openReport('changed', scope, 'node-detail');
       var back = document.getElementById('rc-back');
       if (back) back.setAttribute('onclick', "showView('node-detail');ndTab('history')");
+    }
+
+    // Entry point from Policies → Compliance report (back returns to Policies)
+    function openReportFromPolicies() {
+      openReport('compliance', 'From Policies · policy and check compliance across all managed nodes', 'policies');
     }
 
     function renderReport() {
@@ -16408,7 +16426,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-reports" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" onclick="showView('reports-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;margin-top:2px;">← Back to Reports</button>
+          <button id="rep-back" class="btn-outline" onclick="showView('reports-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;margin-top:2px;">← Back to Reports</button>
           <div>
             <div class="page-title">Compliance report</div>
             <div class="page-sub" id="rep-scope-desc">Policy and check compliance across the selected scope</div>
