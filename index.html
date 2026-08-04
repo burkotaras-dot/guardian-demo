@@ -732,6 +732,9 @@ body.dark .diff-sub   { color:var(--text-muted); }
 @keyframes scanBar  { from{width:4%} to{width:88%} }
 @keyframes shimmer  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 @keyframes dotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)} 50%{box-shadow:0 0 0 5px rgba(16,185,129,0)} }
+/* Report loading skeleton — shimmer placeholder blocks */
+.rep-skel { background:linear-gradient(90deg, var(--bg-canvas) 25%, var(--border) 37%, var(--bg-canvas) 63%); background-size:200% 100%; animation:shimmer 1.4s ease-in-out infinite; border-radius:6px; }
+body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.10) 37%, rgba(255,255,255,0.04) 63%); background-size:200% 100%; }
 
 /* ── TOP NAV ── */
 .top-nav {
@@ -13438,7 +13441,29 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       });
       band.innerHTML = c1 + c2 + c3 + c4;
     }
+    var _repLoadT = null;
+    // Scope (re)generation shows a brief loading skeleton before the real content.
+    // Local table filters call reportApplyFilters() directly and stay instant (no skeleton).
     function renderReport() {
+      var results = document.getElementById('report-results');
+      var emptyEl = document.getElementById('report-empty');
+      var loadEl = document.getElementById('report-loading');
+      if (loadEl) loadEl.style.display = 'block';
+      if (results) results.style.display = 'none';
+      if (emptyEl) emptyEl.style.display = 'none';
+      // Disable export while the report regenerates.
+      ['rep-export-csv', 'rep-export-pdf'].forEach(function (bid) {
+        var b = document.getElementById(bid);
+        if (b) { b.style.opacity = '0.45'; b.style.pointerEvents = 'none'; }
+      });
+      clearTimeout(_repLoadT);
+      _repLoadT = setTimeout(function () {
+        var l = document.getElementById('report-loading');
+        if (l) l.style.display = 'none';
+        _repRenderNow();
+      }, 550);
+    }
+    function _repRenderNow() {
       var grpSel = document.getElementById('rep-group');
       var group = grpSel ? grpSel.value : 'All node groups';
       var data = _repResolveScope();
@@ -17404,6 +17429,23 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         </div>
 
         </div><!-- /report-results -->
+
+        <!-- Loading skeleton — shown briefly while the scope is (re)generated -->
+        <div id="report-loading" style="display:none;">
+          <div class="stat-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px;">
+            <div class="stat-card" style="display:flex;flex-direction:column;"><div class="rep-skel" style="height:11px;width:55%;margin-bottom:20px;"></div><div style="display:flex;gap:16px;align-items:center;"><div class="rep-skel" style="width:76px;height:76px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:9px;"><div class="rep-skel" style="height:10px;width:82%;"></div><div class="rep-skel" style="height:10px;width:60%;"></div></div></div><div class="rep-skel" style="height:10px;width:48%;margin-top:20px;"></div></div>
+            <div class="stat-card" style="display:flex;flex-direction:column;"><div class="rep-skel" style="height:11px;width:55%;margin-bottom:20px;"></div><div style="display:flex;gap:16px;align-items:center;"><div class="rep-skel" style="width:76px;height:76px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:9px;"><div class="rep-skel" style="height:10px;width:82%;"></div><div class="rep-skel" style="height:10px;width:60%;"></div></div></div><div class="rep-skel" style="height:10px;width:48%;margin-top:20px;"></div></div>
+            <div class="stat-card" style="display:flex;flex-direction:column;"><div class="rep-skel" style="height:11px;width:55%;margin-bottom:20px;"></div><div style="display:flex;gap:16px;align-items:center;"><div class="rep-skel" style="width:76px;height:76px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:9px;"><div class="rep-skel" style="height:10px;width:82%;"></div><div class="rep-skel" style="height:10px;width:60%;"></div></div></div><div class="rep-skel" style="height:10px;width:48%;margin-top:20px;"></div></div>
+            <div class="stat-card" style="display:flex;flex-direction:column;"><div class="rep-skel" style="height:11px;width:55%;margin-bottom:20px;"></div><div style="display:flex;gap:16px;align-items:center;"><div class="rep-skel" style="width:76px;height:76px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:9px;"><div class="rep-skel" style="height:10px;width:82%;"></div><div class="rep-skel" style="height:10px;width:60%;"></div></div></div><div class="rep-skel" style="height:10px;width:48%;margin-top:20px;"></div></div>
+          </div>
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:16px 18px;">
+            <div class="rep-skel" style="height:12px;width:180px;margin-bottom:18px;"></div>
+            <div class="rep-skel" style="height:12px;width:100%;margin-bottom:12px;"></div>
+            <div class="rep-skel" style="height:12px;width:100%;margin-bottom:12px;"></div>
+            <div class="rep-skel" style="height:12px;width:100%;margin-bottom:12px;"></div>
+            <div class="rep-skel" style="height:12px;width:92%;"></div>
+          </div>
+        </div>
 
         <!-- Empty state — no nodes/scans match the current scope -->
         <div id="report-empty" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:56px 24px;text-align:center;">
