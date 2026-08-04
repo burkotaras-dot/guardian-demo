@@ -13073,6 +13073,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     function generateReport(type) {
       if (type === 'compliance') { openReport('compliance', 'Policy and check compliance across the selected scope', 'reports-list'); return; }
       if (type === 'changed') { openReport('changed', 'Configuration changes detected between two scans'); return; }
+      if (type === 'baseline') { openReport('baseline', 'Drift away from the active approved baseline', 'reports-list'); return; }
       showToast('This report type is coming soon');
     }
 
@@ -13092,6 +13093,14 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         var rback = document.getElementById('rep-back');
         if (rback) rback.setAttribute('onclick', "showView('" + (backView || 'reports-list') + "')");
         showView('reports');
+        return;
+      }
+      if (type === 'baseline') {
+        var bel = document.getElementById('rb-scope-desc');
+        if (bel && scopeDesc) bel.textContent = scopeDesc;
+        var bback = document.getElementById('rb-back');
+        if (bback) bback.setAttribute('onclick', "showView('" + (backView || 'reports-list') + "')");
+        showView('report-baseline');
         return;
       }
     }
@@ -16154,8 +16163,8 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
               <li>Baseline date and source scan</li>
             </ul>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;">
-              <span class="rpt-meta">No active baseline yet</span>
-              <button class="rpt-soon" disabled>Coming soon</button>
+              <span class="rpt-meta">Nodes and checks vs baseline</span>
+              <button class="rpt-preview-btn" onclick="generateReport('baseline')">View preview →</button>
             </div>
           </div>
 
@@ -16403,6 +16412,246 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div><span class="rc-chg modified">Modified</span></div>
             <div class="rc-val"><span class="rc-prev">14 chars</span><span class="rc-arrow">→</span><span class="rc-cur">8 chars</span></div>
             <div class="rc-when">5h ago</div>
+          </div>
+          <div class="rc-row">
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><div class="rc-item-txt"><div class="rc-item">Scheduled task · NightlyBackup</div><div class="rc-path">\Microsoft\Windows\Backup</div></div></div>
+            <div class="rc-node">PROD-SERVER-01</div>
+            <div><span class="rc-chg removed">Removed</span></div>
+            <div class="rc-val"><span class="rc-prev">Enabled</span><span class="rc-arrow">→</span><span class="rc-empty">—</span></div>
+            <div class="rc-when">6h ago</div>
+          </div>
+          <div class="rc-row">
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg></span><div class="rc-item-txt"><div class="rc-item">Audit policy · Logon events</div><div class="rc-path">Advanced audit policy</div></div></div>
+            <div class="rc-node">MACBOOK-TARAS</div>
+            <div><span class="rc-chg removed">Removed</span></div>
+            <div class="rc-val"><span class="rc-prev">Success, Failure</span><span class="rc-arrow">→</span><span class="rc-cur">No auditing</span></div>
+            <div class="rc-when">1d ago</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Baseline deviation — Report Detail (Preview concept) -->
+    <div class="view" id="v-report-baseline" style="display: none;">
+      <div class="page-header">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <button class="btn-outline" id="rb-back" onclick="showView('reports-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;margin-top:2px;">← Back to Reports</button>
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="page-title">Baseline deviation report</div>
+              <span class="rpt-badge preview">Preview</span>
+            </div>
+            <div class="page-sub" id="rb-scope-desc">Drift away from the active approved baseline</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <button class="dk-form" disabled title="Export becomes available when this report type ships" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;color:var(--text-muted);white-space:nowrap;background:var(--bg-canvas);cursor:not-allowed;font-family:inherit;opacity:0.7;">↓ Export</button>
+        </div>
+      </div>
+      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
+
+        <!-- Context bar — preview note + baseline scope merged into one compact toolbar -->
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data shown · Export unavailable</span>
+          </div>
+          <span style="width:1px;height:16px;background:var(--border);flex-shrink:0;"></span>
+          <span class="rc-scope-pill" id="rb-scope-baseline">Baseline · Windows 11 · 15 Jul 02:00</span>
+          <span class="rc-scope-pill">All deviation types</span>
+          <span class="rc-scope-pill" id="rb-scope-nodes">2 nodes off baseline</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--text-muted);white-space:nowrap;">Baseline 15 Jul 02:00 vs current 15 Jul 14:22</span>
+        </div>
+
+        <!-- KPIs — Dashboard stat-card pattern -->
+        <div class="stat-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px;">
+
+          <!-- Total deviations -->
+          <div class="stat-card" style="display:flex;flex-direction:column;padding:16px 18px;">
+            <div class="stat-head"><div class="stat-card-label">Total deviations</div><div class="stat-info">i<div class="stat-tip">Settings that no longer match the approved baseline, grouped by deviation type.</div></div></div>
+            <div style="display:flex;align-items:center;gap:16px;flex:1;">
+              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
+                <svg width="76" height="76" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#d97706" stroke-width="8" stroke-linecap="round" stroke-dasharray="122.5 238.8" stroke-dashoffset="-7" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Modified: 8 settings&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" stroke-dasharray="37.2 238.8" stroke-dashoffset="-143.5" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Added: 3 settings&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-linecap="round" stroke-dasharray="37.2 238.8" stroke-dashoffset="-194.6" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed: 3 settings&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">14</div>
+                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">off base</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span>Modified</span>
+                    <span style="font-size:12px;font-weight:700;color:#d97706;min-width:20px;text-align:right;">8</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0;"></span>Added</span>
+                    <span style="font-size:12px;font-weight:700;color:#2563eb;min-width:20px;text-align:right;">3</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Removed</span>
+                    <span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">3</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">vs. approved baseline</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="document.getElementById('rb-table').scrollIntoView({behavior:'smooth',block:'start'})"><span class="stat-link-txt">View deviations</span> <span class="arr">→</span></button>
+            </div>
+          </div>
+
+          <!-- Nodes off baseline -->
+          <div class="stat-card" style="display:flex;flex-direction:column;padding:16px 18px;">
+            <div class="stat-head"><div class="stat-card-label">Nodes off baseline</div><div class="stat-info">i<div class="stat-tip">Monitored nodes whose current state no longer matches the approved baseline, out of all nodes it covers.</div></div></div>
+            <div style="display:flex;align-items:center;gap:16px;flex:1;">
+              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
+                <svg width="76" height="76" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#d97706" stroke-width="8" stroke-linecap="round" stroke-dasharray="105.4 238.8" stroke-dashoffset="-7" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Off baseline: 2 nodes&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="8" stroke-linecap="round" stroke-dasharray="105.4 238.8" stroke-dashoffset="-126.4" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;On baseline: 2 nodes&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">2</div>
+                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">of 4</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);min-width:0;"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">MACBOOK-TARAS</span></span>
+                    <span style="font-size:12px;font-weight:700;color:var(--text-default);min-width:20px;text-align:right;">6</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);min-width:0;"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">PROD-SERVER-01</span></span>
+                    <span style="font-size:12px;font-weight:700;color:var(--text-default);min-width:20px;text-align:right;">8</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">2 of 4 monitored nodes</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="showView('all-devices')"><span class="stat-link-txt">View nodes</span> <span class="arr">→</span></button>
+            </div>
+          </div>
+
+          <!-- Most deviated node -->
+          <div class="stat-card" style="display:flex;flex-direction:column;padding:16px 18px;">
+            <div class="stat-head"><div class="stat-card-label">Most deviated node</div><div class="stat-info">i<div class="stat-tip">The node with the highest number of settings that differ from the approved baseline.</div></div></div>
+            <div style="display:flex;align-items:center;gap:16px;flex:1;">
+              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
+                <svg width="76" height="76" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#d97706" stroke-width="8" stroke-linecap="round" stroke-dasharray="75.5 238.8" stroke-dashoffset="-7" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Modified: 3 settings&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" stroke-dasharray="75.5 238.8" stroke-dashoffset="-96.5" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Added: 3 settings&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-linecap="round" stroke-dasharray="45.7 238.8" stroke-dashoffset="-186" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed: 2 settings&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">8</div>
+                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">off base</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span>Modified</span>
+                    <span style="font-size:12px;font-weight:700;color:#d97706;min-width:20px;text-align:right;">3</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0;"></span>Added</span>
+                    <span style="font-size:12px;font-weight:700;color:#2563eb;min-width:20px;text-align:right;">3</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Removed</span>
+                    <span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">PROD-SERVER-01</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="showView('node-detail')"><span class="stat-link-txt">View node</span> <span class="arr">→</span></button>
+            </div>
+          </div>
+
+          <!-- Requires review -->
+          <div class="stat-card" style="display:flex;flex-direction:column;padding:16px 18px;">
+            <div class="stat-head">
+              <div class="stat-card-label">Requires review</div>
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#d97706;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:999px;padding:2px 8px;white-space:nowrap;">Needs review</span>
+              <div class="stat-info">i<div class="stat-tip">Deviations that weaken a security-sensitive setting or drop protective configuration from the baseline — worth reviewing first.</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;flex:1;">
+              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
+                <svg width="76" height="76" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-linecap="round" stroke-dasharray="145.2 238.8" stroke-dashoffset="-7" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Security-sensitive: 2&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" stroke-dasharray="65.6 238.8" stroke-dashoffset="-166.2" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed protection: 1&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">3</div>
+                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">to review</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);min-width:0;"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Security-sensitive</span></span>
+                    <span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">2</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);min-width:0;"><span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Removed protection</span></span>
+                    <span style="font-size:12px;font-weight:700;color:var(--text-default);min-width:20px;text-align:right;">1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">Needs attention</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="document.getElementById('rb-table').scrollIntoView({behavior:'smooth',block:'start'})"><span class="stat-link-txt">Review deviations</span> <span class="arr">→</span></button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Deviations table -->
+        <div id="rb-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+          <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Baseline deviations (14)</div>
+          <div class="col-thead" style="display:grid;grid-template-columns:1.8fr 1fr 0.85fr 1.5fr 0.7fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
+            <div>Setting</div><div>Node</div><div>Deviation</div><div>Baseline → Current</div><div>Since</div>
+          </div>
+          <div class="rc-row">
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></span><div class="rc-item-txt"><div class="rc-item">Windows Defender · Real-time protection</div><div class="rc-path">Defender · Real-Time Protection</div></div></div>
+            <div class="rc-node">MACBOOK-TARAS</div>
+            <div><span class="rc-chg modified">Modified</span></div>
+            <div class="rc-val"><span class="rc-prev">Enabled</span><span class="rc-arrow">→</span><span class="rc-cur">Disabled</span></div>
+            <div class="rc-when">2h ago</div>
+          </div>
+          <div class="rc-row">
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"></path></svg></span><div class="rc-item-txt"><div class="rc-item">Password policy · Min length</div><div class="rc-path">Account policies</div></div></div>
+            <div class="rc-node">PROD-SERVER-01</div>
+            <div><span class="rc-chg modified">Modified</span></div>
+            <div class="rc-val"><span class="rc-prev">14 chars</span><span class="rc-arrow">→</span><span class="rc-cur">8 chars</span></div>
+            <div class="rc-when">5h ago</div>
+          </div>
+          <div class="rc-row">
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><div class="rc-item-txt"><div class="rc-item">Local admin · svc-deploy</div><div class="rc-path">Local users &amp; groups</div></div></div>
+            <div class="rc-node">PROD-SERVER-01</div>
+            <div><span class="rc-chg added">Added</span></div>
+            <div class="rc-val"><span class="rc-empty">—</span><span class="rc-arrow">→</span><span class="rc-cur">Administrators</span></div>
+            <div class="rc-when">5h ago</div>
+          </div>
+          <div class="rc-row">
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg></span><div class="rc-item-txt"><div class="rc-item">Firewall rule · Allow RDP</div><div class="rc-path">HKLM\SYSTEM\...\FirewallPolicy</div></div></div>
+            <div class="rc-node">MACBOOK-TARAS</div>
+            <div><span class="rc-chg added">Added</span></div>
+            <div class="rc-val"><span class="rc-empty">—</span><span class="rc-arrow">→</span><span class="rc-cur">Allow inbound</span></div>
+            <div class="rc-when">2h ago</div>
           </div>
           <div class="rc-row">
             <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><div class="rc-item-txt"><div class="rc-item">Scheduled task · NightlyBackup</div><div class="rc-path">\Microsoft\Windows\Backup</div></div></div>
@@ -18778,7 +19027,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 <div class="screen-lbl" id="lbl">s11 · Dashboard</div>
 
 <script>
-const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','report-changed','reports','cm-list','cm-detail','credentials'];
+const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','report-changed','report-baseline','reports','cm-list','cm-detail','credentials'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Node',
   s05:'s05 · Install Agent',
@@ -18809,7 +19058,7 @@ const LABELS = {
   'add-check':'Policy · Add Check',
   'edit-check':'Policy · Edit Check'
 ,'j3-connect':'J3 · Connect AWS','j3-connecting':'J3 · Connecting','j3-connected':'J3 · Connected','j3-syncing':'J3 · Syncing','j3-inventory':'J3 · Node Inventory','j3-cmdb':'J3 · CMDB Match','j3-matched':'J3 · Match Confirmed','j3-scan-config':'J3 · Scan Config','j3-scanning':'J3 · Scanning','j3-scan-complete':'J3 · Scan Complete','j3-results':'J3 · Results','j3-connect-failed':'J3 · Connection Failed','j3-no-resources':'J3 · No Resources','j3-manual-match':'J3 · Manual Match','j3-scan-failed':'J3 · Scan Failed'
-,'scan-schedule':'Scan Schedules','cm-list':'Connection Manager Groups','cm-detail':'CM Group · Detail','credentials':'Credential Vault','settings-integrations':'Settings · Integrations','integration-detail':'Integration · Detail','integration-connect':'Integrations · Add','secret-server-config':'Settings · Secret Server','scan-failed':'Node · Scan Failed','reports-list':'Reports','report-changed':'Reports · What changed','reports':'Reports · Compliance'
+,'scan-schedule':'Scan Schedules','cm-list':'Connection Manager Groups','cm-detail':'CM Group · Detail','credentials':'Credential Vault','settings-integrations':'Settings · Integrations','integration-detail':'Integration · Detail','integration-connect':'Integrations · Add','secret-server-config':'Settings · Secret Server','scan-failed':'Node · Scan Failed','reports-list':'Reports','report-changed':'Reports · What changed','report-baseline':'Reports · Baseline deviation','reports':'Reports · Compliance'
 ,'j4-connect':'J4 · Configure ServiceNow','j4-connecting':'J4 · Connecting','j4-connected':'J4 · Connected','j4-syncing':'J4 · Syncing Nodes','j4-match':'J4 · Match Nodes','j4-active':'J4 · Recon Active','j4-summary':'J4 · Summary','j4-connect-failed':'J4 · Connection Failed','j4-no-crs':'J4 · No CRs Found','j4-partial-match':'J4 · Partial Match'
 ,'cmdb-connect':'CMDB · Connect','cmdb-connecting':'CMDB · Connecting','cmdb-connect-failed':'CMDB · Connection Failed','cmdb-browse':'CMDB · Select Nodes','cmdb-credentials':'CMDB · Credentials','cmdb-importing':'CMDB · Importing','cmdb-complete':'CMDB · Complete'
 ,'csv-import':'CSV · Upload','csv-preview':'CSV · Review','csv-importing':'CSV · Importing','csv-complete':'CSV · Complete'};
@@ -19022,7 +19271,7 @@ function go(key) {
     const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
       changes:'sb-changes','change-detail':'sb-changes','change-approve':'sb-changes',
       'change-unapprove':'sb-changes','cr-audit':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
-      'node-detail':'sb-all-devices','j3-connect-failed':'sb-all-devices','scan-failed':'sb-all-devices','reports-list':'sb-reports','report-changed':'sb-reports','reports':'sb-reports',
+      'node-detail':'sb-all-devices','j3-connect-failed':'sb-all-devices','scan-failed':'sb-all-devices','reports-list':'sb-reports','report-changed':'sb-reports','report-baseline':'sb-reports','reports':'sb-reports',
       'policies':'sb-policies','policy-create':'sb-policies','policy-detail':'sb-policies','policy-edit':'sb-policies',
       'policy-assign':'sb-policies','add-check':'sb-policies','edit-check':'sb-policies',
       'j3-results':'sb-integrations' };
@@ -19110,7 +19359,7 @@ function showView(name) {
     'change-unapprove':'sb-changes', 'cr-audit':'sb-changes', 'changes-done':'sb-changes', 'all-devices':'sb-all-devices',
     'j3-no-resources':'sb-all-devices', 'j3-manual-match':'sb-all-devices', 'j3-scan-failed':'sb-all-devices', 'scan-failed':'sb-all-devices',
     'policies':'sb-policies', 'policy-create':'sb-policies', 'policy-detail':'sb-policies', 'policy-edit':'sb-policies',
-    'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies', 'reports-list':'sb-reports', 'report-changed':'sb-reports', 'reports':'sb-reports',
+    'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies', 'reports-list':'sb-reports', 'report-changed':'sb-reports', 'report-baseline':'sb-reports', 'reports':'sb-reports',
     'settings-integrations':'sb-integrations', 'integration-connect':'sb-integrations', 'secret-server-config':'sb-integrations',
     'scan-schedule':'sb-scan-schedule', 'cm-list':'sb-cm-list', 'cm-detail':'sb-cm-list',
     'credentials':'sb-credentials' };
