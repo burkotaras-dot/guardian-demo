@@ -276,6 +276,26 @@ body.dark #v-reports .badge-high {
   border-color:rgba(250,115,21,0.55);
 }
 body.dark #v-reports .badge-high::before { background:#FA7315; }
+/* Reports List — report-type cards */
+.rpt-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; align-items:stretch; }
+@media (max-width:900px){ .rpt-grid { grid-template-columns:1fr; } }
+.rpt-card { display:flex; flex-direction:column; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); padding:16px 18px; transition:border-color .15s, box-shadow .15s; }
+.rpt-card:hover { border-color:var(--green1); box-shadow:var(--shadow-md); }
+body.dark .rpt-card { border-color:var(--p-dark-border); }
+body.dark .rpt-card:hover { border-color:var(--green1); }
+.rpt-soon { width:auto; padding:9px 18px; font-size:13px; font-weight:600; border-radius:var(--radius-md); background:var(--bg-canvas); color:var(--text-muted); border:1px solid var(--border); cursor:not-allowed; font-family:inherit; }
+body.dark .rpt-soon { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12); color:var(--text-muted); }
+.rpt-card .rpt-params { list-style:none; padding:0; margin:10px 0 0; display:flex; flex-direction:column; gap:6px; }
+.rpt-card .rpt-params li { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--text-sec); line-height:1.4; }
+.rpt-card .rpt-params li::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--text-muted); margin-top:6px; flex-shrink:0; }
+.rpt-badge { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:3px 8px; border-radius:20px; white-space:nowrap; }
+.rpt-badge.avail { color:#15803d; background:rgba(0,175,115,0.12); }
+body.dark .rpt-badge.avail { color:#34D399; background:rgba(0,175,115,0.14); }
+.rpt-badge.preview { color:var(--text-muted); background:var(--bg-canvas); border:1px solid var(--border); }
+.rpt-meta { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:500; color:var(--text-muted); }
+.rpt-meta::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; opacity:0.6; flex-shrink:0; }
+.rpt-meta.ready { color:#15803d; }
+body.dark .rpt-meta.ready { color:#34D399; }
 .ms-btn:hover { border-color:var(--green1); }
 .ms-btn::after { content:''; position:absolute; right:10px; top:50%; width:5px; height:5px; border-right:1.5px solid #94a3b8; border-bottom:1.5px solid #94a3b8; transform:translateY(-65%) rotate(45deg); pointer-events:none; }
 .ms-menu { display:none; position:absolute; left:0; top:calc(100% + 4px); background:var(--bg-card); border:1px solid var(--border); border-radius:8px; box-shadow:0 8px 32px rgba(0,0,0,0.35); min-width:100%; z-index:200; padding:4px 0; white-space:nowrap; }
@@ -3369,7 +3389,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg>
         Policies
       </div>
-      <div class="sidebar-item" id="sb-reports" onclick="showView(&#39;reports&#39;)">
+      <div class="sidebar-item" id="sb-reports" onclick="showView(&#39;reports-list&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
         Reports
       </div>
@@ -13012,6 +13032,13 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         '<div>' + _repSevBadge(f.sev) + '</div>' +
         '</div>';
     }
+    // Reports List → Generate report. Compliance opens the full detail;
+    // the other three types get their detail content in a later step.
+    function generateReport(type) {
+      if (type === 'compliance') { showView('reports'); return; }
+      showToast('This report type is coming soon');
+    }
+
     function renderReport() {
       var grpSel = document.getElementById('rep-group');
       var group = grpSel ? grpSel.value : 'All node groups';
@@ -15972,11 +15999,108 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     </div>
 
     <!-- REPORTS — on-demand compliance report (item 9): benchmark → policies → checks → score -->
+    <!-- ═══ REPORTS LIST — report-type catalogue ═══ -->
+    <div class="view" id="v-reports-list" style="display: none;">
+      <div class="dash-main" style="max-width:100%;display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 140px);">
+        <div style="max-width:820px;width:100%;margin:0 auto;transform:translateY(-200px);">
+        <div style="margin-bottom:16px;">
+          <div class="page-title">Reports</div>
+          <div class="page-sub" style="color:var(--text-muted);margin-top:4px;">Generate and export compliance &amp; drift reports for your estate</div>
+        </div>
+
+        <div class="rpt-grid">
+          <!-- Compliance -->
+          <div class="rpt-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+              <div style="width:42px;height:42px;border-radius:11px;background:rgba(0,175,115,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+              </div>
+              <span class="rpt-badge avail">Available</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-default);margin-top:12px;">Compliance</div>
+            <div style="font-size:12px;color:var(--text-sec);line-height:1.5;margin-top:5px;">Policy and check compliance state across your estate.</div>
+            <ul class="rpt-params">
+              <li>Passed / failed checks per policy</li>
+              <li>Scope by nodes, groups and benchmarks</li>
+            </ul>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;">
+              <span class="rpt-meta ready">Last run · 2 days ago</span>
+              <button class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;" onclick="generateReport('compliance')">Generate report →</button>
+            </div>
+          </div>
+
+          <!-- What changed -->
+          <div class="rpt-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+              <div style="width:42px;height:42px;border-radius:11px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+              </div>
+              <span class="rpt-badge preview">Preview</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-default);margin-top:12px;">What changed</div>
+            <div style="font-size:12px;color:var(--text-sec);line-height:1.5;margin-top:5px;">Configuration changes detected between two scans.</div>
+            <ul class="rpt-params">
+              <li>Added / modified / removed items</li>
+              <li>Period and selected scope</li>
+            </ul>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;">
+              <span class="rpt-meta">Needs 2+ scans</span>
+              <button class="rpt-soon" disabled>Coming soon</button>
+            </div>
+          </div>
+
+          <!-- Baseline deviation -->
+          <div class="rpt-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+              <div style="width:42px;height:42px;border-radius:11px;background:rgba(217,119,6,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              </div>
+              <span class="rpt-badge preview">Preview</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-default);margin-top:12px;">Baseline deviation</div>
+            <div style="font-size:12px;color:var(--text-sec);line-height:1.5;margin-top:5px;">Drift away from the active approved baseline.</div>
+            <ul class="rpt-params">
+              <li>Nodes and checks that changed</li>
+              <li>Baseline date and source scan</li>
+            </ul>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;">
+              <span class="rpt-meta">No active baseline yet</span>
+              <button class="rpt-soon" disabled>Coming soon</button>
+            </div>
+          </div>
+
+          <!-- Needs investigation -->
+          <div class="rpt-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+              <div style="width:42px;height:42px;border-radius:11px;background:rgba(251,60,68,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+              <span class="rpt-badge preview">Preview</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-default);margin-top:12px;">Needs investigation</div>
+            <div style="font-size:12px;color:var(--text-sec);line-height:1.5;margin-top:5px;">Everything that currently demands attention.</div>
+            <ul class="rpt-params">
+              <li>Critical failures and unreconciled drift</li>
+              <li>Scan failures and other attention states</li>
+            </ul>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;">
+              <span class="rpt-meta">3 items need attention</span>
+              <button class="rpt-soon" disabled>Coming soon</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
     <div class="view" id="v-reports" style="display: none;">
       <div class="page-header">
-        <div>
-          <div class="page-title">Compliance Reports</div>
-          <div class="page-sub">On-demand policy compliance report</div>
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <button class="btn-outline" onclick="showView('reports-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;margin-top:2px;">← Back to Reports</button>
+          <div>
+            <div class="page-title">Compliance report</div>
+            <div class="page-sub" id="rep-scope-desc">Policy and check compliance across the selected scope</div>
+          </div>
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <div class="demo-wrap" title="Prototype only — simulate export success or failure. Not shown in the live product.">
@@ -18324,7 +18448,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 <div class="screen-lbl" id="lbl">s11 · Dashboard</div>
 
 <script>
-const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports','cm-list','cm-detail','credentials'];
+const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','reports','cm-list','cm-detail','credentials'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Node',
   s05:'s05 · Install Agent',
@@ -18355,7 +18479,7 @@ const LABELS = {
   'add-check':'Policy · Add Check',
   'edit-check':'Policy · Edit Check'
 ,'j3-connect':'J3 · Connect AWS','j3-connecting':'J3 · Connecting','j3-connected':'J3 · Connected','j3-syncing':'J3 · Syncing','j3-inventory':'J3 · Node Inventory','j3-cmdb':'J3 · CMDB Match','j3-matched':'J3 · Match Confirmed','j3-scan-config':'J3 · Scan Config','j3-scanning':'J3 · Scanning','j3-scan-complete':'J3 · Scan Complete','j3-results':'J3 · Results','j3-connect-failed':'J3 · Connection Failed','j3-no-resources':'J3 · No Resources','j3-manual-match':'J3 · Manual Match','j3-scan-failed':'J3 · Scan Failed'
-,'scan-schedule':'Scan Schedules','cm-list':'Connection Manager Groups','cm-detail':'CM Group · Detail','credentials':'Credential Vault','settings-integrations':'Settings · Integrations','integration-detail':'Integration · Detail','integration-connect':'Integrations · Add','secret-server-config':'Settings · Secret Server','scan-failed':'Node · Scan Failed','reports':'Compliance Reports'
+,'scan-schedule':'Scan Schedules','cm-list':'Connection Manager Groups','cm-detail':'CM Group · Detail','credentials':'Credential Vault','settings-integrations':'Settings · Integrations','integration-detail':'Integration · Detail','integration-connect':'Integrations · Add','secret-server-config':'Settings · Secret Server','scan-failed':'Node · Scan Failed','reports-list':'Reports','reports':'Reports · Compliance'
 ,'j4-connect':'J4 · Configure ServiceNow','j4-connecting':'J4 · Connecting','j4-connected':'J4 · Connected','j4-syncing':'J4 · Syncing Nodes','j4-match':'J4 · Match Nodes','j4-active':'J4 · Recon Active','j4-summary':'J4 · Summary','j4-connect-failed':'J4 · Connection Failed','j4-no-crs':'J4 · No CRs Found','j4-partial-match':'J4 · Partial Match'
 ,'cmdb-connect':'CMDB · Connect','cmdb-connecting':'CMDB · Connecting','cmdb-connect-failed':'CMDB · Connection Failed','cmdb-browse':'CMDB · Select Nodes','cmdb-credentials':'CMDB · Credentials','cmdb-importing':'CMDB · Importing','cmdb-complete':'CMDB · Complete'
 ,'csv-import':'CSV · Upload','csv-preview':'CSV · Review','csv-importing':'CSV · Importing','csv-complete':'CSV · Complete'};
@@ -18568,7 +18692,7 @@ function go(key) {
     const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
       changes:'sb-changes','change-detail':'sb-changes','change-approve':'sb-changes',
       'change-unapprove':'sb-changes','cr-audit':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
-      'node-detail':'sb-all-devices','j3-connect-failed':'sb-all-devices','scan-failed':'sb-all-devices','reports':'sb-reports',
+      'node-detail':'sb-all-devices','j3-connect-failed':'sb-all-devices','scan-failed':'sb-all-devices','reports-list':'sb-reports','reports':'sb-reports',
       'policies':'sb-policies','policy-create':'sb-policies','policy-detail':'sb-policies','policy-edit':'sb-policies',
       'policy-assign':'sb-policies','add-check':'sb-policies','edit-check':'sb-policies',
       'j3-results':'sb-integrations' };
@@ -18656,7 +18780,7 @@ function showView(name) {
     'change-unapprove':'sb-changes', 'cr-audit':'sb-changes', 'changes-done':'sb-changes', 'all-devices':'sb-all-devices',
     'j3-no-resources':'sb-all-devices', 'j3-manual-match':'sb-all-devices', 'j3-scan-failed':'sb-all-devices', 'scan-failed':'sb-all-devices',
     'policies':'sb-policies', 'policy-create':'sb-policies', 'policy-detail':'sb-policies', 'policy-edit':'sb-policies',
-    'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies', 'reports':'sb-reports',
+    'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies', 'reports-list':'sb-reports', 'reports':'sb-reports',
     'settings-integrations':'sb-integrations', 'integration-connect':'sb-integrations', 'secret-server-config':'sb-integrations',
     'scan-schedule':'sb-scan-schedule', 'cm-list':'sb-cm-list', 'cm-detail':'sb-cm-list',
     'credentials':'sb-credentials' };
