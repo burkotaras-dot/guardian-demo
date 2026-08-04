@@ -1212,10 +1212,10 @@ body.dark .check-card[data-sev="critical"] .check-ico { color:#E66A71; }
 body.dark .check-card[data-sev="medium"]   .check-ico { color:#D98A3A; }
 body.dark .check-card[data-sev="low"]      .check-ico { color:#5B8DEF; }
 body.dark .check-card[data-sev="passed"]   .check-ico { color:#34D399; }
-.type-pill--critical { color:#CF454D; background:rgba(217,74,82,0.055); border-color:rgba(217,74,82,0.24); }
-.type-pill--medium { color:#B86410; background:rgba(197,106,16,0.055); border-color:rgba(197,106,16,0.24); }
-.type-pill--low { color:#2563EB; background:rgba(37,99,235,0.055); border-color:rgba(37,99,235,0.24); }
-.type-pill--pass { color:#15803d; background:rgba(21,128,61,0.06); border-color:rgba(21,128,61,0.24); }
+.type-pill.type-pill--critical { color:#CF454D; background:rgba(217,74,82,0.055); border-color:rgba(217,74,82,0.24); }
+.type-pill.type-pill--medium { color:#B86410; background:rgba(197,106,16,0.055); border-color:rgba(197,106,16,0.24); }
+.type-pill.type-pill--low { color:#2563EB; background:rgba(37,99,235,0.055); border-color:rgba(37,99,235,0.24); }
+.type-pill.type-pill--pass { color:#15803d; background:rgba(21,128,61,0.06); border-color:rgba(21,128,61,0.24); }
 body.dark .type-pill--critical { color:#E66A71; background:rgba(230,106,113,0.07); border-color:rgba(230,106,113,0.26); }
 body.dark .type-pill--medium { color:#D98A3A; background:rgba(217,138,58,0.07); border-color:rgba(217,138,58,0.26); }
 body.dark .type-pill--low { color:#5B8DEF; background:rgba(91,141,239,0.07); border-color:rgba(91,141,239,0.26); }
@@ -1560,9 +1560,14 @@ body.dark #v-all-devices .node-kpi-card::after {
 .node-kpi-head { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:20px; }
 .node-kpi-head-l { display:flex; align-items:center; gap:8px; min-width:0; }
 .node-kpi-head .stat-card-label { margin-bottom:0; }
+.node-kpi-head .stat-info { margin-left:0; }
+.node-kpi-grid { grid-template-columns:repeat(4,1fr); }
+@media (max-width:1180px){ .node-kpi-grid { grid-template-columns:repeat(2,1fr); } }
 .node-kpi-trend { margin-left:auto; flex-shrink:0; font-size:10px; font-weight:700; white-space:nowrap; }
 .node-kpi-trend.danger { color:#E84C3D; }
 .node-kpi-trend.warning { color:#D97706; }
+.node-kpi-trend.success { color:#15803d; }
+body.dark .node-kpi-trend.success { color:#34D399; }
 .node-kpi-main { margin-top:12px; }
 .node-kpi-value { font-size:28px; font-weight:750; line-height:1; letter-spacing:-.4px; }
 .node-kpi-unit { margin-left:2px; font-size:15px; font-weight:500; color:var(--text-sec); letter-spacing:0; }
@@ -4615,6 +4620,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="node-kpi-head">
               <div class="node-kpi-head-l"><div class="stat-card-label">Lowest Node Score</div></div>
               <span class="node-kpi-trend danger">↓ 8 vs last scan</span>
+              <div class="stat-info">i<div class="stat-tip">The lowest compliance score across all monitored nodes. Start here — this node carries the most risk.</div></div>
             </div>
             <div class="node-kpi-main">
               <div class="node-kpi-value" style="color:#E84C3D;">54<span class="node-kpi-unit">/100</span></div>
@@ -4624,8 +4630,21 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           </div>
           <div class="stat-card node-kpi-card">
             <div class="node-kpi-head">
+              <div class="node-kpi-head-l"><div class="stat-card-label">Average Node Score</div></div>
+              <span class="node-kpi-trend success">↑ 3 vs previous scan</span>
+              <div class="stat-info">i<div class="stat-tip">The mean compliance score across all monitored nodes — a fleet-wide health indicator that complements the lowest node score.</div></div>
+            </div>
+            <div class="node-kpi-main">
+              <div class="node-kpi-value" style="color:#15803d;">71<span class="node-kpi-unit">/100</span></div>
+              <div class="node-kpi-context"><strong style="color:#15803d;">3 of 4 nodes</strong> improved</div>
+            </div>
+            <button class="stat-link" onclick="showView(&#39;results&#39;)"><span class="stat-link-txt">View score details</span> <span class="arr">→</span></button>
+          </div>
+          <div class="stat-card node-kpi-card">
+            <div class="node-kpi-head">
               <div class="node-kpi-head-l"><div class="stat-card-label">Critical Issues</div></div>
               <span class="node-kpi-trend danger">↑ 4</span>
+              <div class="stat-info">i<div class="stat-tip">Total critical-severity check failures across all nodes in the latest scan. These need urgent remediation.</div></div>
             </div>
             <div class="node-kpi-main">
               <div class="node-kpi-value" style="color:#FB3C44;">31</div>
@@ -4640,6 +4659,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
                 <span class="node-kpi-badge">Needs review</span>
               </div>
               <span class="node-kpi-trend warning">↑ 2</span>
+              <div class="stat-info">i<div class="stat-tip">Configuration changes detected on nodes with no matching Change Request. Review and reconcile to stay audit-ready.</div></div>
             </div>
             <div class="node-kpi-main">
               <div class="node-kpi-value" style="color:#D97706;">5</div>
