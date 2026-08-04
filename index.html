@@ -305,7 +305,7 @@ body.dark .rpt-meta.ready { color:#34D399; }
 /* What changed — Report Detail (Preview concept) */
 .rc-scope-pill { font-size:11px; font-weight:600; color:var(--text-default); background:var(--bg-subtle); border:1px solid var(--border); border-radius:20px; padding:3px 10px; white-space:nowrap; }
 body.dark .rc-scope-pill { color:#E2E8F0; background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); }
-.rc-row { display:grid; grid-template-columns:2fr 1.3fr 0.9fr 0.9fr; padding:11px 18px; border-bottom:1px solid var(--border); font-size:12px; align-items:center; }
+.rc-row { display:grid; grid-template-columns:1.8fr 1fr 0.85fr 1.5fr 0.7fr; padding:11px 18px; border-bottom:1px solid var(--border); font-size:12px; align-items:center; }
 .rc-row:last-child { border-bottom:none; }
 .rc-item-cell { display:flex; align-items:center; gap:11px; min-width:0; }
 .rc-ico { width:30px; height:30px; border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:var(--bg-subtle); color:var(--text-sec); }
@@ -316,6 +316,11 @@ body.dark .rc-ico { background:rgba(148,163,184,0.09); }
 .rc-path { font-size:11px; color:var(--text-muted); margin-top:2px; }
 .rc-node { color:var(--text-sec); }
 .rc-when { color:var(--text-muted); font-size:11px; }
+.rc-val { display:flex; align-items:center; gap:6px; min-width:0; font-size:11.5px; }
+.rc-val .rc-prev { color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rc-val .rc-arrow { color:var(--text-muted); flex-shrink:0; }
+.rc-val .rc-cur { color:var(--text-default); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rc-val .rc-empty { color:var(--text-muted); }
 .rc-chg { display:inline-flex; align-items:center; gap:5px; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; padding:2px 9px; border-radius:20px; width:fit-content; }
 .rc-chg::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
 .rc-chg.added { color:#2563eb; background:rgba(37,99,235,0.12); }
@@ -16342,43 +16347,49 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <!-- Changes table -->
         <div id="rc-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Detected changes (14)</div>
-          <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.3fr 0.9fr 0.9fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
-            <div>Item</div><div>Node</div><div>Change</div><div>When</div>
+          <div class="col-thead" style="display:grid;grid-template-columns:1.8fr 1fr 0.85fr 1.5fr 0.7fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
+            <div>Item</div><div>Node</div><div>Change</div><div>Previous → Current</div><div>When</div>
           </div>
           <div class="rc-row">
             <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg></span><div class="rc-item-txt"><div class="rc-item">Firewall rule · Allow RDP</div><div class="rc-path">HKLM\SYSTEM\...\FirewallPolicy</div></div></div>
             <div class="rc-node">MACBOOK-TARAS</div>
             <div><span class="rc-chg added">Added</span></div>
+            <div class="rc-val"><span class="rc-empty">—</span><span class="rc-arrow">→</span><span class="rc-cur">Allow inbound</span></div>
             <div class="rc-when">2h ago</div>
           </div>
           <div class="rc-row">
-            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></span><div class="rc-item-txt"><div class="rc-item">Windows Defender · Real-time protection</div><div class="rc-path">Enabled → Disabled</div></div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></span><div class="rc-item-txt"><div class="rc-item">Windows Defender · Real-time protection</div><div class="rc-path">Defender · Real-Time Protection</div></div></div>
             <div class="rc-node">MACBOOK-TARAS</div>
             <div><span class="rc-chg modified">Modified</span></div>
+            <div class="rc-val"><span class="rc-prev">Enabled</span><span class="rc-arrow">→</span><span class="rc-cur">Disabled</span></div>
             <div class="rc-when">2h ago</div>
           </div>
           <div class="rc-row">
-            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><div class="rc-item-txt"><div class="rc-item">Local admin · svc-deploy</div><div class="rc-path">Administrators group</div></div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><div class="rc-item-txt"><div class="rc-item">Local admin · svc-deploy</div><div class="rc-path">Local users &amp; groups</div></div></div>
             <div class="rc-node">PROD-SERVER-01</div>
             <div><span class="rc-chg added">Added</span></div>
+            <div class="rc-val"><span class="rc-empty">—</span><span class="rc-arrow">→</span><span class="rc-cur">Administrators</span></div>
             <div class="rc-when">5h ago</div>
           </div>
           <div class="rc-row">
-            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"></path></svg></span><div class="rc-item-txt"><div class="rc-item">Password policy · Min length</div><div class="rc-path">14 → 8 characters</div></div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"></path></svg></span><div class="rc-item-txt"><div class="rc-item">Password policy · Min length</div><div class="rc-path">Account policies</div></div></div>
             <div class="rc-node">PROD-SERVER-01</div>
             <div><span class="rc-chg modified">Modified</span></div>
+            <div class="rc-val"><span class="rc-prev">14 chars</span><span class="rc-arrow">→</span><span class="rc-cur">8 chars</span></div>
             <div class="rc-when">5h ago</div>
           </div>
           <div class="rc-row">
             <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><div class="rc-item-txt"><div class="rc-item">Scheduled task · NightlyBackup</div><div class="rc-path">\Microsoft\Windows\Backup</div></div></div>
             <div class="rc-node">PROD-SERVER-01</div>
             <div><span class="rc-chg removed">Removed</span></div>
+            <div class="rc-val"><span class="rc-prev">Enabled</span><span class="rc-arrow">→</span><span class="rc-empty">—</span></div>
             <div class="rc-when">6h ago</div>
           </div>
           <div class="rc-row">
-            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg></span><div class="rc-item-txt"><div class="rc-item">Audit policy · Logon events</div><div class="rc-path">Success,Failure → No auditing</div></div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg></span><div class="rc-item-txt"><div class="rc-item">Audit policy · Logon events</div><div class="rc-path">Advanced audit policy</div></div></div>
             <div class="rc-node">MACBOOK-TARAS</div>
             <div><span class="rc-chg removed">Removed</span></div>
+            <div class="rc-val"><span class="rc-prev">Success, Failure</span><span class="rc-arrow">→</span><span class="rc-cur">No auditing</span></div>
             <div class="rc-when">1d ago</div>
           </div>
         </div>
