@@ -6374,6 +6374,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div style="font-size:12px;color:var(--text-sec);"><span id="nd-sum-monitored" style="color:var(--green2);font-weight:700;">12</span> attributes monitored</div>
             <div style="font-size:12px;color:var(--text-sec);"><span style="color:var(--green2);font-weight:700;">4</span> compliance policies</div>
             <div style="font-size:12px;color:var(--text-sec);"><span id="nd-sum-baseline" style="color:#d97706;font-weight:700;">0</span> changes since baseline</div>
+            <button class="stat-link" onclick="openReportFromBaseline()" style="align-self:flex-end;padding-top:2px;" title="Open a Baseline deviation report scoped to this node"><span class="stat-link-txt">Baseline deviation report</span> <span class="arr">→</span></button>
           </div>
         </div>
 
@@ -13141,6 +13142,16 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     // Entry point from Policies → Compliance report (back returns to Policies)
     function openReportFromPolicies() {
       openReport('compliance', 'From Policies · policy and check compliance across all managed nodes', 'policies');
+    }
+
+    // Entry point from Node Details → "changes since baseline" → Baseline deviation report
+    function openReportFromBaseline() {
+      var scope = 'From node baseline';
+      var t = document.querySelector('#v-node-detail .page-title');
+      if (t && t.textContent.trim()) scope += ' · ' + t.textContent.trim();
+      var w = document.getElementById('nd-baseline-when');
+      if (w && w.textContent.trim()) scope += ' · vs baseline ' + w.textContent.trim();
+      openReport('baseline', scope, 'node-detail');
     }
 
     function renderReport() {
