@@ -13103,6 +13103,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         if (bel && scopeDesc) bel.textContent = scopeDesc;
         var bback = document.getElementById('rb-back');
         if (bback) bback.setAttribute('onclick', "showView('" + (backView || 'reports-list') + "')");
+        rbResetFilters();
         showView('report-baseline');
         return;
       }
@@ -13111,6 +13112,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         if (iel && scopeDesc) iel.textContent = scopeDesc;
         var iback = document.getElementById('ri-back');
         if (iback) iback.setAttribute('onclick', "showView('" + (backView || 'reports-list') + "')");
+        riResetFilters();
         showView('report-investigation');
         return;
       }
@@ -13152,6 +13154,69 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     function rcResetFilters() {
       ['rc-f-period', 'rc-f-type', 'rc-f-node'].forEach(function(id) { var s = document.getElementById(id); if (s) s.selectedIndex = 0; });
       rcApplyFilters();
+    }
+
+    // Baseline deviation report — same filter pattern (period / deviation type / node)
+    function rbApplyFilters() {
+      var pe = document.getElementById('rb-f-period'); var period = pe ? pe.value : 'all';
+      var te = document.getElementById('rb-f-type');   var type   = te ? te.value : 'all';
+      var ne = document.getElementById('rb-f-node');   var node   = ne ? ne.value : 'all';
+      var rows = document.querySelectorAll('#rb-table .rc-row');
+      var visible = 0;
+      rows.forEach(function(row) {
+        var show = true;
+        if (type !== 'all') { var chg = row.querySelector('.rc-chg'); if (!chg || !chg.classList.contains(type)) show = false; }
+        if (show && node !== 'all') { var nd = row.querySelector('.rc-node'); if (!nd || nd.textContent.trim() !== node) show = false; }
+        if (show && period !== 'all' && period !== 'alltime') { var w = row.querySelector('.rc-when'); if (rcParseHours(w ? w.textContent : '') > parseFloat(period)) show = false; }
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      var cnt = document.getElementById('rb-count');
+      if (cnt) cnt.textContent = 'Baseline deviations (' + visible + ')';
+      var active = (period !== 'all' || type !== 'all' || node !== 'all');
+      var reset = document.getElementById('rb-f-reset');
+      if (reset) {
+        reset.style.opacity = active ? '1' : '0.5';
+        reset.style.pointerEvents = active ? 'auto' : 'none';
+        reset.style.cursor = active ? 'pointer' : 'default';
+        reset.style.color = active ? 'var(--text-sec)' : 'var(--text-muted)';
+      }
+    }
+    function rbResetFilters() {
+      ['rb-f-period', 'rb-f-type', 'rb-f-node'].forEach(function(id) { var s = document.getElementById(id); if (s) s.selectedIndex = 0; });
+      rbApplyFilters();
+    }
+
+    // Needs investigation report — filter by category / severity / node (type-pill classes)
+    function riApplyFilters() {
+      var ce = document.getElementById('ri-f-cat');  var cat  = ce ? ce.value : 'all';
+      var se = document.getElementById('ri-f-sev');  var sev  = se ? se.value : 'all';
+      var ne = document.getElementById('ri-f-node'); var node = ne ? ne.value : 'all';
+      var rows = document.querySelectorAll('#ri-table .rc-row');
+      var visible = 0;
+      rows.forEach(function(row) {
+        var show = true;
+        var pills = row.querySelectorAll('.type-pill');
+        if (cat !== 'all') { if (!pills[0] || !pills[0].classList.contains('type-pill--' + cat)) show = false; }
+        if (show && sev !== 'all') { if (!pills[1] || !pills[1].classList.contains('type-pill--' + sev)) show = false; }
+        if (show && node !== 'all') { var nd = row.querySelector('.rc-node'); if (!nd || nd.textContent.trim() !== node) show = false; }
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      var cnt = document.getElementById('ri-count');
+      if (cnt) cnt.textContent = 'Items needing investigation (' + visible + ')';
+      var active = (cat !== 'all' || sev !== 'all' || node !== 'all');
+      var reset = document.getElementById('ri-f-reset');
+      if (reset) {
+        reset.style.opacity = active ? '1' : '0.5';
+        reset.style.pointerEvents = active ? 'auto' : 'none';
+        reset.style.cursor = active ? 'pointer' : 'default';
+        reset.style.color = active ? 'var(--text-sec)' : 'var(--text-muted)';
+      }
+    }
+    function riResetFilters() {
+      ['ri-f-cat', 'ri-f-sev', 'ri-f-node'].forEach(function(id) { var s = document.getElementById(id); if (s) s.selectedIndex = 0; });
+      riApplyFilters();
     }
 
     // Entry point from Detected Drift → What changed report, scoped to current drift view
@@ -16520,8 +16585,12 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           </div>
           <span style="width:1px;height:16px;background:var(--border);flex-shrink:0;"></span>
           <span class="rc-scope-pill" id="rb-scope-baseline">Baseline · Windows 11 · 15 Jul 02:00</span>
-          <span class="rc-scope-pill">All deviation types</span>
-          <span class="rc-scope-pill" id="rb-scope-nodes">2 nodes off baseline</span>
+          <span style="width:1px;height:16px;background:var(--border);flex-shrink:0;"></span>
+          <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Filter</span>
+          <select id="rb-f-period" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">Since baseline set</option><option value="6">Last 6 hours</option><option value="24">Last 24 hours</option><option value="alltime">All time</option></select>
+          <select id="rb-f-type" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All deviation types</option><option value="added">Added</option><option value="modified">Modified</option><option value="removed">Removed</option></select>
+          <select id="rb-f-node" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option></select>
+          <button id="rb-f-reset" onclick="rbResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
           <span style="margin-left:auto;font-size:11px;color:var(--text-muted);white-space:nowrap;">Baseline 15 Jul 02:00 vs current 15 Jul 14:22</span>
         </div>
 
@@ -16682,7 +16751,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 
         <!-- Deviations table -->
         <div id="rb-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-          <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Baseline deviations (14)</div>
+          <div id="rb-count" style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Baseline deviations (6)</div>
           <div class="col-thead" style="display:grid;grid-template-columns:1.8fr 1fr 0.85fr 1.5fr 0.7fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div>Setting</div><div>Node</div><div>Deviation</div><div>Baseline → Current</div><div>Since</div>
           </div>
@@ -16759,8 +16828,11 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data shown · Export unavailable</span>
           </div>
           <span style="width:1px;height:16px;background:var(--border);flex-shrink:0;"></span>
-          <span class="rc-scope-pill">Failed checks · Drift · Scan failures</span>
-          <span class="rc-scope-pill" id="ri-scope-nodes">3 nodes affected</span>
+          <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Filter</span>
+          <select id="ri-f-cat" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All categories</option><option value="compliance">Failed check</option><option value="drift">Drift</option><option value="polarchived">Scan failure</option></select>
+          <select id="ri-f-sev" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All severities</option><option value="critical">Critical</option><option value="medium">Medium</option><option value="low">Low</option></select>
+          <select id="ri-f-node" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option><option value="STAGING-WIN-02">STAGING-WIN-02</option></select>
+          <button id="ri-f-reset" onclick="riResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
           <span style="margin-left:auto;font-size:11px;color:var(--text-muted);white-space:nowrap;">As of 15 Jul 14:22 · oldest 1d ago</span>
         </div>
 
@@ -16925,7 +16997,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 
         <!-- Attention items table -->
         <div id="ri-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-          <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Items needing investigation (8)</div>
+          <div id="ri-count" style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Items needing investigation (6)</div>
           <div class="col-thead" style="display:grid;grid-template-columns:1.8fr 1fr 0.85fr 1.5fr 0.7fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div>Item</div><div>Node</div><div>Category</div><div>Severity</div><div>Since</div>
           </div>
