@@ -296,25 +296,32 @@ body.dark .rpt-preview-btn:hover { background:rgba(0,175,115,0.22); border-color
 .rpt-badge { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:3px 8px; border-radius:20px; white-space:nowrap; }
 .rpt-badge.avail { color:#15803d; background:rgba(0,175,115,0.12); }
 body.dark .rpt-badge.avail { color:#34D399; background:rgba(0,175,115,0.14); }
-.rpt-badge.preview { color:var(--text-muted); background:var(--bg-canvas); border:1px solid var(--border); }
+.rpt-badge.preview { color:#2563eb; background:rgba(37,99,235,0.1); border:1px solid rgba(37,99,235,0.32); }
+body.dark .rpt-badge.preview { color:#7DABFF; background:rgba(37,99,235,0.2); border-color:rgba(37,99,235,0.5); }
 .rpt-meta { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:500; color:var(--text-muted); }
 .rpt-meta::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; opacity:0.6; flex-shrink:0; }
 .rpt-meta.ready { color:#15803d; }
 body.dark .rpt-meta.ready { color:#34D399; }
 /* What changed — Report Detail (Preview concept) */
-.rc-scope-pill { font-size:11px; font-weight:600; color:var(--text-sec); background:var(--bg-canvas); border:1px solid var(--border); border-radius:20px; padding:3px 10px; white-space:nowrap; }
+.rc-scope-pill { font-size:11px; font-weight:600; color:var(--text-default); background:var(--bg-subtle); border:1px solid var(--border); border-radius:20px; padding:3px 10px; white-space:nowrap; }
+body.dark .rc-scope-pill { color:#E2E8F0; background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); }
 .rc-row { display:grid; grid-template-columns:2fr 1.3fr 0.9fr 0.9fr; padding:11px 18px; border-bottom:1px solid var(--border); font-size:12px; align-items:center; }
 .rc-row:last-child { border-bottom:none; }
+.rc-item-cell { display:flex; align-items:center; gap:11px; min-width:0; }
+.rc-ico { width:30px; height:30px; border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:var(--bg-subtle); color:var(--text-sec); }
+.rc-ico svg { width:16px; height:16px; stroke:currentColor; }
+body.dark .rc-ico { background:rgba(148,163,184,0.09); }
+.rc-item-txt { min-width:0; }
 .rc-item { font-weight:600; color:var(--text-default); }
 .rc-path { font-size:11px; color:var(--text-muted); margin-top:2px; }
 .rc-node { color:var(--text-sec); }
 .rc-when { color:var(--text-muted); font-size:11px; }
 .rc-chg { display:inline-flex; align-items:center; gap:5px; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; padding:2px 9px; border-radius:20px; width:fit-content; }
 .rc-chg::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
-.rc-chg.added { color:#15803d; background:rgba(0,175,115,0.12); }
+.rc-chg.added { color:#2563eb; background:rgba(37,99,235,0.12); }
 .rc-chg.modified { color:#B45309; background:rgba(217,119,6,0.12); }
 .rc-chg.removed { color:#DC2626; background:rgba(251,60,68,0.12); }
-body.dark .rc-chg.added { color:#34D399; }
+body.dark .rc-chg.added { color:#5B9CFF; }
 body.dark .rc-chg.modified { color:#F59E0B; }
 body.dark .rc-chg.removed { color:#FF6B6B; }
 .ms-btn:hover { border-color:var(--green1); }
@@ -16164,87 +16171,212 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
-        <!-- Concept notice -->
-        <div style="display:flex;align-items:center;gap:10px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:11px 16px;margin-bottom:16px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" style="flex-shrink:0;"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-          <div style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> — structure and scope shown with sample data. Export and live values arrive when this report type ships.</div>
+        <!-- Context bar — preview note + scope merged into one compact toolbar -->
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" style="flex-shrink:0;"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+            <span style="font-size:12px;color:var(--text-sec);"><span style="font-weight:700;color:var(--text-default);">Preview concept</span> · Sample data shown · Export unavailable</span>
+          </div>
+          <span style="width:1px;height:16px;background:var(--border);flex-shrink:0;"></span>
+          <span class="rc-scope-pill" id="rc-scope-period">Since last scan</span>
+          <span class="rc-scope-pill">All change types</span>
+          <span class="rc-scope-pill" id="rc-scope-nodes">2 nodes</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--text-muted);white-space:nowrap;">Compared: 15 Jul 14:22 vs 15 Jul 02:00</span>
         </div>
 
-        <!-- Scope summary -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-            <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Scope</span>
-            <span class="rc-scope-pill" id="rc-scope-period">Since last scan</span>
-            <span class="rc-scope-pill">All change types</span>
-            <span class="rc-scope-pill" id="rc-scope-nodes">2 nodes</span>
-            <span style="margin-left:auto;font-size:11px;color:var(--text-sec);">Compared: 15 Jul 14:22 vs 15 Jul 02:00</span>
-          </div>
-        </div>
+        <!-- KPIs — Dashboard stat-card pattern -->
+        <div class="stat-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px;">
 
-        <!-- KPIs -->
-        <div class="stat-grid" style="margin-bottom:16px;">
-          <div class="stat-card" style="padding:20px 24px;">
-            <div class="stat-card-label" style="margin-bottom:16px;">Total changes</div>
-            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
-              <span style="font-size:36px;font-weight:700;color:var(--text-default);line-height:1;">14</span>
-              <span style="font-size:12px;color:var(--text-sec);">across 2 nodes</span>
+          <!-- Total changes -->
+          <div class="stat-card" style="display:flex;flex-direction:column;padding:16px 18px;">
+            <div class="stat-head"><div class="stat-card-label">Total changes</div><div class="stat-info">i<div class="stat-tip">All configuration changes detected between the two compared scans, grouped by change type.</div></div></div>
+            <div style="display:flex;align-items:center;gap:16px;flex:1;">
+              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
+                <svg width="76" height="76" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#2563eb" stroke-width="8" stroke-dasharray="102.3 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Added: 6 items&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#d97706" stroke-width="8" stroke-dasharray="85.3 238.8" stroke-dashoffset="-102.3" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Modified: 5 items&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-dasharray="51.2 238.8" stroke-dashoffset="-187.6" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed: 3 items&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">14</div>
+                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">changes</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0;"></span>Added</span>
+                    <span style="font-size:12px;font-weight:700;color:#2563eb;min-width:20px;text-align:right;">6</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span>Modified</span>
+                    <span style="font-size:12px;font-weight:700;color:#d97706;min-width:20px;text-align:right;">5</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Removed</span>
+                    <span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">3</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">vs. previous scan</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="document.getElementById('rc-table').scrollIntoView({behavior:'smooth',block:'start'})"><span class="stat-link-txt">View changes</span> <span class="arr">→</span></button>
             </div>
           </div>
-          <div class="stat-card" style="padding:20px 24px;">
-            <div class="stat-card-label" style="margin-bottom:16px;">Change breakdown</div>
-            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-              <span style="font-size:20px;font-weight:700;color:#15803d;line-height:1;">6 <span style="font-size:12px;font-weight:600;">Added</span></span>
-              <span style="font-size:20px;font-weight:700;color:#B45309;line-height:1;">5 <span style="font-size:12px;font-weight:600;">Modified</span></span>
-              <span style="font-size:20px;font-weight:700;color:#DC2626;line-height:1;">3 <span style="font-size:12px;font-weight:600;">Removed</span></span>
+
+          <!-- Nodes affected -->
+          <div class="stat-card" style="display:flex;flex-direction:column;padding:16px 18px;">
+            <div class="stat-head"><div class="stat-card-label">Nodes affected</div><div class="stat-info">i<div class="stat-tip">Monitored nodes that recorded at least one change in this period, out of all nodes covered by the scan.</div></div></div>
+            <div style="display:flex;align-items:center;gap:16px;flex:1;">
+              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
+                <svg width="76" height="76" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#d97706" stroke-width="8" stroke-dasharray="119.4 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Affected: 2 nodes&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="8" stroke-dasharray="119.4 238.8" stroke-dashoffset="-119.4" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Unchanged: 2 nodes&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">2</div>
+                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">of 4</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);min-width:0;"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">MACBOOK-TARAS</span></span>
+                    <span style="font-size:12px;font-weight:700;color:var(--text-default);min-width:20px;text-align:right;">6</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);min-width:0;"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">PROD-SERVER-01</span></span>
+                    <span style="font-size:12px;font-weight:700;color:var(--text-default);min-width:20px;text-align:right;">8</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">2 of 4 monitored nodes</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="showView('all-devices')"><span class="stat-link-txt">View nodes</span> <span class="arr">→</span></button>
             </div>
           </div>
-          <div class="stat-card" style="padding:20px 24px;">
-            <div class="stat-card-label" style="margin-bottom:16px;">Nodes affected</div>
-            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
-              <span style="font-size:36px;font-weight:700;color:var(--text-default);line-height:1;">2</span>
-              <span style="font-size:12px;color:var(--text-sec);">MACBOOK-TARAS · PROD-SERVER-01</span>
+
+          <!-- Most affected node -->
+          <div class="stat-card" style="display:flex;flex-direction:column;padding:16px 18px;">
+            <div class="stat-head"><div class="stat-card-label">Most affected node</div><div class="stat-info">i<div class="stat-tip">The node with the highest number of detected changes in the current period.</div></div></div>
+            <div style="display:flex;align-items:center;gap:16px;flex:1;">
+              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
+                <svg width="76" height="76" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#2563eb" stroke-width="8" stroke-dasharray="89.5 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Added: 3 items&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#d97706" stroke-width="8" stroke-dasharray="89.5 238.8" stroke-dashoffset="-89.5" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Modified: 3 items&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-dasharray="59.7 238.8" stroke-dashoffset="-179" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed: 2 items&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">8</div>
+                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">changes</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0;"></span>Added</span>
+                    <span style="font-size:12px;font-weight:700;color:#2563eb;min-width:20px;text-align:right;">3</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;"></span>Modified</span>
+                    <span style="font-size:12px;font-weight:700;color:#d97706;min-width:20px;text-align:right;">3</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Removed</span>
+                    <span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">PROD-SERVER-01</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="showView('node-detail')"><span class="stat-link-txt">View node</span> <span class="arr">→</span></button>
             </div>
           </div>
+
+          <!-- Changes requiring review -->
+          <div class="stat-card" style="display:flex;flex-direction:column;padding:16px 18px;">
+            <div class="stat-head">
+              <div class="stat-card-label">Requires review</div>
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#d97706;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:999px;padding:2px 8px;white-space:nowrap;">Needs review</span>
+              <div class="stat-info">i<div class="stat-tip">Changes that touch security-sensitive settings or remove protective configuration — worth reviewing first.</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;flex:1;">
+              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
+                <svg width="76" height="76" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-dasharray="159.2 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Security-sensitive: 2&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-dasharray="79.6 238.8" stroke-dashoffset="-159.2" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed settings: 1&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">3</div>
+                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">to review</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;flex-direction:column;">
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);min-width:0;"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Security-sensitive</span></span>
+                    <span style="font-size:12px;font-weight:700;color:#FB3C44;min-width:20px;text-align:right;">2</span>
+                  </div>
+                  <div class="stat-legend-row">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);min-width:0;"><span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Removed settings</span></span>
+                    <span style="font-size:12px;font-weight:700;color:var(--text-default);min-width:20px;text-align:right;">1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">Needs attention</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="document.getElementById('rc-table').scrollIntoView({behavior:'smooth',block:'start'})"><span class="stat-link-txt">Review changes</span> <span class="arr">→</span></button>
+            </div>
+          </div>
+
         </div>
 
         <!-- Changes table -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+        <div id="rc-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Detected changes (14)</div>
           <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.3fr 0.9fr 0.9fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div>Item</div><div>Node</div><div>Change</div><div>When</div>
           </div>
           <div class="rc-row">
-            <div><div class="rc-item">Firewall rule · Allow RDP</div><div class="rc-path">HKLM\SYSTEM\...\FirewallPolicy</div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg></span><div class="rc-item-txt"><div class="rc-item">Firewall rule · Allow RDP</div><div class="rc-path">HKLM\SYSTEM\...\FirewallPolicy</div></div></div>
             <div class="rc-node">MACBOOK-TARAS</div>
             <div><span class="rc-chg added">Added</span></div>
             <div class="rc-when">2h ago</div>
           </div>
           <div class="rc-row">
-            <div><div class="rc-item">Windows Defender · Real-time protection</div><div class="rc-path">Enabled → Disabled</div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></span><div class="rc-item-txt"><div class="rc-item">Windows Defender · Real-time protection</div><div class="rc-path">Enabled → Disabled</div></div></div>
             <div class="rc-node">MACBOOK-TARAS</div>
             <div><span class="rc-chg modified">Modified</span></div>
             <div class="rc-when">2h ago</div>
           </div>
           <div class="rc-row">
-            <div><div class="rc-item">Local admin · svc-deploy</div><div class="rc-path">Administrators group</div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><div class="rc-item-txt"><div class="rc-item">Local admin · svc-deploy</div><div class="rc-path">Administrators group</div></div></div>
             <div class="rc-node">PROD-SERVER-01</div>
             <div><span class="rc-chg added">Added</span></div>
             <div class="rc-when">5h ago</div>
           </div>
           <div class="rc-row">
-            <div><div class="rc-item">Password policy · Min length</div><div class="rc-path">14 → 8 characters</div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"></path></svg></span><div class="rc-item-txt"><div class="rc-item">Password policy · Min length</div><div class="rc-path">14 → 8 characters</div></div></div>
             <div class="rc-node">PROD-SERVER-01</div>
             <div><span class="rc-chg modified">Modified</span></div>
             <div class="rc-when">5h ago</div>
           </div>
           <div class="rc-row">
-            <div><div class="rc-item">Scheduled task · NightlyBackup</div><div class="rc-path">\Microsoft\Windows\Backup</div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><div class="rc-item-txt"><div class="rc-item">Scheduled task · NightlyBackup</div><div class="rc-path">\Microsoft\Windows\Backup</div></div></div>
             <div class="rc-node">PROD-SERVER-01</div>
             <div><span class="rc-chg removed">Removed</span></div>
             <div class="rc-when">6h ago</div>
           </div>
           <div class="rc-row">
-            <div><div class="rc-item">Audit policy · Logon events</div><div class="rc-path">Success,Failure → No auditing</div></div>
+            <div class="rc-item-cell"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg></span><div class="rc-item-txt"><div class="rc-item">Audit policy · Logon events</div><div class="rc-path">Success,Failure → No auditing</div></div></div>
             <div class="rc-node">MACBOOK-TARAS</div>
             <div><span class="rc-chg removed">Removed</span></div>
             <div class="rc-when">1d ago</div>
