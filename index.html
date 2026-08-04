@@ -6770,9 +6770,12 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 
             <!-- Scan history list -->
             <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
-              <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
-                <div style="font-size:13px;font-weight:700;color:var(--text-default);">Scan history</div>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">3 scans recorded for this node</div>
+              <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--text-default);">Scan history</div>
+                  <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">3 scans recorded for this node</div>
+                </div>
+                <button class="btn-outline" onclick="openReportFromScanHistory()" style="width:auto;display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;white-space:nowrap;" title="Generate a What changed report from this node's scan history"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>What changed report</button>
               </div>
               <!-- Header -->
               <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:8px 18px;background:rgba(255,255,255,0.05);border-bottom:2px solid var(--border);">
@@ -13091,6 +13094,17 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         scope += ' · all nodes';
       }
       openReport('changed', scope, 'changes');
+    }
+
+    // Entry point from Node Details → Scan history → What changed report
+    function openReportFromScanHistory() {
+      var scope = 'From Scan history';
+      var t = document.querySelector('#v-node-detail .page-title');
+      if (t && t.textContent.trim()) scope += ' · ' + t.textContent.trim();
+      scope += ' · latest vs previous scan';
+      openReport('changed', scope, 'node-detail');
+      var back = document.getElementById('rc-back');
+      if (back) back.setAttribute('onclick', "showView('node-detail');ndTab('history')");
     }
 
     function renderReport() {
