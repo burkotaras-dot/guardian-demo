@@ -1566,7 +1566,7 @@ body.dark #v-dashboard .dash-main > .stat-grid > .stat-card {
   isolation:isolate;
   overflow:hidden;
   min-height:154px;
-  padding:18px 20px;
+  padding:16px 20px;
   display:flex;
   flex-direction:column;
   background-color:var(--bg-surface);
@@ -1625,6 +1625,18 @@ body.dark #v-all-devices .node-kpi-card::after {
 .node-kpi-trend.warning { color:#D97706; }
 .node-kpi-trend.success { color:#15803d; }
 body.dark .node-kpi-trend.success { color:#34D399; }
+.nkpi-num-good { color:#15803d; }
+body.dark .nkpi-num-good { color:#34D399; }
+.nkpi-mini-row { display:flex; align-items:center; justify-content:space-between; padding:6px 10px; border-radius:8px; background:var(--bg-subtle); }
+body.dark .nkpi-mini-row { background:rgba(255,255,255,0.05); }
+.nkpi-vbar { flex:1; min-width:0; min-height:3px; border-radius:3px 3px 0 0; background:#CBD5E1; cursor:pointer; transition:background .12s; }
+body.dark .nkpi-vbar { background:rgba(255,255,255,0.18); }
+.nkpi-vbar:hover { background:#94A3B8; }
+body.dark .nkpi-vbar:hover { background:rgba(255,255,255,0.32); }
+.nkpi-vbar.crit { background:#FCA5A5; }
+.nkpi-vbar.crit:hover { background:#FB3C44; }
+body.dark .nkpi-vbar.crit { background:#502C30; }
+body.dark .nkpi-vbar.crit:hover { background:#FB3C44; }
 .node-kpi-main { margin-top:12px; }
 .node-kpi-value { font-size:28px; font-weight:750; line-height:1; letter-spacing:-.4px; }
 .node-kpi-unit { margin-left:2px; font-size:15px; font-weight:500; color:var(--text-sec); letter-spacing:0; }
@@ -1788,23 +1800,38 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .cr-demo-btn:hover:not(.active) { color:var(--text-sec); }
 .cr-demo-btn.active { color:var(--text-sec); font-weight:700; }
 .cr-demo-sep { font-size:9px; color:var(--text-muted); opacity:.45; user-select:none; }
-.action-row { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 16px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:10px; cursor:pointer; transition:background .15s, border-color .15s, box-shadow .15s, transform .15s; }
-.action-row:hover { background:rgba(16,185,129,0.025); border-color:rgba(16,185,129,0.28); box-shadow:var(--shadow-md); transform:translateY(-1px); }
+.action-row { position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 16px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:10px; cursor:pointer; transition:background .15s, border-color .15s, box-shadow .15s, transform .15s; --row-accent:var(--border-strong); }
+.action-row::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--row-accent); opacity:0; transition:opacity .15s; }
+.action-row:hover::before { opacity:1; }
+.action-row--drift { --row-accent:#C56A10; }
+.action-row--change { --row-accent:#7659C4; }
+.action-row--compliance { --row-accent:#D94A52; }
+.action-row:hover { background:#F9FAFC; border-color:var(--border-strong); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
 .action-row:focus-visible { outline:2px solid var(--green1); outline-offset:2px; border-color:var(--green1); }
 body.dark .action-row { border-color:rgba(255,255,255,0.1); }
-body.dark .action-row:hover { background:#0A2E31; border-color:rgba(16,185,129,0.32); box-shadow:var(--shadow-md); transform:translateY(-1px); }
+body.dark .action-row--drift { --row-accent:#D98A3A; }
+body.dark .action-row--change { --row-accent:#9B83DD; }
+body.dark .action-row--compliance { --row-accent:#E66A71; }
+body.dark .action-row:hover { background:#012F32; border-color:rgba(255,255,255,0.18); }
 .policy-card { transition:background .15s, border-color .15s, box-shadow .15s, transform .15s, opacity .15s !important; }
 .policy-card:hover { background:rgba(16,185,129,0.025) !important; border-color:rgba(16,185,129,0.28) !important; box-shadow:var(--shadow-md) !important; transform:translateY(-1px); opacity:1 !important; }
 body.dark .policy-card:hover { background:#0A2E31 !important; border-color:rgba(16,185,129,0.32) !important; }
 .policy-card[data-pol-type="archived"] { background:#FAFAFA; }
 body.dark .policy-card[data-pol-type="archived"] { background:var(--bg-surface); }
+/* Policies card action buttons — same green-outlined type as dashboard row CTAs (row/strip + buttons standard) */
+.policy-card .btn-secondary { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); box-shadow:none; }
+.policy-card .btn-secondary:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
+body.dark .policy-card .btn-secondary { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .policy-card .btn-secondary:hover { background:rgba(0,175,115,0.18); border-color:rgba(0,175,115,0.38); color:var(--p-neutral-50); }
 .action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
 .action-ico { width:34px; height:34px; padding:8px; box-sizing:border-box; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--bg-subtle); }
 .action-ico svg { width:17px; height:17px; stroke:currentColor; }
 .action-ico--drift { color:#C56A10; }
 .action-ico--change { color:#7659C4; }
 .action-ico--compliance { color:#D94A52; }
+.action-row:hover .action-ico { background:var(--bg-surface); }
 body.dark .action-ico { background:rgba(148,163,184,0.09); }
+body.dark .action-row:hover .action-ico { background:rgba(255,255,255,0.14); }
 body.dark .action-ico--drift { color:#D98A3A; }
 body.dark .action-ico--change { color:#9B83DD; }
 body.dark .action-ico--compliance { color:#E66A71; }
@@ -1836,6 +1863,17 @@ body.dark .action-cta { background:#103438; border-color:rgba(255,255,255,0.14);
 body.dark .action-row:hover .action-cta { background:#173D40; border-color:rgba(255,255,255,0.22); color:var(--p-neutral-50); }
 body.dark .action-cta:hover,
 body.dark .action-row:hover .action-cta:hover { background:rgba(16,185,129,0.12); border-color:var(--green1); color:var(--p-neutral-50); }
+/* Dashboard "Needs your attention" row CTAs — green outlined (scoped, does not affect other pages) */
+.action-row .action-cta { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
+.action-row .action-cta .action-arrow { color:var(--green1); }
+.action-row:hover .action-cta { background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.45); color:var(--text-default); }
+.action-row .action-cta:hover,
+.action-row:hover .action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
+body.dark .action-row .action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .action-row .action-cta .action-arrow { color:#00AF73; }
+body.dark .action-row:hover .action-cta { background:rgba(0,175,115,0.18); border-color:rgba(0,175,115,0.38); color:var(--p-neutral-50); }
+body.dark .action-row .action-cta:hover,
+body.dark .action-row:hover .action-cta:hover { background:rgba(0,175,115,0.18); border-color:rgba(0,175,115,0.38); color:var(--p-neutral-50); }
 .activity-link { display:inline-flex; align-items:center; gap:5px; padding:4px 0; border:none; background:transparent; color:var(--green2); font-family:'DM Sans',sans-serif; font-size:11.5px; font-weight:600; cursor:pointer; transition:color .15s; }
 .activity-link:hover { color:var(--green1); }
 .activity-link:focus-visible { outline:2px solid var(--green1); outline-offset:3px; border-radius:3px; }
@@ -4473,12 +4511,12 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <div class="issues-card">
           <div class="dash-block-head">
             <div style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</div>
-            <button class="activity-link" onclick="showView(&#39;changes&#39;)">View all activity <span class="action-arrow">→</span></button>
+            <button class="activity-link" onclick="showView(&#39;changes&#39;)">View all activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>
           </div>
 
           <!-- Needs your attention — mixed, prioritised action queue -->
           <div id="dash-concept-attention">
-            <div class="action-row" role="link" tabindex="0" onclick="showView(&#39;changes&#39;)" onkeydown="if(event.key===&#39;Enter&#39;||event.key===&#39; &#39;){event.preventDefault();showView(&#39;changes&#39;);}">
+            <div class="action-row action-row--drift" role="link" tabindex="0" onclick="showView(&#39;changes&#39;)" onkeydown="if(event.key===&#39;Enter&#39;||event.key===&#39; &#39;){event.preventDefault();showView(&#39;changes&#39;);}">
               <div class="action-row-l">
                 <div class="action-ico action-ico--drift"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"></path></svg></div>
                 <div style="min-width:0;">
@@ -4486,9 +4524,9 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
                   <div class="action-meta"><span>3 config changes · No matching CR</span><span class="action-time">Detected in latest scan</span></div>
                 </div>
               </div>
-              <button class="action-cta" onclick="event.stopPropagation();showView(&#39;changes&#39;)">Review <span class="action-arrow">→</span></button>
+              <button class="action-cta" onclick="event.stopPropagation();showView(&#39;changes&#39;)">Review <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>
             </div>
-            <div class="action-row" role="link" tabindex="0" onclick="showView(&#39;changes&#39;)" onkeydown="if(event.key===&#39;Enter&#39;||event.key===&#39; &#39;){event.preventDefault();showView(&#39;changes&#39;);}">
+            <div class="action-row action-row--change" role="link" tabindex="0" onclick="showView(&#39;changes&#39;)" onkeydown="if(event.key===&#39;Enter&#39;||event.key===&#39; &#39;){event.preventDefault();showView(&#39;changes&#39;);}">
               <div class="action-row-l">
                 <div class="action-ico action-ico--change"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg></div>
                 <div style="min-width:0;">
@@ -4496,9 +4534,9 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
                   <div class="action-meta"><span>5 nodes affected · Awaiting drift match</span><span class="action-time">2h ago</span></div>
                 </div>
               </div>
-              <button class="action-cta" onclick="event.stopPropagation();showView(&#39;changes&#39;)">Reconcile <span class="action-arrow">→</span></button>
+              <button class="action-cta" onclick="event.stopPropagation();showView(&#39;changes&#39;)">Reconcile <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>
             </div>
-            <div class="action-row" role="link" tabindex="0" onclick="openRemediation(0)" onkeydown="if(event.key===&#39;Enter&#39;||event.key===&#39; &#39;){event.preventDefault();openRemediation(0);}">
+            <div class="action-row action-row--compliance" role="link" tabindex="0" onclick="openRemediation(0)" onkeydown="if(event.key===&#39;Enter&#39;||event.key===&#39; &#39;){event.preventDefault();openRemediation(0);}">
               <div class="action-row-l">
                 <div class="action-ico action-ico--compliance"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
                 <div style="min-width:0;">
@@ -4506,7 +4544,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
                   <div class="action-meta"><span>Windows Defender disabled · BitLocker off</span><span class="action-time">Latest scan</span></div>
                 </div>
               </div>
-              <button class="action-cta" onclick="event.stopPropagation();openRemediation(0)">Review issue <span class="action-arrow">→</span></button>
+              <button class="action-cta" onclick="event.stopPropagation();openRemediation(0)">Review issue <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>
             </div>
           </div>
         </div>
@@ -4677,35 +4715,30 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView('node-detail')">
             <div class="node-kpi-head">
               <div class="node-kpi-head-l"><div class="stat-card-label">Lowest Node Score</div></div>
-              <span class="node-kpi-trend danger">↓ 8 vs last scan</span>
+              <span class="node-kpi-trend danger">↓ 8</span>
               <div class="stat-info">i<div class="stat-tip">The lowest compliance score across all monitored nodes. Start here — this node carries the most risk.</div></div>
             </div>
-            <div style="display:flex;align-items:center;gap:16px;flex:1;margin-top:14px;">
-              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
-                <svg width="76" height="76" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="8" stroke-dasharray="115 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'✓ Pass: 54 checks')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-dasharray="96 238.8" stroke-dashoffset="-129" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'✗ Fail: 46 checks')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
-                </svg>
-                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:17px;font-weight:800;color:#E84C3D;line-height:1;">54</div>
-                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">/100</div>
-                </div>
+            <div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">
+              <!-- Big score number + node -->
+              <div style="display:flex;align-items:baseline;gap:6px;">
+                <span style="font-size:32px;font-weight:800;color:#E84C3D;line-height:1;">54</span>
+                <span style="font-size:12px;font-weight:600;color:var(--text-sec);">/100</span>
+                <span style="margin-left:auto;font-size:11px;font-weight:650;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;">SARAH-LAPTOP-01</span>
               </div>
-              <div style="flex:1;min-width:0;">
-                <div style="display:flex;flex-direction:column;">
-                  <div class="stat-legend-row">
-                    <span style="font-size:11px;color:var(--text-sec);">Node</span>
-                    <span style="font-size:11px;font-weight:650;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:112px;">SARAH-LAPTOP-01</span>
-                  </div>
-                  <div class="stat-legend-row">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#3FC878;flex-shrink:0;"></span>Pass</span>
-                    <span style="font-size:12px;font-weight:700;color:var(--text-default);">54</span>
-                  </div>
-                  <div class="stat-legend-row">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Fail</span>
-                    <span style="font-size:12px;font-weight:700;color:#FB3C44;">46</span>
-                  </div>
+              <!-- Threshold risk gauge -->
+              <div style="margin-top:16px;">
+                <div style="position:relative;display:flex;height:7px;border-radius:99px;overflow:visible;">
+                  <div style="flex:0 0 60%;background:rgba(251,60,68,0.30);border-radius:99px 0 0 99px;"></div>
+                  <div style="flex:0 0 20%;background:rgba(245,158,11,0.30);"></div>
+                  <div style="flex:0 0 20%;background:rgba(63,200,120,0.32);border-radius:0 99px 99px 0;"></div>
+                  <!-- marker at 54 -->
+                  <div style="position:absolute;top:-3px;left:54%;transform:translateX(-50%);width:2px;height:13px;background:#E84C3D;border-radius:2px;pointer-events:none;"></div>
+                  <div style="position:absolute;top:-5px;left:54%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:transparent;cursor:pointer;" onmouseenter="showDonutTip(event,'Score 54/100 · Critical zone')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                  <div style="position:absolute;top:-2px;left:54%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:var(--bg-surface);border:2.5px solid #E84C3D;box-sizing:border-box;pointer-events:none;"></div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:7px;">
+                  <span style="font-size:10px;color:var(--text-sec);">Critical</span>
+                  <span style="font-size:10px;color:var(--text-sec);">Healthy</span>
                 </div>
               </div>
             </div>
@@ -4719,35 +4752,39 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView('results')">
             <div class="node-kpi-head">
               <div class="node-kpi-head-l"><div class="stat-card-label">Average Node Score</div></div>
-              <span class="node-kpi-trend success">↑ 3 vs previous scan</span>
+              <span class="node-kpi-trend success">↑ 3</span>
               <div class="stat-info">i<div class="stat-tip">The mean compliance score across all monitored nodes — a fleet-wide health indicator that complements the lowest node score.</div></div>
             </div>
-            <div style="display:flex;align-items:center;gap:16px;flex:1;margin-top:14px;">
-              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
-                <svg width="76" height="76" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="8" stroke-dasharray="165 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'Improved: 3 nodes')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-dasharray="46 238.8" stroke-dashoffset="-179" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'Unchanged: 1 node')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
-                </svg>
-                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:17px;font-weight:800;color:#15803d;line-height:1;">71</div>
-                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">/100</div>
-                </div>
+            <div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">
+              <!-- Big average score -->
+              <div style="display:flex;align-items:baseline;gap:6px;">
+                <span class="nkpi-num-good" style="font-size:32px;font-weight:800;line-height:1;">71</span>
+                <span style="font-size:12px;font-weight:600;color:var(--text-sec);">/100</span>
               </div>
-              <div style="flex:1;min-width:0;">
-                <div style="display:flex;flex-direction:column;">
-                  <div class="stat-legend-row">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#3FC878;flex-shrink:0;"></span>Improved</span>
-                    <span style="font-size:12px;font-weight:700;color:var(--text-default);">3</span>
-                  </div>
-                  <div class="stat-legend-row">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;"></span>Unchanged</span>
-                    <span style="font-size:12px;font-weight:700;color:var(--text-default);">1</span>
-                  </div>
-                  <div class="stat-legend-row">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Declined</span>
-                    <span style="font-size:12px;font-weight:700;color:var(--text-default);">0</span>
-                  </div>
+              <!-- Compact area chart (last 7 scans) -->
+              <div style="position:relative;height:40px;margin-top:auto;">
+                <svg width="100%" height="100%" viewBox="0 0 200 60" preserveAspectRatio="none" style="display:block;position:absolute;inset:0;">
+                  <polygon points="2,45 34,36 66,39 99,27 132,21 164,18 197,12 197,60 2,60" fill="#3FC878" fill-opacity="0.10"></polygon>
+                  <polyline points="2,45 34,36 66,39 99,27 132,21 164,18 197,12" fill="none" stroke="#3FC878" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+                </svg>
+                <!-- data-point dots (HTML to avoid preserveAspectRatio distortion) -->
+                <div style="position:absolute;left:1%;top:75%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3FC878;border:1.5px solid var(--bg-surface);box-sizing:border-box;pointer-events:none;"></div>
+                <div style="position:absolute;left:17%;top:60%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3FC878;border:1.5px solid var(--bg-surface);box-sizing:border-box;pointer-events:none;"></div>
+                <div style="position:absolute;left:33%;top:65%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3FC878;border:1.5px solid var(--bg-surface);box-sizing:border-box;pointer-events:none;"></div>
+                <div style="position:absolute;left:49.5%;top:45%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3FC878;border:1.5px solid var(--bg-surface);box-sizing:border-box;pointer-events:none;"></div>
+                <div style="position:absolute;left:66%;top:35%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3FC878;border:1.5px solid var(--bg-surface);box-sizing:border-box;pointer-events:none;"></div>
+                <div style="position:absolute;left:82%;top:30%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3FC878;border:1.5px solid var(--bg-surface);box-sizing:border-box;pointer-events:none;"></div>
+                <!-- accent last point (HTML dot to avoid distortion) -->
+                <div style="position:absolute;left:98.5%;top:20%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:var(--bg-surface);border:2.5px solid #15803d;box-sizing:border-box;pointer-events:none;"></div>
+                <!-- invisible hover columns per scan -->
+                <div style="position:absolute;inset:0;display:flex;">
+                  <div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,'Scan 1 · 64/100')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                  <div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,'Scan 2 · 66/100')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                  <div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,'Scan 3 · 65/100')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                  <div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,'Scan 4 · 68/100')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                  <div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,'Scan 5 · 69/100')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                  <div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,'Scan 6 · 70/100')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                  <div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,'This scan · 71/100')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
                 </div>
               </div>
             </div>
@@ -4764,37 +4801,35 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
               <span class="node-kpi-trend danger">↑ 4</span>
               <div class="stat-info">i<div class="stat-tip">Critical-severity check failures across all nodes in the latest scan, and their impact on your fleet.</div></div>
             </div>
-            <div style="display:flex;align-items:center;gap:16px;flex:1;margin-top:14px;">
-              <div style="position:relative;width:76px;height:76px;flex-shrink:0;">
-                <svg width="76" height="76" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-dasharray="105 238.8" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'Affected: 2 nodes')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-dasharray="105 238.8" stroke-dashoffset="-119" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,'Clear: 2 nodes')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
-                </svg>
-                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:17px;font-weight:800;color:#FB3C44;line-height:1;">31</div>
-                  <div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">issues</div>
-                </div>
+            <div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">
+              <!-- Big issue count + affected nodes inline -->
+              <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">
+                <span style="font-size:28px;font-weight:800;color:#FB3C44;line-height:1;">31</span>
+                <span style="font-size:12px;font-weight:600;color:var(--text-sec);">issues</span>
+                <span style="font-size:11px;color:var(--text-sec);margin-left:2px;">· 15 nodes affected</span>
               </div>
-              <div style="flex:1;min-width:0;">
-                <div style="display:flex;flex-direction:column;">
-                  <div class="stat-legend-row">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Nodes affected</span>
-                    <span style="font-size:12px;font-weight:700;color:#FB3C44;">2</span>
-                  </div>
-                  <div class="stat-legend-row">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></span>New</span>
-                    <span style="font-size:12px;font-weight:700;color:#f59e0b;">4</span>
-                  </div>
-                  <div class="stat-legend-row">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);"><span style="width:8px;height:8px;border-radius:50%;background:#3FC878;flex-shrink:0;"></span>Resolved</span>
-                    <span style="font-size:12px;font-weight:700;color:var(--text-default);">1</span>
-                  </div>
-                </div>
+              <!-- Per-node histogram (one bar = one node, sorted by critical count desc) -->
+              <div style="height:42px;display:flex;align-items:flex-end;gap:3px;margin-top:14px;">
+                <div class="nkpi-vbar crit" style="height:100%;" onmouseenter="showDonutTip(event,'SARAH-LAPTOP-01 · 6 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar crit" style="height:83%;" onmouseenter="showDonutTip(event,'MACBOOK-TARAS · 5 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar crit" style="height:67%;" onmouseenter="showDonutTip(event,'DEV-MACPRO-03 · 4 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:50%;" onmouseenter="showDonutTip(event,'JAMES-WIN-DESK · 3 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:33%;" onmouseenter="showDonutTip(event,'STAGING-WIN-02 · 2 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:33%;" onmouseenter="showDonutTip(event,'PROD-SERVER-01 · 2 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'QA-LINUX-07 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'HR-LAPTOP-04 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'FIN-DESK-02 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'OPS-VM-11 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'DEV-WIN-09 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'SALES-MBP-03 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'LAB-NODE-05 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'EDGE-SRV-01 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
+                <div class="nkpi-vbar" style="height:17%;" onmouseenter="showDonutTip(event,'TEST-VM-22 · 1 critical')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>
               </div>
+              <div style="font-size:10px;color:var(--text-sec);margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Most affected: <span style="color:var(--text-default);font-weight:600;">SARAH-LAPTOP-01</span> · 6 critical</div>
             </div>
             <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">
-              <div class="stat-foot" style="padding-top:0;">2 nodes need urgent attention</div>
+              <div class="stat-foot" style="padding-top:0;">15 nodes need attention</div>
               <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView('results')"><span class="stat-link-txt">View issues</span> <span class="arr">→</span></button>
             </div>
           </div>
@@ -9672,7 +9707,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         + intgCardHead(p)
         + '<div class="intg-card-body">'+meta+'</div>'
         + '<div class="intg-card-foot"><div class="intg-foot-caps">'+capsRow+'</div>'
-        +   '<button class="action-cta" style="width:auto;" onclick="event.stopPropagation();openIntegrationDetail(\''+p.id+'\')">Manage <span class="action-arrow">→</span></button>'
+        +   '<button class="action-cta" style="width:auto;" onclick="event.stopPropagation();openIntegrationDetail(\''+p.id+'\')">Manage <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>'
         + '</div>'
         + '</div>';
     }
@@ -9821,14 +9856,14 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           if (!c.issues && c.enabled) meta += '<div class="id-cap-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>No issues</div>';
           meta += '</div>';
           var attention = '';
-          if (c.issues) attention = '<div class="id-cap-attention"><div class="id-cap-attention-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="id-cap-attention-text">'+c.issues+'<span> · no matching Change Request found</span></div><button class="id-cap-attention-btn" onclick="showView(\'changes\')">Review <span class="action-arrow">→</span></button></div>';
+          if (c.issues) attention = '<div class="id-cap-attention"><div class="id-cap-attention-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="id-cap-attention-text">'+c.issues+'<span> · no matching Change Request found</span></div><button class="id-cap-attention-btn" onclick="showView(\'changes\')">Review <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button></div>';
           var actions = '<div class="id-cap-actions">';
           if (c.enabled) {
             var _mk = c.schema || c.id;
             if (FM_SCHEMAS[_mk]) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping(\''+_mk+'\')">Manage mapping</button>';
             var actView = (c.id==='recon') ? 'changes' : (c.id==='cmdb'||c.id==='cloud-nodes') ? 'all-devices' : '';
-            if (actView) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView(\''+actView+'\')">View activity <span class="action-arrow">→</span></button>';
-            else actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showToast(\''+c.name+' activity\')">View activity <span class="action-arrow">→</span></button>';
+            if (actView) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView(\''+actView+'\')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>';
+            else actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showToast(\''+c.name+' activity\')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>';
           } else {
             actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="idSetCap(\''+c.id+'\',true)">Enable</button>';
           }
@@ -17727,7 +17762,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div id="intg-list"></div>
           <div class="intg-footer">
             <div class="intg-footer-txt"><span id="intg-foot-title">Can&#39;t find the integration you need?</span><br><span class="intg-footer-sub" id="intg-foot-sub">Request a new integration for your organisation.</span></div>
-            <button class="action-cta" style="width:auto;" onclick="showToast('Request noted — we\'ll follow up with you about this integration')">Request integration <span class="action-arrow">→</span></button>
+            <button class="action-cta" style="width:auto;" onclick="showToast('Request noted — we\'ll follow up with you about this integration')">Request integration <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>
           </div>
         </div>
 
@@ -17991,7 +18026,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
                 </div>
                 <div class="id-cap-actions">
                   <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping('cmdb')">Manage mapping</button>
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('all-devices')">View activity <span class="action-arrow">→</span></button>
+                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('all-devices')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>
                 </div>
               </div>
 
@@ -18018,11 +18053,11 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
                 <div class="id-cap-attention">
                   <div class="id-cap-attention-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                   <div class="id-cap-attention-text">2 unmatched drift events<span> · no matching Change Request found</span></div>
-                  <button class="id-cap-attention-btn" onclick="showView('changes')">Review <span class="action-arrow">→</span></button>
+                  <button class="id-cap-attention-btn" onclick="showView('changes')">Review <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>
                 </div>
                 <div class="id-cap-actions">
                   <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping('recon')">Manage mapping</button>
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('changes')">View activity <span class="action-arrow">→</span></button>
+                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('changes')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></button>
                 </div>
               </div>
               </div>
