@@ -13668,6 +13668,12 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       var totalFrows = document.querySelectorAll('.rep-frow').length;
       if (none) none.style.display = (visFailed === 0 && totalFrows > 0) ? 'block' : 'none';
     }
+    // Reset only the local table filters (policy + severity) — used by the "no results" state.
+    function reportClearTableFilters() {
+      msSetAll('ms-pol', true);
+      msSetAll('ms-sev', true);
+      reportApplyFilters();
+    }
     function reportResetScope() {
       // Reset all scope selects to first option
       document.querySelectorAll('#rep-scope-bar select.rep-scope-sel').forEach(function(s) {
@@ -16652,6 +16658,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="back-btn" id="rc-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
+          <div style="width:38px;height:38px;border-radius:10px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></div>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">What changed report</div>
@@ -16662,7 +16669,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <div style="position:relative;">
-            <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('rc-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rc-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
             <div id="rc-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
               <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
               <button onclick="document.getElementById('rc-export-drop').style.display='none';openReportExport('changed','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
@@ -16909,6 +16916,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="back-btn" id="rb-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
+          <div style="width:38px;height:38px;border-radius:10px;background:rgba(217,119,6,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">Baseline deviation report</div>
@@ -16919,7 +16927,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <div style="position:relative;">
-            <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('rb-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rb-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
             <div id="rb-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
               <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
               <button onclick="document.getElementById('rb-export-drop').style.display='none';openReportExport('baseline','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
@@ -17168,6 +17176,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="back-btn" id="ri-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
+          <div style="width:38px;height:38px;border-radius:10px;background:rgba(251,60,68,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">Needs investigation report</div>
@@ -17178,7 +17187,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <div style="position:relative;">
-            <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('ri-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('ri-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
             <div id="ri-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
               <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
               <button onclick="document.getElementById('ri-export-drop').style.display='none';openReportExport('investigation','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
@@ -17428,6 +17437,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button id="rep-back" class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
+          <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,175,115,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></div>
           <div>
             <div class="page-title">Compliance report</div>
             <div class="page-sub" id="rep-scope-desc">Policy and check compliance across the selected scope</div>
@@ -17443,7 +17453,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           </div>
           <div style="width:1px;height:26px;background:var(--border);"></div>
           <div style="position:relative;">
-            <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('rep-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rep-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
             <div id="rep-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
               <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
               <button onclick="document.getElementById('rep-export-drop').style.display='none';openExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
@@ -17502,6 +17512,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div style="padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <div style="font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (<span id="rep-failed-count">4</span>)</div>
             <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Filters</span>
               <div class="ms-wrap" id="ms-pol">
                 <button type="button" class="ms-btn" onclick="msToggle(&#39;ms-pol&#39;,event)" style="font-size:11px;padding:4px 26px 4px 10px;"><span class="ms-label">All policies</span></button>
                 <div class="ms-menu" onclick="event.stopPropagation()">
@@ -17526,7 +17537,14 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div style="cursor:pointer;">Node <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Policy <span style="opacity:0.4;">⇅</span></div><div>Control</div><div>Current → Expected</div><div style="cursor:pointer;">Severity <span style="opacity:0.4;">⇅</span></div>
           </div>
           <div id="rep-frows"></div>
-          <div id="rep-failed-none" style="display:none;padding:28px 18px;text-align:center;font-size:12px;color:var(--text-sec);">No failed checks match the selected filters.</div>
+          <div id="rep-failed-none" style="display:none;padding:44px 18px;text-align:center;">
+            <div style="width:52px;height:52px;margin:0 auto 16px;border-radius:50%;background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">No results for these filters</div>
+            <div style="font-size:12px;color:var(--text-sec);margin-top:6px;max-width:340px;margin-left:auto;margin-right:auto;line-height:1.55;">No failed checks match the selected policies and severities. Try widening the filters.</div>
+            <button onclick="reportClearTableFilters()" class="btn-outline" style="width:auto;padding:8px 16px;font-size:12px;margin-top:18px;">Reset filters</button>
+          </div>
           <div id="rep-failed-success" style="display:none;padding:32px 18px;text-align:center;">
             <div style="width:40px;height:40px;margin:0 auto 12px;border-radius:50%;background:rgba(0,175,115,0.1);display:flex;align-items:center;justify-content:center;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
