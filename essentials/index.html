@@ -13153,6 +13153,43 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       m = txt.match(/(\d+)\s*m/); if (m) return parseInt(m[1], 10) / 60;
       return 0;
     }
+    // Shared report skeleton markup (4 KPI cards + table) — reused by the Preview reports.
+    function _repSkelHTML() {
+      var card = '<div class="stat-card" style="display:flex;flex-direction:column;"><div class="rep-skel" style="height:11px;width:55%;margin-bottom:20px;"></div><div style="display:flex;gap:16px;align-items:center;"><div class="rep-skel" style="width:76px;height:76px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:9px;"><div class="rep-skel" style="height:10px;width:82%;"></div><div class="rep-skel" style="height:10px;width:60%;"></div></div></div><div class="rep-skel" style="height:10px;width:48%;margin-top:20px;"></div></div>';
+      var row = '<div class="rep-skel" style="height:12px;width:100%;margin-bottom:12px;"></div>';
+      return '<div class="stat-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px;">' + card + card + card + card + '</div>' +
+        '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:16px 18px;">' +
+        '<div class="rep-skel" style="height:12px;width:180px;margin-bottom:18px;"></div>' + row + row + row + '<div class="rep-skel" style="height:12px;width:92%;"></div></div>';
+    }
+    // Brief loading skeleton when a Preview report view opens (mirrors the Compliance report's open-load).
+    function repPreviewLoad(viewName) {
+      var view = document.getElementById('v-' + viewName);
+      if (!view) return;
+      var body = view.children[1]; // scroll body (page-header is children[0])
+      if (!body) return;
+      var skel = body.querySelector(':scope > .rpt-skel-block');
+      if (!skel) {
+        skel = document.createElement('div');
+        skel.className = 'rpt-skel-block';
+        skel.innerHTML = _repSkelHTML();
+        body.insertBefore(skel, body.firstChild);
+      }
+      Array.prototype.forEach.call(body.children, function (c) {
+        if (c === skel) return;
+        if (c.getAttribute('data-skel-prev') === null) c.setAttribute('data-skel-prev', c.style.display || '');
+        c.style.display = 'none';
+      });
+      skel.style.display = 'block';
+      clearTimeout(body._skelT);
+      body._skelT = setTimeout(function () {
+        skel.style.display = 'none';
+        Array.prototype.forEach.call(body.children, function (c) {
+          if (c === skel) return;
+          c.style.display = c.getAttribute('data-skel-prev') || '';
+          c.removeAttribute('data-skel-prev');
+        });
+      }, 550);
+    }
     function rcApplyFilters() {
       var pe = document.getElementById('rc-f-period'); var period = pe ? pe.value : 'all';
       var te = document.getElementById('rc-f-type');   var type   = te ? te.value : 'all';
@@ -19988,6 +20025,7 @@ function showView(name) {
   if (name === 'cm-list') renderCMList();
   if (name === 'credentials') renderCredentials();
   if (name === 'reports') renderReport();
+  if (name === 'report-changed' || name === 'report-baseline' || name === 'report-investigation') repPreviewLoad(name);
   if (sb) sb.classList.add('active');
   if (isJ3Nav) updateJ3Nav(name);
   if (isJ4Nav) updateJ4Nav(name);
