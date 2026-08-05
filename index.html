@@ -1251,9 +1251,23 @@ body.dark .check-menu-btn:hover { background:rgba(16,185,129,0.18); border-color
 .check-row   { display:flex; align-items:center; gap:8px; }
 .check-title { font-size:12.5px; font-weight:600; color:var(--text-default); flex:1; }
 .check-desc  { font-size:11px; color:var(--text-sec); margin-top:4px; }
-#v-results .check-card { display:flex; align-items:center; gap:13px; padding:13px 66px 13px 16px; box-shadow:none; }
-#v-results .check-card:hover { background:rgba(16,185,129,0.025); border-color:rgba(16,185,129,0.28); box-shadow:var(--shadow-md); transform:translateY(-1px); }
-body.dark #v-results .check-card:hover { background:#0A2E31; border-color:rgba(16,185,129,0.32); }
+#v-results .check-card { display:flex; align-items:center; gap:13px; padding:13px 66px 13px 16px; box-shadow:none; overflow:hidden; --row-accent:var(--border-strong); }
+/* Scans/Results check rows — match dashboard .action-row look (left accent strip + neutral hover lift) */
+#v-results .check-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--row-accent); opacity:0; transition:opacity .15s; }
+#v-results .check-card:hover::before { opacity:1; }
+#v-results .check-card[data-sev="critical"] { --row-accent:#D94A52; }
+#v-results .check-card[data-sev="medium"]   { --row-accent:#C56A10; }
+#v-results .check-card[data-sev="low"]      { --row-accent:#2563EB; }
+#v-results .check-card[data-sev="passed"]   { --row-accent:#15803d; }
+#v-results .check-card:hover { background:var(--bg-surface); border-color:var(--border-strong); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+#v-results .check-card:hover .check-ico { background:#EAF0F6; }
+body.dark #v-results .check-card { border-color:rgba(255,255,255,0.1); }
+body.dark #v-results .check-card[data-sev="critical"] { --row-accent:#E66A71; }
+body.dark #v-results .check-card[data-sev="medium"]   { --row-accent:#D98A3A; }
+body.dark #v-results .check-card[data-sev="low"]      { --row-accent:#5B8DEF; }
+body.dark #v-results .check-card[data-sev="passed"]   { --row-accent:#34D399; }
+body.dark #v-results .check-card:hover { background:#012F32; border-color:rgba(255,255,255,0.18); }
+body.dark #v-results .check-card:hover .check-ico { background:rgba(255,255,255,0.14); }
 #v-results .check-card > svg { position:absolute; right:14px; top:50%; transform:translateY(-50%); stroke:var(--green1); }
 body.dark #v-results .check-card > svg { stroke:#34D399; }
 .check-main { min-width:0; flex:1; }
@@ -1826,6 +1840,13 @@ body.dark .policy-card[data-pol-type="archived"] { background:var(--bg-surface);
 .policy-card .btn-secondary:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
 body.dark .policy-card .btn-secondary { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
 body.dark .policy-card .btn-secondary:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+/* Nodes table (All Nodes) row action buttons — same green-outlined type as dashboard row CTAs */
+.node-row .btn-secondary { display:inline-flex; align-items:center; gap:5px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); box-shadow:none; }
+.node-row .btn-secondary .action-arrow { color:var(--green1); display:inline-flex; }
+.node-row .btn-secondary:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
+body.dark .node-row .btn-secondary { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .node-row .btn-secondary .action-arrow { color:#00AF73; }
+body.dark .node-row .btn-secondary:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
 .action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
 .action-ico { width:34px; height:34px; padding:8px; box-sizing:border-box; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F1F5F9; }
 .action-ico svg { width:17px; height:17px; stroke:currentColor; }
@@ -4984,7 +5005,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             </div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">3 pending</span></div>
             <div style="font-size:12px;color:var(--text-sec);">2 min ago</div>
-            <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Details →</button></div>
+            <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Details <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
           <!-- Device row 2 — critical score -->
@@ -5009,7 +5030,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             </div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 pending</span></div>
             <div style="font-size:12px;color:var(--text-sec);">1 hour ago</div>
-            <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;" onclick="event.stopPropagation();">Fix now</button></div>
+            <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();">Fix now</button></div>
           </div>
 
           <!-- Device row 3 — healthy -->
@@ -5034,7 +5055,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             </div>
             <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
             <div style="font-size:12px;color:var(--text-sec);">2 hours ago</div>
-            <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Details →</button></div>
+            <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Details <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
           <!-- Device row 4 — scan in progress -->
@@ -5059,7 +5080,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 pending</span></div>
             <div style="font-size:12px;color:var(--text-sec);">Running now</div>
-            <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Pending…</button></div>
+            <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Pending…</button></div>
           </div>
 
           <!-- AWS Nodes section — shown after J3 completion -->
@@ -5087,7 +5108,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
               <div><span style="font-size:12px;font-weight:600;color:#FB3C44;">4 crit</span><div style="font-size:11px;color:var(--text-sec);">9 others</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);">Just now</div>
-              <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
             </div>
             <!-- EC2: web-prod-02 -->
             <div class="node-row" data-name="web-prod-02 EC2 Amazon Linux us-east-1" data-type="aws" data-group="AWS Web Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
@@ -5105,7 +5126,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
               <div><span style="font-size:12px;font-weight:600;color:#d97706;">2 high</span><div style="font-size:11px;color:var(--text-sec);">5 others</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);">Just now</div>
-              <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
             </div>
             <!-- EC2: api-server-01 -->
             <div class="node-row" data-name="api-server-01 EC2 Ubuntu eu-west-1" data-type="aws" data-group="AWS API Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
@@ -5123,7 +5144,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
               <div><span style="font-size:12px;font-weight:600;color:#FB3C44;">6 crit</span><div style="font-size:11px;color:var(--text-sec);">14 others</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);">Just now</div>
-              <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Fix now</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Fix now</button></div>
             </div>
             <!-- ECS -->
             <div class="node-row" data-name="ecs-cluster-prod ECS us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
@@ -5141,7 +5162,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
               <div><span style="font-size:12px;font-weight:600;color:#d97706;">3 high</span><div style="font-size:11px;color:var(--text-sec);">8 others</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);">Just now</div>
-              <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
             </div>
             <!-- EKS -->
             <div class="node-row" data-name="eks-prod-cluster EKS Kubernetes us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
@@ -5159,7 +5180,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
               <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 high</span><div style="font-size:11px;color:var(--text-sec);">3 others</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);">Just now</div>
-              <div><button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:90px;justify-content:center;text-align:center;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
             </div>
             <!-- collapsed note for remaining 7 nodes -->
             <div style="padding:12px 20px;border-top:1px solid var(--border);background:var(--bg-canvas);text-align:center;">
@@ -5755,7 +5776,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 
 
         <!-- AWS Integration card — Connect state (default) -->
-        <div id="aws-connect-card" style="background:var(--intg-aws-bg);border:1px solid var(--intg-aws-bd);border-radius:12px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;">
+        <div id="aws-connect-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;">
           <div style="display:flex;align-items:center;gap:14px;">
             <div style="width:38px;height:38px;border-radius:10px;background:var(--intg-aws-icon-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--intg-aws-icon-fg)" stroke-width="1.5"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"></path></svg></div>
             <div>
