@@ -4847,7 +4847,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         </div>
 
         <!-- Inline search + filter -->
-        <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;justify-content:space-between;">
+        <div id="node-filter-row" style="display:flex;gap:10px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <div style="position:relative;flex:1 1 180px;min-width:140px;max-width:280px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
@@ -4889,15 +4889,12 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             </div>
           </div>
           </div><!-- end left group -->
-          
-        </div>
-
-        <!-- Selection actions row (hidden until ≥1 node selected) -->
-        <div id="node-action-bar" style="display:none;align-items:center;gap:8px;margin-bottom:16px;">
+          <!-- Selection actions — right side of the SAME filter row (space-between) -->
+          <div id="node-action-bar" style="display:none;align-items:center;gap:8px;flex-shrink:0;">
             <span id="node-action-count" style="font-size:12px;font-weight:500;color:var(--text-sec);white-space:nowrap;"></span>
             <button id="node-action-baseline" onclick="setGroupBaseline()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              Set baseline
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              Set as baseline
             </button>
             <button id="node-action-compare" onclick="showCompare()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"></path></svg>
@@ -4912,6 +4909,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
               Consensus Comparison
             </button>
           </div>
+        </div><!-- end filter row -->
 
         <!-- Device list -->
         <div id="nodes-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
@@ -20396,6 +20394,7 @@ function updateScanSelected() {
   const compareBtn = document.getElementById('node-action-compare');
   const scanBtn = document.getElementById('node-action-scan');
   const actionBar = document.getElementById('node-action-bar');
+  // Selection actions live on the RIGHT of the filter row (same row); filters stay visible.
   if (actionBar) actionBar.style.display = checked > 0 ? 'flex' : 'none';
   if (countEl) countEl.textContent = checked + ' node' + (checked === 1 ? '' : 's') + ' selected';
   const isDark = document.body.classList.contains('dark');
