@@ -4892,19 +4892,19 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <!-- Selection actions — right side of the SAME filter row (space-between) -->
           <div id="node-action-bar" style="display:none;align-items:center;gap:8px;flex-shrink:0;">
             <span id="node-action-count" style="font-size:12px;font-weight:500;color:var(--text-sec);white-space:nowrap;"></span>
-            <button id="node-action-baseline" onclick="setGroupBaseline()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-baseline" onclick="setGroupBaseline()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
               Set as baseline
             </button>
-            <button id="node-action-compare" onclick="showCompare()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-compare" onclick="showCompare()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"></path></svg>
               Compare
             </button>
-            <button id="node-action-scan" onclick="go(&#39;s07&#39;)" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-scan" onclick="go(&#39;s07&#39;)" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
               Scan Selected
             </button>
-            <button id="node-action-consensus" onclick="(function(){var n=Array.from(document.querySelectorAll(&#39;.node-checkbox:checked&#39;)).map(function(cb){var r=cb.closest(&#39;.node-row&#39;);return r?(r.dataset.name||&#39;&#39;).split(&#39; &#39;)[0]:&#39;&#39;;}).filter(Boolean);showView(&#39;all-devices&#39;);setNodesTab(&#39;peer&#39;);applySelectionConsensus(n);})()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-consensus" onclick="(function(){var n=Array.from(document.querySelectorAll(&#39;.node-checkbox:checked&#39;)).map(function(cb){var r=cb.closest(&#39;.node-row&#39;);return r?(r.dataset.name||&#39;&#39;).split(&#39; &#39;)[0]:&#39;&#39;;}).filter(Boolean);showView(&#39;all-devices&#39;);setNodesTab(&#39;peer&#39;);applySelectionConsensus(n);})()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
               Consensus Comparison
             </button>
@@ -20400,6 +20400,9 @@ function updateScanSelected() {
   const isDark = document.body.classList.contains('dark');
   const inactiveBorder = isDark ? 'rgba(255,255,255,0.28)' : 'var(--border)';
   const inactiveColor  = isDark ? 'rgba(255,255,255,0.65)' : 'var(--text-sec)';
+  // LIGHT: neutral buttons need a white surface fill so they don't blend into the canvas (#F8FAFC).
+  // DARK: transparent-on-panel is intentional.
+  const inactiveBg     = isDark ? 'transparent' : 'var(--bg-surface)';
   const scanActiveBorder = isDark ? 'rgba(16,185,129,0.45)' : 'var(--green2)';
   const scanActiveColor  = isDark ? '#34D399' : 'var(--green2)';
   const scanActiveBg     = isDark ? 'rgba(16,185,129,0.08)' : 'rgba(63,200,120,0.12)';
@@ -20410,7 +20413,7 @@ function updateScanSelected() {
     scanBtn.style.cursor = checked > 0 ? 'pointer' : 'not-allowed';
     scanBtn.style.borderColor = checked > 0 ? scanActiveBorder : inactiveBorder;
     scanBtn.style.color = checked > 0 ? scanActiveColor : inactiveColor;
-    scanBtn.style.background = checked > 0 ? scanActiveBg : 'transparent';
+    scanBtn.style.background = checked > 0 ? scanActiveBg : inactiveBg;
   }
   // Compare — active only when exactly 2
   if (compareBtn) {
@@ -20420,16 +20423,19 @@ function updateScanSelected() {
     compareBtn.style.cursor = canCompare ? 'pointer' : 'not-allowed';
     compareBtn.style.borderColor = canCompare ? '#818CF8' : inactiveBorder;
     compareBtn.style.color = canCompare ? '#818CF8' : inactiveColor;
-    compareBtn.style.background = canCompare ? 'rgba(99,102,241,0.12)' : 'transparent';
+    compareBtn.style.background = canCompare ? 'rgba(99,102,241,0.12)' : inactiveBg;
   }
-  // Set baseline — active when 1+
+  // Set as baseline — active when 1+. NEUTRAL chrome + amber STAR only (never fill the whole
+  // button amber — that reads as a warning/disabled). Enabled/disabled via opacity, like Node Details.
   const baselineBtn = document.getElementById('node-action-baseline');
   if (baselineBtn) {
-    baselineBtn.disabled = checked === 0;
-    baselineBtn.style.cursor = checked > 0 ? 'pointer' : 'not-allowed';
-    baselineBtn.style.borderColor = checked > 0 ? '#D97706' : inactiveBorder;
-    baselineBtn.style.color = checked > 0 ? '#D97706' : inactiveColor;
-    baselineBtn.style.background = checked > 0 ? 'rgba(217,119,6,0.10)' : 'transparent';
+    const bOn = checked > 0;
+    baselineBtn.disabled = !bOn;
+    baselineBtn.style.cursor = bOn ? 'pointer' : 'not-allowed';
+    baselineBtn.style.opacity = bOn ? '1' : '0.5';
+    baselineBtn.style.borderColor = inactiveBorder;
+    baselineBtn.style.color = isDark ? 'rgba(255,255,255,0.92)' : 'var(--text-default)';
+    baselineBtn.style.background = inactiveBg;
   }
   // Consensus Comparison — active when 3+
   const consensusBtn = document.getElementById('node-action-consensus');
@@ -20440,7 +20446,7 @@ function updateScanSelected() {
     consensusBtn.style.cursor = canConsensus ? 'pointer' : 'not-allowed';
     consensusBtn.style.borderColor = canConsensus ? (isDark ? 'rgba(52,211,153,0.45)' : '#10B981') : inactiveBorder;
     consensusBtn.style.color = canConsensus ? (isDark ? '#34D399' : '#059669') : inactiveColor;
-    consensusBtn.style.background = canConsensus ? (isDark ? 'rgba(16,185,129,0.08)' : 'rgba(16,185,129,0.1)') : 'transparent';
+    consensusBtn.style.background = canConsensus ? (isDark ? 'rgba(16,185,129,0.08)' : 'rgba(16,185,129,0.1)') : inactiveBg;
   }
 
   const btn = document.getElementById('scan-selected-btn');
