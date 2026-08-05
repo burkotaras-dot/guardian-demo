@@ -2112,6 +2112,14 @@ body.dark span[style*="font-size:11px"][style*="font-weight:600"][style*="color:
 /* ── J3 AWS Scanning styles ── */
 .back-link { display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-sec);cursor:pointer;margin-bottom:20px;transition:color 0.15s; }
 .back-link:hover { color:var(--text-default); }
+/* ── Canonical icon-only Back button (user, 2026-08-05) — arrow only; breadcrumbs live in top-nav.
+   Light+dark share the same greenish chrome; only the arrow colour differs. States per Figma. ── */
+.back-btn { width:32px; height:32px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; padding:0; flex-shrink:0; cursor:pointer; background:rgba(0,175,115,0.05); border:1px solid rgba(0,175,115,0.35); color:var(--text-default); transition:background .15s, border-color .15s; font-family:inherit; }
+.back-btn svg { display:block; width:10px; height:10px; }
+.back-btn:hover { background:rgba(0,175,115,0.15); border-color:#10B981; }
+.back-btn:disabled, .back-btn[disabled] { opacity:0.4; cursor:not-allowed; pointer-events:none; }
+body.dark .back-btn { background:rgba(0,175,115,0.05); border-color:rgba(0,175,115,0.35); color:#fff; }
+body.dark .back-btn:hover { background:rgba(0,175,115,0.15); border-color:#10B981; }
 .panel-title { font-size:18px;font-weight:700;color:var(--text-default);margin-bottom:4px;letter-spacing:-0.3px; }
 .panel-sub   { font-size:12px;color:var(--text-sec);margin-bottom:24px; }
 .form-group  { margin-bottom:18px; }
@@ -4319,7 +4327,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-remediation" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button class="btn-outline" onclick="showView(&#39;results&#39;)" style="width:auto;padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div><div class="page-title">Remediation</div><div class="page-sub">Fix issues to improve your compliance score</div></div>
         </div>
         <button class="btn-outline" style="width:auto;padding:9px 18px;font-size:13px;" onclick="showView(&#39;dashboard&#39;)">Done → Dashboard</button>
@@ -6256,7 +6264,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <!-- Header -->
             <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
               <div style="display:flex;align-items:flex-start;gap:12px;">
-                <button class="btn-outline" onclick="showView('node-detail')" style="padding:6px 12px;font-size:12px;">← Back to Node</button>
+                <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
                 <div>
                   <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Scan Comparison</div>
                   <div style="font-size:12px;color:var(--text-sec);margin-top:3px;">MACBOOK-TARAS · <span id="sc-sub"></span></div>
@@ -6330,7 +6338,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <div class="view" id="v-node-detail" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" onclick="nodeDetailBack()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title">MACBOOK-TARAS</div>
             <div class="page-sub" id="nd-page-sub">Windows 11 · This node · <span style="color:#00AF73;font-weight:600;">● Online</span> · Last scanned 2 min ago</div>
@@ -7963,7 +7971,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 
         <!-- Back to Policies -->
         <div style="margin-bottom:12px;">
-          <button class="btn-outline" onclick="showView(&#39;policies&#39;)" style="width:auto;padding:7px 14px;font-size:12px;">← Back to Policies</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
         </div>
 
         <!-- Header card -->
@@ -8088,7 +8096,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-policy-edit" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button class="btn-outline" onclick="showView(&#39;policy-detail&#39;)" style="width:auto;padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <input id="pe-name" type="text" value="Endpoint Protection Policy" style="font-size:18px;font-weight:700;color:var(--text-default);border:none;outline:none;background:transparent;padding:2px 4px;border-radius:4px;letter-spacing:-0.3px;width:320px;" onfocus="this.style.border=&#39;1px solid var(--green1)&#39;;this.style.boxShadow=&#39;0 0 0 3px var(--green-dim)&#39;;this.style.background=&#39;white&#39;" onblur="this.style.border=&#39;none&#39;;this.style.boxShadow=&#39;none&#39;;this.style.background=&#39;transparent&#39;">
             <div class="page-sub">Custom policy · Edit mode</div>
@@ -8325,7 +8333,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-policy-assign" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button class="btn-outline" onclick="showView(&#39;policy-detail&#39;)" style="width:auto;padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title">Assign Policy</div>
             <div class="page-sub">Endpoint Protection Policy</div>
@@ -8488,7 +8496,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-add-check" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button class="btn-outline" onclick="checkDone()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="checkDone()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title">Add New Check</div>
             <div class="page-sub">Define a new compliance check for this policy</div>
@@ -8623,7 +8631,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-edit-check" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button class="btn-outline" onclick="checkDone()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="checkDone()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title">Edit Check</div>
             <div class="page-sub" style="font-size:11px;color:var(--text-sec);margin-top:2px;">Antivirus active and up to date</div>
@@ -14713,7 +14721,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       <!-- Header: back + title + badge -->
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button class="btn-outline" onclick="showView(&#39;changes&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back to Detected Drift</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div id="cd-title" class="page-title">Windows Defender — Real-time protection</div>
             <div class="page-sub"><span id="cd-node" onclick="showView(&#39;node-detail&#39;)" style="color:var(--text-default);font-weight:600;cursor:pointer;" onmouseover="this.style.color=&#39;var(--green1)&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;">MACBOOK-TARAS</span> <span id="cd-detected">· Detected today at 14:23 · Scheduled scan</span></div>
@@ -14849,7 +14857,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-cr-audit" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" onclick="showView(&#39;change-detail&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title">Change Request Audit</div>
             <div class="page-sub">Static audit trail · read-only</div>
@@ -14951,7 +14959,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="page-title">Approve Change</div>
           <div class="page-sub">Windows Defender — Real-time protection</div>
         </div>
-        <button class="btn-outline" onclick="showView(&#39;changes&#39;)">← Back</button>
+        <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;align-items:center;display:flex;flex-direction:column;">
         <div style="width:100%;max-width:560px;">
@@ -15004,7 +15012,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
           <div class="page-title">Flag for Investigation</div>
           <div class="page-sub">Windows Defender — Real-time protection</div>
         </div>
-        <button class="btn-outline" onclick="showView(&#39;changes&#39;)">← Back</button>
+        <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;display:flex;flex-direction:column;align-items:center;">
         <div style="width:100%;max-width:560px;">
@@ -16474,7 +16482,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-scan-failed" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" onclick="go(&#39;node-detail&#39;)" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title">Scan Failed</div>
             <div class="page-sub">MACBOOK-TARAS · scan diagnostics</div>
@@ -16643,7 +16651,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-report-changed" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" id="rc-back" onclick="showView('reports-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;margin-top:2px;">← Back to Reports</button>
+          <button class="back-btn" id="rc-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">What changed report</div>
@@ -16900,7 +16908,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-report-baseline" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" id="rb-back" onclick="showView('reports-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;margin-top:2px;">← Back to Reports</button>
+          <button class="back-btn" id="rb-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">Baseline deviation report</div>
@@ -17159,7 +17167,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-report-investigation" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" id="ri-back" onclick="showView('reports-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;margin-top:2px;">← Back to Reports</button>
+          <button class="back-btn" id="ri-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">Needs investigation report</div>
@@ -17419,7 +17427,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-reports" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button id="rep-back" class="btn-outline" onclick="showView('reports-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;margin-top:2px;">← Back to Reports</button>
+          <button id="rep-back" class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title">Compliance report</div>
             <div class="page-sub" id="rep-scope-desc">Policy and check compliance across the selected scope</div>
@@ -17673,7 +17681,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <!-- Header -->
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
           <div style="display:flex;align-items:flex-start;gap:14px;">
-            <button class="btn-outline" onclick="showView('cm-list')" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+            <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
             <div>
               <div class="page-title" id="cmd-name"></div>
               <div class="page-sub" id="cmd-sub"></div>
@@ -17941,7 +17949,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
     <div class="view" id="v-integration-detail" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:center;gap:12px;">
-          <button class="btn-outline" onclick="showView('settings-integrations')" style="padding:7px 14px;font-size:12px;">← Back</button>
+          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title" id="id-page-title">ServiceNow</div>
             <div class="page-sub" id="id-page-sub">ITSM integration</div>
@@ -20021,6 +20029,19 @@ function nodeDetailBack() {
   showView(ref);
 }
 
+// ── History-based Back — icon Back button returns to wherever you came from ──
+var _viewHistory = [];
+var _navigatingBack = false;
+function navBack() {
+  if (_viewHistory.length) {
+    _navigatingBack = true;
+    showView(_viewHistory.pop());
+    _navigatingBack = false;
+  } else {
+    showView('dashboard');
+  }
+}
+
 function showView(name) {
   // Capture the view we're leaving as the node-detail referrer (fallback: All Devices)
   if (name === 'node-detail' && _currentView && _currentView !== 'node-detail') {
@@ -20058,6 +20079,15 @@ function showView(name) {
     'change-detail': `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">Windows Defender — Real-time protection</span>`,
     'change-approve': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Approve Change</span>`,
     'cr-audit': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">CHG0012345 Audit</span>`,
+    'change-unapprove': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Unapprove Change</span>`,
+    'remediation': `<span class="bc-link" onclick="showView('results')">Results</span><span class="bc-sep">›</span><span class="bc-cur">Remediation</span>`,
+    'compare-scans': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('node-detail')">MACBOOK-TARAS</span><span class="bc-sep">›</span><span class="bc-cur">Scan Comparison</span>`,
+    'scan-failed': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('node-detail')">MACBOOK-TARAS</span><span class="bc-sep">›</span><span class="bc-cur">Scan Failed</span>`,
+    'report-changed': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">What changed</span>`,
+    'report-baseline': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Baseline deviation</span>`,
+    'report-investigation': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Needs investigation</span>`,
+    'reports': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Compliance</span>`,
+    'integration-detail': `<span class="bc-link" onclick="showView('settings-integrations')">Integrations</span><span class="bc-sep">›</span><span class="bc-cur">Details</span>`,
   };
   const _nb = document.getElementById('nav-breadcrumb');
   if (_nb) {
@@ -20104,6 +20134,9 @@ function showView(name) {
   }
   if (name === 'policy-edit') {
     setTimeout(() => peInitB(), 50);
+  }
+  if (!_navigatingBack && name !== _currentView) {
+    if (_viewHistory[_viewHistory.length - 1] !== _currentView) _viewHistory.push(_currentView);
   }
   _currentView = name;
 }
