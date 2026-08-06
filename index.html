@@ -6953,7 +6953,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
                 <div>
                   <div style="font-size:13px;font-weight:700;color:var(--text-default);">Scan history</div>
-                  <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">3 scans recorded for this node</div>
+                  <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">4 scans recorded for this node</div>
                 </div>
                 <button class="btn-outline" onclick="openReportFromScanHistory()" style="width:auto;display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;white-space:nowrap;" title="Generate a What changed report from this node's scan history"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>What changed report</button>
               </div>
@@ -6965,45 +6965,59 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Policies failing</div>
                 <div></div>
               </div>
-              <!-- Row 1 — latest (current) -->
-              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);">
+              <!-- Row 1 — now (latest / current) -->
+              <div data-hist-scan="now" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
                 <div>
-                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">Today 14:23</div>
-                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Latest scan <span style="font-size:9px;font-weight:700;background:rgba(16,185,129,0.1);color:#15803d;border:1px solid rgba(16,185,129,0.25);border-radius:4px;padding:1px 5px;margin-left:4px;">Current</span></div>
+                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">Now · 2 min ago</div>
+                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Latest scan <span style="font-size:9px;font-weight:700;background:rgba(16,185,129,0.1);color:#15803d;border:1px solid rgba(16,185,129,0.25);border-radius:4px;padding:1px 5px;margin-left:4px;">Current</span><span class="nd-hist-star" style="display:none;font-size:9px;font-weight:700;background:rgba(217,119,6,0.1);color:#B45309;border:1px solid rgba(217,119,6,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;">★ Baseline</span></div>
                 </div>
                 <div><span style="font-size:12px;font-weight:700;color:#d97706;">3 changes</span></div>
                 <div><span style="font-size:12px;font-weight:700;color:#d97706;">78</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
                 <div><span style="font-size:12px;color:#FB3C44;font-weight:600;">2 failing</span></div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;">
-                  <span style="font-size:11px;color:var(--text-sec);cursor:default;">View scan →</span>
+                  <span onclick="ndSelectScan(&#39;now&#39;)" style="font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">View scan →</span>
                 </div>
               </div>
-              <!-- Row 2 — previous -->
-              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
+              <!-- Row 2 — yesterday -->
+              <div data-hist-scan="yest" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
                 <div>
-                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">Yesterday 14:10</div>
-                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Previous scan</div>
+                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">Yesterday · 18:02</div>
+                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Previous scan<span class="nd-hist-star" style="display:none;font-size:9px;font-weight:700;background:rgba(217,119,6,0.1);color:#B45309;border:1px solid rgba(217,119,6,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;">★ Baseline</span></div>
                 </div>
                 <div><span style="font-size:12px;font-weight:700;color:#d97706;">1 change</span></div>
-                <div><span style="font-size:12px;font-weight:700;color:#00AF73;">82</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
+                <div><span style="font-size:12px;font-weight:700;color:#00AF73;">94</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
                 <div><span style="font-size:12px;color:#FB3C44;font-weight:600;">1 failing</span></div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;">
                   <span onclick="ndSelectScan(&#39;yest&#39;)" style="font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">View scan →</span>
                   <span onclick="ndSelectScan(&#39;yest&#39;);showScanCompare()" style="font-size:11px;font-weight:600;color:var(--text-sec);cursor:pointer;" onmouseover="this.style.color=&#39;var(--green1)&#39;" onmouseout="this.style.color=&#39;var(--text-sec)&#39;">Compare →</span>
                 </div>
               </div>
-              <!-- Row 3 — older -->
-              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
+              <!-- Row 3 — 3 days ago (baseline) -->
+              <div data-hist-scan="3d" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
                 <div>
-                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">2 days ago 09:45</div>
-                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Older scan</div>
+                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">3 days ago · 09:14</div>
+                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Older scan<span class="nd-hist-star" style="display:none;font-size:9px;font-weight:700;background:rgba(217,119,6,0.1);color:#B45309;border:1px solid rgba(217,119,6,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;">★ Baseline</span></div>
                 </div>
                 <div><span style="font-size:12px;color:var(--text-sec);">0 changes</span></div>
-                <div><span style="font-size:12px;font-weight:700;color:#00AF73;">82</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
+                <div><span style="font-size:12px;font-weight:700;color:#00AF73;">100</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
                 <div><span style="font-size:12px;color:#15803d;font-weight:600;">0 failing</span></div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;">
                   <span onclick="ndSelectScan(&#39;3d&#39;)" style="font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">View scan →</span>
                   <span onclick="ndSelectScan(&#39;3d&#39;);showScanCompare()" style="font-size:11px;font-weight:600;color:var(--text-sec);cursor:pointer;" onmouseover="this.style.color=&#39;var(--green1)&#39;" onmouseout="this.style.color=&#39;var(--text-sec)&#39;">Compare →</span>
+                </div>
+              </div>
+              <!-- Row 4 — 28 May (older) -->
+              <div data-hist-scan="28may" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">28 May · 11:30</div>
+                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Older scan<span class="nd-hist-star" style="display:none;font-size:9px;font-weight:700;background:rgba(217,119,6,0.1);color:#B45309;border:1px solid rgba(217,119,6,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;">★ Baseline</span></div>
+                </div>
+                <div><span style="font-size:12px;font-weight:700;color:#d97706;">2 changes</span></div>
+                <div><span style="font-size:12px;font-weight:700;color:#00AF73;">91</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
+                <div><span style="font-size:12px;color:#FB3C44;font-weight:600;">1 failing</span></div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                  <span onclick="ndSelectScan(&#39;28may&#39;)" style="font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">View scan →</span>
+                  <span onclick="ndSelectScan(&#39;28may&#39;);showScanCompare()" style="font-size:11px;font-weight:600;color:var(--text-sec);cursor:pointer;" onmouseover="this.style.color=&#39;var(--green1)&#39;" onmouseout="this.style.color=&#39;var(--text-sec)&#39;">Compare →</span>
                 </div>
               </div>
             </div>
@@ -7469,6 +7483,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         }
       }
       ndMarkBaselineOptions();
+      // Sync the ★ Baseline marker in the History-tab scan list
+      Array.prototype.forEach.call(document.querySelectorAll('#nd-tab-history [data-hist-scan]'), function (row) {
+        var star = row.querySelector('.nd-hist-star');
+        if (star) star.style.display = (row.getAttribute('data-hist-scan') === ndBaseline) ? 'inline-block' : 'none';
+      });
     }
     function ndSetBaseline() {
       var cur = (document.getElementById('nd-scan-select') || {}).value || 'now';
