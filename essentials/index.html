@@ -2101,6 +2101,7 @@ body.dark span[style*="font-size:11px"][style*="font-weight:600"][style*="color:
 
 /* SCREEN LABEL */
 .screen-lbl {
+  display:none;
   position:fixed; bottom:60px; right:12px;
   background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
   color:rgba(255,255,255,0.6);
@@ -6376,9 +6377,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 
         <!-- Latest scan attempt failed — entry point to diagnostics (item 7) -->
         <div id="nd-scanfail-banner" style="display:flex;align-items:center;gap:14px;background:var(--bg-surface);border:1px solid var(--border);border-left:3px solid #FB3C44;border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;box-shadow:var(--shadow-sm);">
-          <div style="width:38px;height:38px;border-radius:10px;background:rgba(251,60,68,0.12);border:1px solid var(--bg-error-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           <div style="flex:1;min-width:0;">
             <div style="font-size:13px;font-weight:700;color:var(--text-default);">Scan failed 2h ago <span style="color:#FB3C44;">·</span> authentication error</div>
             <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">Showing your last successful scan below.</div>
@@ -12301,6 +12300,85 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
       }, 1500);
     }
 
+    // ── Scan failure types (4 scenarios based on known Guardian/agentless scan behaviour) ──
+    var SCAN_FAIL_TYPES = {
+      auth: {
+        category: 'Authentication',
+        title: 'Credential rejected by the target',
+        desc: 'Guardian reached the node, but the stored credential was refused during authentication. The scan never started, so no attributes were collected this run.',
+        raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 FAILED\n[2026-07-03 09:14:03] error: credentials rejected by server (0x8009030E)\n[2026-07-03 09:14:03] scan aborted \u2014 0 attributes collected',
+        steps: [
+          'Check the node\u2019s credential in Secret Server is current and not expired. <span onclick="go(\'secret-server-config\')" style="color:var(--green1);font-weight:600;cursor:pointer;">Open Secret Server \u2192</span>',
+          'Confirm the account isn\u2019t locked out or disabled on the target node.',
+          'Verify the credential has scan permissions (local admin / WinRM access).',
+          'Re-run the scan once the credential is updated.'
+        ]
+      },
+      connect: {
+        category: 'Connectivity',
+        title: 'Unable to reach the target node',
+        desc: 'Guardian could not establish a connection to the node. The scan engine was unable to open a WinRM session \u2014 the target may be offline, behind a firewall, or the address may have changed.',
+        raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 FAILED\n[2026-07-03 09:14:32] error: connection timed out after 30s (WSAETIMEDOUT)\n[2026-07-03 09:14:32] scan aborted \u2014 target unreachable',
+        steps: [
+          'Verify the node is powered on and reachable from your network.',
+          'Check that port 5985 (WinRM HTTP) or 5986 (HTTPS) is open on the target firewall.',
+          'Confirm the IP/hostname in Guardian matches the node\u2019s current address. <span onclick="showView(\'node-detail\')" style="color:var(--green1);font-weight:600;cursor:pointer;">Check node settings \u2192</span>',
+          'Re-run the scan once connectivity is restored.'
+        ]
+      },
+      timeout: {
+        category: 'Timeout',
+        title: 'Scan timed out before completing',
+        desc: 'Guardian connected and began collecting attributes, but the scan exceeded the maximum allowed duration. Partial data was discarded \u2014 no changes were recorded.',
+        raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:03] collecting attributes \u2026 47/96\n[2026-07-03 09:19:03] error: scan exceeded 300s limit (timeout)\n[2026-07-03 09:19:03] scan aborted \u2014 partial collection discarded',
+        steps: [
+          'Check if the node is under heavy load \u2014 a slow response can cause timeouts.',
+          'Review the scan scope: reduce the number of policies or checks if the node has many attributes.',
+          'Increase the scan timeout in Scan Schedules if available. <span onclick="showView(\'scan-schedule\')" style="color:var(--green1);font-weight:600;cursor:pointer;">Open Scan Schedules \u2192</span>',
+          'Re-run the scan during a lower-activity window.'
+        ]
+      },
+      permission: {
+        category: 'Permission',
+        title: 'Insufficient privileges on the target',
+        desc: 'Guardian authenticated successfully, but the scan account lacks the required permissions to read one or more configuration attributes. The scan collected partial data that was discarded.',
+        raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:04] reading registry HKLM\\SOFTWARE\\Policies \u2026 ACCESS DENIED\n[2026-07-03 09:14:04] error: insufficient privileges (0x80070005)\n[2026-07-03 09:14:04] scan aborted \u2014 3 of 12 attributes inaccessible',
+        steps: [
+          'Verify the scan account has local administrator privileges on the target node.',
+          'Check group policy isn\u2019t restricting WinRM remote access for the account.',
+          'Ensure UAC remote restrictions are configured to allow the scan account. <span onclick="go(\'secret-server-config\')" style="color:var(--green1);font-weight:600;cursor:pointer;">Review credentials \u2192</span>',
+          'Re-run the scan after adjusting permissions.'
+        ]
+      }
+    };
+    function setScanFailType(type) {
+      var d = SCAN_FAIL_TYPES[type];
+      if (!d) return;
+      document.getElementById('sf-category').textContent = d.category;
+      document.getElementById('sf-title').textContent = d.title;
+      document.getElementById('sf-desc').textContent = d.desc;
+      document.getElementById('sf-raw').textContent = d.raw;
+      // Close the <details> so raw output starts collapsed
+      var wrap = document.getElementById('sf-raw-wrap');
+      if (wrap) wrap.removeAttribute('open');
+      // Render numbered steps
+      var box = document.getElementById('sf-steps');
+      if (box) {
+        box.innerHTML = d.steps.map(function (s, i) {
+          return '<div style="display:flex;align-items:flex-start;gap:12px;">'
+            + '<div style="width:22px;height:22px;border-radius:50%;background:rgba(63,200,120,0.1);border:1px solid rgba(63,200,120,0.3);color:#15803d;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + (i + 1) + '</div>'
+            + '<div style="font-size:12px;color:var(--text-default);line-height:1.5;">' + s + '</div></div>';
+        }).join('');
+      }
+      // Update demo toggle active state
+      var btns = document.querySelectorAll('#v-scan-failed .demo-seg');
+      btns.forEach(function (b) {
+        b.classList.toggle('on', b.getAttribute('onclick').indexOf("'" + type + "'") !== -1);
+      });
+    }
+    // Render initial auth type on page load
+    window.addEventListener('load', function () { try { setScanFailType('auth'); } catch (e) {} });
+
     var _polActiveTag = '';
     function toggleTagFilter(e) {
       e.stopPropagation();
@@ -16494,32 +16572,43 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
             <div class="page-sub">MACBOOK-TARAS · scan diagnostics</div>
           </div>
         </div>
-        <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:13px;" onclick="retryScan(this)">Retry scan</button>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div class="demo-wrap" title="Prototype only — switch failure type. Not shown in the live product.">
+            <span class="demo-lbl">Demo</span>
+            <div class="demo-seg-group">
+              <button class="demo-seg on" onclick="setScanFailType('auth')">Auth</button>
+              <button class="demo-seg" onclick="setScanFailType('connect')">Connect</button>
+              <button class="demo-seg" onclick="setScanFailType('timeout')">Timeout</button>
+              <button class="demo-seg" onclick="setScanFailType('permission')">Permission</button>
+            </div>
+          </div>
+          <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:13px;" onclick="retryScan(this)">Retry scan</button>
+        </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
         <!-- Status banner -->
-        <div style="background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-left:3px solid #FB3C44;border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           <div style="flex:1;">
-            <div style="font-size:13px;font-weight:700;color:#991b1b;">Scan attempt failed 2h ago</div>
-            <div style="font-size:11px;color:#b91c1c;margin-top:2px;">The last successful scan was 2 days ago — that snapshot is what's shown on the node page.</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text-default);">Scan attempt failed 2h ago <span style="color:#FB3C44;">·</span> <span style="color:#FB3C44;font-weight:600;">authentication error</span></div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">The last successful scan was 2 days ago — that snapshot is what's shown on the node page.</div>
           </div>
         </div>
 
         <!-- Failure category + plain-English cause -->
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <span style="font-size:10px;font-weight:700;color:#FB3C44;background:rgba(251,60,68,0.1);border:1px solid rgba(251,60,68,0.2);border-radius:20px;padding:3px 11px;">Authentication</span>
+            <span id="sf-category" style="font-size:10px;font-weight:700;color:#FB3C44;background:rgba(251,60,68,0.1);border:1px solid rgba(251,60,68,0.2);border-radius:20px;padding:3px 11px;">Authentication</span>
             <span style="font-size:11px;color:var(--text-sec);">Failure category</span>
           </div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Credential rejected by the target</div>
-          <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Guardian reached the node, but the stored credential was refused during authentication. The scan never started, so no attributes were collected this run.</div>
+          <div id="sf-title" style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Credential rejected by the target</div>
+          <div id="sf-desc" style="font-size:12px;color:var(--text-sec);line-height:1.5;">Guardian reached the node, but the stored credential was refused during authentication. The scan never started, so no attributes were collected this run.</div>
 
           <!-- Raw scanner output (collapsible) -->
-          <details style="margin-top:14px;">
+          <details id="sf-raw-wrap" style="margin-top:14px;">
             <summary style="font-size:11px;font-weight:600;color:var(--green1);cursor:pointer;">Show raw scanner output</summary>
-            <pre style="margin-top:10px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-family:&#39;DM Mono&#39;,monospace;font-size:11px;color:var(--text-sec);white-space:pre-wrap;overflow-x:auto;">[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 … ok
+            <pre id="sf-raw" style="margin-top:10px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-sec);white-space:pre-wrap;overflow-x:auto;">[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 … ok
 [2026-07-03 09:14:03] WinRM negotiate auth … FAILED
 [2026-07-03 09:14:03] error: credentials rejected by server (0x8009030E)
 [2026-07-03 09:14:03] scan aborted — 0 attributes collected</pre>
@@ -16529,23 +16618,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
         <!-- Remediation steps -->
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:14px;">How to fix</div>
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            <div style="display:flex;align-items:flex-start;gap:12px;">
-              <div style="width:22px;height:22px;border-radius:50%;background:rgba(63,200,120,0.1);border:1px solid rgba(63,200,120,0.3);color:#15803d;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
-              <div style="font-size:12px;color:var(--text-default);line-height:1.5;">Check the node's credential in Secret Server is current and not expired. <span onclick="go(&#39;secret-server-config&#39;)" style="color:var(--green1);font-weight:600;cursor:pointer;">Open Secret Server →</span></div>
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:12px;">
-              <div style="width:22px;height:22px;border-radius:50%;background:rgba(63,200,120,0.1);border:1px solid rgba(63,200,120,0.3);color:#15803d;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
-              <div style="font-size:12px;color:var(--text-default);line-height:1.5;">Confirm the account isn't locked out or disabled on the target node.</div>
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:12px;">
-              <div style="width:22px;height:22px;border-radius:50%;background:rgba(63,200,120,0.1);border:1px solid rgba(63,200,120,0.3);color:#15803d;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
-              <div style="font-size:12px;color:var(--text-default);line-height:1.5;">Verify the credential has scan permissions (local admin / WinRM access).</div>
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:12px;">
-              <div style="width:22px;height:22px;border-radius:50%;background:rgba(63,200,120,0.1);border:1px solid rgba(63,200,120,0.3);color:#15803d;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
-              <div style="font-size:12px;color:var(--text-default);line-height:1.5;">Re-run the scan once the credential is updated.</div>
-            </div>
+          <div id="sf-steps" style="display:flex;flex-direction:column;gap:12px;">
           </div>
         </div>
 
@@ -20141,8 +20214,7 @@ function showView(name) {
   if (isJ3Nav) updateJ3Nav(name);
   if (isJ4Nav) updateJ4Nav(name);
   var _lblEl2 = document.getElementById('lbl');
-  _lblEl2.textContent = LABELS[name] || name;
-  _lblEl2.style.display = (name === 's-agentless' || name === 'settings-integrations') ? 'none' : '';
+  if (_lblEl2) { _lblEl2.textContent = LABELS[name] || name; _lblEl2.style.display = 'none'; }
   if (name === 'changes') {
     applyDriftFilters();
     setTimeout(() => {
