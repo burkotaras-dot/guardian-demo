@@ -20062,10 +20062,13 @@ function go(key) {
   document.getElementById('pc-step-nav').style.display = 'none';
   document.getElementById('icx-step-nav').style.display = 'none';
   document.getElementById('navUser').style.display     = isOnboarding ? 'none' : 'flex';
-  var _goBc = document.getElementById('nav-breadcrumb');
-  if (_goBc) _goBc.style.display = isOnboarding ? 'none' : '';
+  if (isOnboarding) {
+    var _goBc = document.getElementById('nav-breadcrumb');
+    if (_goBc) _goBc.style.display = 'none';
+  }
 
   showOnly(key);
+  if (!isOnboarding) _updateBC(key);
   if (isJ1Onboarding) {
     setSteps(key);
     var si1 = document.getElementById('si1');
@@ -20133,6 +20136,43 @@ function navBack() {
   }
 }
 
+// ── Breadcrumb population — shared by showView() and go() ──
+var _BC_MAP = {
+  'node-detail': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>`,
+  'policy-create': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-cur">Create New Policy</span>`,
+  'policy-detail': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-cur">Compliance Policy · Windows 11</span>`,
+  'policy-edit': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-detail')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Edit</span>`,
+  'policy-assign': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-detail')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Assign</span>`,
+  'add-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Add Check</span>`,
+  'edit-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Edit Check</span>`,
+  'change-detail': `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">Windows Defender — Real-time protection</span>`,
+  'change-approve': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Approve Change</span>`,
+  'cr-audit': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">CHG0012345 Audit</span>`,
+  'change-unapprove': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Unapprove Change</span>`,
+  'remediation': `<span class="bc-link" onclick="showView('results')">Results</span><span class="bc-sep">›</span><span class="bc-cur">Remediation</span>`,
+  'compare-scans': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('node-detail')">MACBOOK-TARAS</span><span class="bc-sep">›</span><span class="bc-cur">Scan Comparison</span>`,
+  'scan-failed': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('node-detail')">MACBOOK-TARAS</span><span class="bc-sep">›</span><span class="bc-cur">Scan Failed</span>`,
+  'report-changed': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">What changed</span>`,
+  'report-baseline': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Baseline deviation</span>`,
+  'report-investigation': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Needs investigation</span>`,
+  'reports': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Compliance</span>`,
+  'integration-detail': `<span class="bc-link" onclick="showView('settings-integrations')">Integrations</span><span class="bc-sep">›</span><span class="bc-cur">Details</span>`,
+};
+function _updateBC(name) {
+  var _nb = document.getElementById('nav-breadcrumb');
+  if (!_nb) return;
+  var _bc = _BC_MAP[name] || null;
+  if (name === 'node-detail') {
+    var _r = NODE_REF[_nodeRef] || NODE_REF['all-devices'];
+    _bc = '<span class="bc-link" onclick="showView(\'' + _r.view + '\')">' + _r.label + '</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>';
+  }
+  if (name === 'policy-create') { _bc = null; }
+  if (name === 'cm-detail' && _currentCM) {
+    _bc = '<span class="bc-link" onclick="showView(\'cm-list\')">CM Groups</span><span class="bc-sep">›</span><span class="bc-cur">' + _currentCM.name + '</span>';
+  }
+  if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
+}
+
 function showView(name) {
   // Capture the view we're leaving as the node-detail referrer (fallback: All Devices)
   if (name === 'node-detail' && _currentView && _currentView !== 'node-detail') {
@@ -20159,40 +20199,7 @@ function showView(name) {
   if (_nav) _nav.style.background = isWizardChrome ? '#062A2E' : 'linear-gradient(to right, #062A2E 220px, transparent 220px)';
   showOnly(name);
   if (name === 'settings-integrations' && typeof renderIntegrations === 'function') renderIntegrations();
-  const _BC = {
-    'node-detail': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>`,
-    'policy-create': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-cur">Create New Policy</span>`,
-    'policy-detail': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-cur">Compliance Policy · Windows 11</span>`,
-    'policy-edit': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-detail')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Edit</span>`,
-    'policy-assign': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-detail')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Assign</span>`,
-    'add-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Add Check</span>`,
-    'edit-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Edit Check</span>`,
-    'change-detail': `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">Windows Defender — Real-time protection</span>`,
-    'change-approve': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Approve Change</span>`,
-    'cr-audit': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">CHG0012345 Audit</span>`,
-    'change-unapprove': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Unapprove Change</span>`,
-    'remediation': `<span class="bc-link" onclick="showView('results')">Results</span><span class="bc-sep">›</span><span class="bc-cur">Remediation</span>`,
-    'compare-scans': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('node-detail')">MACBOOK-TARAS</span><span class="bc-sep">›</span><span class="bc-cur">Scan Comparison</span>`,
-    'scan-failed': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('node-detail')">MACBOOK-TARAS</span><span class="bc-sep">›</span><span class="bc-cur">Scan Failed</span>`,
-    'report-changed': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">What changed</span>`,
-    'report-baseline': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Baseline deviation</span>`,
-    'report-investigation': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Needs investigation</span>`,
-    'reports': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Compliance</span>`,
-    'integration-detail': `<span class="bc-link" onclick="showView('settings-integrations')">Integrations</span><span class="bc-sep">›</span><span class="bc-cur">Details</span>`,
-  };
-  const _nb = document.getElementById('nav-breadcrumb');
-  if (_nb) {
-    let _bc = _BC[name];
-    if (name === 'node-detail') {
-      const _r = NODE_REF[_nodeRef] || NODE_REF['all-devices'];
-      _bc = `<span class="bc-link" onclick="showView('${_r.view}')">${_r.label}</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>`;
-    }
-    if (name === 'policy-create') { _bc = null; } // wizard uses the top stepper, not a breadcrumb
-    if (name === 'cm-detail' && _currentCM) {
-      _bc = `<span class="bc-link" onclick="showView('cm-list')">CM Groups</span><span class="bc-sep">›</span><span class="bc-cur">${_currentCM.name}</span>`;
-    }
-    if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
-  }
+  _updateBC(name);
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
     changes:'sb-changes', 'change-detail':'sb-changes', 'change-approve':'sb-changes',
