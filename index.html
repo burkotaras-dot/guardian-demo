@@ -421,7 +421,14 @@ body.dark .tag-filter-sep { background:rgba(255,255,255,0.08); }
 .policies-tabs-bar .pol-tab {
   min-height:42px;
   padding:12px 16px !important;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
 }
+.pol-tab-count { min-width:22px; height:22px; box-sizing:border-box; padding:0 7px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; background:#E9EEF3; color:var(--text-sec); font-size:11px; font-weight:700; line-height:1; transition:background .15s, color .15s; }
+.pol-tab-active .pol-tab-count { background:rgba(16,185,129,0.10); color:var(--green2); }
+body.dark .pol-tab-count { background:rgba(255,255,255,0.08); color:var(--text-sec); }
+body.dark .pol-tab-active .pol-tab-count { background:rgba(0,175,115,0.18); color:#00AF73; }
 .policies-toolbar {
   min-height:0;
   padding:0;
@@ -7631,10 +7638,10 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         <!-- Tabs bar -->
         <div class="policies-tabs-bar">
           <div class="policies-tabs">
-            <button id="pol-tab-all" class="pol-tab pol-tab-active" onclick="polSetTab(&#39;all&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--green2);background:none;border:none;border-bottom:2px solid var(--green2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">All</button>
-            <button class="pol-tab" onclick="polSetTab(&#39;cis&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Compliance Policy</button>
-            <button class="pol-tab" onclick="polSetTab(&#39;custom&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Custom</button>
-            <button class="pol-tab" onclick="polSetTab(&#39;archived&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Archived</button>
+            <button id="pol-tab-all" class="pol-tab pol-tab-active" onclick="polSetTab(&#39;all&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--green2);background:none;border:none;border-bottom:2px solid var(--green2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">All <span class="pol-tab-count" data-pol-count="all">6</span></button>
+            <button class="pol-tab" onclick="polSetTab(&#39;cis&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Compliance Policy <span class="pol-tab-count" data-pol-count="cis">2</span></button>
+            <button class="pol-tab" onclick="polSetTab(&#39;custom&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Custom <span class="pol-tab-count" data-pol-count="custom">3</span></button>
+            <button class="pol-tab" onclick="polSetTab(&#39;archived&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Archived <span class="pol-tab-count" data-pol-count="archived">1</span></button>
           </div>
           <div class="policies-toolbar">
             <div class="policies-search">
@@ -9013,6 +9020,19 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       }
       empty.textContent = anyVisible ? '' : 'No ' + sev + ' issues to display in this preview.';
       empty.style.display = anyVisible ? 'none' : 'block';
+    }
+
+    function polUpdateCounts() {
+      var counts = { all: 0, cis: 0, custom: 0, archived: 0 };
+      document.querySelectorAll('#v-policies [data-pol-type]').forEach(function(card) {
+        var type = card.getAttribute('data-pol-type');
+        counts.all += 1;
+        if (Object.prototype.hasOwnProperty.call(counts, type)) counts[type] += 1;
+      });
+      Object.keys(counts).forEach(function(key) {
+        var badge = document.querySelector('#v-policies [data-pol-count="' + key + '"]');
+        if (badge) badge.textContent = counts[key];
+      });
     }
 
     function polSetTab(key, btn) {
@@ -13091,7 +13111,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         subtitle: 'This action cannot be undone. The policy will be removed and un-applied from every node it is currently assigned to.',
         buttons: [
           { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
-          { label: 'Delete policy', kind: 'destructive', onClick: function(){ closeModal('policy-del-overlay'); if (card) card.remove(); showToast('Policy deleted · ' + name); } }
+          { label: 'Delete policy', kind: 'destructive', onClick: function(){ closeModal('policy-del-overlay'); if (card) card.remove(); polUpdateCounts(); showToast('Policy deleted · ' + name); } }
         ]
       });
     }
