@@ -366,13 +366,16 @@ body.dark .pol-tab:hover:not(.pol-tab-active) { color:var(--p-neutral-50) !impor
 .tag-filter-btn svg { transition:transform 0.18s; opacity:0.65; }
 .tag-filter.is-open .tag-filter-btn svg { transform:rotate(180deg); }
 .tag-filter-menu {
-  position:absolute; top:calc(100% + 6px); left:0; min-width:200px;
+  position:absolute; top:calc(100% + 6px); right:0; left:auto;
+  width:200px; min-width:0; max-width:calc(100vw - 24px); box-sizing:border-box;
+  max-height:var(--tag-menu-max-height, calc(100vh - 24px)); overflow-y:auto;
   background:var(--bg-surface); border:1px solid var(--border);
   border-radius:var(--radius-md); box-shadow:var(--shadow-md);
   padding:6px; z-index:50;
   display:none; flex-direction:column; gap:1px;
 }
 .tag-filter.is-open .tag-filter-menu { display:flex; }
+.tag-filter.is-open.is-drop-up .tag-filter-menu { top:auto; bottom:calc(100% + 6px); }
 .tag-filter-item {
   display:flex; align-items:center; gap:9px;
   padding:7px 10px; font-size:13px; font-family:inherit; text-align:left;
@@ -1337,14 +1340,19 @@ body.dark .rctx-opt:hover { background:rgba(255,255,255,0.06); }
 .check-card > .check-row > svg { position:absolute; right:14px; top:50%; transform:translateY(-50%); }
 #v-results .check-card > .check-row > svg { stroke:var(--green1); }
 body.dark #v-results .check-card > .check-row > svg { stroke:#34D399; }
-.check-menu-btn { position:absolute; right:38px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:1px solid rgba(16,185,129,0.3); background:var(--bg-surface); border-radius:var(--radius-md); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--interactive-secondary); box-shadow:var(--shadow-sm); transition:all .15s; }
-.check-menu-btn:hover { border-color:var(--green1); color:var(--green2); box-shadow:0 2px 8px rgba(16,185,129,0.15); }
-body.dark .check-menu-btn { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.45); color:var(--p-green-300); }
-body.dark .check-menu-btn:hover { background:rgba(16,185,129,0.18); border-color:var(--green1); color:#fff; }
+.check-menu-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); width:34px; height:34px; box-sizing:border-box; border:1px solid rgba(16,185,129,0.32); background:#F3FAF6; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-default); box-shadow:none; transition:all .15s; }
+.check-menu-btn svg { width:13px; height:13px; }
+#v-results .check-card:hover .check-menu-btn { background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.45); color:var(--text-default); }
+.check-menu-btn:hover,
+#v-results .check-card:hover .check-menu-btn:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
+body.dark .check-menu-btn { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark #v-results .check-card:hover .check-menu-btn,
+body.dark .check-menu-btn:hover,
+body.dark #v-results .check-card:hover .check-menu-btn:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
 .check-row   { display:flex; align-items:center; gap:8px; }
 .check-title { font-size:12.5px; font-weight:600; color:var(--text-default); flex:1; }
 .check-desc  { font-size:11px; color:var(--text-sec); margin-top:4px; }
-#v-results .check-card { display:flex; align-items:center; gap:13px; padding:13px 66px 13px 16px; box-shadow:none; overflow:hidden; --row-accent:var(--border-strong); }
+#v-results .check-card { display:flex; align-items:center; gap:13px; padding:13px 62px 13px 16px; box-shadow:none; overflow:hidden; --row-accent:var(--border-strong); }
 /* Scans/Results check rows — match dashboard .action-row look (left accent strip + neutral hover lift) */
 #v-results .check-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--row-accent); opacity:0; transition:opacity .15s; }
 #v-results .check-card:hover::before { opacity:1; }
@@ -2792,6 +2800,24 @@ body.dark #cmd-actions .btn-outline:hover { background:rgba(16,185,129,0.18) !im
 .cm-actions-btn:hover { border-color:var(--green1); color:var(--green2); }
 body.dark .cm-actions-btn { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.45); color:var(--p-green-300); }
 body.dark .cm-actions-btn:hover { background:rgba(16,185,129,0.18); border-color:var(--green1); color:#fff; }
+#v-cm-list .cm-actions-btn,
+#v-cm-detail .cm-actions-btn,
+#v-credentials .cm-actions-btn { width:34px; height:34px; box-sizing:border-box; background:#F3FAF6; border-color:rgba(16,185,129,0.32); border-radius:8px; color:var(--text-default); box-shadow:none; }
+#v-cm-list .cm-actions-btn:hover,
+#v-cm-detail .cm-actions-btn:hover,
+#v-credentials .cm-actions-btn:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
+body.dark #v-cm-list .cm-actions-btn,
+body.dark #v-cm-detail .cm-actions-btn,
+body.dark #v-credentials .cm-actions-btn { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark #v-cm-list .cm-actions-btn:hover,
+body.dark #v-cm-detail .cm-actions-btn:hover,
+body.dark #v-credentials .cm-actions-btn:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+/* Shared overflow action — follows the Policies button pattern everywhere. */
+:is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) { width:34px; height:34px; min-width:34px; box-sizing:border-box; padding:0; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid rgba(16,185,129,0.32); border-radius:8px; background:#F3FAF6; color:var(--text-default); cursor:pointer; box-shadow:none; font-family:inherit; line-height:1; transition:background .15s, border-color .15s, color .15s; }
+:is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more):hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
+:is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) svg { width:13px; height:13px; display:block; margin:0; flex-shrink:0; }
+body.dark :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more):hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
 .cm-dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
 /* ── Credential Vault ── */
 .cred-row { display:grid; grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px; min-width:900px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
@@ -4372,27 +4398,27 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <div class="check-card" data-sev="critical" onclick="openRemediation(0)" oncontextmenu="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)">
             <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
             <div class="check-main"><div style="display:flex;align-items:center;gap:8px;"><div class="check-title" style="flex:0 1 auto;">Windows Defender real-time protection is disabled</div><span class="type-pill type-pill--critical">Critical</span></div><div class="check-meta"><span>Control 8.1 · Current: Disabled · Expected: Enabled</span></div></div>
-            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Defender real-time protection is disabled&#39;,&#39;av.realtime_protection&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
           </div>
           <div class="check-card" data-sev="critical" onclick="openRemediation(1)" oncontextmenu="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)">
             <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
             <div class="check-main"><div style="display:flex;align-items:center;gap:8px;"><div class="check-title" style="flex:0 1 auto;">BitLocker encryption not enabled on system drive</div><span class="type-pill type-pill--critical">Critical</span></div><div class="check-meta"><span>Control 3.6 · Current: Not encrypted · Expected: AES-256</span></div></div>
-            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;BitLocker encryption not enabled on system drive&#39;,&#39;disk.encryption_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
           </div>
           <div class="check-card" data-sev="critical" onclick="openRemediation(2)" oncontextmenu="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)">
             <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
             <div class="check-main"><div style="display:flex;align-items:center;gap:8px;"><div class="check-title" style="flex:0 1 auto;">Remote Desktop enabled without Network Level Auth</div><span class="type-pill type-pill--critical">Critical</span></div><div class="check-meta"><span>Control 9.2 · Current: No NLA · Expected: NLA required</span></div></div>
-            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Remote Desktop enabled without Network Level Auth&#39;,&#39;rdp.nla_required&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
           </div>
           <div class="check-card" data-sev="medium" onclick="openRemediation(3)" oncontextmenu="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)">
             <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
             <div class="check-main"><div style="display:flex;align-items:center;gap:8px;"><div class="check-title" style="flex:0 1 auto;">Windows Firewall disabled for Domain profile</div><span class="type-pill type-pill--medium">Medium</span></div><div class="check-meta"><span>Control 9.1 · Current: Disabled · Expected: Enabled</span></div></div>
-            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Windows Firewall disabled for Domain profile&#39;,&#39;fw.domain_enabled&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
           </div>
           <div class="check-card" data-sev="medium" onclick="openRemediation(4)" oncontextmenu="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)">
             <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
             <div class="check-main"><div style="display:flex;align-items:center;gap:8px;"><div class="check-title" style="flex:0 1 auto;">Screen lock timeout exceeds 15 minutes</div><span class="type-pill type-pill--medium">Medium</span></div><div class="check-meta"><span>Control 1.2 · Current: 30 min · Expected: ≤15 min</span></div></div>
-            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <button class="check-menu-btn" title="Add to policy" onclick="resultsCtx(event,&#39;Screen lock timeout exceeds 15 minutes&#39;,&#39;lock.timeout_minutes&#39;)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
           </div>
           <div class="check-card" data-sev="passed" style="display:none;cursor:default;" oncontextmenu="resultsCtx(event,&#39;Automatic Windows Update is enabled&#39;,&#39;update.auto_enabled&#39;)">
             <div class="check-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
@@ -12618,6 +12644,20 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var wrap = document.getElementById('tag-filter-wrap');
       if (!wrap) return;
       wrap.classList.toggle('is-open');
+      wrap.classList.remove('is-drop-up');
+      if (wrap.classList.contains('is-open')) {
+        var menu = document.getElementById('tag-filter-menu');
+        if (menu) {
+          menu.style.removeProperty('--tag-menu-max-height');
+          var triggerRect = wrap.getBoundingClientRect();
+          var menuHeight = menu.getBoundingClientRect().height;
+          var roomBelow = window.innerHeight - triggerRect.bottom - 12;
+          var roomAbove = triggerRect.top - 12;
+          var openUp = menuHeight > roomBelow && roomAbove > roomBelow;
+          if (openUp) wrap.classList.add('is-drop-up');
+          menu.style.setProperty('--tag-menu-max-height', Math.max(0, openUp ? roomAbove : roomBelow) + 'px');
+        }
+      }
     }
     function polFilterByTag(tag) {
       _polActiveTag = tag;
