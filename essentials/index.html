@@ -2122,6 +2122,36 @@ body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.
 /* All Nodes toolbar group/env dropdown triggers — white fill on light (dark keeps --bg-subtle standard) */
 #node-group-btn, #node-env-btn { background:var(--bg-surface); }
 body.dark #node-group-btn, body.dark #node-env-btn { background:var(--bg-subtle); }
+/* Scans toolbar dropdowns — same visual language as All Nodes environment selector. */
+#v-results .scan-menu-trigger {
+  height:34px; box-sizing:border-box; display:inline-flex; align-items:center; gap:6px;
+  padding:7px 14px; border:1px solid var(--border); border-radius:8px;
+  background:var(--bg-surface); color:var(--text-default); font:inherit; font-size:12px;
+  cursor:pointer; white-space:nowrap; user-select:none; transition:border-color .15s, background .15s;
+}
+#v-results .scan-menu-trigger:hover { border-color:var(--text-muted); }
+#v-results .scan-menu-trigger.is-open { border-color:var(--green1); }
+#v-results .scan-menu-trigger .scan-menu-chevron { transition:transform .15s; }
+#v-results .scan-menu-trigger.is-open .scan-menu-chevron { transform:rotate(180deg); }
+#v-results .scan-menu-panel {
+  position:absolute; top:calc(100% + 6px); right:0; width:220px;
+  max-width:calc(100vw - 24px); max-height:calc(100vh - 24px); overflow-y:auto;
+  box-sizing:border-box; padding:8px; background:var(--bg-surface); border:1px solid var(--border);
+  border-radius:var(--radius-lg); box-shadow:0 8px 24px rgba(0,0,0,.12); z-index:100;
+}
+#v-results .scan-menu-section { padding:4px 12px 6px; font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:.5px; }
+#v-results .scan-menu-section:not(:first-child) { padding-top:10px; }
+#v-results .scan-menu-option,
+#v-results .scan-filter-choice {
+  width:100%; box-sizing:border-box; display:flex; align-items:center; gap:8px;
+  margin:0; padding:8px 12px; border:0; border-radius:6px; background:transparent;
+  color:var(--text-default); font:inherit; font-size:12px; text-align:left; cursor:pointer;
+}
+#v-results .scan-menu-option:hover,
+#v-results .scan-filter-choice:hover { background:rgba(0,175,115,.08); }
+#v-results .scan-menu-option svg { color:var(--green1); flex-shrink:0; }
+body.dark #v-results .scan-menu-trigger { background:var(--bg-subtle); }
+body.dark #v-results .scan-menu-panel { background:var(--bg-surface); box-shadow:0 8px 24px rgba(0,0,0,.5); }
 /* RULE (app-wide, 2026-07-21): in DARK, EVERY dropdown/select CONTROL trigger uses var(--bg-subtle)
    (#081E18) as its fill — the green-tinted subtle, NEVER grey rgba(255,255,255,0.07). Add any new
    select/dropdown trigger to this list. Toggles (.hh-toggle) are NOT dropdowns → stay grey. */
@@ -4365,32 +4395,32 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;position:relative;">
               <div style="position:relative;">
-                <button class="dk-form" onclick="toggleResultsFilter(this)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;">
+                <button class="scan-menu-trigger" onclick="toggleResultsFilter(this)">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
                   Filters
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  <svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
-                <div id="results-filter-panel" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-                  <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Sort by</div>
-                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;margin-bottom:8px;"><input type="radio" name="rf-sort" checked="" style="accent-color:var(--green1);"> Severity</label>
-                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;margin-bottom:14px;"><input type="radio" name="rf-sort" style="accent-color:var(--green1);"> Control ID</label>
-                  <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Show</div>
-                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;margin-bottom:8px;" onclick="this.querySelector(&#39;.rf-chk&#39;).classList.toggle(&#39;rf-unchecked&#39;)">
+                <div id="results-filter-panel" class="scan-menu-panel" style="display:none;">
+                  <div class="scan-menu-section">Sort by</div>
+                  <label class="scan-filter-choice"><input type="radio" name="rf-sort" checked="" style="accent-color:var(--green1);"> Severity</label>
+                  <label class="scan-filter-choice"><input type="radio" name="rf-sort" style="accent-color:var(--green1);"> Control ID</label>
+                  <div class="scan-menu-section">Show</div>
+                  <label class="scan-filter-choice" onclick="this.querySelector(&#39;.rf-chk&#39;).classList.toggle(&#39;rf-unchecked&#39;)">
                     <div class="rf-chk" style="width:15px;height:15px;border-radius:3px;background:var(--green1);border:1.5px solid var(--green1);flex-shrink:0;display:flex;align-items:center;justify-content:center;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
                     Failed checks
                   </label>
-                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-default);cursor:pointer;" onclick="this.querySelector(&#39;.rf-chk&#39;).classList.toggle(&#39;rf-unchecked&#39;)">
+                  <label class="scan-filter-choice" onclick="this.querySelector(&#39;.rf-chk&#39;).classList.toggle(&#39;rf-unchecked&#39;)">
                     <div class="rf-chk" style="width:15px;height:15px;border-radius:3px;background:var(--green1);border:1.5px solid var(--green1);flex-shrink:0;display:flex;align-items:center;justify-content:center;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
                     Passed checks
                   </label>
                 </div>
               </div>
               <div style="position:relative;">
-                <button class="dk-form" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;font-family:inherit;" onclick="var d=document.getElementById('scan-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-                <div id="scan-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-                  <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
-                  <button onclick="document.getElementById('scan-export-drop').style.display='none';openExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
-                  <button onclick="document.getElementById('scan-export-drop').style.display='none';openExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+                <button class="scan-menu-trigger" onclick="toggleScanExport(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>Export <svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+                <div id="scan-export-drop" class="scan-menu-panel" style="display:none;">
+                  <div class="scan-menu-section">Export as</div>
+                  <button class="scan-menu-option" onclick="closeScanDropdown('scan-export-drop');openExport('csv')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>CSV spreadsheet</button>
+                  <button class="scan-menu-option" onclick="closeScanDropdown('scan-export-drop');openExport('pdf')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>PDF report</button>
                 </div>
               </div>
             </div>
@@ -13231,19 +13261,38 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       }
     }
 
-    function toggleResultsFilter(btn) {
-      var panel = document.getElementById('results-filter-panel');
+    function closeScanDropdown(id) {
+      var panel = document.getElementById(id);
+      if (!panel) return;
+      panel.style.display = 'none';
+      var trigger = panel.parentElement && panel.parentElement.querySelector('.scan-menu-trigger');
+      if (trigger) trigger.classList.remove('is-open');
+    }
+
+    function toggleScanDropdown(id, btn, otherId) {
+      var panel = document.getElementById(id);
       if (!panel) return;
       var open = panel.style.display !== 'none';
+      if (otherId) closeScanDropdown(otherId);
       panel.style.display = open ? 'none' : 'block';
+      btn.classList.toggle('is-open', !open);
       if (!open) {
         setTimeout(function() {
           document.addEventListener('click', function h(e) {
-            if (!panel.contains(e.target) && e.target !== btn) { panel.style.display = 'none'; }
-            document.removeEventListener('click', h);
+            var outside = !panel.contains(e.target) && !btn.contains(e.target);
+            if (outside) closeScanDropdown(id);
+            if (outside || panel.style.display === 'none') document.removeEventListener('click', h);
           });
         }, 10);
       }
+    }
+
+    function toggleResultsFilter(btn) {
+      toggleScanDropdown('results-filter-panel', btn, 'scan-export-drop');
+    }
+
+    function toggleScanExport(btn) {
+      toggleScanDropdown('scan-export-drop', btn, 'results-filter-panel');
     }
 
     function exportResults() {
