@@ -2709,8 +2709,21 @@ body.dark #pe-tag-pop { background: var(--bg-card) !important; box-shadow: 0 8px
 body.dark #pe-tag-pop [style*="background:var(--bg-subtle)"] { background: rgba(255,255,255,0.07) !important; color: var(--p-neutral-200) !important; }
 body.dark #pe-tag-pop [style*="background:var(--bg-subtle)"]:hover { background: rgba(16,185,129,0.12) !important; color: #FFFFFF !important; cursor: pointer; }
 /* + tag row buttons — override hardcoded onmouseout colors */
-body.dark button[onclick*="peAddTagMenu"], body.dark button[onclick*="pcAddTag"], body.dark button[onclick*="pePolicyTagMenu"] { border-color: rgba(148,163,184,0.35) !important; color: var(--text-sec) !important; }
-body.dark button[onclick*="peAddTagMenu"]:hover, body.dark button[onclick*="pcAddTag"]:hover, body.dark button[onclick*="pePolicyTagMenu"]:hover { border-color: var(--green1) !important; color: var(--green1) !important; background: rgba(16,185,129,0.08) !important; }
+body.dark button[onclick*="peAddTagMenu"] { border-color: rgba(148,163,184,0.35) !important; color: var(--text-sec) !important; }
+body.dark button[onclick*="peAddTagMenu"]:hover { border-color: var(--green1) !important; color: var(--green1) !important; background: rgba(16,185,129,0.08) !important; }
+/* Policy tags — all approved tags shown inline, click to toggle (no dropdown) */
+.tagpick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tagpick-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border-default); background: var(--bg-subtle); color: var(--text-sec); cursor: pointer; user-select: none; transition: all 0.12s; }
+.tagpick-chip:hover { border-color: var(--green1); color: var(--text-default); }
+.tagpick-chip.is-on { background: rgba(16,185,129,0.12); border-color: var(--green1); color: var(--text-default); font-weight: 600; }
+.tagpick-check { display: none; }
+.tagpick-chip.is-on .tagpick-check { display: inline-flex; color: var(--green1); }
+.tagpick-foot { flex-basis: 100%; margin-top: 2px; }
+.tagpick-foot a { font-size: 11px; color: var(--green2); text-decoration: none; }
+body.dark .tagpick-chip { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.18); color: var(--p-neutral-300); }
+body.dark .tagpick-chip:hover { border-color: var(--green1); color: var(--p-neutral-50); }
+body.dark .tagpick-chip.is-on { background: rgba(0,175,115,0.15); border-color: rgba(0,175,115,0.5); color: var(--p-neutral-50); }
+body.dark .tagpick-chip.is-on .tagpick-check { color: #00AF73; }
 /* Classification tags in policy edit rows */
 body.dark [id^="pe-a-tags"] span { --p-neutral-500: #FFFFFF; color: #FFFFFF !important; background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.1) !important; }
 /* Bulk toolbar — opaque bg in dark mode so column header doesn't bleed through */
@@ -7992,13 +8005,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
             <!-- Policy tags -->
             <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Policy tags</label>
-              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;" id="pc-tags-container">
-                <button onclick="pcAddTag(this)" style="font-size:11px;padding:4px 11px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.12s;" onmouseover="this.style.borderColor=&#39;var(--green1)&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.borderColor=&#39;#94a3b8&#39;;this.style.color=&#39;#64748b&#39;">
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  Add tag
-                </button>
-              </div>
+              <label class="form-label">Policy tags <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+              <div class="tagpick" data-tagpick id="pc-tags-container"></div>
             </div>
 
           </div>
@@ -8284,11 +8292,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       <!-- Policy-level tags row -->
       <div style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
         <span style="font-size:12px;font-weight:700;color:var(--p-neutral-800);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;">Policy tags</span>
-        <div id="pe-policy-tags" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:1;">
-          <span onclick="peRemoveTag(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg-subtle);color:var(--p-neutral-500);cursor:pointer;border:1px solid var(--border-default);">Security ×</span>
-          <span onclick="peRemoveTag(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg-subtle);color:var(--p-neutral-500);cursor:pointer;border:1px solid var(--border-default);">Compliance ×</span>
-          <button onclick="pePolicyTagMenu(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ Add tag</button>
-        </div>
+        <div class="tagpick" data-tagpick data-selected="Security,Compliance" id="pe-policy-tags" style="flex:1;"></div>
       </div>
 
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -13055,6 +13059,29 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
     function peRemoveTag(el) { el.remove(); }
 
+    /* ── Policy tags — all approved tags shown inline, click to toggle ── */
+    var TAGPICK_APPROVED = ['Security','Network','Data','Compliance','Monitoring','Authentication','Config','Custom','Needs review'];
+    function tagpickInit(){
+      document.querySelectorAll('[data-tagpick]').forEach(function(root){
+        if (root.children.length) return; // already built
+        var sel = (root.getAttribute('data-selected') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+        var html = '';
+        TAGPICK_APPROVED.forEach(function(t){
+          var on = sel.indexOf(t) >= 0;
+          html += '<span class="tagpick-chip' + (on ? ' is-on' : '') + '" data-val="' + t + '" onclick="tagpickToggle(this)">' +
+                  '<svg class="tagpick-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+                  t + '</span>';
+        });
+        html += '<div class="tagpick-foot"><a href="#" onclick="return false;">Manage approved tags in Settings &rarr;</a></div>';
+        root.innerHTML = html;
+      });
+    }
+    function tagpickToggle(chip){ chip.classList.toggle('is-on'); }
+    function tagpickSelected(root){
+      return Array.prototype.map.call(root.querySelectorAll('.tagpick-chip.is-on'), function(c){ return c.getAttribute('data-val'); });
+    }
+    tagpickInit();
+
     // Add Policy wizard step nav: 0-based top stepper pc-si0..2; content pc-step-1..3 (1-based).
     var _pcResumeStep = null;   // set to 2 when returning from Add/Edit Check → resume on Checks
     var _checkReturn = 'policy-create'; // origin for add-check / edit-check sub-pages
@@ -14286,24 +14313,6 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       showView('policies');
     }
 
-    function pcAddTag(btn) {
-      var pop = document.getElementById('pe-tag-pop');
-      if (!pop) return;
-      var rect = btn.getBoundingClientRect();
-      pop.style.top = (rect.bottom + 6) + 'px';
-      pop.style.left = rect.left + 'px';
-      pop.style.display = 'block';
-      _peTagTarget = btn.parentElement;
-      setTimeout(function() {
-        document.addEventListener('click', function closePop(e) {
-          if (!pop.contains(e.target)) {
-            pop.style.display = 'none';
-            document.removeEventListener('click', closePop);
-          }
-        });
-      }, 0);
-    }
-
     // Policy Edit — severity select styling
     var _peSevMap = {
       critical: {border:'#fca5a5', bg:'#fef2f2', color:'#FB3C44'},
@@ -14398,20 +14407,6 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         }
       });
       sel.selectedIndex = 0;
-    }
-
-    function pePolicyTagMenu(btn) {
-      var pop = document.getElementById('pe-tag-pop');
-      var rect = btn.getBoundingClientRect();
-      pop.style.top = (rect.bottom + 6) + 'px';
-      pop.style.left = rect.left + 'px';
-      pop.style.display = 'block';
-      _peTagTarget = btn.parentElement;
-      setTimeout(function() {
-        document.addEventListener('click', function closePop(e) {
-          if(!pop.contains(e.target)) { pop.style.display='none'; document.removeEventListener('click', closePop); }
-        });
-      }, 0);
     }
 
     function ecToggleSec(e) {
