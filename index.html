@@ -418,7 +418,7 @@ body.dark .tag-filter-sep { background:rgba(255,255,255,0.08); }
   flex-shrink:0;
 }
 .policies-tabs { height:42px; display:flex; align-items:stretch; gap:0; border-bottom:1px solid var(--border); flex-shrink:0; }
-.policies-tabs-bar .pol-tab {
+.policies-tabs .pol-tab {
   min-height:42px;
   padding:12px 16px !important;
   display:inline-flex;
@@ -429,6 +429,11 @@ body.dark .tag-filter-sep { background:rgba(255,255,255,0.08); }
 .pol-tab-active .pol-tab-count { background:rgba(16,185,129,0.10); color:var(--green2); }
 body.dark .pol-tab-count { background:rgba(255,255,255,0.08); color:var(--text-sec); }
 body.dark .pol-tab-active .pol-tab-count { background:rgba(0,175,115,0.18); color:#00AF73; }
+body.dark #v-policies .pol-tab-active .pol-tab-count { color:#fff; }
+body.dark #nodes-tabs .pol-tab-count,
+body.dark #nodes-tabs .pol-tab-active .pol-tab-count { color:#fff; }
+body.dark #results-pills .pol-tab-count,
+body.dark #results-pills .pol-tab-active .pol-tab-count { color:#fff; }
 .policies-toolbar {
   min-height:0;
   padding:0;
@@ -4326,11 +4331,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             </div>
           </div>
           <div class="filter-pills" id="results-pills" style="justify-content:space-between;flex-wrap:nowrap;">
-            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-              <div class="pill active-crit" data-sev="critical" onclick="setSevFilter(&#39;critical&#39;,this)">Critical (9)</div>
-              <div class="pill" data-sev="medium" onclick="setSevFilter(&#39;medium&#39;,this)">Medium (12)</div>
-              <div class="pill" data-sev="low" onclick="setSevFilter(&#39;low&#39;,this)">Low (6)</div>
-              <div class="pill" data-sev="passed" onclick="setSevFilter(&#39;passed&#39;,this)">Passed (78)</div>
+            <div class="policies-tabs">
+              <button class="pol-tab pol-tab-active" data-sev="critical" onclick="setSevFilter(&#39;critical&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--green2);background:none;border:none;border-bottom:2px solid var(--green2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Critical <span class="pol-tab-count">9</span></button>
+              <button class="pol-tab" data-sev="medium" onclick="setSevFilter(&#39;medium&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Medium <span class="pol-tab-count">12</span></button>
+              <button class="pol-tab" data-sev="low" onclick="setSevFilter(&#39;low&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Low <span class="pol-tab-count">6</span></button>
+              <button class="pol-tab" data-sev="passed" onclick="setSevFilter(&#39;passed&#39;,this)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Passed <span class="pol-tab-count">78</span></button>
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;position:relative;">
               <div style="position:relative;">
@@ -4838,11 +4843,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           </div>
         </div>
 
-        <!-- Managed / Detected tabs -->
-        <div id="nodes-tabs" style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:22px;">
-          <div id="nodes-tab-managed" onclick="setNodesTab(&#39;managed&#39;)" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--p-green-400);border-bottom:2px solid #3FC878;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Managed <span id="nodes-tab-managed-count" style="background:rgba(100,116,139,0.12);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;">4</span></div>
-          <div id="nodes-tab-detected" onclick="setNodesTab(&#39;detected&#39;)" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Detected <span id="nodes-tab-detected-count" style="background:rgba(100,116,139,0.12);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;">3</span></div>
-          <div id="nodes-tab-peer" onclick="setNodesTab(&#39;peer&#39;);clearSelectionConsensus()" style="padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-sec);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px;">Consensus Comparison</div>
+        <!-- Managed / Detected tabs — shared Policies tab component -->
+        <div id="nodes-tabs" class="policies-tabs" style="margin-bottom:22px;">
+          <button id="nodes-tab-managed" class="pol-tab pol-tab-active" onclick="setNodesTab(&#39;managed&#39;)" style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--green2);background:none;border:none;border-bottom:2px solid var(--green2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Managed <span id="nodes-tab-managed-count" class="pol-tab-count">4</span></button>
+          <button id="nodes-tab-detected" class="pol-tab" onclick="setNodesTab(&#39;detected&#39;)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Detected <span id="nodes-tab-detected-count" class="pol-tab-count">3</span></button>
+          <button id="nodes-tab-peer" class="pol-tab" onclick="setNodesTab(&#39;peer&#39;);clearSelectionConsensus()" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Consensus Comparison</button>
         </div>
 
         <div id="nodes-managed-view">
@@ -9005,12 +9010,17 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     }
 
     function setSevFilter(sev, pillEl) {
-      var pills = document.querySelectorAll('#results-pills .pill');
-      var classMap = { critical:'active-crit', medium:'active-med', low:'active-low', passed:'active-pass' };
+      var pills = document.querySelectorAll('#results-pills .pol-tab');
       pills.forEach(function(p) {
-        Object.values(classMap).forEach(function(c){ p.classList.remove(c); });
+        p.style.color = 'var(--text-sec)';
+        p.style.borderBottom = '2px solid transparent';
+        p.style.fontWeight = '500';
+        p.classList.remove('pol-tab-active');
       });
-      pillEl.classList.add(classMap[sev]);
+      pillEl.style.color = 'var(--green2)';
+      pillEl.style.borderBottom = '2px solid var(--green2)';
+      pillEl.style.fontWeight = '600';
+      pillEl.classList.add('pol-tab-active');
       var passed = sev === 'passed';
       var heading = document.getElementById('results-heading');
       if (heading) heading.textContent = passed ? 'Passing checks' : 'Failed checks';
@@ -20937,22 +20947,32 @@ function setNodesTab(tab) {
   var mTab = document.getElementById('nodes-tab-managed');
   var dTab = document.getElementById('nodes-tab-detected');
   var pTab = document.getElementById('nodes-tab-peer');
-  var isDark = document.body.classList.contains('dark');
-  var activeColor   = '#3FC878';
-  var inactiveColor = isDark ? '#94A3B8' : 'var(--text-sec)';
-
   [managedView, detectedView, peerView].forEach(function(v) { if (v) v.style.display = 'none'; });
-  [mTab, dTab, pTab].forEach(function(t) { if (t) { t.style.color = inactiveColor; t.style.borderBottomColor = 'transparent'; } });
+  [mTab, dTab, pTab].forEach(function(t) {
+    if (!t) return;
+    t.style.color = 'var(--text-sec)';
+    t.style.borderBottom = '2px solid transparent';
+    t.style.fontWeight = '500';
+    t.classList.remove('pol-tab-active');
+  });
+
+  function activateNodesTab(t) {
+    if (!t) return;
+    t.style.color = 'var(--green2)';
+    t.style.borderBottom = '2px solid var(--green2)';
+    t.style.fontWeight = '600';
+    t.classList.add('pol-tab-active');
+  }
 
   if (tab === 'detected' && detectedView && dTab) {
     detectedView.style.display = 'block';
-    dTab.style.color = activeColor; dTab.style.borderBottomColor = activeColor;
+    activateNodesTab(dTab);
   } else if (tab === 'peer' && peerView && pTab) {
     peerView.style.display = 'block';
-    pTab.style.color = activeColor; pTab.style.borderBottomColor = activeColor;
+    activateNodesTab(pTab);
   } else {
     if (managedView) managedView.style.display = 'block';
-    if (mTab) { mTab.style.color = activeColor; mTab.style.borderBottomColor = activeColor; }
+    activateNodesTab(mTab);
   }
 }
 
