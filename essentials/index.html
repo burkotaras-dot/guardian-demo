@@ -1649,21 +1649,15 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 
 /* How to fix — interactive checklist (click a step to tick it off) */
 .remed-steps { display:flex; flex-direction:column; gap:2px; margin-bottom:20px; }
-.remed-step { display:flex; gap:12px; align-items:flex-start; padding:8px 10px; border-radius:8px; cursor:pointer; transition:background 0.12s; }
-.remed-step:hover { background:var(--bg-page); }
+.remed-step { display:flex; gap:12px; align-items:flex-start; padding:8px 10px; }
 .remed-step-check {
   width:22px; height:22px; border-radius:50%;
   border:2px solid rgba(16,185,129,0.35); background:rgba(16,185,129,0.12);
   flex-shrink:0; display:flex; align-items:center; justify-content:center;
-  margin-top:1px; transition:background 0.12s, border-color 0.12s;
+  margin-top:1px;
 }
 .remed-step-num { font-size:11px; font-weight:700; color:var(--text-default); }
-.remed-step-check svg { display:none; width:12px; height:12px; }
 .remed-step-text { font-size:13px; color:var(--p-neutral-700); padding-top:2px; line-height:1.5; }
-.remed-step.done .remed-step-check { background:var(--green1); border-color:var(--green1); }
-.remed-step.done .remed-step-num { display:none; }
-.remed-step.done .remed-step-check svg { display:block; }
-.remed-step.done .remed-step-text { color:var(--text-muted); text-decoration:line-through; text-decoration-color:var(--border); }
 
 /* Metadata block — Policy / Control / Severity */
 .remed-meta { display:flex; gap:32px; padding:14px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:16px; }
@@ -4607,10 +4601,10 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <div class="card">
             <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:16px;letter-spacing:-0.2px;">How to fix this</div>
             <div class="remed-steps">
-              <div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">1</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">Open <strong>Windows Security</strong> from the Start menu</div></div>
-              <div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">2</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">Click <strong>Virus &amp; threat protection</strong></div></div>
-              <div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">3</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">Under settings → click <strong>Manage settings</strong></div></div>
-              <div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">4</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">Toggle <strong>Real-time protection</strong> to <strong>On</strong></div></div>
+              <div class="remed-step"><div class="remed-step-check"><span class="remed-step-num">1</span></div><div class="remed-step-text">Open <strong>Windows Security</strong> from the Start menu</div></div>
+              <div class="remed-step"><div class="remed-step-check"><span class="remed-step-num">2</span></div><div class="remed-step-text">Click <strong>Virus &amp; threat protection</strong></div></div>
+              <div class="remed-step"><div class="remed-step-check"><span class="remed-step-num">3</span></div><div class="remed-step-text">Under settings → click <strong>Manage settings</strong></div></div>
+              <div class="remed-step"><div class="remed-step-check"><span class="remed-step-num">4</span></div><div class="remed-step-text">Toggle <strong>Real-time protection</strong> to <strong>On</strong></div></div>
             </div>
             <div id="remed-action-area" style="display:flex;align-items:center;gap:10px;">
               <button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">↻ Scan again</button>
@@ -20740,11 +20734,11 @@ function selectCheck(el) {
   // Impact text
   var impactSpan = document.getElementById('remed-impact-text');
   if (impactSpan) impactSpan.textContent = c.impact;
-  // Steps — interactive checklist, reset to un-ticked on select
+  // Steps — instructional numbered list (not completion controls; verify via Scan again)
   var stepsContainer = document.querySelector('.remed-detail .card:last-child .remed-steps');
   if (stepsContainer) {
     stepsContainer.innerHTML = c.steps.map(function(s,i) {
-      return '<div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">'+(i+1)+'</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">'+s+'</div></div>';
+      return '<div class="remed-step"><div class="remed-step-check"><span class="remed-step-num">'+(i+1)+'</span></div><div class="remed-step-text">'+s+'</div></div>';
     }).join('');
   }
   // Reset action area
@@ -20754,10 +20748,6 @@ function selectCheck(el) {
   // Hide result block
   var rb = document.getElementById('remed-result-block');
   if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
-}
-
-function toggleRemedStep(el) {
-  el.classList.toggle('done');
 }
 
 function filterRemed(btn, sev) {
