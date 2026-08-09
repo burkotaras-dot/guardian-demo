@@ -3265,13 +3265,12 @@ body.dark #v-remediation .sev-medium   .remed-state-label { color: var(--p-amber
 body.dark #v-remediation .sev-ok       .remed-state-label { color: #34D399 !important; }
 body.dark #v-remediation #remed-current-val { color: var(--p-neutral-50) !important; }
 body.dark #v-remediation #remed-current-sub { color: var(--p-neutral-300) !important; }
-/* Result block (Now passing) */
-body.dark #v-remediation #remed-result-block [style*="background:var(--bg-success)"] {
-  background: #082A1F !important; border-color: var(--p-green-700) !important;
-}
-body.dark #v-remediation #remed-result-block [style*="font-weight:700"][style*="color:#15803d"] { color: #34D399 !important; }
-body.dark #v-remediation #remed-result-block [style*="color:#15803d"]:not([style*="font-weight:700"]) { color: #FFFFFF !important; }
-body.dark #v-remediation #remed-result-block [style*="color:#166534"] { color: #FFFFFF !important; }
+/* Result block (Now passing / Still failing) — neutral panel, colour only on icon+heading.
+   Green text #15803d is remapped to #6EE7B7 by _syncInlineTheme; match the svg stroke to it.
+   Amber #d97706 is NOT remapped, so brighten both text + stroke here. */
+body.dark #v-remediation #remed-result-block svg[stroke="#15803d"] { stroke: #6EE7B7 !important; }
+body.dark #v-remediation #remed-result-block [style*="color:#d97706"] { color: #F59E0B !important; }
+body.dark #v-remediation #remed-result-block svg[stroke="#d97706"] { stroke: #F59E0B !important; }
 /* ✓ Passing badge in remed-item — fix text color & remove dot circle */
 body.dark .remed-item .type-pill--pass .pass-check { color: #34D399 !important; }
 /* Risk accepted block */
@@ -20909,13 +20908,13 @@ function startRescan() {
     if (remedAttempt === 1) {
       // State 2: Still failing
       resultBlock.innerHTML =
-        '<div style="display:flex;align-items:flex-start;gap:10px;background:var(--bg-warning);border:1px solid var(--bg-warning-border);border-radius:8px;padding:12px 14px;">' +
-          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
-          '<div>' +
-            '<div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:2px;">Still failing</div>' +
-            '<div style="font-size:11px;color:#92400e;">MACBOOK-TARAS still reports Disabled \u2014 review the steps above and try again.</div>' +
-            '<div style="font-size:10px;color:#b45309;margin-top:4px;">Rescanned ' + now + '</div>' +
+        '<div class="remed-impact">' +
+          '<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
+            '<span style="font-size:12px;font-weight:700;color:#d97706;">Still failing</span>' +
           '</div>' +
+          '<div style="font-size:11px;color:var(--text-default);line-height:1.5;">MACBOOK-TARAS still reports Disabled \u2014 review the steps above and try again.</div>' +
+          '<div style="font-size:10px;color:var(--text-sec);margin-top:4px;">Rescanned ' + now + '</div>' +
         '</div>';
       document.getElementById('remed-action-area').innerHTML =
         '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Rescan again</button>' +
@@ -20927,13 +20926,13 @@ function startRescan() {
       document.getElementById('remed-current-val').textContent = 'Enabled';
       document.getElementById('remed-current-sub').textContent = 'Real-time scanning active';
       resultBlock.innerHTML =
-        '<div style="display:flex;align-items:flex-start;gap:10px;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:8px;padding:12px 14px;">' +
-          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5" style="flex-shrink:0;margin-top:1px;"><polyline points="20 6 9 17 4 12"/></svg>' +
-          '<div>' +
-            '<div style="font-size:12px;font-weight:700;color:#15803d;margin-bottom:2px;">Now passing</div>' +
-            '<div style="font-size:11px;color:#15803d;">Value changed: Disabled \u2192 Enabled \u00b7 Real-time protection restored</div>' +
-            '<div style="font-size:10px;color:#166534;margin-top:4px;">Rescanned ' + now + '</div>' +
+        '<div class="remed-impact">' +
+          '<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>' +
+            '<span style="font-size:12px;font-weight:700;color:#15803d;">Now passing</span>' +
           '</div>' +
+          '<div style="font-size:11px;color:var(--text-default);line-height:1.5;">Value changed: Disabled \u2192 Enabled \u00b7 Real-time protection restored</div>' +
+          '<div style="font-size:10px;color:var(--text-sec);margin-top:4px;">Rescanned ' + now + '</div>' +
         '</div>';
       var activeItem = document.querySelector('.remed-item.active');
       if (activeItem) {
