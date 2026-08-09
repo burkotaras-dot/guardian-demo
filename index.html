@@ -1572,15 +1572,17 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 
 /* ── REMEDIATION ── */
 .remed-layout { flex:1; display:flex; overflow:hidden; min-width:0; }
+/* Failed-checks list — RIGHT sidebar */
 .remed-list {
-  width:270px; background:var(--bg-surface);
-  border-right:1px solid var(--border);
+  width:380px; background:var(--bg-surface);
+  border-left:1px solid var(--border);
+  box-shadow:-6px 0 16px rgba(15,23,42,0.04);
   overflow-y:auto; flex-shrink:0;
 }
 .remed-detail { flex:1; background:var(--bg-page); padding:24px; overflow-y:auto; min-width:0; }
 
 .remed-list-header {
-  padding:14px 16px 12px;
+  padding:14px 16px 0;
   border-bottom:1px solid var(--border);
   background:var(--bg-surface);
   position:sticky; top:0; z-index:1;
@@ -1588,18 +1590,94 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 .remed-list-title { font-size:12px; font-weight:700; color:var(--text-default); letter-spacing:0.2px; }
 .remed-list-sub   { font-size:11px; color:var(--text-sec); margin-top:2px; }
 
+/* Severity filter — canonical underline tabs (reuse .pol-tab / .pol-tab-count) */
+.remed-tabs { display:flex; gap:2px; margin-top:12px; }
+.remed-tabs .pol-tab {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 11px; font-size:12px; font-weight:500;
+  color:var(--text-sec); background:none; border:none;
+  border-bottom:2px solid transparent; cursor:pointer;
+  margin-bottom:-1px; white-space:nowrap; font-family:inherit;
+}
+.remed-tabs .pol-tab-active { font-weight:600; color:var(--green2); border-bottom:2px solid var(--green2); }
+.remed-tabs .remed-tab-n { color:var(--text-muted); font-weight:500; }
+.remed-tabs .pol-tab-active .remed-tab-n { color:var(--green2); }
+
+/* Dense rows (~48px): severity chip + title + one secondary line */
 .remed-item {
-  padding:12px 16px; border-bottom:1px solid var(--border);
-  cursor:pointer; transition:all 0.12s;
+  display:flex; align-items:center; gap:10px;
+  padding:9px 14px; border-bottom:1px solid var(--border);
+  cursor:pointer; transition:background 0.12s;
 }
 .remed-item:hover { background:var(--bg-canvas); }
 .remed-item.active {
-  background:rgba(63,200,120,0.05);
-  border-left:3px solid var(--green1);
-  padding-left:13px;
+  background:var(--bg-surface);
+  border-left:4px solid var(--green1);
+  padding-left:10px;
+  box-shadow:0 2px 6px rgba(15,23,42,0.08);
+  position:relative; z-index:1;
 }
-.remed-item h4 { font-size:12px; font-weight:600; color:var(--text-default); margin-bottom:3px; }
-.remed-item p  { font-size:11px; color:var(--text-sec); }
+.remed-item .type-pill { flex-shrink:0; }
+.remed-item-text { min-width:0; flex:1; }
+.remed-item h4 { font-size:12px; font-weight:600; color:var(--text-default); margin-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.remed-item p  { font-size:11px; color:var(--text-sec); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Current → Expected — TWO filled cards + a floating arrow between them */
+.remed-compare {
+  display:flex; align-items:center;
+  background:transparent; border:none; border-radius:0;
+  overflow:visible; margin-bottom:16px;
+}
+.remed-compare-side {
+  flex:1; padding:16px 18px; min-width:0;
+  background:var(--bg-page); border:1px solid var(--border);
+  border-radius:var(--radius-md); box-shadow:0 1px 3px rgba(15,23,42,0.06);
+}
+.remed-compare-arrow {
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  width:56px; color:var(--text-muted);
+  background:transparent; border:none;
+}
+.remed-state-label {
+  font-size:9px; font-weight:700; letter-spacing:0.6px;
+  margin-bottom:5px; display:flex; align-items:center; gap:5px;
+  color:var(--text-sec);
+}
+.remed-state-label::before {
+  content:""; width:6px; height:6px; border-radius:50%;
+  background:currentColor; flex-shrink:0;
+}
+.sev-critical .remed-state-label { color:#FB3C44; }
+.sev-medium   .remed-state-label { color:#d97706; }
+.sev-ok       .remed-state-label { color:#15803d; }
+
+/* How to fix — interactive checklist (click a step to tick it off) */
+.remed-steps { display:flex; flex-direction:column; gap:2px; margin-bottom:20px; }
+.remed-step { display:flex; gap:12px; align-items:flex-start; padding:8px 10px; border-radius:8px; cursor:pointer; transition:background 0.12s; }
+.remed-step:hover { background:var(--bg-page); }
+.remed-step-check {
+  width:22px; height:22px; border-radius:50%;
+  border:2px solid rgba(16,185,129,0.35); background:rgba(16,185,129,0.12);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  margin-top:1px; transition:background 0.12s, border-color 0.12s;
+}
+.remed-step-num { font-size:11px; font-weight:700; color:var(--text-default); }
+.remed-step-check svg { display:none; width:12px; height:12px; }
+.remed-step-text { font-size:13px; color:var(--p-neutral-700); padding-top:2px; line-height:1.5; }
+.remed-step.done .remed-step-check { background:var(--green1); border-color:var(--green1); }
+.remed-step.done .remed-step-num { display:none; }
+.remed-step.done .remed-step-check svg { display:block; }
+.remed-step.done .remed-step-text { color:var(--text-muted); text-decoration:line-through; text-decoration-color:var(--border); }
+
+/* Metadata block — Policy / Control / Severity */
+.remed-meta { display:flex; gap:32px; padding:14px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:16px; }
+.remed-meta-k { font-size:9px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-sec); margin-bottom:4px; }
+.remed-meta-v { font-size:12px; font-weight:600; color:var(--text-default); }
+
+/* Security impact — labelled, neutral surface, colour only on icon + label */
+.remed-impact { background:var(--bg-page); border:1px solid var(--border); border-radius:8px; padding:13px 15px; }
+.remed-impact-head { display:flex; align-items:center; gap:7px; font-size:10px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:#FB3C44; margin-bottom:6px; }
+.remed-impact-text { font-size:12px; color:var(--text-default); line-height:1.55; }
 
 /* PAGE HEADER */
 .page-header {
@@ -2655,6 +2733,7 @@ body.dark .pill.active-low    { background: rgba(37,99,235,0.20); border-color: 
 body.dark .pill.active-pass   { background: rgba(37,167,96,0.18); border-color: rgba(37,167,96,0.5); color: #fff; }
 body.dark .radio-item         { background: var(--bg-card); }
 body.dark .remed-item:hover   { background: #012F32; }
+body.dark .remed-item.active  { background: var(--bg-card); border-left-color: #00AF73; box-shadow: 0 2px 8px rgba(0,0,0,0.35); }
 body.dark .remed-item h4      { color: var(--p-neutral-50); }
 body.dark .impact-box         { background: #261208; border-color: #7C2D12; color: #FDBA74; }
 body.dark .region-pill        { border-color: rgba(255,255,255,0.2); color: var(--p-neutral-300); }
@@ -2681,6 +2760,10 @@ body.dark .remed-list-header  { background: var(--bg-card); border-color: var(--
 body.dark .remed-list-title   { color: var(--p-neutral-50); }
 body.dark .remed-list-top     { background: var(--bg-card); border-color: var(--border); }
 body.dark .remed-detail       { background: var(--bg-page); }
+body.dark .remed-tabs .pol-tab             { color: var(--p-neutral-400); }
+body.dark .remed-tabs .pol-tab-active      { color: #00AF73; border-bottom-color: #00AF73; }
+body.dark .remed-tabs .remed-tab-n         { color: var(--p-neutral-500); }
+body.dark .remed-tabs .pol-tab-active .remed-tab-n { color: #00AF73; }
 
 /* All Nodes / All Devices table */
 body.dark .j3-table           { background: var(--bg-card); }
@@ -3167,9 +3250,7 @@ body.dark #v-remediation [style*="color:var(--text-default)"] { color: var(--p-n
 body.dark #v-remediation [style*="color:var(--p-neutral-700)"] { color: var(--p-neutral-300) !important; }
 body.dark #v-remediation [style*="color:var(--p-neutral-800)"] { color: var(--p-neutral-300) !important; }
 body.dark #v-remediation [style*="color:var(--p-neutral-500)"] { color: var(--p-neutral-400) !important; }
-body.dark #v-remediation [style*="background:var(--bg-error)"],
-body.dark #v-remediation #remed-current-box[style*="rgb(254"],
-body.dark #v-remediation #remed-current-box[style*="rgb(255, 251"] { background: #2D1818 !important; border-color: #7F1D1D !important; }
+body.dark #v-remediation [style*="background:var(--bg-error)"] { background: #2D1818 !important; border-color: #7F1D1D !important; }
 body.dark #v-remediation [style*="background:var(--bg-success)"] { background: #082A1F !important; border-color: var(--p-green-700) !important; }
 body.dark #v-remediation [style*="background:var(--bg-warning)"] { background: rgba(245,158,11,0.1) !important; border-color: rgba(245,158,11,0.3) !important; }
 body.dark #v-remediation [style*="background:var(--bg-page)"] { background: var(--p-dark-canvas) !important; border-color: rgba(255,255,255,0.08) !important; }
@@ -3179,22 +3260,19 @@ body.dark #v-remediation [style*="color:#166534"] { color: #86EFAC !important; }
 body.dark #v-remediation [style*="font-weight:700"][style*="color:#92400e"] { color: #FCD34D !important; }
 body.dark #v-remediation [style*="color:#92400e"]:not([style*="font-weight:700"]) { color: #CBD5E1 !important; }
 body.dark #v-remediation [style*="color:#b45309"] { color: #CBD5E1 !important; }
-/* Force dark on dynamically-set state boxes regardless of JS-set bg */
-body.dark #v-remediation #remed-current-box {
-  background: #2D1818 !important;
-  border-color: #7F1D1D !important;
-}
-body.dark #v-remediation #remed-current-label { color: var(--p-red-200) !important; }
+/* Issue-list panel — subtle elevation off the darker content area */
+body.dark #v-remediation .remed-list { box-shadow: -6px 0 16px rgba(0,0,0,0.25) !important; border-left-color: rgba(255,255,255,0.08) !important; }
+/* Security-impact label — soften red for dark */
+body.dark #v-remediation .remed-impact-head { color: var(--p-red-200) !important; }
+/* Comparison — two filled cards + floating arrow; colour lives on the class-driven label + dot */
+body.dark #v-remediation .remed-compare { background: transparent !important; border: none !important; }
+body.dark #v-remediation .remed-compare-side { background: var(--p-dark-canvas) !important; border-color: rgba(255,255,255,0.08) !important; box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important; }
+body.dark #v-remediation .remed-compare-arrow { background: transparent !important; border: none !important; color: var(--p-neutral-400) !important; }
+body.dark #v-remediation .sev-critical .remed-state-label { color: var(--p-red-200) !important; }
+body.dark #v-remediation .sev-medium   .remed-state-label { color: var(--p-amber-300) !important; }
+body.dark #v-remediation .sev-ok       .remed-state-label { color: #34D399 !important; }
 body.dark #v-remediation #remed-current-val { color: var(--p-neutral-50) !important; }
 body.dark #v-remediation #remed-current-sub { color: var(--p-neutral-300) !important; }
-/* Yellow/medium variant when current box has warning bg */
-body.dark #v-remediation #remed-current-box[style*="fffbeb"],
-body.dark #v-remediation #remed-current-box[style*="rgb(255, 251, 235)"] {
-  background: #261208 !important;
-  border-color: #7C2D12 !important;
-}
-body.dark #v-remediation #remed-current-box[style*="fffbeb"] #remed-current-label,
-body.dark #v-remediation #remed-current-box[style*="rgb(255, 251, 235)"] #remed-current-label { color: var(--p-amber-300) !important; }
 /* Result block (Now passing) */
 body.dark #v-remediation #remed-result-block [style*="background:var(--bg-success)"] {
   background: #082A1F !important; border-color: var(--p-green-700) !important;
@@ -3203,9 +3281,7 @@ body.dark #v-remediation #remed-result-block [style*="font-weight:700"][style*="
 body.dark #v-remediation #remed-result-block [style*="color:#15803d"]:not([style*="font-weight:700"]) { color: #FFFFFF !important; }
 body.dark #v-remediation #remed-result-block [style*="color:#166534"] { color: #FFFFFF !important; }
 /* ✓ Passing badge in remed-item — fix text color & remove dot circle */
-body.dark .remed-item .badge[style*="var(--bg-success)"] { color: #FFFFFF !important; background: rgba(52,211,153,0.1) !important; border-color: rgba(52,211,153,0.3) !important; }
-body.dark .remed-item .badge[style*="var(--bg-success)"] .pass-check { color: #34D399 !important; }
-body.dark .remed-item .badge[style*="var(--bg-success)"]::before { display: none !important; }
+body.dark .remed-item .type-pill--pass .pass-check { color: #34D399 !important; }
 /* Risk accepted block */
 body.dark #v-remediation #remed-result-block [style*="background:var(--bg-canvas)"] {
   background: var(--p-dark-muted) !important; border-color: #1A3D30 !important;
@@ -4494,56 +4570,71 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div><div class="page-title">Remediation</div><div class="page-sub">Fix issues to improve your compliance score</div></div>
         </div>
-        <button class="btn-outline" style="width:auto;padding:9px 18px;font-size:13px;" onclick="showView(&#39;dashboard&#39;)">Done → Dashboard</button>
       </div>
       <div class="remed-layout">
-        <div class="remed-list">
-          <div class="remed-list-header"><div class="remed-list-title">Failed Checks</div><div class="remed-list-sub">27 issues · 9 critical</div></div>
-          <div class="remed-item active" onclick="selectCheck(this)"><div style="margin-bottom:4px;"><span class="badge badge-critical" style="font-size:9px;padding:2px 7px;">Critical</span></div><h4>Windows Defender disabled</h4><p>Real-time protection off</p></div>
-          <div class="remed-item" onclick="selectCheck(this)"><div style="margin-bottom:4px;"><span class="badge badge-critical" style="font-size:9px;padding:2px 7px;">Critical</span></div><h4>BitLocker not enabled</h4><p>System drive unencrypted</p></div>
-          <div class="remed-item" onclick="selectCheck(this)"><div style="margin-bottom:4px;"><span class="badge badge-critical" style="font-size:9px;padding:2px 7px;">Critical</span></div><h4>RDP without NLA</h4><p>Remote Desktop unsecured</p></div>
-          <div class="remed-item" onclick="selectCheck(this)"><div style="margin-bottom:4px;"><span class="badge badge-medium" style="font-size:9px;padding:2px 7px;">Medium</span></div><h4>Firewall disabled</h4><p>Domain profile off</p></div>
-          <div class="remed-item" onclick="selectCheck(this)"><div style="margin-bottom:4px;"><span class="badge badge-medium" style="font-size:9px;padding:2px 7px;">Medium</span></div><h4>Screen lock timeout</h4><p>30 min · max is 15 min</p></div>
-        </div>
         <div class="remed-detail">
           <div class="card" style="margin-bottom:14px;">
             <div style="margin-bottom:16px;">
-              <span class="badge badge-critical" style="margin-bottom:10px;display:inline-flex;">Critical</span>
+              <span class="type-pill type-pill--critical" style="margin-bottom:10px;display:inline-flex;">Critical</span>
               <div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Windows Defender real-time protection is disabled</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">Compliance Policy · Control 8.1 · Malware Defenses</div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-              <div id="remed-current-box" style="background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:var(--radius-md);padding:12px;">
-                <div id="remed-current-label" style="font-size:9px;font-weight:700;color:#FB3C44;letter-spacing:0.6px;margin-bottom:5px;">CURRENT STATE</div>
-                <div id="remed-current-val" style="font-size:13px;font-weight:700;color:var(--text-default);">Disabled</div>
+            <div class="remed-compare">
+              <div id="remed-current-box" class="remed-compare-side sev-critical">
+                <div id="remed-current-label" class="remed-state-label">CURRENT STATE</div>
+                <div id="remed-current-val" style="font-size:14px;font-weight:700;color:var(--text-default);">Disabled</div>
                 <div id="remed-current-sub" style="font-size:11px;color:var(--text-sec);margin-top:2px;">Real-time scanning off</div>
               </div>
-              <div style="background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:var(--radius-md);padding:12px;">
-                <div style="font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.6px;margin-bottom:5px;">EXPECTED STATE</div>
-                <div id="remed-expected-val" style="font-size:13px;font-weight:700;color:var(--text-default);">Enabled</div>
+              <div class="remed-compare-arrow"><svg width="20" height="20" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></div>
+              <div class="remed-compare-side sev-ok">
+                <div class="remed-state-label">EXPECTED STATE</div>
+                <div id="remed-expected-val" style="font-size:14px;font-weight:700;color:var(--text-default);">Enabled</div>
                 <div id="remed-expected-sub" style="font-size:11px;color:var(--text-sec);margin-top:2px;">Real-time scanning active</div>
               </div>
             </div>
-            <div style="display:flex;align-items:flex-start;gap:8px;padding:12px 14px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-              <span style="font-size:11px;color:var(--text-sec);line-height:1.5;">Without real-time protection, malware can execute on this node without detection. This is a critical security gap.</span>
+            <div class="remed-meta">
+              <div><div class="remed-meta-k">Policy</div><div class="remed-meta-v" id="remed-meta-policy">Compliance Policy</div></div>
+              <div><div class="remed-meta-k">Control</div><div class="remed-meta-v" id="remed-meta-control">8.1 · Malware Defenses</div></div>
+              <div><div class="remed-meta-k">Severity</div><div class="remed-meta-v" id="remed-meta-sev">Critical</div></div>
+            </div>
+            <div class="remed-impact">
+              <div class="remed-impact-head">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Security impact
+              </div>
+              <div class="remed-impact-text" id="remed-impact-text">Without real-time protection, malware can execute on this node without detection. This is a critical security gap.</div>
             </div>
             <!-- Scan result block — shown after rescan -->
             <div id="remed-result-block" style="display:none;margin-top:12px;"></div>
           </div>
           <div class="card">
             <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:16px;letter-spacing:-0.2px;">How to fix this</div>
-            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px;">
-              <div style="display:flex;gap:12px;align-items:flex-start;"><div class="step-circle" style="width:26px;height:26px;font-size:11px;flex-shrink:0;">1</div><div style="font-size:13px;color:var(--p-neutral-700);padding-top:2px;">Open <strong>Windows Security</strong> from the Start menu</div></div>
-              <div style="display:flex;gap:12px;align-items:flex-start;"><div class="step-circle" style="width:26px;height:26px;font-size:11px;flex-shrink:0;">2</div><div style="font-size:13px;color:var(--p-neutral-700);padding-top:2px;">Click <strong>Virus &amp; threat protection</strong></div></div>
-              <div style="display:flex;gap:12px;align-items:flex-start;"><div class="step-circle" style="width:26px;height:26px;font-size:11px;flex-shrink:0;">3</div><div style="font-size:13px;color:var(--p-neutral-700);padding-top:2px;">Under settings → click <strong>Manage settings</strong></div></div>
-              <div style="display:flex;gap:12px;align-items:flex-start;"><div class="step-circle" style="width:26px;height:26px;font-size:11px;flex-shrink:0;">4</div><div style="font-size:13px;color:var(--p-neutral-700);padding-top:2px;">Toggle <strong>Real-time protection</strong> to <strong>On</strong></div></div>
+            <div class="remed-steps">
+              <div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">1</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">Open <strong>Windows Security</strong> from the Start menu</div></div>
+              <div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">2</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">Click <strong>Virus &amp; threat protection</strong></div></div>
+              <div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">3</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">Under settings → click <strong>Manage settings</strong></div></div>
+              <div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">4</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">Toggle <strong>Real-time protection</strong> to <strong>On</strong></div></div>
             </div>
             <div id="remed-action-area" style="display:flex;align-items:center;gap:10px;">
-              <button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">I've fixed this → Scan again</button>
+              <button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">↻ Scan again</button>
               <button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>
             </div>
           </div>
+        </div>
+        <div class="remed-list">
+          <div class="remed-list-header">
+            <div class="remed-list-title">Failed Checks</div>
+            <div class="remed-list-sub">27 issues · 9 critical</div>
+            <div class="remed-tabs">
+              <button class="pol-tab pol-tab-active" onclick="filterRemed(this,'all')">All <span class="remed-tab-n">(27)</span></button>
+              <button class="pol-tab" onclick="filterRemed(this,'critical')">Critical <span class="remed-tab-n">(9)</span></button>
+              <button class="pol-tab" onclick="filterRemed(this,'medium')">Medium <span class="remed-tab-n">(18)</span></button>
+            </div>
+          </div>
+          <div class="remed-item active" onclick="selectCheck(this)"><span class="type-pill type-pill--critical">Critical</span><div class="remed-item-text"><h4>Windows Defender disabled</h4><p>Real-time protection off</p></div></div>
+          <div class="remed-item" onclick="selectCheck(this)"><span class="type-pill type-pill--critical">Critical</span><div class="remed-item-text"><h4>BitLocker not enabled</h4><p>System drive unencrypted</p></div></div>
+          <div class="remed-item" onclick="selectCheck(this)"><span class="type-pill type-pill--critical">Critical</span><div class="remed-item-text"><h4>RDP without NLA</h4><p>Remote Desktop unsecured</p></div></div>
+          <div class="remed-item" onclick="selectCheck(this)"><span class="type-pill type-pill--medium">Medium</span><div class="remed-item-text"><h4>Firewall disabled</h4><p>Domain profile off</p></div></div>
+          <div class="remed-item" onclick="selectCheck(this)"><span class="type-pill type-pill--medium">Medium</span><div class="remed-item-text"><h4>Screen lock timeout</h4><p>30 min · max is 15 min</p></div></div>
         </div>
       </div>
     </div>
@@ -20565,7 +20656,7 @@ function showView(name) {
 
 var remedChecks = [
   {
-    severity: 'Critical', badgeClass: 'badge-critical',
+    severity: 'Critical', badgeClass: 'type-pill--critical',
     title: 'Windows Defender real-time protection is disabled',
     sub: 'Compliance Policy · Control 8.1 · Malware Defenses',
     currentVal: 'Disabled', currentSub: 'Real-time scanning off', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#FB3C44',
@@ -20574,7 +20665,7 @@ var remedChecks = [
     steps: ['Open <strong>Windows Security</strong> from the Start menu','Click <strong>Virus & threat protection</strong>','Under settings → click <strong>Manage settings</strong>','Toggle <strong>Real-time protection</strong> to <strong>On</strong>']
   },
   {
-    severity: 'Critical', badgeClass: 'badge-critical',
+    severity: 'Critical', badgeClass: 'type-pill--critical',
     title: 'BitLocker encryption not enabled on system drive',
     sub: 'Compliance Policy · Control 3.6 · Data Protection',
     currentVal: 'Not encrypted', currentSub: 'System drive has no encryption', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#FB3C44',
@@ -20583,7 +20674,7 @@ var remedChecks = [
     steps: ['Open <strong>Control Panel → BitLocker Drive Encryption</strong>','Click <strong>Turn on BitLocker</strong> for the C: drive','Choose how to unlock (TPM recommended)','Save the recovery key and complete encryption']
   },
   {
-    severity: 'Critical', badgeClass: 'badge-critical',
+    severity: 'Critical', badgeClass: 'type-pill--critical',
     title: 'Remote Desktop enabled without Network Level Auth',
     sub: 'Compliance Policy · Control 9.2 · Access Control',
     currentVal: 'No NLA', currentSub: 'RDP accessible without auth check', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#FB3C44',
@@ -20592,7 +20683,7 @@ var remedChecks = [
     steps: ['Open <strong>System Properties → Remote</strong> tab','Check <strong>"Allow connections only from computers running Remote Desktop with NLA"</strong>','Click Apply and OK','Verify RDP port 3389 is firewall-restricted']
   },
   {
-    severity: 'Medium', badgeClass: 'badge-medium',
+    severity: 'Medium', badgeClass: 'type-pill--medium',
     title: 'Windows Firewall disabled on domain profile',
     sub: 'Compliance Policy · Control 12.4 · Network Defense',
     currentVal: 'Disabled', currentSub: 'Domain profile firewall off', currentBg: '#fffbeb', currentBorder: '#fde68a', currentLabelColor: '#d97706',
@@ -20601,7 +20692,7 @@ var remedChecks = [
     steps: ['Open <strong>Windows Defender Firewall</strong>','Click <strong>Turn Windows Defender Firewall on or off</strong>','Enable for <strong>Domain</strong>, Private and Public networks','Click OK to apply']
   },
   {
-    severity: 'Medium', badgeClass: 'badge-medium',
+    severity: 'Medium', badgeClass: 'type-pill--medium',
     title: 'Screen lock timeout exceeds policy maximum',
     sub: 'Compliance Policy · Control 16.11 · Session Management',
     currentVal: '30 minutes', currentSub: 'Current idle timeout setting', currentBg: '#fffbeb', currentBorder: '#fde68a', currentLabelColor: '#d97706',
@@ -20626,37 +20717,60 @@ function selectCheck(el) {
   if (!c) return;
   // Reset rescan state
   remedAttempt = 0;
-  // Update detail panel
-  document.getElementById('remed-current-box').style.background = c.currentBg;
-  document.getElementById('remed-current-box').style.borderColor = c.currentBorder;
-  document.getElementById('remed-current-label').style.color = c.currentLabelColor;
+  // Update detail panel — colour lives on the label class, box stays neutral
+  document.getElementById('remed-current-box').className =
+    'remed-compare-side ' + (c.badgeClass === 'type-pill--critical' ? 'sev-critical' : 'sev-medium');
   document.getElementById('remed-current-val').textContent = c.currentVal;
   document.getElementById('remed-current-sub').textContent = c.currentSub;
   var detailCard = document.querySelector('.remed-detail .card:first-child');
+  var hdrBadge = detailCard.querySelector('.type-pill');
+  if (hdrBadge) { hdrBadge.className = 'type-pill ' + c.badgeClass; hdrBadge.textContent = c.severity; }
   detailCard.querySelector('[style*="font-size:16px"]').textContent = c.title;
-  detailCard.querySelector('[style*="font-size:11px"][style*="color:var(--text-sec)"]').textContent = c.sub;
+  // Metadata block — parse "Policy · Control X · Category" into Policy / Control / Severity
+  var subParts = c.sub.split(' · ');
+  var mPolicy = document.getElementById('remed-meta-policy');
+  var mControl = document.getElementById('remed-meta-control');
+  var mSev = document.getElementById('remed-meta-sev');
+  if (mPolicy) mPolicy.textContent = subParts[0] || '—';
+  if (mControl) mControl.textContent = subParts.slice(1).join(' · ').replace(/^Control\s+/, '') || '—';
+  if (mSev) mSev.textContent = c.severity;
   // Expected state — update via explicit ids
   var expVal = document.getElementById('remed-expected-val');
   var expSub = document.getElementById('remed-expected-sub');
   if (expVal) expVal.textContent = c.expectedVal;
   if (expSub) expSub.textContent = c.expectedSub;
   // Impact text
-  var impactSpan = detailCard.querySelector('span[style*="font-size:11px"]');
+  var impactSpan = document.getElementById('remed-impact-text');
   if (impactSpan) impactSpan.textContent = c.impact;
-  // Steps
-  var stepsContainer = document.querySelector('.remed-detail .card:last-child [style*="flex-direction:column"]');
+  // Steps — interactive checklist, reset to un-ticked on select
+  var stepsContainer = document.querySelector('.remed-detail .card:last-child .remed-steps');
   if (stepsContainer) {
     stepsContainer.innerHTML = c.steps.map(function(s,i) {
-      return '<div style="display:flex;gap:12px;align-items:flex-start;"><div class="step-circle" style="width:26px;height:26px;font-size:11px;flex-shrink:0;">'+(i+1)+'</div><div style="font-size:13px;color:var(--p-neutral-700);padding-top:2px;">'+s+'</div></div>';
+      return '<div class="remed-step" onclick="toggleRemedStep(this)"><div class="remed-step-check"><span class="remed-step-num">'+(i+1)+'</span><svg viewBox="0 0 8 8" fill="none" stroke="#fff" stroke-width="1.2"><path d="M1.5 4.2L3.2 6L6.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="remed-step-text">'+s+'</div></div>';
     }).join('');
   }
   // Reset action area
   document.getElementById('remed-action-area').innerHTML =
-    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">I\'ve fixed this → Scan again</button>' +
+    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Scan again</button>' +
     '<button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>';
   // Hide result block
   var rb = document.getElementById('remed-result-block');
   if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
+}
+
+function toggleRemedStep(el) {
+  el.classList.toggle('done');
+}
+
+function filterRemed(btn, sev) {
+  document.querySelectorAll('#v-remediation .remed-tabs .pol-tab').forEach(function(b){ b.classList.remove('pol-tab-active'); });
+  btn.classList.add('pol-tab-active');
+  document.querySelectorAll('#v-remediation .remed-item').forEach(function(item){
+    if (sev === 'all') { item.style.display = ''; return; }
+    var badge = item.querySelector('.type-pill');
+    var match = badge && badge.className.indexOf('type-pill--' + sev) !== -1;
+    item.style.display = match ? '' : 'none';
+  });
 }
 
 // ── Journey 2 state ──
@@ -20821,9 +20935,7 @@ function startRescan() {
     } else {
       // State 3: Resolved
       var box = document.getElementById('remed-current-box');
-      box.style.background = '#f0fdf4';
-      box.style.borderColor = '#bbf7d0';
-      document.getElementById('remed-current-label').style.color = '#15803d';
+      box.className = 'remed-compare-side sev-ok';
       document.getElementById('remed-current-val').textContent = 'Enabled';
       document.getElementById('remed-current-sub').textContent = 'Real-time scanning active';
       resultBlock.innerHTML =
@@ -20837,8 +20949,8 @@ function startRescan() {
         '</div>';
       var activeItem = document.querySelector('.remed-item.active');
       if (activeItem) {
-        var badge = activeItem.querySelector('.badge');
-        if (badge) { badge.className = 'badge'; badge.style.cssText = 'background:var(--bg-success);color:#15803d;border:1px solid var(--bg-success-border);'; badge.innerHTML = '<span class="pass-check">\u2713</span> Passing'; }
+        var badge = activeItem.querySelector('.type-pill');
+        if (badge) { badge.className = 'type-pill type-pill--pass'; badge.style.cssText = ''; badge.innerHTML = '<span class="pass-check">\u2713</span> Passing'; }
         var p = activeItem.querySelector('p');
         if (p) p.textContent = 'Now passing \u00b7 Disabled \u2192 Enabled';
       }
@@ -20852,9 +20964,9 @@ function startRescan() {
 function acceptRisk() {
   var activeItem = document.querySelector('.remed-item.active');
   if (activeItem) {
-    var badge = activeItem.querySelector('.badge');
+    var badge = activeItem.querySelector('.type-pill');
     if (badge) {
-      badge.className = 'badge';
+      badge.className = 'type-pill';
       badge.style.cssText = 'background:var(--bg-subtle);color:var(--p-neutral-500);border:1px solid #cbd5e1;';
       badge.textContent = 'Risk accepted';
     }
@@ -20885,9 +20997,9 @@ function undoAcceptRisk() {
   var idx = activeItem ? Array.from(document.querySelectorAll('.remed-item')).indexOf(activeItem) : 0;
   var c = remedChecks[idx] || remedChecks[0];
   if (activeItem) {
-    var badge = activeItem.querySelector('.badge');
+    var badge = activeItem.querySelector('.type-pill');
     if (badge) {
-      badge.className = 'badge ' + c.badgeClass;
+      badge.className = 'type-pill ' + c.badgeClass;
       badge.style.cssText = '';
       badge.textContent = c.severity;
     }
@@ -20899,7 +21011,7 @@ function undoAcceptRisk() {
   var rb = document.getElementById('remed-result-block');
   if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
   document.getElementById('remed-action-area').innerHTML =
-    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">I\'ve fixed this → Scan again</button>' +
+    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Scan again</button>' +
     '<button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>';
 }
 
