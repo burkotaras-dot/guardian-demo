@@ -3113,12 +3113,14 @@ body.dark .na-action.na-primary .na-action-ico { background:#10B981; color:#0424
 .csel-btn.csel-sm::after { right: 10px; }
 .csel-menu { display: none; position: absolute; left: 0; top: calc(100% + 4px); background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1); min-width: 100%; z-index: 200; overflow-y: auto; max-height: 280px; padding: 4px 0; }
 .csel-menu.open { display: block; }
-.csel-opt { padding: 9px 14px; font-size: 12px; cursor: pointer; color: var(--text-sec); font-weight: 400; white-space: nowrap; }
+.csel-opt { position:relative; margin:0 4px; padding:9px 10px 9px 32px; border-radius:7px; font-size:12px; cursor:pointer; color:var(--text-sec); font-weight:400; white-space:nowrap; }
+.csel-opt::before { content:'✓'; position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--green1); font-size:13px; font-weight:700; opacity:0; }
 .csel-opt:hover { background: rgba(0,175,115,0.08); }
-.csel-opt.sel { color: var(--green2); font-weight: 600; }
+.csel-opt.sel { background:var(--dropdown-option-hover); color:var(--text-default); font-weight:500; }
+.csel-opt.sel::before { opacity:1; }
 body.dark .csel-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
 body.dark .csel-opt { color: #C0C0C0 !important; }
-body.dark .csel-opt.sel { color: var(--green1) !important; }
+body.dark .csel-opt.sel { color:var(--p-neutral-50) !important; }
 /* Policy-create step 1: full-width benchmark picker + softer selected Type-card border in dark */
 #pc-cis-dropdown .csel-wrap, #pc-cis-dropdown .csel-btn { display: flex; width: 100%; }
 /* Credential editor type picker: match form-input sizing */
@@ -3129,7 +3131,9 @@ body.dark #cred-edit-overlay .csel-btn { background: rgba(255,255,255,0.05) !imp
 #schedule-modal .csel-wrap, #schedule-modal .csel-btn { display:flex; width:100%; box-sizing:border-box; }
 #schedule-modal .csel-btn { min-height:38px; padding:9px 34px 9px 12px; border-radius:var(--radius-md); background:var(--bg-subtle); font-size:13px; font-weight:400; }
 #schedule-modal .csel-menu { width:100%; box-sizing:border-box; padding:6px; border-radius:var(--radius-md); }
-#schedule-modal .csel-opt { padding:9px 10px; border-radius:7px; }
+#schedule-modal .sched-time-fields { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:8px; }
+#schedule-modal .sched-time-fields .csel-btn { justify-content:space-between; }
+#schedule-modal .sched-time-separator { color:var(--text-sec); font-size:16px; font-weight:700; }
 body.dark #schedule-modal .csel-btn { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.2); color:var(--p-neutral-50); }
 body.dark #pc-step-1 label:has(input[name="pc-type"]:checked) { border-color: rgba(16,185,129,0.55) !important; }
 body.dark span[style*="color:#7C3AED"] { color: #A78BFA !important; border-color: rgba(167,139,250,0.55) !important; background: rgba(124,58,237,0.15) !important; }
@@ -3622,13 +3626,43 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
   .cvp-new,
   .csel-opt,
   .sort-opt,
+  .group-opt,
   .recon-time-opt,
+  .drift-node-opt,
   .cms-opt,
+  .ng-opt,
+  .ne-opt,
   .id-cap-menu-item,
   .cred-act-item
 ):not(.danger):hover,
 .policy-menu > [onclick]:not([onclick*="policyDelete"]):hover {
   background:var(--dropdown-option-hover) !important;
+}
+
+/* App-wide selected state for value-bearing dropdown options. */
+:is(
+  .dropdown-option.is-selected,
+  .tag-filter-item.is-active,
+  .csel-opt.sel,
+  .sort-opt.sort-opt-active,
+  .group-opt.group-opt-active,
+  .cms-opt.cms-opt-active,
+  .ng-opt.ng-opt-active,
+  .ne-opt.ne-opt-active,
+  .ac-sec-opt.is-selected,
+  .pe-sev-opt.is-selected,
+  .recon-time-opt.is-selected,
+  .drift-node-opt.is-selected,
+  .cvp-opt.is-selected
+) {
+  background:var(--dropdown-option-hover) !important;
+  color:var(--text-default) !important;
+}
+.ms-opt:has(input:checked),
+.scan-filter-choice:has(input[type="radio"]:checked),
+.scan-filter-choice:has(.rf-chk:not(.rf-unchecked)) {
+  background:var(--dropdown-option-hover) !important;
+  color:var(--text-default) !important;
 }
 </style>
 </head>
@@ -7861,7 +7895,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </button>
               <div class="tag-filter-menu" id="tag-filter-menu" role="menu">
-                <button type="button" class="tag-filter-item is-default" data-tag="" onclick="polFilterByTag(&#39;&#39;)">All tags</button>
+                <button type="button" class="tag-filter-item is-default is-active" data-tag="" onclick="polFilterByTag(&#39;&#39;)">All tags</button>
                 <div class="tag-filter-sep"></div>
                 <button type="button" class="tag-filter-item" data-tag="Security" onclick="polFilterByTag(&#39;Security&#39;)"><span class="tag-dot" style="background:#3B82F6"></span>Security</button>
                 <button type="button" class="tag-filter-item" data-tag="Compliance" onclick="polFilterByTag(&#39;Compliance&#39;)"><span class="tag-dot" style="background:#10B981"></span>Compliance</button>
@@ -9813,10 +9847,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     function renderAlCredMenu() {
       var menu = document.getElementById('al-cred-menu');
       if (!menu || typeof CREDENTIALS === 'undefined') return;
+      var selectedId = (document.getElementById('al-secret') || {}).value || '';
       var list = CREDENTIALS.filter(function (c) { return !selectedCM || c.cm === selectedCM; });
       var rows = list.map(function (c) {
         var st = _credStatusDef(c.status);
-        return '<div class="cvp-opt" onclick="alCredPick(\'' + c.id + '\')">' +
+        return '<div class="cvp-opt' + (c.id === selectedId ? ' is-selected' : '') + '" onclick="alCredPick(\'' + c.id + '\')">' +
                '<span class="cvp-dot" style="background:' + st.dot + '"></span>' +
                '<div class="cvp-opt-main">' +
                  '<div class="cvp-opt-name">' + c.name + '</div>' +
@@ -14471,6 +14506,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     var _peSevPickTarget = null;
     function peOpenSevPick(btn, idx) {
       var pick = document.getElementById('pe-sev-pick');
+      var current = btn.getAttribute('data-val');
+      pick.querySelectorAll('.pe-sev-opt').forEach(function(opt) { opt.classList.toggle('is-selected', opt.getAttribute('data-val') === current); });
       var rect = btn.getBoundingClientRect();
       pick.style.top = (rect.bottom + 4) + 'px';
       pick.style.left = rect.left + 'px';
@@ -14494,6 +14531,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var btn = _peSevPickTarget;
       _peSevPickTarget = null;
       btn.setAttribute('data-val', val);
+      document.querySelectorAll('#pe-sev-pick .pe-sev-opt').forEach(function(opt) { opt.classList.toggle('is-selected', opt.getAttribute('data-val') === val); });
       var span = btn.querySelector('.pe-sev-lbl');
       if (span) span.textContent = val.charAt(0).toUpperCase() + val.slice(1);
     }
@@ -14567,6 +14605,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     }
     function ecPickSec(val, label) {
       document.getElementById('ec-sec-label').textContent = label;
+      document.querySelectorAll('#ec-sec-pop .ac-sec-opt').forEach(function(opt) { opt.classList.toggle('is-selected', opt.textContent.trim() === label); });
       document.getElementById('ec-sec-pop').style.display = 'none';
       document.getElementById('ec-sec-chev').style.transform = '';
     }
@@ -14582,6 +14621,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var lbl = document.getElementById('ac-sec-label');
       lbl.textContent = label;
       lbl.style.color = 'var(--text-default)';
+      document.querySelectorAll('#ac-sec-pop .ac-sec-opt').forEach(function(opt) { opt.classList.toggle('is-selected', opt.textContent.trim() === label); });
       document.getElementById('ac-sec-pop').style.display = 'none';
       document.getElementById('ac-sec-chev').style.transform = '';
     }
@@ -14623,6 +14663,12 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     }
     function acPickType(label) {
       document.getElementById('ac-type-label').textContent = label;
+      var normalized = label.replace(/\s+/g, '').toLowerCase();
+      document.querySelectorAll('#ac-type-pop .ac-sec-opt').forEach(function(opt) {
+        var text = opt.textContent.trim().replace(/\s+/g, '').toLowerCase();
+        var selected = text === normalized || text.indexOf(normalized + '(') === 0;
+        opt.classList.toggle('is-selected', selected);
+      });
       document.getElementById('ac-type-pop').style.display = 'none';
       document.getElementById('ac-type-chev').style.transform = '';
     }
@@ -14639,6 +14685,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     function ecPickTypeG(opt, label) {
       var grp = opt.closest('.form-group');
       grp.querySelector('.ec-type-label').textContent = label;
+      grp.querySelectorAll('.ec-type-pop .ac-sec-opt').forEach(function(item) { item.classList.toggle('is-selected', item === opt); });
       grp.querySelector('.ec-type-pop').style.display = 'none';
       grp.querySelector('.ec-type-chev').style.transform = '';
     }
@@ -15083,7 +15130,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div id="recon-time-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:180px;z-index:100;">
-                      <div class="recon-time-opt" data-val="" onclick="pickReconTime(this,&#39;Any time&#39;,null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Any time</div>
+                      <div class="recon-time-opt is-selected" data-val="" onclick="pickReconTime(this,&#39;Any time&#39;,null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Any time</div>
                       <div class="recon-time-opt" data-val="today" onclick="pickReconTime(this,&#39;Today&#39;,null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Today</div>
                       <div class="recon-time-opt" data-val="3d" onclick="pickReconTime(this,&#39;Last 3 days&#39;,null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Last 3 days</div>
                       <div class="recon-time-opt" data-val="7d" onclick="pickReconTime(this,&#39;Last 7 days&#39;,null)" style="padding:7px 11px;font-size:12.5px;cursor:pointer;border-radius:6px;color:var(--text-default);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Last 7 days</div>
@@ -15247,10 +15294,10 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <span id="drift-rpp-label">10</span>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </div>
-              <div id="drift-rpp-dropdown" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;min-width:70px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 6px 20px rgba(0,0,0,0.12);overflow:hidden;z-index:30;">
-                <div onclick="pickRpp(&#39;10&#39;)" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-subtle)&#39;" onmouseout="this.style.background=&#39;transparent&#39;">10</div>
-                <div onclick="pickRpp(&#39;25&#39;)" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-subtle)&#39;" onmouseout="this.style.background=&#39;transparent&#39;">25</div>
-                <div onclick="pickRpp(&#39;50&#39;)" style="padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-subtle)&#39;" onmouseout="this.style.background=&#39;transparent&#39;">50</div>
+              <div id="drift-rpp-dropdown" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;min-width:70px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 6px 20px rgba(0,0,0,0.12);overflow:hidden;z-index:30;padding:4px;">
+                <div class="dropdown-option is-selected" data-val="10" onclick="pickRpp(&#39;10&#39;)" style="padding:8px 12px;border-radius:6px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;">10</div>
+                <div class="dropdown-option" data-val="25" onclick="pickRpp(&#39;25&#39;)" style="padding:8px 12px;border-radius:6px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;">25</div>
+                <div class="dropdown-option" data-val="50" onclick="pickRpp(&#39;50&#39;)" style="padding:8px 12px;border-radius:6px;font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;">50</div>
               </div>
             </div>
           </div>
@@ -20449,7 +20496,7 @@ function pickNodeGroup(el, label) {
   document.querySelectorAll('.ng-opt').forEach(function(o) {
     o.classList.remove('ng-opt-active'); o.querySelector('.ng-check').style.visibility = 'hidden'; o.style.background = '';
   });
-  el.classList.add('ng-opt-active'); el.querySelector('.ng-check').style.visibility = 'visible'; el.style.background = 'rgba(0,175,115,0.08)';
+  el.classList.add('ng-opt-active'); el.querySelector('.ng-check').style.visibility = 'visible'; el.style.background = 'var(--dropdown-option-hover)';
   document.getElementById('node-group-label').textContent = label;
   document.getElementById('node-group-dropdown').style.display = 'none';
   filterNodes();
@@ -20469,7 +20516,7 @@ function pickNodeEnv(el, label) {
   document.querySelectorAll('.ne-opt').forEach(function(o) {
     o.classList.remove('ne-opt-active'); o.querySelector('.ne-check').style.visibility = 'hidden'; o.style.background = '';
   });
-  el.classList.add('ne-opt-active'); el.querySelector('.ne-check').style.visibility = 'visible'; el.style.background = 'rgba(0,175,115,0.08)';
+  el.classList.add('ne-opt-active'); el.querySelector('.ne-check').style.visibility = 'visible'; el.style.background = 'var(--dropdown-option-hover)';
   document.getElementById('node-env-label').textContent = label;
   document.getElementById('node-env-dropdown').style.display = 'none';
   filterNodes();
@@ -21824,10 +21871,18 @@ function onScheduleFreqChange() {
   sel.innerHTML = opts.map(function(o) { return '<option>' + o + '</option>'; }).join('');
   if (sel._csel) refreshCsel(sel);
 }
+function syncScheduleTime() {
+  const hour = document.getElementById('sched-hour');
+  const minute = document.getElementById('sched-minute');
+  const time = document.getElementById('sched-time');
+  if (hour && minute && time) time.value = hour.value + ':' + minute.value;
+}
 function openScheduleModal(g) {
   _schedEditGroup = g;
   const s = schedSet()[g] || {};
   const creating = !s.set;
+  const hoursHtml = Array.from({length:24}, function(_, i) { const v = String(i).padStart(2, '0'); return '<option value="' + v + '">' + v + '</option>'; }).join('');
+  const minutesHtml = Array.from({length:60}, function(_, i) { const v = String(i).padStart(2, '0'); return '<option value="' + v + '">' + v + '</option>'; }).join('');
   const body = ''
     + '<div style="margin-bottom:14px;">'
     +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Frequency</div>'
@@ -21841,7 +21896,12 @@ function openScheduleModal(g) {
     + '</div>'
     + '<div style="margin-bottom:14px;">'
     +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Time (UTC)</div>'
-    +   '<input id="sched-time" type="time" class="form-input" value="02:00">'
+    +   '<input id="sched-time" type="hidden" value="02:00">'
+    +   '<div class="sched-time-fields">'
+    +     '<select id="sched-hour" class="form-input csel" aria-label="Hour" onchange="syncScheduleTime()">' + hoursHtml + '</select>'
+    +     '<span class="sched-time-separator">:</span>'
+    +     '<select id="sched-minute" class="form-input csel" aria-label="Minute" onchange="syncScheduleTime()">' + minutesHtml + '</select>'
+    +   '</div>'
     + '</div>'
     + '<div style="display:flex;align-items:center;gap:8px;">'
     +   '<input id="sched-enabled" type="checkbox" style="accent-color:var(--green2);cursor:pointer;">'
@@ -21858,13 +21918,18 @@ function openScheduleModal(g) {
       { label: 'Save schedule', kind: 'primary', onClick: function(){ saveSchedule(); } }
     ],
     afterMount: function() {
+      const initialTime = (creating ? '02:00' : s.time || '02:00').split(':');
       document.getElementById('sched-freq').value = creating ? 'Daily' : s.freq;
-      document.getElementById('sched-time').value = creating ? '02:00' : s.time;
+      document.getElementById('sched-hour').value = initialTime[0] || '02';
+      document.getElementById('sched-minute').value = initialTime[1] || '00';
+      syncScheduleTime();
       document.getElementById('sched-enabled').checked = creating ? true : s.enabled;
       onScheduleFreqChange();
       if (!creating && s.freq !== 'Daily') document.getElementById('sched-day').value = s.day;
       enhanceSelect(document.getElementById('sched-freq'));
       enhanceSelect(document.getElementById('sched-day'));
+      enhanceSelect(document.getElementById('sched-hour'));
+      enhanceSelect(document.getElementById('sched-minute'));
     }
   });
 }
@@ -22051,7 +22116,7 @@ function pickSort(el, label) {
   });
   el.classList.add('sort-opt-active');
   el.querySelector('.sort-check').style.visibility = 'visible';
-  el.style.background = 'rgba(0,175,115,0.08)';
+  el.style.background = 'var(--dropdown-option-hover)';
   document.getElementById('changes-sort-label').textContent = label;
   document.getElementById('changes-sort-dropdown').style.display = 'none';
   sortChanges(el.dataset.val);
@@ -22078,7 +22143,7 @@ function pickGroup(el, label) {
   });
   el.classList.add('group-opt-active');
   el.querySelector('.group-check').style.visibility = 'visible';
-  el.style.background = 'rgba(0,175,115,0.08)';
+  el.style.background = 'var(--dropdown-option-hover)';
   document.getElementById('changes-group-label').textContent = 'Group: ' + label;
   document.getElementById('changes-group-dropdown').style.display = 'none';
   driftGroupBy = el.dataset.val;
@@ -22101,6 +22166,7 @@ function toggleDriftRpp(e) {
 }
 function pickRpp(val) {
   document.getElementById('drift-rpp-label').textContent = val;
+  document.querySelectorAll('#drift-rpp-dropdown .dropdown-option').forEach(function(opt) { opt.classList.toggle('is-selected', opt.dataset.val === String(val)); });
   document.getElementById('drift-rpp-dropdown').style.display = 'none';
 }
 
@@ -22126,11 +22192,13 @@ function filterDriftNodes(q) {
 }
 function selectDriftNode(el) {
   document.querySelectorAll('.drift-node-opt').forEach(function(opt) {
+    opt.classList.remove('is-selected');
     opt.style.background = '';
     opt.style.color = 'var(--text-default)';
     opt.style.fontWeight = '';
   });
-  el.style.background = 'rgba(0,175,115,0.08)';
+  el.classList.add('is-selected');
+  el.style.background = 'var(--dropdown-option-hover)';
   el.style.color = 'var(--green1)';
   el.style.fontWeight = '600';
   var isAll = el.getAttribute('data-val') === 'all';
@@ -22574,6 +22642,7 @@ function _driftTimeMatch(cardDate) {
 }
 function pickReconTime(el, label, _unused) {
   var val = el.dataset.val || null;
+  document.querySelectorAll('#recon-time-dropdown .recon-time-opt').forEach(function(opt) { opt.classList.toggle('is-selected', opt === el); });
   document.getElementById('recon-time-label').textContent = label;
   document.getElementById('recon-time-dropdown').style.display = 'none';
   var range = document.getElementById('recon-date-range');
@@ -22596,6 +22665,7 @@ function applyReconDateRange() {
 function resetReconTime() {
   driftFilters.timeSpan = null; driftFilters.dateFrom = null; driftFilters.dateTo = null;
   var lbl = document.getElementById('recon-time-label'); if (lbl) lbl.textContent = 'Any time';
+  document.querySelectorAll('#recon-time-dropdown .recon-time-opt').forEach(function(opt) { opt.classList.toggle('is-selected', !opt.dataset.val); });
   var range = document.getElementById('recon-date-range'); if (range) range.style.display = 'none';
   var from = document.getElementById('recon-date-from'); if (from) from.value = '';
   var to = document.getElementById('recon-date-to'); if (to) to.value = '';

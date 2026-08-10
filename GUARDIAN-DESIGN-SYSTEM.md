@@ -13,7 +13,7 @@
 ## Зміст
 1. [Navigation](#1-navigation) — ✅ заповнено
 2. Page layout — ⏳
-3. [Forms](#3-forms) — ✅ dropdown hover
+3. [Forms](#3-forms) — ✅ dropdown hover + selected state
 4. [Tables](#4-tables) — ✅ table headers
 5. States — ⏳
 6. Buttons — ⏳
@@ -115,6 +115,14 @@
 **Reference.** Scans → меню **Add check to policy**; hover на рядку `Windows 11 Security Baseline`.
 
 **Exceptions.** Destructive/danger options зберігають червоний hover. Disabled options не мають hover. Native `<option>` може використовувати системний стиль браузера й не гарантує кастомний hover.
+
+### 3.3 Dropdown selected option
+
+**Rule.** Поточне вибране значення у value-bearing dropdown завжди має видимий selected-state: фон `var(--dropdown-option-hover)` (`#EDF9F4` у світлій темі, `rgba(255,255,255,0.06)` у темній), контрастний основний текст і зелену галочку там, де компонент має single-select indicator. Недостатньо позначати вибір лише зеленим кольором тексту. Reusable `.csel` автоматично використовує `.csel-opt.sel`; bespoke-компоненти мають ставити `.is-selected` або власний задокументований active-клас. Multi-select рядки отримують той самий фон через checked-state. Action/overflow menus і Export не мають selected-state, бо не зберігають поточного значення.
+
+**Reference.** Scan Schedules → Edit schedule → `Frequency`, `Hour`, `Minute`; All Nodes → `All groups` / `All environments`; Detected Drift → sort/group/time; Policies → `Filter by tag`; CM Groups → `Status` / `Availability`.
+
+**Exceptions.** Action/overflow menus, Export і create-new rows не мають selected-state. Native `<option>` може залишатися системним; для повністю контрольованого selected-state використовувати reusable `.csel`.
 
 ---
 
