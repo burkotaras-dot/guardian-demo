@@ -12,7 +12,7 @@
 
 ## Зміст
 1. [Navigation](#1-navigation) — ✅ заповнено
-2. Page layout — ⏳
+2. [Page layout](#2-page-layout) — ✅ dark canvas
 3. [Forms](#3-forms) — ✅ dropdown hover + selected state
 4. [Tables](#4-tables) — ✅ table headers
 5. States — ⏳
@@ -93,6 +93,18 @@
 - **Dropzone** та **csv-col chips** — це елементи вводу/даних, не рамки-обгортки.
 
 **Порушники — ✅ усунені** (сплющено разом із конвертацією 1.1): CMDB connect/connecting/failed/browse/credentials/importing/complete + CSV template/upload/preview/importing/complete.
+
+---
+
+## 2. Page layout
+
+### 2.1 Main background
+
+**Rule.** Основний фон усіх сторінок у темній темі — `#031516`. Єдине джерело значення — primitive-токен `--p-dark-canvas`, який через `--bg-canvas` / `--bg-page` застосовується до `body`, content-area та всіх основних page surfaces. Не задавати локальний основний фон сторінки окремими hex-значеннями.
+
+**Reference.** Усі основні views застосунку: Dashboard, All Nodes, Scans, Detected Drift, Policies, Reports, Scan Schedules, CM Groups, Credentials та Integrations.
+
+**Exceptions.** Картки, таблиці, sidebar, модальні вікна, dropdown-панелі, hover/selected-стани та інші підняті або інтерактивні surfaces використовують власні семантичні токени й не прирівнюються до основного фону сторінки.
 
 ---
 
