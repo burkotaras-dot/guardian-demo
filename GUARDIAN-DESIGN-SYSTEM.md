@@ -124,6 +124,14 @@
 
 **Exceptions.** Action/overflow menus, Export і create-new rows не мають selected-state. Native `<option>` може залишатися системним; для повністю контрольованого selected-state використовувати reusable `.csel`.
 
+### 3.4 Search text
+
+**Rule.** Усі search-поля використовують спільні theme-aware токени `--search-text` і `--search-placeholder`; локальні кольори для окремих search-полів заборонені. У світлій темі введений текст і placeholder мають колір `#475569` з `opacity:1`. У темній темі введений текст — `#96A6BD`, placeholder — `rgba(150,166,189,0.60)` з `opacity:1`. Нове поле пошуку має використовувати семантичний `type="search"` або клас `.app-search-input`; legacy-поля додатково покриваються за `id`/placeholder зі словом `search`.
+
+**Reference.** Global Search, All Nodes, Detected Drift, Policies, CM Groups, Credentials, CI browser.
+
+**Exceptions.** Звичайні form inputs та combobox без функції пошуку не підпадають під це правило.
+
 ---
 
 ## 4. Tables
