@@ -263,6 +263,13 @@ body.dark .rep-seg-btn.on { background:rgba(0,175,115,0.15); color:var(--green2)
 .ms-btn { display:inline-flex; align-items:center; height:32px; box-sizing:border-box; font-size:12px; font-weight:600; padding:0 26px 0 10px; border-radius:8px; border:1px solid var(--border); background:#F9FAFC; color:var(--text-default); cursor:pointer; font-family:inherit; position:relative; white-space:nowrap; }
 .rep-scope-sel { height:32px; box-sizing:border-box; background:#F9FAFC !important; }
 #rep-scope-bar .csel-btn { background:#F9FAFC !important; min-width:140px; }
+.report-table-filter-controls select.rep-scope-sel,
+.report-table-filter-controls .csel-wrap,
+.report-table-filter-controls .csel-btn,
+.report-table-filter-controls .ms-wrap,
+.report-table-filter-controls .ms-btn { width:160px; box-sizing:border-box; }
+.report-table-filter-controls :is(.csel-btn, .ms-btn) { background:#FFFFFF !important; }
+body.dark .report-table-filter-controls :is(.csel-btn, .ms-btn) { background:#133033 !important; border-color:#42595C !important; }
 body.dark .rep-scope-sel { background:rgba(255,255,255,0.11) !important; border-color:rgba(255,255,255,0.28) !important; }
 body.dark #rep-scope-bar .csel-btn { background:rgba(255,255,255,0.11) !important; border-color:rgba(255,255,255,0.28) !important; }
 body.dark #rc-table .csel-btn, body.dark #rb-table .csel-btn, body.dark #ri-table .csel-btn { background:rgba(255,255,255,0.11) !important; border-color:var(--border-default) !important; }
@@ -2133,6 +2140,7 @@ body.dark .detected-row-cta.action-cta { background:rgba(0,175,115,0.15); border
 body.dark .detected-row-cta.action-cta .action-arrow { color:#00AF73; }
 body.dark .detected-row-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
 body.dark #detected-banner-title { color:#D98A3A !important; }
+body.dark .cm-last-activity { color:#96A6BD !important; }
 .activity-link { display:inline-flex; align-items:center; gap:5px; padding:4px 0; border:none; background:transparent; color:var(--green2); font-family:'DM Sans',sans-serif; font-size:11.5px; font-weight:600; cursor:pointer; transition:color .15s; }
 .activity-link:hover { color:var(--green1); }
 .activity-link:focus-visible { outline:2px solid var(--green1); outline-offset:3px; border-radius:3px; }
@@ -11865,7 +11873,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           + '<div style="font-size:11px;">'+healthHtml+'</div>'
           + '<div style="color:var(--text-sec);font-size:11px;">'+(g.location || '—')+'</div>'
           + '<div style="font-weight:700;color:var(--text-default);">'+nodes+'</div>'
-          + '<div style="font-size:11px;color:var(--text-muted);">'+lastAct+'</div>'
+          + '<div class="cm-last-activity" style="font-size:11px;color:var(--text-muted);">'+lastAct+'</div>'
           + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="event.stopPropagation();cmRowMenu(this,\''+g.id+'\')">⋯</button></div>'
           + '</div>';
       }).join('');
@@ -12327,6 +12335,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
       var sbCount = document.querySelector('#sb-credentials span');
       if (sbCount) sbCount.textContent = all.length;
+      var tableCount = document.getElementById('cred-table-count');
+      if (tableCount) tableCount.textContent = all.length + ' reusable credential' + (all.length === 1 ? '' : 's') + ' available for Connection Managers';
 
       var q = ((document.getElementById('cred-search') || {}).value || '').toLowerCase().trim();
       var filtered = all.filter(function(c) {
@@ -17612,17 +17622,17 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
         </div>
 
-        <!-- Changes table -->
-        <div id="rc-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:11px 18px;border-bottom:1px solid var(--border);">
-            <div id="rc-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Detected changes (6)</div>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto;">
-              <select id="rc-f-period" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">Since last scan</option><option value="6">Last 6 hours</option><option value="24">Last 24 hours</option><option value="alltime">All time</option></select>
-              <select id="rc-f-type" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All change types</option><option value="added">Added</option><option value="modified">Modified</option><option value="removed">Removed</option></select>
-              <select id="rc-f-node" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option></select>
-              <button id="rc-f-reset" onclick="rcResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
-            </div>
+        <!-- Changes table heading + filters -->
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;padding:0 18px;">
+          <div id="rc-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Detected changes (6)</div>
+          <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
+            <select id="rc-f-period" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">Since last scan</option><option value="6">Last 6 hours</option><option value="24">Last 24 hours</option><option value="alltime">All time</option></select>
+            <select id="rc-f-type" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All change types</option><option value="added">Added</option><option value="modified">Modified</option><option value="removed">Removed</option></select>
+            <select id="rc-f-node" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option></select>
+            <button id="rc-f-reset" onclick="rcResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
           </div>
+        </div>
+        <div id="rc-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div class="col-thead" style="display:grid;grid-template-columns:1.8fr 1fr 0.85fr 1.5fr 0.7fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div>Item</div><div>Node</div><div>Change</div><div>Previous → Current</div><div>When</div>
           </div>
@@ -17872,17 +17882,17 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
         </div>
 
-        <!-- Deviations table -->
-        <div id="rb-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:11px 18px;border-bottom:1px solid var(--border);">
-            <div id="rb-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Baseline deviations (6)</div>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto;">
-              <select id="rb-f-period" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">Since baseline set</option><option value="6">Last 6 hours</option><option value="24">Last 24 hours</option><option value="alltime">All time</option></select>
-              <select id="rb-f-type" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All deviation types</option><option value="added">Added</option><option value="modified">Modified</option><option value="removed">Removed</option></select>
-              <select id="rb-f-node" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option></select>
-              <button id="rb-f-reset" onclick="rbResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
-            </div>
+        <!-- Deviations table heading + filters -->
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;padding:0 18px;">
+          <div id="rb-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Baseline deviations (6)</div>
+          <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
+            <select id="rb-f-period" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">Since baseline set</option><option value="6">Last 6 hours</option><option value="24">Last 24 hours</option><option value="alltime">All time</option></select>
+            <select id="rb-f-type" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All deviation types</option><option value="added">Added</option><option value="modified">Modified</option><option value="removed">Removed</option></select>
+            <select id="rb-f-node" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option></select>
+            <button id="rb-f-reset" onclick="rbResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
           </div>
+        </div>
+        <div id="rb-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div class="col-thead" style="display:grid;grid-template-columns:1.8fr 1fr 0.85fr 1.5fr 0.7fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div>Setting</div><div>Node</div><div>Deviation</div><div>Baseline → Current</div><div>Since</div>
           </div>
@@ -18134,17 +18144,17 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
         </div>
 
-        <!-- Attention items table -->
-        <div id="ri-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:11px 18px;border-bottom:1px solid var(--border);">
-            <div id="ri-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Items needing investigation (6)</div>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto;">
-              <select id="ri-f-cat" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All categories</option><option value="compliance">Failed check</option><option value="drift">Drift</option><option value="polarchived">Scan failure</option></select>
-              <select id="ri-f-sev" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All severities</option><option value="critical">Critical</option><option value="medium">Medium</option><option value="low">Low</option></select>
-              <select id="ri-f-node" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option><option value="STAGING-WIN-02">STAGING-WIN-02</option></select>
-              <button id="ri-f-reset" onclick="riResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
-            </div>
+        <!-- Attention items table heading + filters -->
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;padding:0 18px;">
+          <div id="ri-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Items needing investigation (6)</div>
+          <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
+            <select id="ri-f-cat" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All categories</option><option value="compliance">Failed check</option><option value="drift">Drift</option><option value="polarchived">Scan failure</option></select>
+            <select id="ri-f-sev" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All severities</option><option value="critical">Critical</option><option value="medium">Medium</option><option value="low">Low</option></select>
+            <select id="ri-f-node" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option><option value="STAGING-WIN-02">STAGING-WIN-02</option></select>
+            <button id="ri-f-reset" onclick="riResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
           </div>
+        </div>
+        <div id="ri-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div class="col-thead" style="display:grid;grid-template-columns:1.8fr 1fr 0.85fr 1.5fr 0.7fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div>Item</div><div>Node</div><div>Category</div><div>Severity</div><div>Since</div>
           </div>
@@ -18266,8 +18276,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         <!-- filters moved into Failed checks table header below -->
 
         <!-- Per-policy table: benchmark → policies → checks → score -->
+        <div id="rep-policy-title" style="margin-bottom:10px;padding:0 18px;font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
         <div id="rep-policy-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-          <div id="rep-policy-title" style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
           <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div style="cursor:pointer;">Policy <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Checks (pass / fail) <span style="opacity:0.4;">⇅</span></div><div>Failing by severity</div><div style="cursor:pointer;">Nodes <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Score <span style="opacity:0.4;">⇅</span></div>
           </div>
@@ -18276,11 +18286,9 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         </div>
 
         <!-- Failed-checks detail -->
-        <div id="rep-failed-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:visible;box-shadow:var(--shadow-sm);">
-          <div style="padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <div style="font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (<span id="rep-failed-count">4</span>)</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Filters</span>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;padding:0 18px;">
+          <div style="font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (<span id="rep-failed-count">4</span>)</div>
+          <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
               <div class="ms-wrap" id="ms-pol">
                 <button type="button" class="ms-btn" onclick="msToggle(&#39;ms-pol&#39;,event)" style="font-size:11px;padding:4px 26px 4px 10px;"><span class="ms-label">All policies</span></button>
                 <div class="ms-menu" onclick="event.stopPropagation()">
@@ -18299,8 +18307,9 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   <label class="ms-opt"><input type="checkbox" value="low" checked onchange="msChange(&#39;ms-sev&#39;)">Low</label>
                 </div>
               </div>
-            </div>
           </div>
+        </div>
+        <div id="rep-failed-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div style="cursor:pointer;">Node <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Policy <span style="opacity:0.4;">⇅</span></div><div>Control</div><div>Current → Expected</div><div style="cursor:pointer;">Severity <span style="opacity:0.4;">⇅</span></div>
           </div>
@@ -18424,9 +18433,14 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         <div id="cm-stat-nodes" class="stat-mini" data-accent="blue"></div>
       </div>
 
-      <!-- Toolbar: search + filters + count -->
-      <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap;">
-        <div style="position:relative;flex:0 1 240px;min-width:140px;">
+      <!-- Groups table heading + controls -->
+      <div style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
+        <div style="min-width:180px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Groups</div>
+          <div id="cm-count-label" style="font-size:11px;color:var(--text-sec);margin-top:3px;white-space:nowrap;"></div>
+        </div>
+        <div style="display:flex;flex:1;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:nowrap;min-width:0;">
+        <div style="position:relative;flex:1 1 240px;min-width:160px;max-width:280px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
           <input id="cm-search" type="text" placeholder="Search groups…" oninput="filterCMList()" style="width:100%;padding:8px 12px 8px 36px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;">
         </div>
@@ -18458,9 +18472,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             </div>
           </div>
         </div>
-        <div style="flex:1;"></div>
-        <div id="cm-count-label" style="font-size:11px;color:var(--text-muted);white-space:nowrap;"></div>
-        <button id="cm-demo-empty" onclick="cmToggleEmpty()" style="font-size:9px;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-surface);color:var(--text-muted);cursor:pointer;opacity:0.3;margin-left:8px;">Empty state</button>
+        <button id="cm-demo-empty" onclick="cmToggleEmpty()" style="flex-shrink:0;font-size:9px;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-surface);color:var(--text-muted);cursor:pointer;opacity:0.3;">Empty state</button>
+        </div>
       </div>
 
       <!-- Table -->
@@ -18559,9 +18572,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         <div id="cred-stat-unused" class="stat-mini"></div>
       </div>
 
-      <!-- Search -->
-      <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;">
-        <div style="position:relative;flex:1 1 180px;min-width:140px;max-width:280px;">
+      <!-- Stored credentials table heading + search -->
+      <div style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
+        <div style="min-width:220px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Stored credentials</div>
+          <div id="cred-table-count" style="font-size:11px;color:var(--text-sec);margin-top:3px;">8 reusable credentials available for Connection Managers</div>
+        </div>
+        <div style="position:relative;width:280px;max-width:100%;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
           <input id="cred-search" type="text" placeholder="Search credentials…" oninput="renderCredentials()" style="width:100%;padding:9px 12px 9px 36px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;">
         </div>
