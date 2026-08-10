@@ -1680,7 +1680,7 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 .remed-step-text { font-size:13px; color:var(--p-neutral-700); padding-top:2px; line-height:1.5; }
 
 /* Metadata block — Policy / Control / Severity */
-.remed-meta { display:flex; gap:32px; padding:14px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:16px; }
+.remed-meta { display:flex; gap:32px; padding:14px 0; border:0; margin-bottom:16px; }
 .remed-meta-k { font-size:9px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-sec); margin-bottom:4px; }
 .remed-meta-v { font-size:12px; font-weight:600; color:var(--text-default); }
 
@@ -2092,6 +2092,13 @@ body.dark .action-cta:hover { background:rgba(16,185,129,0.12); border-color:var
 body.dark .action-row .action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
 body.dark .action-row .action-cta .action-arrow { color:#00AF73; }
 body.dark .action-row .action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+/* Scans remediation — Dashboard CTA treatment for Accept risk. */
+.remed-risk-cta.action-cta { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
+.remed-risk-cta.action-cta .remed-risk-check { color:var(--green1); display:flex; flex-shrink:0; }
+.remed-risk-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
+body.dark .remed-risk-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .remed-risk-cta.action-cta .remed-risk-check { color:#00AF73; }
+body.dark .remed-risk-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
 /* Scan Schedules row actions — same outlined treatment as Dashboard CTAs */
 .schedule-action-cta.action-cta { width:auto; min-width:68px; padding:6px 10px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
 .schedule-action-cta.action-cta .action-arrow { color:var(--green1); }
@@ -4790,7 +4797,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             </div>
             <div id="remed-action-area" style="display:flex;align-items:center;gap:10px;">
               <button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">↻ Scan again</button>
-              <button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>
+              <button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>
             </div>
           </div>
         </div>
@@ -20960,7 +20967,7 @@ function selectCheck(el) {
   // Reset action area
   document.getElementById('remed-action-area').innerHTML =
     '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Scan again</button>' +
-    '<button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>';
+    '<button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>';
   // Hide result block
   var rb = document.getElementById('remed-result-block');
   if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
@@ -21139,7 +21146,7 @@ function startRescan() {
         '</div>';
       document.getElementById('remed-action-area').innerHTML =
         '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Rescan again</button>' +
-        '<button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>';
+        '<button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>';
     } else {
       // State 3: Resolved
       var box = document.getElementById('remed-current-box');
@@ -21220,7 +21227,7 @@ function undoAcceptRisk() {
   if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
   document.getElementById('remed-action-area').innerHTML =
     '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Scan again</button>' +
-    '<button class="btn-outline" style="padding:8px 16px;" onclick="acceptRisk()">Accept risk</button>';
+    '<button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>';
 }
 
 // ── All Nodes — checkbox + Scan Selected ──
