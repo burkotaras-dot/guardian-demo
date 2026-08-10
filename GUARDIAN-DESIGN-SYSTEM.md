@@ -108,6 +108,14 @@
 
 **Exceptions.** Disabled controls не мають hover. Overflow/action menus (три крапки), primary action-кнопки, tag-add popovers і спеціально кольорові domain actions зберігають власну button-семантику — це не form dropdown/select triggers. Hover рядків усередині відкритого меню регулюється окремо й не належить до цього правила.
 
+### 3.2 Dropdown option hover
+
+**Rule.** Усі звичайні рядки всередині відкритих dropdown/select-меню у світлій темі на `hover` використовують фон `#EDF9F4` через єдиний токен `--dropdown-option-hover`. У темній темі токен дорівнює `rgba(255,255,255,0.06)`. Нові dropdown-рядки отримують клас `.dropdown-option`; не задавати hover-фон локальними inline handlers або окремими hex/rgba значеннями.
+
+**Reference.** Scans → меню **Add check to policy**; hover на рядку `Windows 11 Security Baseline`.
+
+**Exceptions.** Destructive/danger options зберігають червоний hover. Disabled options не мають hover. Native `<option>` може використовувати системний стиль браузера й не гарантує кастомний hover.
+
 ---
 
 ## 4. Tables
