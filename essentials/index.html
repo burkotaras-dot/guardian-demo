@@ -2102,6 +2102,25 @@ body.dark .schedule-action-cta.action-cta:hover { background:rgba(0,175,115,0.20
 .drift-row { border-bottom:1px solid var(--border); cursor:pointer; transition:background .12s; }
 .drift-row:last-child { border-bottom:none; }
 .drift-row:hover { background:var(--bg-canvas); }
+/* Drift TYPE — the one colour signal ("what changed"): coloured dot + neutral text */
+.drift-type { display:inline-flex; align-items:center; gap:6px; justify-self:start; font-size:11px; font-weight:600; color:var(--text-default); white-space:nowrap; }
+.drift-type::before { content:''; width:8px; height:8px; border-radius:50%; flex-shrink:0; background:#94a3b8; }
+.drift-type--modified::before { background:#f97316; }
+.drift-type--added::before    { background:#2563eb; }
+.drift-type--removed::before  { background:#a855f7; }
+.drift-row .drift-type { cursor:pointer; }
+/* Drift STATUS — de-emphasised process state: coloured dot + text, no fill */
+.drift-stat { display:inline-flex; align-items:center; gap:6px; justify-self:start; font-size:11px; font-weight:600; white-space:nowrap; }
+.drift-stat::before { content:''; width:7px; height:7px; border-radius:50%; background:currentColor; flex-shrink:0; }
+.drift-stat--unreconciled { color:var(--text-sec); }
+.drift-stat--flagged      { color:#FB3C44; }
+.drift-stat--reconciled,
+.drift-stat--approved     { color:#15803d; }
+.drift-stat--review       { color:#d97706; }
+.drift-stat--skipped      { color:var(--text-muted); }
+body.dark .drift-stat--reconciled,
+body.dark .drift-stat--approved { color:#34D399; }
+body.dark .drift-stat--review   { color:#F59E0B; }
 .drift-node { font-size:12.5px; font-weight:600; color:var(--text-default); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .drift-change { font-size:12.5px; color:var(--text-default); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .drift-cr { font-size:11.5px; font-weight:500; color:var(--text-sec); white-space:nowrap; }
@@ -15245,13 +15264,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         <div id="drift-cards">
         <div class="check-card drift-row" id="change-card-0" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-category="services" data-approval-reason="" data-approval-comment="" data-date="2026-07-06" data-ts="7200" onclick="openChange(0)">
           <input type="checkbox" class="drift-select-cb" data-idx="0" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
-          <span class="badge" onclick="event.stopPropagation();setDriftFilter(&#39;type&#39;,&#39;modified&#39;)" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
+          <span class="drift-type drift-type--modified" onclick="event.stopPropagation();setDriftFilter(&#39;type&#39;,&#39;modified&#39;)" title="Filter by Modified">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection disabled</div>
           <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode(&#39;MACBOOK-TARAS&#39;)" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>MACBOOK-TARAS
           </span>
           <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter(&#39;cr&#39;,&#39;none&#39;)" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
-          <span id="change-status-0" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);justify-self:start;white-space:nowrap;">Unreconciled</span>
+          <span id="change-status-0" class="drift-stat drift-stat--unreconciled">Unreconciled</span>
           <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
             <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
             <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:20px;padding:2px 7px;" title="This change has notes">
@@ -15263,13 +15282,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
         <div class="check-card drift-handled drift-row" id="change-card-1" data-change-type="modified" data-recon="reconciled" data-cr="CHG0012345" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-category="services" data-approval-reason="Planned maintenance window" data-approval-comment="Approved per change board — scheduled AV policy update" data-date="2026-07-02" data-ts="345600" onclick="openChange(1)">
           <input type="checkbox" class="drift-select-cb" data-idx="1" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
-          <span class="badge" onclick="event.stopPropagation();setDriftFilter(&#39;type&#39;,&#39;modified&#39;)" title="Filter by Modified" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;cursor:pointer;justify-self:start;">Modified</span>
+          <span class="drift-type drift-type--modified" onclick="event.stopPropagation();setDriftFilter(&#39;type&#39;,&#39;modified&#39;)" title="Filter by Modified">Modified</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Windows Defender — Real-time protection reconciled</div>
           <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode(&#39;MACBOOK-TARAS&#39;)" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>MACBOOK-TARAS
           </span>
           <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter(&#39;cr&#39;,&#39;CHG0012345&#39;)" title="3 associated change requests — reconciled against CHG0012345" style="justify-self:start;white-space:nowrap;">CHG0012345<span style="margin-left:5px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:10px;padding:0 5px;font-size:10px;">+2</span></span>
-          <span id="change-status-1" class="badge pass" style="background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);justify-self:start;white-space:nowrap;">Reconciled</span>
+          <span id="change-status-1" class="drift-stat drift-stat--reconciled">Reconciled</span>
           <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
             <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
           </div>
@@ -15278,13 +15297,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
         <div class="check-card drift-row" id="change-card-2" data-change-type="added" data-recon="flagged" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-category="users" data-approval-reason="" data-approval-comment="" data-date="2026-07-05" data-ts="90000" onclick="openChange(2)">
           <input type="checkbox" class="drift-select-cb" data-idx="2" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
-          <span class="badge" onclick="event.stopPropagation();setDriftFilter(&#39;type&#39;,&#39;added&#39;)" title="Filter by Added" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;cursor:pointer;justify-self:start;">Added</span>
+          <span class="drift-type drift-type--added" onclick="event.stopPropagation();setDriftFilter(&#39;type&#39;,&#39;added&#39;)" title="Filter by Added">Added</span>
           <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">New local user account created</div>
           <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode(&#39;MACBOOK-TARAS&#39;)" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>MACBOOK-TARAS
           </span>
           <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter(&#39;cr&#39;,&#39;none&#39;)" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
-          <span id="change-status-2" class="badge" style="background:rgba(251,60,68,0.1);color:#FB3C44;border:1px solid rgba(251,60,68,0.2);justify-self:start;white-space:nowrap;">Flagged</span>
+          <span id="change-status-2" class="drift-stat drift-stat--flagged">Flagged</span>
           <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
             <span style="font-size:11px;color:var(--text-sec);">2h ago</span>
           </div>
@@ -15339,8 +15358,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span id="cd-type-badge" class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Modified</span>
-          <span id="cd-recon-status" class="badge" style="background:var(--bg-canvas);color:var(--text-sec);border:1px solid var(--border);">Unreconciled</span>
+          <span id="cd-type-badge" class="drift-type drift-type--modified">Modified</span>
+          <span id="cd-recon-status" class="drift-stat drift-stat--unreconciled">Unreconciled</span>
           <span id="cd-control" style="font-size:11px;color:var(--text-sec);">Control 8.1 · Malware Defenses · <span style="color:#FB3C44;font-weight:600;">CIS Fail</span></span>
         </div>
       </div>
@@ -20976,10 +20995,10 @@ function renderChangeDetail(idx) {
   set('cd-impact', d.impact);
   const t = CD_TYPE[d.type] || CD_TYPE.modified;
   const tb = document.getElementById('cd-type-badge');
-  if (tb) { tb.textContent = t.label; tb.style.background = t.bg; tb.style.color = t.color; tb.style.border = '1px solid ' + t.border; }
+  if (tb) { tb.textContent = t.label; tb.className = 'drift-type drift-type--' + (d.type || 'modified'); }
   const r = CD_RECON[d.recon] || CD_RECON.unreconciled;
   const rb = document.getElementById('cd-recon-status');
-  if (rb) { rb.textContent = r.label; rb.style.background = r.bg; rb.style.color = r.color; rb.style.border = '1px solid ' + r.border; }
+  if (rb) { rb.textContent = r.label; rb.className = 'drift-stat drift-stat--' + (d.recon || 'unreconciled'); }
   const nb = document.getElementById('nav-breadcrumb');
   if (nb) nb.innerHTML = `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">${d.title}</span>`;
   setCrState(d.cr);
@@ -22275,14 +22294,10 @@ function driftBulkAction(action) {
     if (statusEl) {
       if (action === 'approve') {
         statusEl.textContent = 'Approved';
-        statusEl.style.background = 'rgba(0,175,115,0.08)';
-        statusEl.style.color = '#00AF73';
-        statusEl.style.borderColor = 'rgba(0,175,115,0.3)';
+        statusEl.className = 'drift-stat drift-stat--approved';
       } else {
         statusEl.textContent = 'Unreconciled';
-        statusEl.style.background = 'var(--bg-canvas)';
-        statusEl.style.color = 'var(--text-sec)';
-        statusEl.style.borderColor = 'var(--border)';
+        statusEl.className = 'drift-stat drift-stat--unreconciled';
       }
     }
     // Reflect reconciliation state so Hide handled / counts react to the action
@@ -22954,9 +22969,9 @@ function toggleGroupSelect(cb) {
 
 function updateChangeList() {
   const styleMap = {
-    approved: { text:'Approved', bg:'rgba(37,167,96,0.1)', color:'#15803d', border:'1px solid rgba(37,167,96,0.2)' },
-    flagged:  { text:'Flagged',  bg:'rgba(251,60,68,0.1)', color:'#FB3C44', border:'1px solid rgba(251,60,68,0.2)' },
-    skipped:  { text:'Skipped',  bg:'rgba(148,163,184,0.1)', color:'#64748b', border:'1px solid rgba(148,163,184,0.2)' }
+    approved: { text:'Approved', cls:'approved' },
+    flagged:  { text:'Flagged',  cls:'flagged' },
+    skipped:  { text:'Skipped',  cls:'skipped' }
   };
   for (let i = 0; i < 3; i++) {
     const badge = document.getElementById('change-status-' + i);
@@ -22965,9 +22980,7 @@ function updateChangeList() {
     if (!badge || s === 'pending') continue;
     const m = styleMap[s];
     badge.textContent = m.text;
-    badge.style.background = m.bg;
-    badge.style.color = m.color;
-    badge.style.border = m.border;
+    badge.className = 'drift-stat drift-stat--' + m.cls;
     if (card) card.style.opacity = s === 'pending' ? '1' : '0.65';
   }
   const pending = changeStatuses.filter(s => s === 'pending').length;
@@ -23515,19 +23528,19 @@ function goToDashboardFromJ4() {
   // Mark change-0 as Reconciled via ServiceNow (CHG0012345)
   const status0 = document.getElementById('change-status-0');
   const card0 = document.getElementById('change-card-0');
-  if (status0) { status0.textContent = '✓ Reconciled · CHG0012345'; status0.style.cssText = 'background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;'; }
+  if (status0) { status0.textContent = 'Reconciled · CHG0012345'; status0.className = 'drift-stat drift-stat--reconciled'; }
   if (card0)   { card0.style.borderLeftColor = '#25a760'; card0.style.opacity = '0.75'; }
 
   // Mark change-1 as Reconciled via ServiceNow (CHG0012346)
   const status1 = document.getElementById('change-status-1');
   const card1 = document.getElementById('change-card-1');
-  if (status1) { status1.textContent = '✓ Reconciled · CHG0012346'; status1.style.cssText = 'background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;'; }
+  if (status1) { status1.textContent = 'Reconciled · CHG0012346'; status1.className = 'drift-stat drift-stat--reconciled'; }
   if (card1)   { card1.style.borderLeftColor = '#25a760'; card1.style.opacity = '0.75'; }
 
   // Mark change-2 as Needs Manual Review
   const status2 = document.getElementById('change-status-2');
   const card2 = document.getElementById('change-card-2');
-  if (status2) { status2.textContent = '⚠ Manual Review'; status2.style.cssText = 'background:rgba(245,158,11,0.1);color:#d97706;border:1px solid rgba(245,158,11,0.2);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;'; }
+  if (status2) { status2.textContent = 'Manual review'; status2.className = 'drift-stat drift-stat--review'; }
   if (card2)   { card2.style.borderLeftColor = '#d97706'; }
 
   // Update Changes subtitle
