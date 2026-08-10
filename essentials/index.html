@@ -807,25 +807,25 @@ body.dark .icx-p2-badge { color:#34D399; }
 .icx-linkbtn { background:none; border:none; padding:0; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-muted); cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
 .icx-linkbtn:hover { color:var(--text-default); }
 
-/* Diff before/after cards — NEUTRAL state-box style (colour on dot+label only, like Remediation) */
-.diff-card { padding:14px 16px; border-radius:10px; background:var(--bg-page); border:1px solid var(--border); }
-.diff-label { font-size:9px; font-weight:700; letter-spacing:1px; margin-bottom:7px; display:flex; align-items:center; gap:5px; }
-.diff-label::before { content:""; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
-.diff-value { font-size:20px; font-weight:800; color:var(--text-default); letter-spacing:-0.5px; margin-bottom:6px; }
-.diff-meta { display:flex; align-items:baseline; gap:5px; flex-wrap:wrap; }
-.diff-status { font-size:11px; font-weight:600; color:var(--text-sec); }
-.diff-dot { font-size:11px; color:var(--text-muted); }
-.diff-sub { font-size:11px; color:var(--text-sec); }
+/* Change-detail — consolidated state-change block (single container, no nested boxes) */
+.cd-sec-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); margin-bottom:11px; }
+.cd-zone-head { display:flex; align-items:center; gap:6px; font-size:9px; font-weight:700; letter-spacing:0.8px; color:var(--text-muted); margin-bottom:3px; }
+.cd-zone-dot { width:7px; height:7px; border-radius:50%; background:var(--text-muted); flex-shrink:0; }
+/* Colour = pass/fail STATE (not before/after position) */
+.cd-zone--pass .cd-zone-dot { background:#15803d; }
+.cd-zone--fail .cd-zone-dot { background:#FB3C44; }
+.cd-zone-body { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:12px; color:var(--text-sec); }
+.cd-zone-val { font-size:14px; font-weight:700; color:var(--text-default); }
+.cd-zone-status { font-weight:600; color:var(--text-sec); }
+.cd-zone-arrow { display:flex; align-items:center; margin:7px 0 7px 1px; color:#94a3b8; }
+.cd-divider { height:1px; background:var(--border); margin:14px 0; }
+.cd-meta { display:flex; align-items:center; flex-wrap:wrap; gap:6px 20px; font-size:11px; color:var(--text-sec); }
+.cd-meta b { font-weight:700; color:var(--text-sec); letter-spacing:0.3px; }
+.cd-risk { display:flex; align-items:flex-start; gap:7px; margin-top:14px; font-size:11px; line-height:1.45; color:var(--text-sec); }
+.cd-risk-label { font-weight:700; color:#FB3C44; }
 
-.diff-before .diff-label { color:#15803d; }
-.diff-after  .diff-label { color:#FB3C44; }
-
-body.dark .diff-card { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); }
-body.dark .diff-before .diff-label { color:var(--p-green-200); }
-body.dark .diff-after  .diff-label { color:var(--p-red-200); }
-body.dark .diff-status { color:var(--text-muted); }
-body.dark .diff-value { color:var(--p-neutral-50); }
-body.dark .diff-sub   { color:var(--text-muted); }
+body.dark .cd-zone--pass .cd-zone-dot { background:var(--p-green-200); }
+body.dark .cd-zone--fail .cd-zone-dot { background:var(--p-red-200); }
 @keyframes scanBar  { from{width:4%} to{width:88%} }
 @keyframes shimmer  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 @keyframes dotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)} 50%{box-shadow:0 0 0 5px rgba(16,185,129,0)} }
@@ -15367,28 +15367,28 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       <div style="flex:1;overflow-y:auto;background:var(--bg-page);padding:24px;">
         <div style="max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
 
-          <!-- Main diff card -->
+          <!-- Consolidated state-change block — single container -->
           <div class="card" style="margin-bottom:0;padding:18px;border-color:var(--border);box-shadow:none;">
 
-            <!-- Before → After diff -->
-            <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:16px;">
-              <div class="diff-card diff-before">
-                <div class="diff-label">BEFORE</div>
-                <div id="cd-before-val" class="diff-value">Enabled</div>
-                <div class="diff-meta"><span id="cd-before-status" class="diff-status">✓ CIS Pass</span><span class="diff-dot">·</span><span id="cd-before-sub" class="diff-sub">Real-time scanning active</span></div>
-              </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
-              <div class="diff-card diff-after">
-                <div class="diff-label">AFTER</div>
-                <div id="cd-after-val" class="diff-value">Disabled</div>
-                <div class="diff-meta"><span id="cd-after-status" class="diff-status">✗ CIS Fail</span><span class="diff-dot">·</span><span id="cd-after-sub" class="diff-sub">Real-time scanning off</span></div>
-              </div>
+            <div class="cd-sec-label">State changed</div>
+
+            <!-- Before → After: two zones on one surface, arrow between -->
+            <div id="cd-before-row" class="cd-zone cd-zone--pass">
+              <div class="cd-zone-head"><span class="cd-zone-dot"></span>BEFORE</div>
+              <div class="cd-zone-body"><span id="cd-before-val" class="cd-zone-val">Enabled</span><span>·</span><span id="cd-before-status" class="cd-zone-status">✓ CIS Pass</span><span>·</span><span id="cd-before-sub">Real-time scanning active</span></div>
+            </div>
+            <div class="cd-zone-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"></path></svg></div>
+            <div id="cd-after-row" class="cd-zone cd-zone--fail">
+              <div class="cd-zone-head"><span class="cd-zone-dot"></span>AFTER</div>
+              <div class="cd-zone-body"><span id="cd-after-val" class="cd-zone-val">Disabled</span><span>·</span><span id="cd-after-status" class="cd-zone-status">✗ CIS Fail</span><span>·</span><span id="cd-after-sub">Real-time scanning off</span></div>
             </div>
 
-            <!-- Score + attribution — compact metadata row -->
-            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;padding:9px 14px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;font-size:11px;color:var(--text-sec);">
+            <div class="cd-divider"></div>
+
+            <!-- Metadata: score + attribution (plain row, no nested box) -->
+            <div class="cd-meta">
               <span style="display:inline-flex;align-items:baseline;gap:5px;">
-                <span style="font-weight:700;color:var(--text-sec);letter-spacing:0.4px;">Score impact</span>
+                <b>Score</b>
                 <span id="cd-score-from" style="font-weight:700;color:var(--text-default);">78</span>
                 <span style="color:#94a3b8;">→</span>
                 <span id="cd-score-to" style="font-weight:700;color:#FB3C44;">74</span>
@@ -15396,18 +15396,17 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <span id="cd-score-delta" style="color:#FB3C44;font-weight:600;">−4 pts</span>
               </span>
               <span style="display:inline-flex;align-items:baseline;gap:5px;">
-                <span style="font-weight:700;color:var(--text-sec);letter-spacing:0.4px;">Detected by</span>
+                <b>Detected by</b>
                 <span id="cd-detby-method" style="font-weight:600;color:var(--text-default);">Scheduled scan</span>
                 <span style="color:var(--text-muted);">·</span>
                 <span id="cd-detby-detail">Today 14:23 · Process: MsMpSvc</span>
               </span>
             </div>
 
-            <!-- Security impact — compact risk row -->
-            <div style="display:flex;align-items:center;gap:7px;padding:8px 12px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-              <span style="font-size:11px;font-weight:700;color:#FB3C44;flex-shrink:0;">Risk</span>
-              <span id="cd-impact" style="font-size:11px;color:var(--text-sec);line-height:1.4;">Without real-time protection, malware can execute on the node undetected — Compliance Policy failure.</span>
+            <!-- Risk — light callout inside the same container (no box) -->
+            <div class="cd-risk">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <span><span class="cd-risk-label">Risk</span> <span id="cd-impact">Without real-time protection, malware can execute on the node undetected.</span></span>
             </div>
           </div>
 
@@ -20924,7 +20923,7 @@ var CHANGE_DATA = [
     after:  { val:'Disabled', status:'✗ CIS Fail', sub:'Real-time scanning off' },
     score: { from:'78', to:'74', delta:'−4 pts' },
     detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
-    impact: 'Without real-time protection, malware can execute on the node undetected — Compliance Policy failure.',
+    impact: 'Without real-time protection, malware can execute on the node undetected.',
     cr: 'nocr',
     notes: [
       { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration, CR pending.' }
@@ -20940,7 +20939,7 @@ var CHANGE_DATA = [
     after:  { val:'Disabled', status:'✗ CIS Fail', sub:'Real-time scanning off' },
     score: { from:'78', to:'74', delta:'−4 pts' },
     detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
-    impact: 'Without real-time protection, malware can execute on the node undetected — Compliance Policy failure.',
+    impact: 'Without real-time protection, malware can execute on the node undetected.',
     cr: 'matched',
     crs: [
       { id:'CHG0012345', title:'AV Software Migration', status:'Approved', primary:true },
@@ -20989,6 +20988,10 @@ function renderChangeDetail(idx) {
   set('cd-control', d.control);
   set('cd-before-val', d.before.val); set('cd-before-status', d.before.status); set('cd-before-sub', d.before.sub);
   set('cd-after-val', d.after.val); set('cd-after-status', d.after.status); set('cd-after-sub', d.after.sub);
+  // Colour keys off pass/fail STATE (✓ = pass), NOT before/after position
+  const _passCls = s => 'cd-zone ' + (/✓/.test(s || '') ? 'cd-zone--pass' : 'cd-zone--fail');
+  const _br = document.getElementById('cd-before-row'); if (_br) _br.className = _passCls(d.before.status);
+  const _ar = document.getElementById('cd-after-row'); if (_ar) _ar.className = _passCls(d.after.status);
   set('cd-score-from', d.score.from); set('cd-score-to', d.score.to); set('cd-score-delta', d.score.delta);
   set('cd-detby-method', d.detby.method); set('cd-detby-detail', d.detby.detail);
   set('cd-impact', d.impact);
