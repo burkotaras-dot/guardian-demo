@@ -2197,9 +2197,9 @@ body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.
 /* Dark mode: form controls need distinct bg from panels */
 /* Form controls: light bg + dark raised bg */
 .dk-form { background:#F1F5F9; }
-/* All Nodes toolbar group/env dropdown triggers — white fill on light (dark keeps --bg-subtle standard) */
-#node-group-btn, #node-env-btn { background:var(--bg-surface); }
-body.dark #node-group-btn, body.dark #node-env-btn { background:var(--bg-subtle); }
+/* Toolbar dropdown triggers — white fill on light (dark keeps --bg-subtle standard). */
+#node-group-btn, #node-env-btn, #cm-status-btn, #cm-availability-btn { background:var(--bg-surface); }
+body.dark #node-group-btn, body.dark #node-env-btn, body.dark #cm-status-btn, body.dark #cm-availability-btn { background:var(--bg-subtle); }
 /* App-wide dropdown trigger hover. Bespoke dropdowns must use .dropdown-trigger. */
 :is(select, .dropdown-trigger, .dk-form, .csel-btn, .ms-btn, .tag-filter-btn, .scan-menu-trigger, .pe-sev-btn, .cvp-btn):not(:disabled):hover {
   border-color:var(--dropdown-hover-border) !important;
@@ -3125,6 +3125,12 @@ body.dark .csel-opt.sel { color: var(--green1) !important; }
 #cred-edit-overlay .csel-wrap, #cred-edit-overlay .csel-btn { display: flex; width: 100%; }
 #cred-edit-overlay .csel-btn { padding: 10px 28px 10px 14px; font-size: 13px; font-weight: 400; border-radius: var(--radius-md); }
 body.dark #cred-edit-overlay .csel-btn { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.2) !important; color: var(--p-neutral-50); }
+/* Scan schedule editor: use the app dropdown instead of the browser-native menu. */
+#schedule-modal .csel-wrap, #schedule-modal .csel-btn { display:flex; width:100%; box-sizing:border-box; }
+#schedule-modal .csel-btn { min-height:38px; padding:9px 34px 9px 12px; border-radius:var(--radius-md); background:var(--bg-subtle); font-size:13px; font-weight:400; }
+#schedule-modal .csel-menu { width:100%; box-sizing:border-box; padding:6px; border-radius:var(--radius-md); }
+#schedule-modal .csel-opt { padding:9px 10px; border-radius:7px; }
+body.dark #schedule-modal .csel-btn { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.2); color:var(--p-neutral-50); }
 body.dark #pc-step-1 label:has(input[name="pc-type"]:checked) { border-color: rgba(16,185,129,0.55) !important; }
 body.dark span[style*="color:#7C3AED"] { color: #A78BFA !important; border-color: rgba(167,139,250,0.55) !important; background: rgba(124,58,237,0.15) !important; }
 body.dark span[style*="color:#7C3AED"] svg { stroke: #A78BFA !important; }
@@ -11471,50 +11477,59 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     var CM_STATUS_LABEL = { connected:'Connected', offline:'Offline', disabled:'Disabled', registered_not_connected:'Registered, not connected' };
     var CM_STATUS_DOT = { connected:'#10B981', offline:'#94a3b8', disabled:'#64748b', registered_not_connected:'#F59E0B' };
     var _cmStatusFilter = 'all';
+    var _cmAvailabilityFilter = 'all';
 
-    function toggleCMStatusDrop() {
-      var dd = document.getElementById('cm-status-dropdown');
+    function toggleCMFilterDrop(kind) {
+      var dd = document.getElementById('cm-' + kind + '-dropdown');
+      var other = document.getElementById('cm-' + (kind === 'status' ? 'availability' : 'status') + '-dropdown');
       if (!dd) return;
+      if (other) other.style.display = 'none';
       dd.style.display = dd.style.display === 'none' ? '' : 'none';
+      document.removeEventListener('click', _closeCMFilterDrops, true);
       if (dd.style.display !== 'none') {
-        setTimeout(function(){ document.addEventListener('click', _closeCMStatusDrop, true); }, 0);
+        setTimeout(function(){ document.addEventListener('click', _closeCMFilterDrops, true); }, 0);
       }
     }
-    function _closeCMStatusDrop(e) {
-      var dd = document.getElementById('cm-status-dropdown');
-      var btn = document.getElementById('cm-status-btn');
-      if (dd && !dd.contains(e.target) && !btn.contains(e.target)) {
-        dd.style.display = 'none';
-        document.removeEventListener('click', _closeCMStatusDrop, true);
-      }
+    function _closeCMFilterDrops(e) {
+      var statusWrap = document.getElementById('cm-status-filter');
+      var availabilityWrap = document.getElementById('cm-availability-filter');
+      if ((statusWrap && statusWrap.contains(e.target)) || (availabilityWrap && availabilityWrap.contains(e.target))) return;
+      var statusDrop = document.getElementById('cm-status-dropdown');
+      var availabilityDrop = document.getElementById('cm-availability-dropdown');
+      if (statusDrop) statusDrop.style.display = 'none';
+      if (availabilityDrop) availabilityDrop.style.display = 'none';
+      document.removeEventListener('click', _closeCMFilterDrops, true);
     }
-    function pickCMStatus(el, label) {
-      _cmStatusFilter = el.getAttribute('data-val');
-      document.getElementById('cm-status-label').textContent = label;
-      var opts = document.querySelectorAll('.cms-opt');
+    function pickCMFilter(kind, el, label) {
+      if (kind === 'status') _cmStatusFilter = el.getAttribute('data-val');
+      else _cmAvailabilityFilter = el.getAttribute('data-val');
+      document.getElementById('cm-' + kind + '-label').textContent = label;
+      var opts = document.querySelectorAll('#cm-' + kind + '-dropdown .cms-opt');
       for (var i = 0; i < opts.length; i++) {
         opts[i].classList.remove('cms-opt-active');
         opts[i].style.background = '';
         opts[i].querySelector('.cms-check').style.visibility = 'hidden';
       }
       el.classList.add('cms-opt-active');
-      el.style.background = 'rgba(0,175,115,0.08)';
+      el.style.background = 'var(--dropdown-option-hover)';
       el.querySelector('.cms-check').style.visibility = '';
-      document.getElementById('cm-status-dropdown').style.display = 'none';
-      document.removeEventListener('click', _closeCMStatusDrop, true);
+      document.getElementById('cm-' + kind + '-dropdown').style.display = 'none';
+      document.removeEventListener('click', _closeCMFilterDrops, true);
       filterCMList();
     }
     function cmQuickFilterAttention() {
-      var opts = document.querySelectorAll('.cms-opt');
-      for (var i = 0; i < opts.length; i++) {
-        if (opts[i].getAttribute('data-val') === 'attention') { pickCMStatus(opts[i], 'Needs attention'); return; }
-      }
+      var opt = document.querySelector('#cm-availability-dropdown .cms-opt[data-val="no-connected"]');
+      if (opt) pickCMFilter('availability', opt, 'Disconnected');
     }
     function cmResetFilters() {
       var s = document.getElementById('cm-search'); if (s) s.value = '';
-      var allOpt = document.querySelector('.cms-opt[data-val="all"]');
-      if (allOpt) { pickCMStatus(allOpt, 'All'); }
-      else { _cmStatusFilter = 'all'; filterCMList(); }
+      var statusAll = document.querySelector('#cm-status-dropdown .cms-opt[data-val="all"]');
+      var availabilityAll = document.querySelector('#cm-availability-dropdown .cms-opt[data-val="all"]');
+      _cmStatusFilter = 'all';
+      _cmAvailabilityFilter = 'all';
+      if (statusAll) pickCMFilter('status', statusAll, 'All');
+      if (availabilityAll) pickCMFilter('availability', availabilityAll, 'All');
+      if (!statusAll && !availabilityAll) filterCMList();
     }
     function filterCMList() { renderCMList(); }
 
@@ -11595,8 +11610,9 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         // State filter
         if (_cmStatusFilter === 'active') { if (g.state !== 'active') return false; }
         else if (_cmStatusFilter === 'disabled') { if (g.state !== 'disabled') return false; }
-        else if (_cmStatusFilter === 'has-connected') { if (g.state === 'disabled' || !g.instances.some(function(i){return i.status==='connected';})) return false; }
-        else if (_cmStatusFilter === 'no-connected') { if (g.state === 'disabled' || g.instances.some(function(i){return i.status==='connected';})) return false; }
+        // Availability filter
+        if (_cmAvailabilityFilter === 'has-connected' && !g.instances.some(function(i){return i.status==='connected';})) return false;
+        if (_cmAvailabilityFilter === 'no-connected' && g.instances.some(function(i){return i.status==='connected';})) return false;
         // Search filter
         if (q) {
           var haystack = (g.name + ' ' + g.location + ' ' + g.instances.map(function(i){return i.reportedName;}).join(' ')).toLowerCase();
@@ -11615,7 +11631,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           ? 'No groups match your filters'
           : 'No CM groups yet';
         var emptySub = groups.length
-          ? 'Try adjusting your search or status filter'
+          ? 'Try adjusting your search or filters'
           : 'Create your first Connection Manager group to start managing nodes';
         var emptyCta = groups.length
           ? '<button onclick="cmResetFilters()" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:1px solid var(--border);border-radius:6px;padding:7px 14px;cursor:pointer;">↺ Reset filters</button>'
@@ -18217,21 +18233,32 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
           <input id="cm-search" type="text" placeholder="Search groups…" oninput="filterCMList()" style="width:100%;padding:8px 12px 8px 36px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;">
         </div>
-        <div style="position:relative;flex-shrink:0;">
-          <div id="cm-status-btn" class="dk-form" onclick="toggleCMStatusDrop()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-            <span style="color:var(--text-muted);font-weight:500;">Status:</span>
-            <span id="cm-status-label" style="font-weight:600;">All</span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        <div id="cm-status-filter" style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
+          <span style="font-size:12px;color:var(--text-muted);font-weight:500;">Status:</span>
+          <div style="position:relative;">
+            <div id="cm-status-btn" class="dk-form" onclick="toggleCMFilterDrop('status')" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:82px;padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+              <span id="cm-status-label" style="font-weight:600;">All</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div id="cm-status-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:200px;z-index:100;">
+              <div class="cms-opt cms-opt-active" data-val="all" onclick="pickCMFilter('status',this,'All')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:var(--dropdown-option-hover);"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All</div>
+              <div class="cms-opt" data-val="active" onclick="pickCMFilter('status',this,'Active')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Active</div>
+              <div class="cms-opt" data-val="disabled" onclick="pickCMFilter('status',this,'Disabled')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Disabled</div>
+            </div>
           </div>
-          <div id="cm-status-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:200px;z-index:100;">
-            <div style="padding:4px 12px 6px;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">State</div>
-            <div class="cms-opt cms-opt-active" data-val="all" onclick="pickCMStatus(this,'All')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All groups</div>
-            <div class="cms-opt" data-val="active" onclick="pickCMStatus(this,'Active')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Active</div>
-            <div class="cms-opt" data-val="disabled" onclick="pickCMStatus(this,'Disabled')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Disabled</div>
-            <div style="height:1px;background:var(--border);margin:4px 0;"></div>
-            <div style="padding:4px 12px 6px;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Availability</div>
-            <div class="cms-opt" data-val="has-connected" onclick="pickCMStatus(this,'Connected')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Has connected managers</div>
-            <div class="cms-opt" data-val="no-connected" onclick="pickCMStatus(this,'Disconnected')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(0,175,115,0.08)'" onmouseout="this.style.background=this.classList.contains('cms-opt-active')?'rgba(0,175,115,0.08)':''"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>No connected managers</div>
+        </div>
+        <div id="cm-availability-filter" style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
+          <span style="font-size:12px;color:var(--text-muted);font-weight:500;">Availability:</span>
+          <div style="position:relative;">
+            <div id="cm-availability-btn" class="dk-form" onclick="toggleCMFilterDrop('availability')" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:82px;padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
+              <span id="cm-availability-label" style="font-weight:600;">All</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div id="cm-availability-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:220px;z-index:100;">
+              <div class="cms-opt cms-opt-active" data-val="all" onclick="pickCMFilter('availability',this,'All')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:var(--dropdown-option-hover);"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All</div>
+              <div class="cms-opt" data-val="has-connected" onclick="pickCMFilter('availability',this,'Connected')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Has connected managers</div>
+              <div class="cms-opt" data-val="no-connected" onclick="pickCMFilter('availability',this,'Disconnected')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;"><svg class="cms-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>No connected managers</div>
+            </div>
           </div>
         </div>
         <div style="flex:1;"></div>
@@ -21795,6 +21822,7 @@ function onScheduleFreqChange() {
   const opts = freq === 'Weekly' ? ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] : ['1st','15th','Last day'];
   lbl.textContent = freq === 'Weekly' ? 'Day of week' : 'Day of month';
   sel.innerHTML = opts.map(function(o) { return '<option>' + o + '</option>'; }).join('');
+  if (sel._csel) refreshCsel(sel);
 }
 function openScheduleModal(g) {
   _schedEditGroup = g;
@@ -21803,13 +21831,13 @@ function openScheduleModal(g) {
   const body = ''
     + '<div style="margin-bottom:14px;">'
     +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Frequency</div>'
-    +   '<select id="sched-freq" class="form-input" onchange="onScheduleFreqChange()" style="cursor:pointer;">'
+    +   '<select id="sched-freq" class="form-input csel" onchange="onScheduleFreqChange()">'
     +     '<option>Daily</option><option>Weekly</option><option>Monthly</option>'
     +   '</select>'
     + '</div>'
     + '<div id="sched-day-row" style="margin-bottom:14px;display:none;">'
     +   '<div id="sched-day-label" style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Day of week</div>'
-    +   '<select id="sched-day" class="form-input" style="cursor:pointer;"></select>'
+    +   '<select id="sched-day" class="form-input csel"></select>'
     + '</div>'
     + '<div style="margin-bottom:14px;">'
     +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Time (UTC)</div>'
@@ -21835,6 +21863,8 @@ function openScheduleModal(g) {
       document.getElementById('sched-enabled').checked = creating ? true : s.enabled;
       onScheduleFreqChange();
       if (!creating && s.freq !== 'Daily') document.getElementById('sched-day').value = s.day;
+      enhanceSelect(document.getElementById('sched-freq'));
+      enhanceSelect(document.getElementById('sched-day'));
     }
   });
 }
