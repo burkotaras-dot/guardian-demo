@@ -2099,7 +2099,12 @@ body.dark .schedule-action-cta.action-cta:hover { background:rgba(0,175,115,0.20
 .drift-ico { width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .drift-ico svg { width:14px; height:14px; }
 .drift-thead { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); background:var(--bg-canvas); border-bottom:1px solid var(--border); }
-.drift-row { border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s, border-color .15s, box-shadow .15s, transform .15s; }
+.drift-row { position:relative; overflow:hidden; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s, border-color .15s, box-shadow .15s, transform .15s; --row-accent:var(--border-strong); }
+.drift-row::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--row-accent); opacity:0; transition:opacity .15s; }
+.drift-row:hover::before { opacity:1; }
+.drift-row[data-change-type="modified"] { --row-accent:#f97316; }
+.drift-row[data-change-type="added"]    { --row-accent:#2563eb; }
+.drift-row[data-change-type="removed"]  { --row-accent:#a855f7; }
 .drift-row:last-child { border-bottom:none; }
 .drift-row:hover { background:var(--bg-surface); border-color:var(--border-strong); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
 /* Drift TYPE — the one colour signal ("what changed"): coloured dot + neutral text */
