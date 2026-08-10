@@ -2125,6 +2125,14 @@ body.dark .remed-post-risk-cta.action-cta:disabled { background:rgba(0,175,115,0
 body.dark .schedule-action-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
 body.dark .schedule-action-cta.action-cta .action-arrow { color:#00AF73; }
 body.dark .schedule-action-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+/* Detected nodes row actions — Dashboard CTA treatment. */
+.detected-row-cta.action-cta { width:124px; padding:6px 10px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
+.detected-row-cta.action-cta .action-arrow { color:var(--green1); }
+.detected-row-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
+body.dark .detected-row-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .detected-row-cta.action-cta .action-arrow { color:#00AF73; }
+body.dark .detected-row-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+body.dark #detected-banner-title { color:#D98A3A !important; }
 .activity-link { display:inline-flex; align-items:center; gap:5px; padding:4px 0; border:none; background:transparent; color:var(--green2); font-family:'DM Sans',sans-serif; font-size:11.5px; font-weight:600; cursor:pointer; transition:color .15s; }
 .activity-link:hover { color:var(--green1); }
 .activity-link:focus-visible { outline:2px solid var(--green1); outline-offset:3px; border-radius:3px; }
@@ -3220,6 +3228,13 @@ body.dark #cred-edit-overlay .csel-btn { background: rgba(255,255,255,0.05) !imp
 body.dark #schedule-modal .csel-btn { background:#133033 !important; border-color:rgba(255,255,255,0.2); color:var(--p-neutral-50); }
 body.dark #pc-step-1 label:has(input[name="pc-type"]:checked) { border-color: rgba(16,185,129,0.55) !important; }
 body.dark #pc-step-1 label:has(input[name="pc-type"]:not(:checked)) { background:#143538 !important; border-color:rgba(255,255,255,0.20) !important; }
+body.dark #pc-step-1 input[name="pc-type"] {
+  appearance:none; -webkit-appearance:none; width:14px; height:14px; flex:0 0 14px;
+  border:1.5px solid #96A6BD; border-radius:50%; background:transparent; cursor:pointer;
+}
+body.dark #pc-step-1 input[name="pc-type"]:checked {
+  border-color:#059669; background:radial-gradient(circle, #059669 0 3.5px, transparent 4px);
+}
 body.dark span[style*="color:#7C3AED"] { color: #A78BFA !important; border-color: rgba(167,139,250,0.55) !important; background: rgba(124,58,237,0.15) !important; }
 body.dark span[style*="color:#7C3AED"] svg { stroke: #A78BFA !important; }
 body.dark span[style*="color:#F59E0B"] { color: #F59E0B !important; border-color: rgba(245,158,11,0.55) !important; background: rgba(245,158,11,0.15) !important; }
@@ -3675,6 +3690,8 @@ body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-c
 .gm-x { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 20px; line-height: 1; margin: -4px -6px 0 0; padding: 0; }
 .gm-x:hover { background: var(--bg-canvas); color: var(--text-default); }
 .gm-body { padding: 14px 24px 4px; overflow-y: auto; flex: 1 1 auto; }
+#export-modal .gm-body { padding-bottom:24px; }
+body.dark #export-modal .export-file-card { background:#133033 !important; border-color:#42595C !important; }
 .gm-foot { display: flex; align-items: center; gap: 8px; padding: 10px 24px 12px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; justify-content: flex-end; }
 .gm-foot-right { display: flex; gap: 8px; margin-left: auto; }
 .gm-btn { padding: 7px 16px; font-size: 12px; border-radius: 6px; cursor: pointer; font-weight: 600; }
@@ -5672,19 +5689,30 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         <div id="nodes-detected-view" style="display:none;">
 
           <!-- Info banner -->
-          <div style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.25);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;">
             <div class="node-ico">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>
             </div>
             <div style="flex:1;">
-              <div style="font-size:13px;font-weight:600;color:var(--text-default);" id="detected-banner-title">3 newly discovered assets awaiting review</div>
+              <div style="font-size:13px;font-weight:600;color:#D97706;" id="detected-banner-title">3 newly discovered assets awaiting review</div>
               <div style="font-size:11px;color:var(--text-sec);margin-top:3px;">Promote to start monitoring · Mark as Unmanaged to explicitly exclude from scope. Detected nodes don't affect compliance score or drift until promoted.</div>
             </div>
           </div>
 
-          <!-- Search + filters + bulk actions -->
-          <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-            <div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0;">
+          <!-- Detected table heading + controls -->
+          <div style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:10px;min-width:210px;">
+              <div style="width:30px;height:30px;flex:0 0 30px;border-radius:8px;background:var(--green-dim);color:var(--green2);display:flex;align-items:center;justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"></circle><path d="M12 12l5-5"></path><path d="M4.7 7.8A9 9 0 0 1 8 4.7"></path>
+                </svg>
+              </div>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--text-default);">Detected nodes</div>
+                <div id="detected-table-count" style="font-size:11px;color:var(--text-sec);margin-top:3px;">3 nodes awaiting review</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap;min-width:0;">
               <div style="position:relative;width:340px;flex-shrink:0;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
                 <input id="detected-search" type="text" placeholder="Search detected nodes…" oninput="filterDetected()" style="width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;" onfocus="this.style.borderColor='var(--green1)';this.style.boxShadow='0 0 0 3px var(--green-dim)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
@@ -5695,11 +5723,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <button onclick="setDetectedSource(&#39;aws&#39;)" id="ds-aws" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);font-family:inherit;">AWS</button>
                 <button onclick="setDetectedSource(&#39;cmdb&#39;)" id="ds-cmdb" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);font-family:inherit;">CMDB</button>
               </div>
-            </div>
-            <div id="detected-bulk-bar" style="display:none;align-items:center;gap:8px;">
-              <span id="detected-bulk-count" style="font-size:12px;color:var(--text-sec);">0 selected</span>
-              <button onclick="bulkPromote()" class="btn-primary" style="width:auto;padding:7px 14px;font-size:12px;">Promote selected</button>
-              <button onclick="bulkDismiss()" class="btn-outline" style="width:auto;padding:7px 14px;font-size:12px;">Mark as Unmanaged</button>
+              <div id="detected-bulk-bar" style="display:none;align-items:center;gap:8px;">
+                <span id="detected-bulk-count" style="font-size:12px;color:var(--text-sec);">0 selected</span>
+                <button onclick="bulkPromote()" class="btn-primary" style="width:auto;padding:7px 14px;font-size:12px;">Promote selected</button>
+                <button onclick="bulkDismiss()" class="btn-outline" style="width:auto;padding:7px 14px;font-size:12px;">Mark as Unmanaged</button>
+              </div>
             </div>
           </div>
 
@@ -5707,7 +5735,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
 
             <!-- Table header -->
-            <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 240px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+            <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 260px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
               <div><input type="checkbox" id="select-all-detected" onchange="toggleAllDetected(this)" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div>Node</div>
               <div>Discovered via</div>
@@ -5717,7 +5745,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             </div>
 
             <!-- Detected row 1: AWS Discovery -->
-            <div class="detected-row" data-name="new-ec2-prod-04 EC2 Amazon Linux us-east-1" data-source="aws" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 240px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div class="detected-row" data-name="new-ec2-prod-04 EC2 Amazon Linux us-east-1" data-source="aws" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 260px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="node-ico">
@@ -5735,13 +5763,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:12px;color:var(--text-sec);">2 hours ago</div>
               <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
               <div style="display:flex;gap:6px;">
-                <button class="btn-secondary" style="width:auto;padding:6px 12px;font-size:11px;white-space:nowrap;" onclick="promoteNode(this)">Promote</button>
-                <button class="btn-outline" style="width:auto;padding:6px 12px;font-size:11px;white-space:nowrap;" onclick="dismissNode(this)">Mark as Unmanaged</button>
+                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="dismissNode(this)">Mark as Unmanaged</button>
               </div>
             </div>
 
             <!-- Detected row 2: Agent install -->
-            <div class="detected-row" data-name="DESKTOP-LH92K Windows 11 Pro" data-source="agent" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 240px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div class="detected-row" data-name="DESKTOP-LH92K Windows 11 Pro" data-source="agent" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 260px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="node-ico">
@@ -5759,13 +5787,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:12px;color:var(--text-sec);">1 day ago</div>
               <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
               <div style="display:flex;gap:6px;">
-                <button class="btn-secondary" style="width:auto;padding:6px 12px;font-size:11px;white-space:nowrap;" onclick="promoteNode(this)">Promote</button>
-                <button class="btn-outline" style="width:auto;padding:6px 12px;font-size:11px;white-space:nowrap;" onclick="dismissNode(this)">Mark as Unmanaged</button>
+                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="dismissNode(this)">Mark as Unmanaged</button>
               </div>
             </div>
 
             <!-- Detected row 3: CMDB / ServiceNow -->
-            <div class="detected-row" data-name="srv-db-replica Linux CMDB" data-source="cmdb" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 240px;padding:14px 20px;align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div class="detected-row" data-name="srv-db-replica Linux CMDB" data-source="cmdb" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 260px;padding:14px 20px;align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="detected-checkbox" onchange="updateDetectedBulk()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="node-ico">
@@ -5783,8 +5811,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:12px;color:var(--text-sec);">3 days ago</div>
               <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
               <div style="display:flex;gap:6px;">
-                <button class="btn-secondary" style="width:auto;padding:6px 12px;font-size:11px;white-space:nowrap;" onclick="promoteNode(this)">Promote</button>
-                <button class="btn-outline" style="width:auto;padding:6px 12px;font-size:11px;white-space:nowrap;" onclick="dismissNode(this)">Mark as Unmanaged</button>
+                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="dismissNode(this)">Mark as Unmanaged</button>
               </div>
             </div>
 
@@ -13469,7 +13497,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
       openModal({
         id: _AC_MODAL,
-        size: 'xl',
+        size: 'lg',
         title: isEdit ? 'Edit Check' : 'Add New Check',
         subtitle: isEdit ? 'Modify the compliance check definition' : 'Define a new compliance check for this policy',
         bodyHtml: '<div id="ac-modal-body"></div>',
@@ -14494,7 +14522,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         +   '</div>'
         +   '<div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Report ready</div>'
         +   '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Your <span id="export-kind-r">' + up + '</span> export has been generated</div>'
-        +   '<div style="display:flex;align-items:center;gap:10px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin:18px 0 6px;text-align:left;">'
+        +   '<div class="export-file-card" style="display:flex;align-items:center;gap:10px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin:18px 0 6px;text-align:left;">'
         +     '<div id="export-file-badge" style="flex-shrink:0;width:34px;height:34px;border-radius:7px;background:rgba(63,200,120,0.1);color:var(--green1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:0.3px;">' + up + '</div>'
         +     '<div style="min-width:0;flex:1;">'
         +       '<div id="export-filename" style="font-size:12px;font-weight:600;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + ctxFile + '.' + kind + '</div>'
@@ -21683,7 +21711,9 @@ function _updateDetectedTabCount() {
   var remaining = document.querySelectorAll('.detected-row').length;
   var badge = document.getElementById('nodes-tab-detected-count');
   var banner = document.getElementById('detected-banner-title');
+  var tableCount = document.getElementById('detected-table-count');
   if (badge) badge.textContent = remaining;
+  if (tableCount) tableCount.textContent = remaining + ' node' + (remaining === 1 ? '' : 's') + ' awaiting review';
   if (banner) banner.textContent = remaining === 0
     ? 'No detected nodes — all assets are managed'
     : remaining + ' newly discovered asset' + (remaining === 1 ? '' : 's') + ' awaiting review';
