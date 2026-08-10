@@ -134,7 +134,7 @@
 
 **Reference.** Scan Schedules → Edit schedule → `Frequency`, `Hour`, `Minute`; All Nodes → `All groups` / `All environments`; Detected Drift → sort/group/time; Policies → `Filter by tag`; CM Groups → `Status` / `Availability`.
 
-**Exceptions.** Action/overflow menus, Export і create-new rows не мають selected-state. Native `<option>` може залишатися системним; для повністю контрольованого selected-state використовувати reusable `.csel`.
+**Exceptions.** Action/overflow menus, Export і create-new rows не мають selected-state. У **Scans → Filters** вибрані рядки `Sort by` / `Show` не мають постійної фонової заливки: стан уже однозначно показують radio/checkbox; `var(--dropdown-option-hover)` зʼявляється лише під час hover. Це локальний виняток `#results-filter-panel`, його не переносити на інші dropdown-и. Native `<option>` може залишатися системним; для повністю контрольованого selected-state використовувати reusable `.csel`.
 
 ### 3.4 Search text
 
