@@ -13,8 +13,8 @@
 ## Зміст
 1. [Navigation](#1-navigation) — ✅ заповнено
 2. Page layout — ⏳
-3. [Forms](#3-forms) — ✅ dropdown hover
-4. Tables — ⏳
+3. [Forms](#3-forms) — ✅ dropdown hover + selected state
+4. [Tables](#4-tables) — ✅ table headers
 5. States — ⏳
 6. Buttons — ⏳
 7. Cards — ⏳
@@ -107,5 +107,41 @@
 **Reference.** Policies → `Filter by tag`; All Nodes → `All groups` / `All environments`; Scans → `Filters` / `Export`; Detected Drift → `Newest first` / `Group: None`.
 
 **Exceptions.** Disabled controls не мають hover. Overflow/action menus (три крапки), primary action-кнопки, tag-add popovers і спеціально кольорові domain actions зберігають власну button-семантику — це не form dropdown/select triggers. Hover рядків усередині відкритого меню регулюється окремо й не належить до цього правила.
+
+### 3.2 Dropdown option hover
+
+**Rule.** Усі звичайні рядки всередині відкритих dropdown/select-меню у світлій темі на `hover` використовують фон `#EDF9F4` через єдиний токен `--dropdown-option-hover`. У темній темі токен дорівнює `rgba(255,255,255,0.06)`. Нові dropdown-рядки отримують клас `.dropdown-option`; не задавати hover-фон локальними inline handlers або окремими hex/rgba значеннями.
+
+**Reference.** Scans → меню **Add check to policy**; hover на рядку `Windows 11 Security Baseline`.
+
+**Exceptions.** Destructive/danger options зберігають червоний hover. Disabled options не мають hover. Native `<option>` може використовувати системний стиль браузера й не гарантує кастомний hover.
+
+### 3.3 Dropdown selected option
+
+**Rule.** Поточне вибране значення у value-bearing dropdown завжди має видимий selected-state: фон `var(--dropdown-option-hover)` (`#EDF9F4` у світлій темі, `rgba(255,255,255,0.06)` у темній), контрастний основний текст і зелену галочку там, де компонент має single-select indicator. Недостатньо позначати вибір лише зеленим кольором тексту. Reusable `.csel` автоматично використовує `.csel-opt.sel`; bespoke-компоненти мають ставити `.is-selected` або власний задокументований active-клас. Multi-select рядки отримують той самий фон через checked-state. Action/overflow menus і Export не мають selected-state, бо не зберігають поточного значення.
+
+**Reference.** Scan Schedules → Edit schedule → `Frequency`, `Hour`, `Minute`; All Nodes → `All groups` / `All environments`; Detected Drift → sort/group/time; Policies → `Filter by tag`; CM Groups → `Status` / `Availability`.
+
+**Exceptions.** Action/overflow menus, Export і create-new rows не мають selected-state. Native `<option>` може залишатися системним; для повністю контрольованого selected-state використовувати reusable `.csel`.
+
+### 3.4 Search text
+
+**Rule.** Усі search-поля використовують спільні theme-aware токени `--search-text` і `--search-placeholder`; локальні кольори для окремих search-полів заборонені. У світлій темі введений текст і placeholder мають колір `#475569` з `opacity:1`. У темній темі введений текст — `#96A6BD`, placeholder — `rgba(150,166,189,0.60)` з `opacity:1`. Нове поле пошуку має використовувати семантичний `type="search"` або клас `.app-search-input`; legacy-поля додатково покриваються за `id`/placeholder зі словом `search`.
+
+**Reference.** Global Search, All Nodes, Detected Drift, Policies, CM Groups, Credentials, CI browser.
+
+**Exceptions.** Звичайні form inputs та combobox без функції пошуку не підпадають під це правило.
+
+---
+
+## 4. Tables
+
+### 4.1 Table header background
+
+**Rule.** Усі шапки таблиць у світлій темі використовують єдиний фон `#F1F5F9` через токен `--table-header-bg`. У темній темі цей токен дорівнює `#063135`. Шапка не має нижнього бордера (`border-bottom:0`), щоб не утворювати подвійну лінію разом із межею першого рядка. Не задавати локальні кольори чи нижні бордери шапок таблиць. Для grid-таблиць використовувати `.col-thead` (або наявні canonical класи `.compare-thead` / `.drift-thead`); HTML-таблиці з `<thead>` покриваються глобальним правилом автоматично.
+
+**Reference.** **Scan Schedules** — шапка таблиці `Node group / Status / Frequency / Time / Last run / Next run`.
+
+**Exceptions.** Групові розділювачі, toolbar-рядки, bulk-action bars, subtotal/footer rows і заголовки карток не є шапками колонок та не використовують `--table-header-bg`.
 
 ---
