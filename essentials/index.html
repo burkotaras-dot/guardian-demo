@@ -1303,13 +1303,23 @@ body.dark #v-s-agentless .btn-outline { background:transparent; }
 /* ── RESULTS ── */
 .results-layout { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
 .results-top {
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border);
+  background:var(--bg-page);
+  border-bottom: 0;
   padding: 18px 24px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 20px;
+  position:relative;
+}
+.results-scope-bar {
+  position:relative; background:var(--bg-page); border-bottom:0;
+  padding:8px 24px; display:flex; align-items:center; gap:8px; flex-shrink:0;
+}
+.results-scope-bar::after,
+.results-top::after {
+  content:''; position:absolute; left:24px; right:24px; bottom:0;
+  height:1px; background:var(--border); pointer-events:none;
 }
 .results-body { flex:1; background:var(--bg-page); padding:24px; overflow-y:auto; min-width:0; }
 
@@ -1317,7 +1327,7 @@ body.dark #v-s-agentless .btn-outline { background:transparent; }
 .score-svg  { width:76px; height:76px; }
 .score-inner {
   position:absolute; inset:9px;
-  background:var(--bg-surface); border-radius:50%;
+  background:var(--bg-page); border-radius:50%;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
 .score-num   { font-size:20px; font-weight:700; color:var(--text-default); line-height:1; }
@@ -2803,7 +2813,8 @@ body.dark .region-pill:hover  { border-color: rgba(16,185,129,0.5); color: var(-
 body.dark .j3-filter-pill     { border-color: #143A2F; }
 
 /* Results / Scans */
-body.dark .results-top        { background: var(--bg-card); border-color: var(--border); }
+body.dark .results-top,
+body.dark .results-scope-bar  { background:var(--bg-page); border-color:var(--border); }
 body.dark .check-card         { background: var(--bg-card); border-color: var(--border); }
 body.dark .check-card:hover   { border-color: rgba(255,255,255,0.18); box-shadow: var(--shadow-md); }
 body.dark .check-card .check-row svg { stroke: rgba(255,255,255,0.55); }
@@ -2813,7 +2824,7 @@ body.dark .check-card .badge[style*="#fef9c3"] { background: rgba(245,158,11,0.1
 body.dark .check-card .badge[style*="#f0fdf4"] { background: rgba(37,167,96,0.15) !important; color: #34D399 !important; border-color: rgba(37,167,96,0.3) !important; }
 body.dark .results-top [style*="font-size:10px;color:var(--text-sec)"] { color: var(--p-neutral-50) !important; }
 body.dark .check-title        { color: var(--p-neutral-50); }
-body.dark .score-inner        { background: var(--bg-card); }
+body.dark .score-inner        { background:var(--bg-page); }
 body.dark .score-num          { color: var(--p-neutral-50); }
 
 /* Remediation */
@@ -4571,11 +4582,10 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       <div class="results-layout">
 
         <!-- Scope context bar — static, no dropdown -->
-        <div style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <div class="results-scope-bar">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
           <span style="font-size:12px;font-weight:600;color:var(--text-default);">All Nodes</span>
           <span style="font-size:11px;color:var(--text-sec);">· 4 nodes · Aggregated results</span>
-          <button class="link-cta" style="margin-left:auto;font-size:11px;" onclick="showView(&#39;all-devices&#39;)"><span class="lc-txt">All Nodes table</span> <span class="arr">→</span></button>
         </div>
 
         <div class="results-top">
