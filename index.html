@@ -1408,10 +1408,12 @@ body.dark .check-card[data-sev="passed"]   .check-ico { color:#34D399; }
 .type-pill.type-pill--medium { color:#B86410; background:rgba(197,106,16,0.055); border-color:rgba(197,106,16,0.24); }
 .type-pill.type-pill--low { color:#2563EB; background:rgba(37,99,235,0.055); border-color:rgba(37,99,235,0.24); }
 .type-pill.type-pill--pass { color:#15803d; background:rgba(21,128,61,0.06); border-color:rgba(21,128,61,0.24); }
+.type-pill.type-pill--risk-accepted { color:#64748B; background:#F1F5F9; border-color:#CBD5E1; }
 body.dark .type-pill--critical { color:#E66A71; background:rgba(230,106,113,0.07); border-color:rgba(230,106,113,0.26); }
 body.dark .type-pill--medium { color:#D98A3A; background:rgba(217,138,58,0.07); border-color:rgba(217,138,58,0.26); }
 body.dark .type-pill--low { color:#5B8DEF; background:rgba(91,141,239,0.07); border-color:rgba(91,141,239,0.26); }
 body.dark .type-pill--pass { color:#34D399; background:rgba(52,211,153,0.07); border-color:rgba(52,211,153,0.26); }
+body.dark .type-pill--risk-accepted { color:#96A6BD; background:rgba(150,166,189,0.08); border-color:rgba(150,166,189,0.28); }
 
 /* ── INSTALL ── */
 .install-wrap { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--bg-page); padding:32px; }
@@ -1687,6 +1689,7 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 /* Security impact — labelled, neutral surface, colour only on icon + label */
 .remed-impact { display:flex; align-items:center; gap:12px; background:var(--bg-page); border:1px solid var(--border); border-radius:8px; padding:11px 15px; }
 .remed-impact-head { display:flex; align-items:center; gap:7px; font-size:10px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:#FB3C44; white-space:nowrap; flex-shrink:0; }
+.remed-result-label { display:flex; align-items:center; gap:7px; flex-shrink:0; white-space:nowrap; font-size:12px; font-weight:700; color:var(--text-sec); }
 .remed-impact-text { font-size:12px; color:var(--text-default); line-height:1.5; }
 
 /* PAGE HEADER */
@@ -2099,6 +2102,22 @@ body.dark .action-row .action-cta:hover { background:rgba(0,175,115,0.20); borde
 body.dark .remed-risk-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
 body.dark .remed-risk-cta.action-cta .remed-risk-check { color:#00AF73; }
 body.dark .remed-risk-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+.remed-back-results-cta.action-cta { width:124px; height:34px; box-sizing:border-box; padding:8px 12px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
+.remed-back-results-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
+body.dark .remed-back-results-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .remed-back-results-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+.remed-post-risk-cta.action-cta { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
+.remed-post-risk-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
+.remed-post-risk-cta.action-cta:disabled { opacity:.5; cursor:not-allowed; background:#F3FAF6; border-color:rgba(16,185,129,0.32); transform:none; }
+body.dark .remed-post-risk-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .remed-post-risk-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+body.dark .remed-post-risk-cta.action-cta:disabled { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); }
+#remed-action-area .btn-primary[onclick="startRescan()"] > svg { display:none; }
+#remed-action-area .btn-primary[onclick="startRescan()"]::before {
+  content:''; width:15px; height:15px; display:block; flex:0 0 15px;
+  background:url('Assets/radix-icons_reload.svg') center/15px 15px no-repeat;
+  filter:brightness(0) invert(1);
+}
 /* Scan Schedules row actions — same outlined treatment as Dashboard CTAs */
 .schedule-action-cta.action-cta { width:auto; min-width:68px; padding:6px 10px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
 .schedule-action-cta.action-cta .action-arrow { color:var(--green1); }
@@ -2837,6 +2856,8 @@ body.dark .score-num          { color: var(--p-neutral-50); }
 /* Remediation */
 body.dark .remed-list         { background: var(--bg-card); border-color: var(--border); }
 body.dark .remed-list-header  { background: var(--bg-card); border-color: var(--border); }
+body.dark #v-remediation .remed-list-header,
+body.dark #v-remediation .remed-item { border-bottom-color:rgba(150,166,189,0.22); }
 body.dark .remed-list-title   { color: var(--p-neutral-50); }
 body.dark .remed-list-top     { background: var(--bg-card); border-color: var(--border); }
 body.dark .remed-detail       { background: var(--bg-page); }
@@ -2881,8 +2902,6 @@ body.dark button[onclick*="peAddTagMenu"]:hover { border-color: var(--green1) !i
 .tagpick-chip.is-on { background: rgba(16,185,129,0.12); border-color: var(--green1); color: var(--text-default); font-weight: 600; }
 .tagpick-check { display: none; }
 .tagpick-chip.is-on .tagpick-check { display: inline-flex; color: var(--green1); }
-.tagpick-foot { flex-basis: 100%; margin-top: 2px; }
-.tagpick-foot a { font-size: 11px; color: var(--green2); text-decoration: none; }
 body.dark .tagpick-chip { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.18); color: var(--p-neutral-300); }
 body.dark .tagpick-chip:hover { border-color: var(--green1); color: var(--p-neutral-50); }
 body.dark .tagpick-chip.is-on { background: rgba(0,175,115,0.15); border-color: rgba(0,175,115,0.5); color: var(--p-neutral-50); }
@@ -3198,8 +3217,9 @@ body.dark #cred-edit-overlay .csel-btn { background: rgba(255,255,255,0.05) !imp
 #schedule-modal .sched-time-fields { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:8px; }
 #schedule-modal .sched-time-fields .csel-btn { justify-content:space-between; }
 #schedule-modal .sched-time-separator { color:var(--text-sec); font-size:16px; font-weight:700; }
-body.dark #schedule-modal .csel-btn { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.2); color:var(--p-neutral-50); }
+body.dark #schedule-modal .csel-btn { background:#133033 !important; border-color:rgba(255,255,255,0.2); color:var(--p-neutral-50); }
 body.dark #pc-step-1 label:has(input[name="pc-type"]:checked) { border-color: rgba(16,185,129,0.55) !important; }
+body.dark #pc-step-1 label:has(input[name="pc-type"]:not(:checked)) { background:#143538 !important; border-color:rgba(255,255,255,0.20) !important; }
 body.dark span[style*="color:#7C3AED"] { color: #A78BFA !important; border-color: rgba(167,139,250,0.55) !important; background: rgba(124,58,237,0.15) !important; }
 body.dark span[style*="color:#7C3AED"] svg { stroke: #A78BFA !important; }
 body.dark span[style*="color:#F59E0B"] { color: #F59E0B !important; border-color: rgba(245,158,11,0.55) !important; background: rgba(245,158,11,0.15) !important; }
@@ -4796,7 +4816,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div class="remed-step"><div class="remed-step-check"><span class="remed-step-num">4</span></div><div class="remed-step-text">Toggle <strong>Real-time protection</strong> to <strong>On</strong></div></div>
             </div>
             <div id="remed-action-area" style="display:flex;align-items:center;gap:10px;">
-              <button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">↻ Scan again</button>
+              <button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M7.50001 0.849609C10.664 0.849609 12.294 3.06861 13 4.30961V4.31161V2.49961C13 2.367 13.0527 2.23982 13.1465 2.14606C13.2402 2.05229 13.3674 1.99961 13.5 1.99961C13.6326 1.99961 13.7598 2.05229 13.8536 2.14606C13.9473 2.23982 14 2.367 14 2.49961V5.49961C14 5.63222 13.9473 5.75939 13.8536 5.85316C13.7598 5.94693 13.6326 5.99961 13.5 5.99961H10.5C10.3674 5.99961 10.2402 5.94693 10.1465 5.85316C10.0527 5.75939 10 5.63222C10 5.367 10.0527 5.23982 10.1465 5.14606C10.2402 5.05229 10.3674 4.99961 10.5 4.99961H12.233L12.121 4.79161C11.481 3.66561 10.111 1.84961 7.50101 1.84961C4.06101 1.84961 1.85001 4.66461 1.85001 7.49961C1.85001 10.3346 4.06001 13.1496 7.50001 13.1496C9.16501 13.1496 10.53 12.4956 11.501 11.5066L11.693 11.3026C12.1239 10.8165 12.47 10.2614 12.717 9.66061L12.765 9.57061C12.8342 9.46774 12.9391 9.39423 13.0594 9.36436C13.1797 9.33448 13.3068 9.35036 13.4161 9.40891C13.5254 9.46747 13.609 9.56453 13.6507 9.68125C13.6925 9.79798 13.6894 9.92605 13.642 10.0406L13.512 10.3366C13.235 10.929 12.8739 11.4783 12.44 11.9676L12.214 12.2076C11.062 13.3806 9.44401 14.1496 7.50001 14.1496C3.43801 14.1496 0.850006 10.8146 0.850006 7.49961C0.850006 4.18561 3.43801 0.849609 7.50001 0.849609Z" fill="currentColor"/></svg>Scan again</button>
               <button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>
             </div>
           </div>
@@ -8237,7 +8257,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                     <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Build a policy from scratch with your own checks</div>
                   </div>
                 </label>
-                <label style="display:flex;align-items:flex-start;gap:12px;padding:14px;border:1.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;background:var(--bg-surface);">
+                <label style="display:flex;align-items:flex-start;gap:12px;padding:14px;border:1.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;background:var(--bg-subtle);">
                   <input type="radio" name="pc-type" value="cis" onchange="pcTypeChange(this)" style="margin-top:2px;accent-color:var(--green2);">
                   <div style="flex:1;">
                     <div style="font-size:13px;font-weight:600;color:var(--text-default);">Based on Compliance Policy</div>
@@ -13357,7 +13377,6 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   '<svg class="tagpick-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
                   t + '</span>';
         });
-        html += '<div class="tagpick-foot"><a href="#" onclick="return false;">Manage approved tags in Settings &rarr;</a></div>';
         root.innerHTML = html;
       });
     }
@@ -13547,7 +13566,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         var inp = lbl.querySelector('input[type=radio]');
         if (!inp) return;
         lbl.style.borderColor = inp.checked ? 'var(--green1)' : 'var(--border)';
-        lbl.style.background = inp.checked ? 'var(--green-dim)' : 'var(--bg-surface)';
+        lbl.style.background = inp.checked ? 'var(--green-dim)' : 'var(--bg-subtle)';
       });
     }
 
@@ -20966,7 +20985,7 @@ function selectCheck(el) {
   }
   // Reset action area
   document.getElementById('remed-action-area').innerHTML =
-    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Scan again</button>' +
+    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M7.50001 0.849609C10.664 0.849609 12.294 3.06861 13 4.30961V4.31161V2.49961C13 2.367 13.0527 2.23982 13.1465 2.14606C13.2402 2.05229 13.3674 1.99961 13.5 1.99961C13.6326 1.99961 13.7598 2.05229 13.8536 2.14606C13.9473 2.23982 14 2.367 14 2.49961V5.49961C14 5.63222 13.9473 5.75939 13.8536 5.85316C13.7598 5.94693 13.6326 5.99961 13.5 5.99961H10.5C10.3674 5.99961 10.2402 5.94693 10.1465 5.85316C10.0527 5.75939 10 5.63222C10 5.367 10.0527 5.23982 10.1465 5.14606C10.2402 5.05229 10.3674 4.99961 10.5 4.99961H12.233L12.121 4.79161C11.481 3.66561 10.111 1.84961 7.50101 1.84961C4.06101 1.84961 1.85001 4.66461 1.85001 7.49961C1.85001 10.3346 4.06001 13.1496 7.50001 13.1496C9.16501 13.1496 10.53 12.4956 11.501 11.5066L11.693 11.3026C12.1239 10.8165 12.47 10.2614 12.717 9.66061L12.765 9.57061C12.8342 9.46774 12.9391 9.39423 13.0594 9.36436C13.1797 9.33448 13.3068 9.35036 13.4161 9.40891C13.5254 9.46747 13.609 9.56453 13.6507 9.68125C13.6925 9.79798 13.6894 9.92605 13.642 10.0406L13.512 10.3366C13.235 10.929 12.8739 11.4783 12.44 11.9676L12.214 12.2076C11.062 13.3806 9.44401 14.1496 7.50001 14.1496C3.43801 14.1496 0.850006 10.8146 0.850006 7.49961C0.850006 4.18561 3.43801 0.849609 7.50001 0.849609Z" fill="currentColor"/></svg>Scan again</button>' +
     '<button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>';
   // Hide result block
   var rb = document.getElementById('remed-result-block');
@@ -21145,7 +21164,7 @@ function startRescan() {
           '<div style="flex-shrink:0;font-size:10px;color:var(--text-sec);">Rescanned ' + now + '</div>' +
         '</div>';
       document.getElementById('remed-action-area').innerHTML =
-        '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Rescan again</button>' +
+        '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M7.50001 0.849609C10.664 0.849609 12.294 3.06861 13 4.30961V4.31161V2.49961C13 2.367 13.0527 2.23982 13.1465 2.14606C13.2402 2.05229 13.3674 1.99961 13.5 1.99961C13.6326 1.99961 13.7598 2.05229 13.8536 2.14606C13.9473 2.23982 14 2.367 14 2.49961V5.49961C14 5.63222 13.9473 5.75939 13.8536 5.85316C13.7598 5.94693 13.6326 5.99961 13.5 5.99961H10.5C10.3674 5.99961 10.2402 5.94693 10.1465 5.85316C10.0527 5.75939 10 5.63222C10 5.367 10.0527 5.23982 10.1465 5.14606C10.2402 5.05229 10.3674 4.99961 10.5 4.99961H12.233L12.121 4.79161C11.481 3.66561 10.111 1.84961 7.50101 1.84961C4.06101 1.84961 1.85001 4.66461 1.85001 7.49961C1.85001 10.3346 4.06001 13.1496 7.50001 13.1496C9.16501 13.1496 10.53 12.4956 11.501 11.5066L11.693 11.3026C12.1239 10.8165 12.47 10.2614 12.717 9.66061L12.765 9.57061C12.8342 9.46774 12.9391 9.39423 13.0594 9.36436C13.1797 9.33448 13.3068 9.35036 13.4161 9.40891C13.5254 9.46747 13.609 9.56453 13.6507 9.68125C13.6925 9.79798 13.6894 9.92605 13.642 10.0406L13.512 10.3366C13.235 10.929 12.8739 11.4783 12.44 11.9676L12.214 12.2076C11.062 13.3806 9.44401 14.1496 7.50001 14.1496C3.43801 14.1496 0.850006 10.8146 0.850006 7.49961C0.850006 4.18561 3.43801 0.849609 7.50001 0.849609Z" fill="currentColor"/></svg>Rescan again</button>' +
         '<button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>';
     } else {
       // State 3: Resolved
@@ -21170,7 +21189,7 @@ function startRescan() {
         if (p) p.textContent = 'Now passing \u00b7 Disabled \u2192 Enabled';
       }
       document.getElementById('remed-action-area').innerHTML =
-        '<button class="btn-outline" style="padding:8px 16px;" onclick="showView(\'results\')">Back to Results</button>';
+        '<button class="action-cta remed-back-results-cta" onclick="showView(\'results\')">Back to Results</button>';
     }
   }, 3000);
 }
@@ -21181,8 +21200,8 @@ function acceptRisk() {
   if (activeItem) {
     var badge = activeItem.querySelector('.type-pill');
     if (badge) {
-      badge.className = 'type-pill';
-      badge.style.cssText = 'background:var(--bg-subtle);color:var(--p-neutral-500);border:1px solid #cbd5e1;';
+      badge.className = 'type-pill type-pill--risk-accepted';
+      badge.style.cssText = '';
       badge.textContent = 'Risk accepted';
     }
     var h4 = activeItem.querySelector('h4');
@@ -21194,17 +21213,17 @@ function acceptRisk() {
   if (rb) {
     rb.style.display = 'block';
     rb.innerHTML =
-      '<div style="display:flex;align-items:flex-start;gap:10px;background:var(--bg-canvas);border:1px solid var(--border-default);border-radius:8px;padding:12px 14px;">' +
-        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
-        '<div>' +
-          '<div style="font-size:12px;font-weight:700;color:var(--p-neutral-600);margin-bottom:2px;">Risk accepted</div>' +
-          '<div style="font-size:11px;color:var(--p-neutral-500);">This issue will be excluded from your compliance score until reviewed. Scheduled for re-evaluation in 90 days.</div>' +
+      '<div class="remed-impact">' +
+        '<div class="remed-result-label">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+          '<span>Risk accepted</span>' +
         '</div>' +
+        '<div class="remed-impact-text">This issue will be excluded from your compliance score until reviewed. Scheduled for re-evaluation in 90 days.</div>' +
       '</div>';
   }
   document.getElementById('remed-action-area').innerHTML =
-    '<button class="btn-outline" style="padding:8px 16px;opacity:0.5;" disabled>Risk accepted</button>' +
-    '<button class="btn-outline" style="padding:8px 16px;" onclick="undoAcceptRisk()">Undo</button>';
+    '<button class="action-cta remed-post-risk-cta" disabled>Risk accepted</button>' +
+    '<button class="action-cta remed-post-risk-cta" onclick="undoAcceptRisk()">Undo</button>';
 }
 
 function undoAcceptRisk() {
@@ -21226,7 +21245,7 @@ function undoAcceptRisk() {
   var rb = document.getElementById('remed-result-block');
   if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
   document.getElementById('remed-action-area').innerHTML =
-    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()">\u21bb Scan again</button>' +
+    '<button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M7.50001 0.849609C10.664 0.849609 12.294 3.06861 13 4.30961V4.31161V2.49961C13 2.367 13.0527 2.23982 13.1465 2.14606C13.2402 2.05229 13.3674 1.99961 13.5 1.99961C13.6326 1.99961 13.7598 2.05229 13.8536 2.14606C13.9473 2.23982 14 2.367 14 2.49961V5.49961C14 5.63222 13.9473 5.75939 13.8536 5.85316C13.7598 5.94693 13.6326 5.99961 13.5 5.99961H10.5C10.3674 5.99961 10.2402 5.94693 10.1465 5.85316C10.0527 5.75939 10 5.63222C10 5.367 10.0527 5.23982 10.1465 5.14606C10.2402 5.05229 10.3674 4.99961 10.5 4.99961H12.233L12.121 4.79161C11.481 3.66561 10.111 1.84961 7.50101 1.84961C4.06101 1.84961 1.85001 4.66461 1.85001 7.49961C1.85001 10.3346 4.06001 13.1496 7.50001 13.1496C9.16501 13.1496 10.53 12.4956 11.501 11.5066L11.693 11.3026C12.1239 10.8165 12.47 10.2614 12.717 9.66061L12.765 9.57061C12.8342 9.46774 12.9391 9.39423 13.0594 9.36436C13.1797 9.33448 13.3068 9.35036 13.4161 9.40891C13.5254 9.46747 13.609 9.56453 13.6507 9.68125C13.6925 9.79798 13.6894 9.92605 13.642 10.0406L13.512 10.3366C13.235 10.929 12.8739 11.4783 12.44 11.9676L12.214 12.2076C11.062 13.3806 9.44401 14.1496 7.50001 14.1496C3.43801 14.1496 0.850006 10.8146 0.850006 7.49961C0.850006 4.18561 3.43801 0.849609 7.50001 0.849609Z" fill="currentColor"/></svg>Scan again</button>' +
     '<button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>';
 }
 
@@ -24364,9 +24383,6 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
     <div onclick="peApplyTag(&#39;Config&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Config</div>
     <div onclick="peApplyTag(&#39;Custom&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Custom</div>
     <div onclick="peApplyTag(&#39;Needs review&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Needs review</div>
-  </div>
-  <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;">
-    <a href="https://burkotaras-dot.github.io/guardian-demo/#" onclick="return false;" style="font-size:11px;color:var(--green2);">Manage approved tags in Settings →</a>
   </div>
 </div>
 
