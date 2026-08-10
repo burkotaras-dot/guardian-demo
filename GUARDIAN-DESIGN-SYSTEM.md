@@ -14,7 +14,7 @@
 1. [Navigation](#1-navigation) — ✅ заповнено
 2. Page layout — ⏳
 3. [Forms](#3-forms) — ✅ dropdown hover
-4. Tables — ⏳
+4. [Tables](#4-tables) — ✅ table headers
 5. States — ⏳
 6. Buttons — ⏳
 7. Cards — ⏳
@@ -107,5 +107,17 @@
 **Reference.** Policies → `Filter by tag`; All Nodes → `All groups` / `All environments`; Scans → `Filters` / `Export`; Detected Drift → `Newest first` / `Group: None`.
 
 **Exceptions.** Disabled controls не мають hover. Overflow/action menus (три крапки), primary action-кнопки, tag-add popovers і спеціально кольорові domain actions зберігають власну button-семантику — це не form dropdown/select triggers. Hover рядків усередині відкритого меню регулюється окремо й не належить до цього правила.
+
+---
+
+## 4. Tables
+
+### 4.1 Table header background
+
+**Rule.** Усі шапки таблиць у світлій темі використовують єдиний фон `#F1F5F9` через токен `--table-header-bg`. У темній темі цей токен дорівнює `#063135`. Шапка не має нижнього бордера (`border-bottom:0`), щоб не утворювати подвійну лінію разом із межею першого рядка. Не задавати локальні кольори чи нижні бордери шапок таблиць. Для grid-таблиць використовувати `.col-thead` (або наявні canonical класи `.compare-thead` / `.drift-thead`); HTML-таблиці з `<thead>` покриваються глобальним правилом автоматично.
+
+**Reference.** **Scan Schedules** — шапка таблиці `Node group / Status / Frequency / Time / Last run / Next run`.
+
+**Exceptions.** Групові розділювачі, toolbar-рядки, bulk-action bars, subtotal/footer rows і заголовки карток не є шапками колонок та не використовують `--table-header-bg`.
 
 ---
