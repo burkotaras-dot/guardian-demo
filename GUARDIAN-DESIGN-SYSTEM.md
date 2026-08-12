@@ -21,7 +21,7 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 3. [Forms](#3-forms) — ✅ dropdown hover + selected state
 4. [Tables](#4-tables) — ✅ table headers
 5. [States](#5-states) — ✅ loading · empty · validation · action result · error · success · warning
-6. [Buttons](#6-buttons) — ✅ placement · order · terminal labels · один результат — один контроль · **6.5 канонічний набір з Figma**
+6. [Buttons](#6-buttons) — ✅ placement · order · terminal labels · один результат — один контроль · **6.5 канонічний набір з Figma** · 6.6 сегменти й таби
 7. Cards — ⏳
 8. KPI — ⏳
 9. Spacing — ⏳
@@ -211,19 +211,37 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 
 Плаский центрований рядок тексту без іконки, заголовка й дії — не empty state.
 
-**Reference.** **Reports** — `rc-empty-state` (`index.html:17554`), `rb-empty-state` (17814),
-`ri-empty-state` (18076).
+**Носій — клас, не inline.** Розмітка нового empty state не пишеться від руки:
+
+```html
+<div class="es">                       <!-- .es.es-sm — компактний варіант у панелі/картці -->
+  <div class="es-ico"><svg …></svg></div>
+  <div class="es-title">…</div>
+  <div class="es-sub">…</div>
+  <div class="es-act"><button …></button></div>
+</div>
+```
+
+Клас `.es` тримає всі канонічні значення (`index.html:598`), тому новий стан не потребує **жодного**
+нового CSS. Ставити `font-size`/`color` інлайн поверх `.es-*` заборонено.
+
+**Reference.** `.es` (`index.html:598`). Робочі зразки: `nd-attrs-empty` (no-match + `Reset filters`),
+`cmd-nodes-empty` (true-empty + `Assign nodes`), `intg-list` порожній (true-empty + `Add integration`).
+Історичні inline-екземпляри `rc-empty-state` / `rb-empty-state` / `ri-empty-state` (Reports) несуть ті
+самі значення й лишаються валідними, але новий код пишеться на `.es`.
 
 **Examples.**
 - ✅ Credentials, Nodes, Scan Schedules, CM Groups — приведені до канону 07.08.2026.
-- ❌ `nd-attrs-empty` (7149), `nd-policies-empty` (7199), `.intg-empty` (591), `.id-caps-empty` (592),
-  `recon-node-empty` (15198), `cmd-nodes-empty` (12383) — text-only, без іконки й дії.
-- ❌ `report-empty` (18227) — 16px/700 + 13px замість канонічних 14/600 + 12px, **на тій самій сторінці,
-  що є Reference**.
+- ✅ `nd-attrs-empty`, `nd-policies-empty`, `.intg-empty`, `.id-caps-empty` (×3), `cmd-nodes-empty`,
+  `report-empty` — переведені на `.es` 13.08.2026. `report-empty` знято з 16px/700 + 13px на 14/600 + 12px.
+- ✅ no-match отримав робочий reset: `ndResetAttrFilters()` / `ndResetPolFilters()` чистять і пошук,
+  і статус-фільтр. Reset без обробника — не reset.
 
 **Exceptions.** Порожня комірка або порожній під-блок усередині заповненого рядка (напр. «—» у колонці)
-не є empty state і не отримує іконки з CTA. Порожній стан всередині dropdown-меню обмежується
-одним рядком тексту.
+не є empty state і не отримує іконки з CTA. Порожній стан всередині dropdown-меню або поповера
+обмежується одним рядком тексту — `icon-circle 44×44` у контейнері шириною 240px непропорційний.
+Чинний виняток: `recon-node-empty` («No matching nodes» у поповері Node scope) свідомо лишений
+text-only.
 
 ### 5.3 Validation
 
@@ -238,19 +256,37 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 Валідаційна помилка **ніколи не показується як toast** — toast не вказує на поле й зникає раніше,
 ніж користувач встигне його виправити.
 
-**Reference.** Full-page — `alValidate` (agentless onboarding). Модалка — `cmCreateGroup` (Create CM group).
+**Носій — хелпер, не копіпаст.** Обидва шасі зведені до трьох функцій (`index.html`, поруч із
+`showToast`), щоб рамка й авто-очищення не переписувались на кожному call-site:
+
+| Функція | Призначення |
+|---|---|
+| `vRequire(ids)` | Модалка. `ids` — id або масив id обовʼязкових полів. Ставить рамку `#FB3C44` на порожні, фокус на перше, знімає рамку при першому вводі. Повертає `true`, якщо є порожні. |
+| `vFormError(host, msg)` | Помилка рівня форми: inline-блок `.v-form-err` угорі `host` (напр. `.gm-body` модалки). `msg = null` знімає блок. Знімається і сам — при першому `input`/`change` у формі. |
+| `vMarkField(el)` | Позначити одне поле (нестандартна умова, не «порожнє»). |
+
+`gmGoStep` очищає `.v-form-err` при кожній зміні кроку — помилка одного кроку не переїжджає
+на наступний. Full-page шасі має два класи-носії: `.v-submit:disabled` і `.v-req-hint`.
+
+**Reference.** Full-page — `alValidate` (agentless onboarding) і `ssValidate` (Configure Secret Server).
+Модалка — `vRequire` у `icxNext` (крок 2, Instance URL); `cmCreateGroup` — історичний зразок.
 
 **Examples.**
 - ✅ `credSave`, CM group edit — auto-clear рамки при вводі (додано 07.08.2026).
-- ⚠️ **Частково виправлено.** Пʼять валідацій (`'Select at least one field'`, `'Fix blocking errors
-  before proceeding'`, `'Select a provider to continue'`, `'Enter the instance URL to continue'`,
-  `'Instance URL and username are required'`) показувались у **зеленому success-toast із галочкою**.
-  12.08.2026 переведені на варіант `error` — інверсію семантики знято. Але вони досі toast, тобто
-  правилу 5.3 ще не відповідають: лишається перевести їх на inline-валідацію біля поля
-  (по одному шасі на форму). Записано в backlog.
+- ✅ **Закрито 13.08.2026.** Пʼять валідацій, що показувались у **зеленому success-toast із галочкою**,
+  12.08 переведені на варіант `error`, а 13.08 — на inline-шасі. По одному шасі на форму:
+  - `ssSaveConfig` (`Instance URL and username are required`) → full-page: `ss-submit` disabled +
+    hint `ss-req-hint` («Add the instance URL and a username to test the connection.»).
+  - `icxNext` крок 2 (`Enter the instance URL to continue`) → `vRequire('icx-url')`: рамка + фокус
+    + auto-clear.
+  - `icxNext` крок 1 (`Select a provider to continue`) → `vFormError`: провайдер обирається плиткою,
+    поля не існує. Знімається у `icxSelectProvider`.
+  - `_fmNext` крок 0 (`Select at least one field`) і крок 1 (`Fix blocking errors before proceeding`)
+    → `vFormError`: обидві стосуються набору галочок / результату тесту, а не поля.
+  У продукті не лишилось жодної валідації, що виводиться через `showToast`.
 
 **Exceptions.** Помилка, що стосується форми в цілому, а не конкретного поля (напр. «Connection test
-failed»), показується inline-блоком угорі форми — але теж не toast.
+failed», «Select a provider»), показується inline-блоком `.v-form-err` угорі форми — але теж не toast.
 
 ### 5.4 Action result (toast)
 
@@ -308,9 +344,11 @@ warning/error 3800 мс — помилка має жити довше, бо на
 
 **Examples.**
 - ✅ AWS Stage 1 у реалізації: account ID можна виправити й перетестувати всередині Stage 1.
-- ✅ **Виправлено 12.08.2026.** Пʼять помилок валідації показувались у **зеленому** success-toast із
-  галочкою — помилка виглядала як підтвердження успіху. Було найгрубішим порушенням семантики кольору
-  в продукті; переведені на варіант `error` (`#991B1B` + коло з ×).
+- ✅ **Виправлено 12.08.2026 — але лише семантику кольору.** Пʼять помилок валідації показувались
+  у **зеленому** success-toast із галочкою: помилка виглядала як підтвердження успіху. Було
+  найгрубішим порушенням семантики кольору в продукті; переведені на варіант `error`
+  (`#991B1B` + коло з ×). ⚠️ **Носій усе ще неправильний** — за 5.3 валідація має бути inline
+  біля поля, а не toast. Не вважати пункт закритим.
 
 **Exceptions.** Немає. Помилка, показана не червоним, — дефект.
 
@@ -420,31 +458,33 @@ warning/error 3800 мс — помилка має жити довше, бо на
 ### 6.4 Кнопка дії в рядку/смузі
 
 **Rule.** Будь-який рядок списку або смуга-картка з кнопками дії (`View`, `Edit`, `Review`,
-`Reconcile`, …) використовує **зелену outlined-кнопку** — єдиний тип для цього патерну app-wide.
+`Reconcile`, …) використовує канонічний **`Secondary`** із 6.5 — єдиний тип для цього патерну app-wide.
+Власних кольорів це правило **не задає**: значення беруться з 6.5 і живуть у базових класах.
 
-| Тема | Стан | Значення |
-|---|---|---|
-| Light | default | bg `#F3FAF6` · border `rgba(16,185,129,0.32)` · text `var(--text-default)` · стрілка `#10B981` |
-| Light | hover | bg `rgba(16,185,129,0.16)` · border `#10B981` |
-| Dark | default | bg `rgba(0,175,115,0.15)` · border `rgba(0,175,115,0.35)` · text `var(--p-neutral-50)` · стрілка `#00AF73` |
-| Dark | hover | bg `rgba(0,175,115,0.20)` · border `rgba(0,175,115,0.41)` |
+Новий рядок-із-кнопкою не потребує **жодного** нового CSS — достатньо класу. Скоупити під клас
+рядка/картки можна лише **геометрію** (min-width, вирівнювання); колір, розмір і стани
+перевизначати заборонено. Ніколи inline — `_syncInlineTheme` мутує inline-фони.
 
-Стиль задається **CSS-класом, зоскопленим під клас рядка/картки** — ніколи inline
-(`_syncInlineTheme` мутує inline-фони) і ніколи глобально на `.btn-secondary`.
+**Reference.** Бази `.btn-secondary` (~1153) і `.action-cta` (~2114) — обидві на значеннях 6.5
+`Secondary s=32`. Зразок вживання: Dashboard → «Needs your attention».
 
-**Reference.** Dashboard → «Needs your attention» — `.action-row .action-cta`.
-
-**Examples.** ✅ Dashboard attention rows; ✅ Policies cards (`.policy-card .btn-secondary`).
+**Examples.**
+- ✅ 12.08.2026 застосунок переведено на 6.5 за один прохід: **54** екземпляри `.action-cta` +
+  `.btn-secondary` дають ОДНУ computed-сигнатуру в кожній темі.
+- ✅ Видалено як дублікати: `.action-row .action-cta`, `.node-row .btn-secondary`, `.remed-risk-cta`,
+  `.remed-back-results-cta`, `.remed-post-risk-cta`, кольори `.schedule-action-cta` і `.detected-row-cta`.
+- ⚠️ Інлайнові `font-size` / `padding` переважують канон — при міграції знято ~49 таких атрибутів.
+  Після будь-якої зміни базового класу перевіряти інлайни.
 
 **Exceptions.** Destructive row-action (напр. `Disconnect`) зберігає червону семантику. Icon-only
-overflow-меню (три крапки) не є кнопкою дії в рядку.
+overflow-меню (три крапки) — це `Back` із 6.5, а не кнопка дії в рядку.
 
 ### 6.5 Канонічний набір кнопок (Figma) — ЄДИНЕ ДЖЕРЕЛО
 
 **Rule.** В застосунку існує **рівно пʼять** типів кнопок: `Primary`, `Secondary`, `Text button`,
 `Third`, `Back`. Створюючи будь-що нове, брати кнопку **звідси** — не вигадувати власну й не копіювати
 старі inline-стилі. Джерело: Figma «Guardian UI Design System based on Mantine — v5.10», секція `Buttons`
-(fileKey `eXz33Qu7v58JjOiatTptAE`, node `2988:70531`). Оновлено з макета 2026-08-12 (**3-тя ревізія**).
+(fileKey `eXz33Qu7v58JjOiatTptAE`, node `2988:70531`). Оновлено з макета 2026-08-12 (**4-та ревізія**).
 
 **Спільне для всіх типів:** шрифт `DM Sans` **600** (SemiBold), `font-size:12px`, `border-radius:10px`,
 текст центрований. Gap між текстом та іконкою — `4px`.
@@ -493,9 +533,13 @@ Padding `10px 20px`, height `32px`.
 |---|---|---|---|
 | Light | default | bg `rgba(0,175,115,0.05)` · border `1px rgba(0,175,115,0.35)` | `#334155` |
 | Light | hover | bg `rgba(0,175,115,0.15)` · border `1px #10B981` | `#334155` |
-| Dark | default | bg `rgba(0,175,115,0.05)` · border `1px #00AF73` (суцільний) | **`#FFFFFF`** |
+| Dark | default | bg `rgba(0,175,115,0.05)` · border `1px rgba(0,175,115,0.35)` | **`#FFFFFF`** |
 | Dark | hover | bg `rgba(0,175,115,0.15)` · border `1px #10B981` | **`#FFFFFF`** |
 | Light/Dark | disable | = свій default + `opacity:0.4` | — |
+
+⚠️ **Тема впливає ЛИШЕ на колір підпису/гліфа.** Сам бокс (`bg .05` / `border .35`) ідентичний
+у light і dark. Тому `body.dark … border-color` для `Third` і `Back` писати не треба — такий
+оверрайд є багом.
 
 Іконка: бокс `10px`, гліф `7.5px` (ліва стрілка = `rotate(180deg)`). Radius `10px`.
 Підпис: `DM Sans 600 12px`, **поза** рамкою. Стану `loading` немає.
@@ -509,7 +553,7 @@ Padding `10px 20px`, height `32px`.
 |---|---|---|
 | Light | default | bg `rgba(0,175,115,0.05)` · border `1px rgba(0,175,115,0.35)` · radius `10px` |
 | Light | hover | bg `rgba(0,175,115,0.15)` · border `1px #10B981` |
-| Dark | default | bg `rgba(0,175,115,0.05)` · border `1px #00AF73` (суцільний) |
+| Dark | default | bg `rgba(0,175,115,0.05)` · border `1px rgba(0,175,115,0.35)` |
 | Dark | hover | bg `rgba(0,175,115,0.15)` · border `1px #10B981` |
 | Light/Dark | disable | = свій default + `opacity:0.4` |
 
@@ -527,9 +571,13 @@ Padding `10px 20px`, height `32px`.
 - ✅ Шрифт збігається з застосунком — `DM Sans` уже базовий (`index.html:233`).
 - ✅ `Text button` → наявний `.action-arrow` (8×8 viewBox) сумісний за геометрією.
 - ✅ `Third` / `Back` → наявний патерн back-кнопки (1.2).
-- ⚠️ `Secondary` близький, але **не тотожний** значенням 6.4 (там light bg `#F3FAF6`, border
-  `rgba(16,185,129,0.32)`). Для нового коду діє **6.5**; 6.4 лишається описом уже написаного,
-  поки не зроблено міграцію.
+- ✅ **Міграція виконана 12.08.2026.** Старі значення (light bg `#F3FAF6`, border
+  `rgba(16,185,129,0.32)`) у коді більше не існують: бази `.btn-secondary` і `.action-cta`
+  переписані на 6.5, дублікати видалені. 6.4 більше не тримає власної таблиці значень і
+  посилається сюди.
+- ✅ `.btn-outline` (Cancel / Skip / нейтральні дії) взяв **форму** канону — h32 · r10 · 12/600 ·
+  gap 4 · `padding:0 14px` · `:disabled opacity .4` — але лишив нейтральні кольори, бо в наборі
+  немає нейтрального типу (див. дефект 8). 36 екземплярів → одна сигнатура.
 
 **Exceptions / відомі дефекти макета** (перевірити з дизайнером до міграції):
 1. **`Text button` = `Thema=Both` з текстом `#059669`.** Це єдиний тип, який НЕ отримав темного варіанта.
@@ -544,13 +592,70 @@ Padding `10px 20px`, height `32px`.
    Два різні способи задати майже однаковий колір; варто звести до одного.
 7. Дрібне: в інстансі `Text button` підпис лишився «Dark thema» замість «Button text»;
    у dark-рядках `Secondary` третій ряд підписаний «left icon», хоча стрілка справа.
+8. **У наборі немає нейтрального типу.** Усі пʼять — зелені або градієнтні. `Cancel`, `Skip`, `Close`
+   поруч із `Primary` дали б два зелені контроли підряд, тому для них довелось лишити нейтральний
+   `.btn-outline` поза каноном. Потрібен шостий тип або явний дозвіл на нейтральний варіант `Secondary`.
+
+**Виправлено в 4-й ревізії (12.08.2026):** `Third` і `Back` у Dark мають **той самий** бордер
+`rgba(0,175,115,0.35)`, що й у Light — суцільний `#00AF73` був помилкою макета. Тема змінює лише
+колір підпису/гліфа.
 
 **Виправлено в 3-й ревізії:** `Secondary` Dark — текст став **білим**, а hover отримав власні значення
-(`0.20` / border `0.41`), тож ховер у темній темі більше не «мертвий»; `Third` Dark розвели з Light
-(суцільний бордер `#00AF73` + білий підпис); токени перейменовані на нейтральні `new buttons/*`.
+(`0.20` / border `0.41`), тож ховер у темній темі більше не «мертвий»; токени перейменовані
+на нейтральні `new buttons/*`.
 
 **Виправлено в 2-й ревізії:** стани `Text button` більше не звуться `Variant=Frame 1`; `Secondary`
 отримав повну матрицю станів та іконок для обох тем; `Third` отримав Light+Dark; додано `Back`.
+
+### 6.6 Сегментовані контроли й таби
+
+**Rule.** Це **два різні компоненти**, і плутати їх не можна. Вибір робиться не за виглядом, а за тим,
+**що саме перемикається**:
+
+| Компонент | Коли | Ознаки |
+|---|---|---|
+| **Таби** — `.policies-tabs` / `.pol-tab` | перемикають **фільтр-вимір сторінки**: взаємовиключні зрізи одного списку, у кожного свій обсяг | підкреслення активного + **лічильник у баджі**, стоять на горизонтальній лінії |
+| **Сегментований контрол** — `.seg` / `.seg-btn` | перемикає **режим або джерело** всередині тулбару; обсяг не показується | одна зʼєднана доріжка з роздільниками, компактна, **без лічильників** |
+
+Сегментований контрол — це ОДНА доріжка. Окремі плаваючі пігулки сегментованим контролом не є.
+
+**Таби.** Смуга `h42`, `border-bottom:1px var(--border)`. Таб `13px/500` → активний `600`,
+`border-bottom:2px` кольору тексту, `margin-bottom:-1px` (лягає на лінію смуги). Бадж `.pol-tab-count`
+`22×22`, `radius:999px`, `11px/700`.
+
+**Сегментований контрол.** Доріжка: `h32` · `radius:10px` · `var(--bg-surface)` · `1px var(--border)` ·
+`overflow:hidden`. Сегмент: `padding:0 14px` · `12px/600` · `border-right:1px var(--border)`
+(немає в останнього). **Драбинка тінтів = тінти `Secondary` своєї теми, нових кольорів не вигадано:**
+
+| Стан | Light | Dark |
+|---|---|---|
+| спокій | прозорий · `var(--text-sec)` | прозорий · `var(--text-sec)` |
+| hover | `rgba(0,175,115,0.05)` = Secondary **default** | `rgba(0,175,115,0.15)` = Secondary **default** |
+| вибраний | `rgba(0,175,115,0.15)` = Secondary **hover** · `#334155` | `rgba(0,175,115,0.20)` = Secondary **hover** · білий |
+
+`.toggle-group` / `.toggle-btn` — **форм-варіант того самого контролу**: ті самі правила, плюс
+`display:flex` + `flex:1`, щоб доріжка займала ширину form-group. Клас активного — `.active`.
+
+JS **не фарбує** сегменти інлайн — лише `classList.toggle` + `aria-pressed`. Інлайн-фон мутує
+`_syncInlineTheme`.
+
+**Reference.** Сегментований контрол — `#node-filter-btns` (All / Local / AWS). Таби — `#results-pills`
+на Scans.
+
+**Examples.**
+- ✅ 12.08.2026 пʼять незалежних реалізацій зведено до однієї: `#node-filter-btns`,
+  `#detected-source-btns`, `#peer-group-btns`, `.rep-seg`, `.toggle-group` — **7 доріжок / 17 сегментів**.
+  Клас `.rep-seg-btn` і мертвий `.dash-seg` видалені; прибрано ~30 рядків інлайн-перефарбування в JS.
+- ✅ Detected Drift: фільтри — це фільтр-вимір із лічильниками, тому **таби**, а не `.seg`.
+- ❌ Колір активного таба в dark заданий **лише для `.remed-tabs`** (`#00AF73`); решта груп
+  успадковують `var(--green2)` = `#059669` — той самий низький контраст на темному полотні,
+  що й дефект 1 у 6.5.
+- ❌ Білий текст у баджі активного таба патчиться **пʼятьма** id-скоупленими правилами
+  (`#v-policies`, `#nodes-tabs`, `#results-pills`, `#sched-scope-tabs`, `#drift-filter-btns`)
+  поверх базового `#00AF73`. Якщо виняток діє для всіх груп — це не виняток, а базове правило.
+
+**Exceptions.** Таб без лічильника допустимий, якщо обсяг зрізу неможливо порахувати дешево.
+Зворотне — сегментований контрол із лічильниками — не допускається: лічильник є ознакою табів.
 
 ---
 
