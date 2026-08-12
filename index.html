@@ -2255,6 +2255,13 @@ body.dark .drift-stat--review       { background:rgba(245,158,11,0.15); color:#F
   text-align:center; max-width:440px;
   box-shadow:var(--shadow-lg); animation:fadeUp 0.3s ease;
 }
+/* Action-result toast — DS §5.4. Colour + icon are a property of the VARIANT, never of the message
+   text. Set via [data-variant] so the fill is a CSS rule, not an inline style (_syncInlineTheme
+   mutates inline backgrounds). Same fill in light and dark: the toast is a solid dark surface. */
+#success-toast[data-variant="success"] { background:#166534; }
+#success-toast[data-variant="error"]   { background:#991B1B; }
+#success-toast[data-variant="warning"] { background:#92400E; }
+#success-toast[data-variant="info"]    { background:#0F172A; }
 .empty-icon {
   width:80px; height:80px;
   background:linear-gradient(135deg, rgba(63,200,120,0.12), rgba(38,162,87,0.06));
@@ -7750,7 +7757,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var cur = (document.getElementById('nd-scan-select') || {}).value || 'now';
       ndBaseline = cur;
       ndUpdateBaselineUI();
-      scToast('★ Baseline set to ' + (SC_LABELS[cur] || cur));
+      showToast('Baseline set to ' + (SC_LABELS[cur] || cur), 'success');
     }
     function setGroupBaseline() {
       var names = Array.prototype.slice.call(document.querySelectorAll('.node-checkbox:checked')).map(function (cb) {
@@ -7759,17 +7766,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       }).filter(Boolean);
       var n = names.length;
       if (!n) return;
-      scToast('★ Baseline set for ' + n + ' node' + (n === 1 ? '' : 's') + ' — current state captured');
+      showToast('Baseline set for ' + n + ' node' + (n === 1 ? '' : 's') + ' — current state captured', 'success');
       if (typeof clearNodeSelection === 'function') clearNodeSelection();
     }
-    function scToast(msg) {
-      var t = document.createElement('div');
-      t.textContent = msg;
-      t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#0F172A;color:#fff;font-size:12px;font-weight:600;padding:10px 18px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);z-index:9999;opacity:0;transition:opacity 0.2s;';
-      document.body.appendChild(t);
-      setTimeout(function () { t.style.opacity = '1'; }, 10);
-      setTimeout(function () { t.style.opacity = '0'; setTimeout(function () { t.remove(); }, 250); }, 2400);
-    }
+    // Alias kept for existing call-sites. There is ONE toast in the app — DS §5.4.
+    function scToast(msg, variant) { showToast(msg, variant || 'info'); }
     window.addEventListener('load', function () { try { enhanceAllSelects(); } catch (e) {} try { ndUpdateBaselineUI(); } catch (e) {} });
 
     function ndToggleCat(id) {
@@ -9989,7 +9990,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var user = (document.getElementById('ss-user') || {}).value || '';
       if (!url.trim() || !user.trim()) {
         if (typeof scToast === 'function') scToast('Instance URL and username are required');
-        else showToast('Instance URL and username are required');
+        else showToast('Instance URL and username are required', 'error');
         return;
       }
       var folders = ssFolders.filter(function (f) { return f.trim(); });
@@ -10522,13 +10523,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var testBtn = document.getElementById('fm-btn-test');
       if (cur === 0) {
         _fmCollectSelected(ov);
-        if (!_fmSelected.length) { showToast('Select at least one field'); return; }
+        if (!_fmSelected.length) { showToast('Select at least one field', 'error'); return; }
         gmGoStep(_FM_MODAL, 1);
         if (nextBtn) nextBtn.textContent = 'Next: Review & activate';
         if (backBtn) backBtn.style.display = '';
         if (testBtn) testBtn.style.display = '';
       } else if (cur === 1) {
-        if (_fmTestState === 'error') { showToast('Fix blocking errors before proceeding'); return; }
+        if (_fmTestState === 'error') { showToast('Fix blocking errors before proceeding', 'error'); return; }
         gmGoStep(_FM_MODAL, 2);
         if (nextBtn) nextBtn.textContent = 'Activate mapping';
         if (testBtn) testBtn.style.display = 'none';
@@ -11147,12 +11148,12 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     }
     function icxNext() {
       if (ICX.step===1) {
-        if (!ICX.provider) { showToast('Select a provider to continue'); return; }
+        if (!ICX.provider) { showToast('Select a provider to continue', 'error'); return; }
         icxGoStep(2); return;
       }
       if (ICX.step===2) {
         var url = (document.getElementById('icx-url')||{}).value||'';
-        if (!url.trim()) { showToast('Enter the instance URL to continue'); return; }
+        if (!url.trim()) { showToast('Enter the instance URL to continue', 'error'); return; }
         icxGoStep(3); return;
       }
       if (ICX.step===3) { icxGoStep(4); return; }
@@ -11789,6 +11790,22 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     //         dismissable:bool (Esc/backdrop/X, default true),
     //         confirmDirty:bool (ask before discarding edits),
     //         afterMount(overlayEl), onClose() }
+    // DS §11.1 — canonical "discard unsaved changes" confirmation.
+    // Verb-labelled destructive action, no native window.confirm anywhere in the product.
+    function confirmDiscard(onDiscard) {
+      openModal({
+        id: 'gm-discard-confirm',
+        size: 'sm',
+        title: 'Discard unsaved changes?',
+        subtitle: 'Your edits on this screen will be lost. This cannot be undone.',
+        bodyHtml: '',
+        buttons: [
+          { label: 'Keep editing', kind: 'secondary', onClick: function(e, close) { close(); } },
+          { label: 'Discard changes', kind: 'destructive', onClick: function(e, close) { close(); onDiscard(); } }
+        ]
+      });
+    }
+
     function openModal(opts) {
       var id = opts.id;
       var old = document.getElementById(id);
@@ -11828,7 +11845,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var card = ov.querySelector('.gm-card');
       function requestClose() {
         if (!dismissable) return;
-        if (opts.confirmDirty && ov._gmDirty && !window.confirm('Discard unsaved changes?')) return;
+        // DS §11.1 — confirmation is always the app's own modal, never window.confirm().
+        if (opts.confirmDirty && ov._gmDirty) { confirmDiscard(function(){ closeModal(id); }); return; }
         closeModal(id);
       }
       if (opts.buttons) {
@@ -12114,11 +12132,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       setTimeout(function() {
         if (c.status === 'valid' || c.status === 'expired') {
           c.status = 'valid'; c.lastVal = 'just now';
-          scToast('✓ ' + c.name + ' revalidated — connection successful');
+          showToast(c.name + ' revalidated — connection successful', 'success');
         } else {
           c.lastVal = 're-checked just now';
           var st = CRED_STATUS[c.status] || { label: c.status };
-          scToast('⚠ ' + c.name + ' still failing — ' + st.label);
+          showToast(c.name + ' still failing — ' + st.label, 'warning');
         }
         renderCredentials();
       }, 1100);
@@ -13541,15 +13559,35 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       showToast('issues_report.csv — download started');
     }
 
-    function showToast(msg) {
+    // ── Action-result toast — DS §5.4 ──
+    // One toast for the whole app, four variants. Colour, icon and dwell time belong to the
+    // VARIANT, never to the message text — do not prefix messages with ★ / ✓ / ⚠.
+    // Not for validation errors (DS §5.3 — those belong next to the field) and not for
+    // progress (DS §5.1).
+    var _TOAST_ICON = {
+      success: '<polyline points="20 6 9 17 4 12"></polyline>',
+      error:   '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>',
+      warning: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>',
+      info:    '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>'
+    };
+    var _TOAST_MS = { success: 2800, info: 2800, warning: 3800, error: 3800 };
+    var _toastTimers = [];
+    function showToast(msg, variant) {
       var t = document.getElementById('success-toast');
       var m = document.getElementById('success-toast-msg');
+      var ic = document.getElementById('success-toast-icon');
       if (!t) return;
+      var v = _TOAST_ICON[variant] ? variant : 'success';
       if (m) m.textContent = msg;
+      if (ic) ic.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' + _TOAST_ICON[v] + '</svg>';
+      if (t.getAttribute('data-variant') !== v) t.setAttribute('data-variant', v);
+      _toastTimers.forEach(clearTimeout);
+      _toastTimers = [];
       t.style.display = 'flex';
-      setTimeout(function(){ t.style.opacity = '1'; }, 10);
-      setTimeout(function(){ t.style.opacity = '0'; }, 2800);
-      setTimeout(function(){ t.style.display = 'none'; }, 3100);
+      var hold = _TOAST_MS[v];
+      _toastTimers.push(setTimeout(function(){ t.style.opacity = '1'; }, 10));
+      _toastTimers.push(setTimeout(function(){ t.style.opacity = '0'; }, hold));
+      _toastTimers.push(setTimeout(function(){ t.style.display = 'none'; }, hold + 300));
     }
 
     // ── Add check to policy from scan results (right-click context menu) ──
@@ -24268,8 +24306,8 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
 
 <!-- Global success toast -->
 
-<div id="success-toast" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:9998;background:#166534;color:white;font-size:13px;font-weight:600;padding:12px 22px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.18);display:flex;align-items:center;gap:10px;pointer-events:none;opacity:0;transition:opacity 0.25s ease;">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+<div id="success-toast" data-variant="success" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:9998;color:white;font-size:13px;font-weight:600;padding:12px 22px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.18);display:flex;align-items:center;gap:10px;pointer-events:none;opacity:0;transition:opacity 0.25s ease;">
+  <span id="success-toast-icon" style="display:flex;align-items:center;"></span>
   <span id="success-toast-msg">Done</span>
 </div>
 
