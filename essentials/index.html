@@ -125,6 +125,7 @@
   --status-warning:    #F97316;
   --status-danger:     #FB3C44;
   --status-info:       #3B82F6;
+  --status-danger-txt: #B91C1C;   /* error text on a light surface — the one red for this role */
   --status-success-bg: rgba(16,185,129,0.10);
   --status-warning-bg: rgba(249,115,22,0.10);
   --status-danger-bg:  rgba(251,60,68,0.08);
@@ -192,8 +193,9 @@
   --blue:        var(--status-info);
   --issues-more-txt: var(--text-sec);
   --issues-link:     var(--brand-accent);
-  --btn-grad:    linear-gradient(135deg, #10B981 0%, #059669 100%);
-  --btn-grad-h:  linear-gradient(135deg, #34D399 0%, #10B981 100%);
+  /* DS §6.5 "Primary" — gradient angles and stops come from the Figma button set */
+  --btn-grad:    linear-gradient(161.24deg, #10B981 0%, #059669 100%);
+  --btn-grad-h:  linear-gradient(65.09deg, #2DCE94 3.4%, #17BE85 86.55%);
   --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md:   0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
   --shadow-lg:   0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
@@ -250,14 +252,6 @@ body {
 .demo-seg { font-size:11px; font-weight:600; padding:4px 11px; border-radius:5px; border:none; background:transparent; color:var(--text-sec); cursor:pointer; font-family:inherit; transition:all 0.15s; }
 .demo-seg.on { background:var(--bg-surface); color:var(--text-default); box-shadow:var(--shadow-sm); }
 #exdemo-err.on { color:#FB3C44; }
-/* Report-type toggle (Compliance summary / Failed-checks / Full report) */
-.rep-seg-btn { font-size:11px; font-weight:600; padding:8px 14px; border:none; border-right:1px solid var(--border); background:#F9FAFC; color:var(--text-sec); cursor:pointer; font-family:inherit; transition:all 0.15s; }
-.rep-seg-btn:last-child { border-right:none; }
-.rep-seg-btn:hover { color:var(--text-default); }
-.rep-seg-btn.on { background:rgba(0,175,115,0.10); color:var(--green1); font-weight:700; }
-body.dark .rep-seg-btn { background:#0A3035; }
-body.dark .rep-seg-btn:hover { background:#0D3D42; }
-body.dark .rep-seg-btn.on { background:rgba(0,175,115,0.15); color:var(--green2); }
 /* Multi-select filter dropdown (Severity / Policy) */
 .ms-wrap { position:relative; display:inline-block; vertical-align:middle; }
 .ms-btn { display:inline-flex; align-items:center; height:32px; box-sizing:border-box; font-size:12px; font-weight:600; padding:0 26px 0 10px; border-radius:8px; border:1px solid var(--border); background:#F9FAFC; color:var(--text-default); cursor:pointer; font-family:inherit; position:relative; white-space:nowrap; }
@@ -298,10 +292,10 @@ body.dark .rpt-card { border-color:var(--p-dark-border); }
 body.dark .rpt-card:hover { border-color:var(--green1); }
 .rpt-soon { width:auto; padding:9px 18px; font-size:13px; font-weight:600; border-radius:var(--radius-md); background:var(--bg-canvas); color:var(--text-muted); border:1px solid var(--border); cursor:not-allowed; font-family:inherit; }
 body.dark .rpt-soon { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12); color:var(--text-muted); }
-/* Reusable Preview secondary CTA — light green, clearly interactive, weaker than primary */
-.rpt-preview-btn { display:inline-flex; align-items:center; gap:6px; width:auto; padding:8px 14px; font-size:13px; font-weight:600; border-radius:8px; background:#F3FAF6; color:var(--text-default); border:1px solid rgba(16,185,129,0.32); cursor:pointer; font-family:inherit; transition:background .15s, border-color .15s; }
+/* Reusable Preview CTA — DS §6.5 "Secondary" (s=32) */
+.rpt-preview-btn { display:inline-flex; align-items:center; justify-content:center; gap:4px; width:auto; height:32px; box-sizing:border-box; padding:0 14px; font-size:12px; font-weight:600; border-radius:10px; background:rgba(0,175,115,0.05); color:#334155; border:1px solid #9DE0C9; cursor:pointer; font-family:'DM Sans',sans-serif; transition:background .15s, border-color .15s, color .15s; }
 .rpt-preview-btn .action-arrow { color:var(--green1); display:inline-flex; transition:transform .12s; }
-.rpt-preview-btn:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); }
+.rpt-preview-btn:hover { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; }
 .rpt-preview-btn:hover .action-arrow { transform:translateX(2px); }
 body.dark .rpt-preview-btn { background:rgba(0,175,115,0.15); color:var(--p-neutral-50); border-color:rgba(0,175,115,0.35); }
 body.dark .rpt-preview-btn .action-arrow { color:#00AF73; }
@@ -436,7 +430,18 @@ body.dark .tag-filter-sep { background:rgba(255,255,255,0.08); }
   display:inline-flex;
   align-items:center;
   gap:8px;
+  background:none;
+  border:none;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:500;
+  color:var(--text-sec);
+  white-space:nowrap;
+  cursor:pointer;
 }
+.policies-tabs .pol-tab-active { font-weight:600; color:var(--green2); border-bottom-color:var(--green2); }
 .pol-tab-count { min-width:22px; height:22px; box-sizing:border-box; padding:0 7px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; background:#E9EEF3; color:var(--text-sec); font-size:11px; font-weight:700; line-height:1; transition:background .15s, color .15s; }
 .pol-tab-active .pol-tab-count { background:rgba(16,185,129,0.10); color:var(--green2); }
 body.dark .pol-tab-count { background:rgba(255,255,255,0.08); color:var(--text-sec); }
@@ -448,6 +453,8 @@ body.dark #results-pills .pol-tab-count,
 body.dark #results-pills .pol-tab-active .pol-tab-count { color:#fff; }
 body.dark #sched-scope-tabs .pol-tab-count,
 body.dark #sched-scope-tabs .pol-tab-active .pol-tab-count { color:#fff; }
+body.dark #drift-filter-btns .pol-tab-count,
+body.dark #drift-filter-btns .pol-tab-active .pol-tab-count { color:#fff; }
 .policies-toolbar {
   min-height:0;
   padding:0;
@@ -462,28 +469,29 @@ body.dark #sched-scope-tabs .pol-tab-active .pol-tab-count { color:#fff; }
 .policies-search { position:relative; flex:1; max-width:340px; }
 .policies-search input { box-sizing:border-box; height:34px; }
 .policies-toolbar .tag-filter-btn { height:34px; box-sizing:border-box; }
+/* DS §6.5 "Secondary" (s=32) */
 .policies-report-btn {
-  height:34px;
+  height:32px;
   box-sizing:border-box;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
+  gap:4px;
   width:auto;
-  padding:8px 16px;
-  border:1px solid rgba(16,185,129,0.32);
-  border-radius:8px;
-  background:#F3FAF6;
-  color:var(--text-default);
+  padding:0 16px;
+  border:1px solid #9DE0C9;
+  border-radius:10px;
+  background:rgba(0,175,115,0.05);
+  color:#334155;
   font-family:'DM Sans',sans-serif;
-  font-size:13px;
+  font-size:12px;
   font-weight:600;
   white-space:nowrap;
   cursor:pointer;
   box-shadow:none;
-  transition:background .15s, border-color .15s, color .15s, box-shadow .15s;
+  transition:background .15s, border-color .15s, color .15s;
 }
-.policies-report-btn:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
+.policies-report-btn:hover { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; }
 .policies-report-btn:focus-visible { outline:2px solid var(--green1); outline-offset:2px; border-color:var(--green1); }
 body.dark .policies-report-btn { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
 body.dark .policies-report-btn:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
@@ -588,8 +596,14 @@ body.dark .intg-status.connected { color:#5ee9b5; background:rgba(37,167,96,0.18
 body.dark .intg-status.attention { color:#fcd34d; background:rgba(245,158,11,0.18); border-color:rgba(245,158,11,0.4); }
 body.dark .intg-status.error { color:#ff9ba0; background:rgba(217,74,82,0.18); border-color:rgba(217,74,82,0.4); }
 body.dark .intg-status.notset { color:#9fb2c4; background:var(--p-dark-card-strip); border-color:#3a5566; } body.dark .intg-status.notset .dot { background:#7d94a8; }
-.intg-empty { text-align:center; color:var(--text-muted); font-size:12px; padding:40px 0; }
-.id-caps-empty { color:var(--text-muted); font-size:12px; line-height:1.5; padding:14px 2px; }
+/* ── Canonical empty state (DS §5.2) — icon-circle 44 + 14/600 title + 12px subtitle + action ── */
+.es { padding:40px 18px; text-align:center; }
+.es-ico { width:44px; height:44px; margin:0 auto 14px; border-radius:50%; background:var(--bg-canvas); display:flex; align-items:center; justify-content:center; }
+.es-ico svg { width:20px; height:20px; stroke:var(--text-muted); }
+.es-title { font-size:14px; font-weight:600; color:var(--text-default); margin-bottom:4px; }
+.es-sub { font-size:12px; color:var(--text-muted); line-height:1.5; }
+.es-act { margin-top:16px; }
+.es-sm { padding:24px 12px; }
 
 /* ── Integration Detail page (id-*) ── */
 .id-head { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
@@ -695,9 +709,6 @@ body.dark .btn-danger-outline:hover { background:#FB3C44; color:#fff; border-col
 .id-sm-status.error .dot { background:#FB3C44; }
 .id-sm-status.notset .dot { background:#94a3b8; }
 .id-sm-sep { color:var(--text-muted); }
-.id-summary-more { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:var(--bg-subtle); color:var(--text-sec); cursor:pointer; flex-shrink:0; transition:border-color .15s, background .15s, color .15s; }
-.id-summary-more:hover { border-color:var(--green1); color:var(--text-default); }
-body.dark .id-summary-more { background:#103438; border-color:rgba(255,255,255,0.14); color:var(--p-neutral-50); }
 
 /* ── ITSM Data Mapping (reusable) ── */
 .col-thead,
@@ -1126,36 +1137,43 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
 .os-link  { font-size:11px; color:var(--p-blue-400); cursor:pointer; text-decoration:none; }
 .os-link:hover {  }
 
+/* DS §6.5 "Primary" — DM Sans 600 / 12px, radius 10px, padding 10px 20px, gap 4px,
+   shadow 0 4px 7px rgba(16,185,129,0.3). The hover lift is an interaction the static
+   mockup cannot express, so it stays; the shadow no longer grows with it. */
 .btn-primary {
   background:var(--btn-grad);
   color:white; border:none; border-radius:var(--radius-md);
-  padding:13px 24px; font-size:14px; font-weight:600;
+  padding:10px 20px; font-size:12px; font-weight:600;
   cursor:pointer; width:100%;
-  display:flex; align-items:center; justify-content:center; gap:8px;
+  display:flex; align-items:center; justify-content:center; gap:4px;
   font-family:'DM Sans',sans-serif;
-  box-shadow:0 4px 14px rgba(16,185,129,0.3);
+  box-shadow:0 4px 7px rgba(16,185,129,0.3);
   transition:all 0.15s;
   letter-spacing:-0.2px;
 }
 .btn-primary:hover {
   background:var(--btn-grad-h);
-  box-shadow:0 6px 20px rgba(16,185,129,0.4);
   transform:translateY(-1px);
 }
 .btn-primary:active { transform:translateY(0); }
+.btn-primary:disabled, .btn-primary[disabled] { opacity:0.4; cursor:not-allowed; transform:none; }
 
+/* DS §6.5 "Secondary" (s=32) */
 .btn-secondary {
-  background:var(--bg-surface); color:var(--interactive-secondary);
-  border:1px solid rgba(16,185,129,0.3);
-  border-radius:var(--radius-md);
-  padding:10px 18px; font-size:13px; font-weight:500;
+  background:rgba(0,175,115,0.05); color:#334155;
+  border:1px solid #9DE0C9;
+  border-radius:10px;
+  height:32px; box-sizing:border-box;
+  padding:0 14px; font-size:12px; font-weight:600;
   cursor:pointer;
-  display:flex; align-items:center; gap:7px;
+  display:flex; align-items:center; justify-content:center; gap:4px;
   font-family:'DM Sans',sans-serif;
-  transition:all 0.15s; white-space:nowrap;
-  box-shadow:var(--shadow-sm);
+  transition:background .15s, border-color .15s, color .15s; white-space:nowrap;
+  box-shadow:none;
 }
-.btn-secondary:hover { border-color:var(--green1); color:var(--green2); box-shadow:0 2px 8px rgba(16,185,129,0.15); }
+.btn-secondary .action-arrow { color:var(--green1); display:inline-flex; }
+.btn-secondary:hover { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; box-shadow:none; }
+.btn-secondary:disabled, .btn-secondary[disabled] { opacity:0.4; cursor:not-allowed; }
 
 .demo-control {
   margin-top:18px;
@@ -1198,16 +1216,44 @@ body.dark .demo-control-btn:hover { background:rgba(16,185,129,0.18); color:var(
 body.dark .btn-danger { background:rgba(220,38,38,0.08); color:#ff9ba0; border-color:rgba(220,38,38,0.35); }
 body.dark .btn-danger:hover { background:rgba(220,38,38,0.15); border-color:rgba(220,38,38,0.5); }
 
+/* Cancel / Back / Skip. DS §6.5 has no NEUTRAL type, so this borrows the canonical GEOMETRY
+   (32px, r10, 12/600, gap 4) but keeps neutral chrome — a Cancel must not read as a second
+   green CTA next to a Primary. Open question for the designer: a neutral type in the set. */
 .btn-outline {
   background:var(--bg-surface); color:var(--text-sec);
-  border:1px solid var(--border); border-radius:var(--radius-md);
-  padding:8px 14px; font-size:12px; font-weight:500;
+  border:1px solid var(--border); border-radius:10px;
+  height:32px; box-sizing:border-box;
+  padding:0 14px; font-size:12px; font-weight:600;
+  display:inline-flex; align-items:center; justify-content:center; gap:4px;
+  white-space:nowrap;
   cursor:pointer; font-family:'DM Sans',sans-serif;
-  transition:all 0.15s;
+  transition:background .15s, border-color .15s, color .15s;
 }
 .btn-outline:hover { border-color:var(--text-muted); color:var(--interactive-secondary); }
+.btn-outline:disabled, .btn-outline[disabled] { opacity:0.4; cursor:not-allowed; }
 #v-s-agentless .btn-outline { background:#fff; }
 body.dark #v-s-agentless .btn-outline { background:transparent; }
+
+/* DS §6.5 "Third" — 32×32 icon square with the label OUTSIDE the border, gap 8px: [←] Label.
+   Bare arrow with no label is "Back" instead. Icon box 10px gives the specified 7.5px glyph. */
+.btn-third {
+  display:inline-flex; align-items:center; gap:8px;
+  background:none; border:none; padding:0; cursor:pointer;
+  font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#334155;
+}
+.btn-third .bt-ico {
+  width:32px; height:32px; flex-shrink:0; border-radius:10px;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:rgba(0,175,115,0.05); border:1px solid rgba(0,175,115,0.35);
+  transition:background .15s, border-color .15s;
+}
+.btn-third .bt-ico svg { width:10px; height:10px; display:block; transform:rotate(180deg); }
+.btn-third:hover .bt-ico { background:rgba(0,175,115,0.15); border-color:#10B981; }
+.btn-third:disabled, .btn-third[disabled] { opacity:0.4; cursor:not-allowed; }
+.btn-third:disabled:hover .bt-ico { background:rgba(0,175,115,0.05); border-color:rgba(0,175,115,0.35); }
+/* Dark differs ONLY in the label colour — the icon box (bg .05 / border .35) is identical in
+   both themes per Figma, so no dark border override. */
+body.dark .btn-third { color:#FFFFFF; }
 
 .btn-ghost {
   background:rgba(255,255,255,0.06); color:var(--muted);
@@ -1367,15 +1413,8 @@ body.dark .rctx-opt:hover { background:rgba(255,255,255,0.06); }
 .check-card > .check-row > svg { position:absolute; right:14px; top:50%; transform:translateY(-50%); }
 #v-results .check-card > .check-row > svg { stroke:var(--green1); }
 body.dark #v-results .check-card > .check-row > svg { stroke:#34D399; }
-.check-menu-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); width:34px; height:34px; box-sizing:border-box; border:1px solid rgba(16,185,129,0.32); background:#F3FAF6; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-default); box-shadow:none; transition:all .15s; }
-.check-menu-btn svg { width:13px; height:13px; }
-#v-results .check-card:hover .check-menu-btn { background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.45); color:var(--text-default); }
-.check-menu-btn:hover,
-#v-results .check-card:hover .check-menu-btn:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
-body.dark .check-menu-btn { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark #v-results .check-card:hover .check-menu-btn,
-body.dark .check-menu-btn:hover,
-body.dark #v-results .check-card:hover .check-menu-btn:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+/* Positioning only — appearance comes from the shared overflow rule (DS §6.5 "Back"). */
+.check-menu-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); }
 .check-row   { display:flex; align-items:center; gap:8px; }
 .check-title { font-size:12.5px; font-weight:600; color:var(--text-default); flex:1; }
 .check-desc  { font-size:11px; color:var(--text-sec); margin-top:4px; }
@@ -2010,10 +2049,6 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .issue-fix-btn:hover { background:var(--bg-canvas); border-color:var(--green1); }
 /* Dashboard "what needs action" — 2 concepts for client review */
 .dash-block-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
-.dash-seg { display:inline-flex; background:var(--bg-canvas); border:1px solid var(--border); border-radius:9px; padding:3px; gap:2px; }
-.dash-seg-btn { font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:var(--text-sec); background:transparent; border:none; padding:6px 13px; border-radius:6px; cursor:pointer; white-space:nowrap; transition:all .12s; }
-.dash-seg-btn.active { background:var(--bg-surface); color:var(--text-default); box-shadow:var(--shadow-sm); }
-.dash-seg-btn:hover:not(.active) { color:var(--text-default); }
 .cr-demo-btn { font-family:inherit; font-size:9px; font-weight:600; color:var(--text-muted); background:transparent; border:none; padding:1px 2px; cursor:pointer; white-space:nowrap; transition:color .12s; }
 .cr-demo-btn:hover:not(.active) { color:var(--text-sec); }
 .cr-demo-btn.active { color:var(--text-sec); font-weight:700; }
@@ -2042,23 +2077,10 @@ body.dark .policy-card:hover { background:#012F32 !important; border-color:rgba(
 body.dark .policy-card[data-pol-type="archived"] { background:var(--bg-surface); }
 .policy-card[data-pol-type="archived"]:hover { opacity:.75 !important; }
 /* Policies actions — same green-outlined CTA treatment as Dashboard, compact for multiple actions */
-.policy-card .btn-secondary { height:34px; box-sizing:border-box; background:#F3FAF6; border-color:rgba(16,185,129,0.32); border-radius:8px; color:var(--text-default); box-shadow:none; }
-.policy-card .btn-secondary[style*="aspect-ratio:1"] { width:34px !important; min-width:34px; padding:0 !important; display:inline-flex; align-items:center; justify-content:center; gap:0; }
+/* Square icon-only variant — DS §6.5 "Back" box (32×32, r10). Colours from the base rule. */
+.policy-card .btn-secondary[style*="aspect-ratio:1"] { width:32px !important; min-width:32px; padding:0 !important; display:inline-flex; align-items:center; justify-content:center; gap:0; }
 .policy-card .btn-secondary[style*="aspect-ratio:1"] svg { display:block; margin:0; flex-shrink:0; }
-.policy-card:hover .btn-secondary { background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.45); color:var(--text-default); }
-.policy-card .btn-secondary:hover,
-.policy-card:hover .btn-secondary:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
-body.dark .policy-card .btn-secondary { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark .policy-card:hover .btn-secondary,
-body.dark .policy-card .btn-secondary:hover,
-body.dark .policy-card:hover .btn-secondary:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-/* Nodes table (All Nodes) row action buttons — same green-outlined type as dashboard row CTAs */
-.node-row .btn-secondary { display:inline-flex; align-items:center; gap:5px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); box-shadow:none; }
-.node-row .btn-secondary .action-arrow { color:var(--green1); display:inline-flex; }
-.node-row .btn-secondary:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
-body.dark .node-row .btn-secondary { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark .node-row .btn-secondary .action-arrow { color:#00AF73; }
-body.dark .node-row .btn-secondary:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+/* Nodes table (All Nodes) row action buttons — DS §6.5 "Secondary" (s=32) */
 .action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
 .action-ico { width:34px; height:34px; padding:8px; box-sizing:border-box; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F1F5F9; }
 .action-ico svg { width:17px; height:17px; stroke:currentColor; }
@@ -2088,99 +2110,90 @@ body.dark .type-pill--polcustom { color:#D98A3A; background:rgba(217,138,58,0.07
 .action-ico--polcustom { color:#C56A10; }
 body.dark .action-ico--polcustom { color:#D98A3A; }
 .meta-chip { font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:6px; background:var(--bg-canvas); border:1px solid var(--border); color:var(--text-sec); white-space:nowrap; }
-.action-cta { display:inline-flex; align-items:center; justify-content:center; gap:6px; width:124px; padding:8px 12px; border-radius:8px; background:var(--bg-subtle); border:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:var(--text-default); cursor:pointer; flex-shrink:0; transition:background .15s, border-color .15s, color .15s, box-shadow .15s; white-space:nowrap; }
-.action-cta .action-arrow { color:var(--green2); transition:transform .15s, color .15s; }
-.action-cta:hover { border-color:var(--green1); background:rgba(16,185,129,0.08); color:var(--text-default); }
-.action-cta:hover .action-arrow { transform:translateX(2px); color:var(--green1); }
-.action-cta:focus-visible { outline:2px solid var(--green1); outline-offset:2px; border-color:var(--green1); }
-body.dark .action-cta { background:#103438; border-color:rgba(255,255,255,0.14); color:var(--p-neutral-50); }
-body.dark .action-cta:hover { background:rgba(16,185,129,0.12); border-color:var(--green1); color:var(--p-neutral-50); }
-.search-filter-action { padding:0; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--green1); }
-.search-filter-action:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--green1); }
-/* Dashboard "Needs your attention" row CTAs — green outlined (scoped, does not affect other pages) */
-/* DS §6.5 "Secondary" (s=32) */
-.action-row .action-cta { height:32px; box-sizing:border-box; border-radius:10px; gap:4px; background:rgba(0,175,115,0.05); border-color:#9DE0C9; color:#334155; }
-.action-row .action-cta .action-arrow { color:var(--green1); }
-.action-row .action-cta:hover { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; }
-body.dark .action-row .action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark .action-row .action-cta .action-arrow { color:#00AF73; }
-body.dark .action-row .action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-/* Detected Drift export — Dashboard CTA treatment without an arrow. */
-.drift-export-cta.btn-outline { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
-.drift-export-cta.btn-outline:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
+/* DS §6.5 "Secondary" (s=32) — THE row/strip action button, app-wide.
+   width:auto + min-width keeps rows aligned for short labels without clipping long ones. */
+.action-cta { display:inline-flex; align-items:center; justify-content:center; gap:4px; width:auto; min-width:124px; height:32px; box-sizing:border-box; padding:0 12px; border-radius:10px; background:rgba(0,175,115,0.05); border:1px solid #9DE0C9; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#334155; cursor:pointer; flex-shrink:0; transition:background .15s, border-color .15s, color .15s; white-space:nowrap; }
+.action-cta .action-arrow { color:var(--green1); transition:transform .15s, color .15s; }
+.action-cta:hover { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; }
+.action-cta:hover .action-arrow { transform:translateX(2px); }
+.action-cta:disabled { opacity:0.4; cursor:not-allowed; }
+.action-cta:focus-visible { outline:2px solid var(--green1); outline-offset:2px; }
+body.dark .action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .action-cta .action-arrow { color:#00AF73; }
+body.dark .action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+.search-filter-action { min-width:0; padding:0; }
+/* Detected Drift export — DS §6.5 "Secondary" on a .btn-outline element (no arrow). */
+.drift-export-cta.btn-outline { height:32px; box-sizing:border-box; border-radius:10px; background:rgba(0,175,115,0.05); border-color:#9DE0C9; color:#334155; }
+.drift-export-cta.btn-outline:hover { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; }
 body.dark .drift-export-cta.btn-outline { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
 body.dark .drift-export-cta.btn-outline:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-/* Scans remediation — Dashboard CTA treatment for Accept risk. */
-.remed-risk-cta.action-cta { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
+/* Scans remediation — Accept risk keeps its check glyph; colours come from the base rule. */
 .remed-risk-cta.action-cta .remed-risk-check { color:var(--green1); display:flex; flex-shrink:0; }
-.remed-risk-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
-body.dark .remed-risk-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
 body.dark .remed-risk-cta.action-cta .remed-risk-check { color:#00AF73; }
-body.dark .remed-risk-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-.remed-back-results-cta.action-cta { width:124px; height:34px; box-sizing:border-box; padding:8px 12px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
-.remed-back-results-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
-body.dark .remed-back-results-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark .remed-back-results-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-.remed-post-risk-cta.action-cta { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
-.remed-post-risk-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
-.remed-post-risk-cta.action-cta:disabled { opacity:.5; cursor:not-allowed; background:#F3FAF6; border-color:rgba(16,185,129,0.32); transform:none; }
-body.dark .remed-post-risk-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark .remed-post-risk-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-body.dark .remed-post-risk-cta.action-cta:disabled { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); }
 #remed-action-area .btn-primary[onclick="startRescan()"] > svg { display:none; }
 #remed-action-area .btn-primary[onclick="startRescan()"]::before {
   content:''; width:15px; height:15px; display:block; flex:0 0 15px;
   background:url('Assets/radix-icons_reload.svg') center/15px 15px no-repeat;
   filter:brightness(0) invert(1);
 }
-/* Scan Schedules row actions — same outlined treatment as Dashboard CTAs */
-.schedule-action-cta.action-cta { width:auto; min-width:68px; padding:6px 10px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
-.schedule-action-cta.action-cta .action-arrow { color:var(--green1); }
-.schedule-action-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
-body.dark .schedule-action-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark .schedule-action-cta.action-cta .action-arrow { color:#00AF73; }
-body.dark .schedule-action-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-/* Detected nodes source filter — unified segmented control. */
-#detected-source-btns {
-  display:flex;
+/* Scan Schedules row actions — narrower than the 124px default; colours from the base rule. */
+.schedule-action-cta.action-cta { min-width:68px; padding:0 10px; }
+/* ── Segmented control (THE one, app-wide) ────────────────────────────────────────────────
+   DS §6.5 has no segmented type, so this borrows the Secondary box (h32, r10, 12/600) and
+   the Secondary tint ladder per theme — no new colours are invented:
+     rest = none  ·  hover = Secondary DEFAULT fill  ·  selected = Secondary HOVER fill.
+   One joined track with dividers; separate free-floating pills are NOT a segmented control.
+   `.toggle-group` / `.toggle-btn` is the FORM variant of the same control (full-width inside a
+   form-group, active class `.active`) — it shares these rules instead of owning its own colours. */
+.seg, .toggle-group {
+  display:inline-flex;
   gap:0;
   overflow:hidden;
   flex-shrink:0;
-  background:#FFFFFF;
+  height:32px;
+  box-sizing:border-box;
+  background:var(--bg-surface);
   border:1px solid var(--border);
   border-radius:10px;
 }
-.detected-source-btn {
-  width:80px;
-  height:30px;
-  padding:0 12px;
+.seg-btn, .toggle-btn {
+  height:100%;
+  padding:0 14px;
   border:0;
   border-right:1px solid var(--border);
   border-radius:0;
   background:transparent;
   color:var(--text-sec);
   cursor:pointer;
-  font-family:inherit;
+  font-family:'DM Sans',sans-serif;
   font-size:12px;
   font-weight:600;
   line-height:1;
-  transition:background 0.15s ease,color 0.15s ease;
+  white-space:nowrap;
+  transition:background .15s, color .15s;
 }
-.detected-source-btn:last-child { border-right:0; }
-.detected-source-btn:hover { background:#EDF9F4; }
-.detected-source-btn.is-active { background:#E2F5EC; color:#15803D; }
-body.dark #detected-source-btns { background:#133033; border-color:#42595C; }
-body.dark .detected-source-btn { border-right-color:#42595C; color:#CBD5E1; }
-body.dark .detected-source-btn:last-child { border-right:0; }
-body.dark .detected-source-btn:hover { background:#063135; }
-body.dark .detected-source-btn.is-active { background:rgba(0,175,115,0.16); color:#34D399; }
-/* Detected nodes row actions — Dashboard CTA treatment. */
-.detected-row-cta.action-cta { width:124px; padding:6px 10px; background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
-.detected-row-cta.action-cta .action-arrow { color:var(--green1); }
-.detected-row-cta.action-cta:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); }
-body.dark .detected-row-cta.action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark .detected-row-cta.action-cta .action-arrow { color:#00AF73; }
-body.dark .detected-row-cta.action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+.seg-btn:last-child, .toggle-btn:last-child { border-right:0; }
+.seg-btn:hover:not(.is-active), .toggle-btn:hover:not(.active) { background:rgba(0,175,115,0.05); color:var(--text-default); }
+.seg-btn.is-active, .toggle-btn.active { background:rgba(0,175,115,0.15); color:#334155; }
+body.dark .seg-btn:hover:not(.is-active), body.dark .toggle-btn:hover:not(.active) { background:rgba(0,175,115,0.15); color:var(--p-neutral-50); }
+body.dark .seg-btn.is-active, body.dark .toggle-btn.active { background:rgba(0,175,115,0.20); color:var(--p-neutral-50); }
+/* Form variant — fills the form-group width, segments share it equally. */
+.toggle-group { display:flex; }
+.toggle-btn { flex:1; display:flex; align-items:center; justify-content:center; text-align:center; outline:none; }
+/* Detected nodes source filter — fixed segment width so the track doesn't jump on filter. */
+.detected-source-btn { width:80px; padding:0 12px; }
+/* Detected-tab row + bulk-bar actions — two CTAs must fit a 260px column, so they shrink to
+   their label instead of the 124px default. Colours come from the base .action-cta rule. */
+.detected-row-cta.action-cta, .detected-bulk-cta.action-cta { min-width:0; }
+
+/* All Nodes selection toolbar (Set as baseline / Compare / Scan Selected / Consensus) —
+   DS §6.5 "Secondary" (s=32). Disabled = own default + opacity 0.4, so the enable rules
+   (1+ / exactly 2 / 3+ nodes) still read without giving each button its own colour. */
+.sel-act-btn { display:flex; align-items:center; gap:4px; height:32px; box-sizing:border-box; padding:0 14px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; white-space:nowrap; background:rgba(0,175,115,0.05); border:1px solid #9DE0C9; color:#334155; cursor:pointer; transition:background .15s, border-color .15s; }
+.sel-act-btn:hover:not(:disabled) { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); }
+.sel-act-btn:disabled { opacity:0.4; cursor:not-allowed; }
+body.dark .sel-act-btn { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
+body.dark .sel-act-btn:hover:not(:disabled) { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); }
 body.dark #detected-banner-title { color:#D98A3A !important; }
 body.dark .cm-last-activity { color:#96A6BD !important; }
 .activity-link { display:inline-flex; align-items:center; gap:5px; padding:4px 0; border:none; background:transparent; color:var(--green2); font-family:'DM Sans',sans-serif; font-size:11.5px; font-weight:600; cursor:pointer; transition:color .15s; }
@@ -2496,8 +2509,8 @@ body.dark span[style*="font-size:11px"][style*="font-weight:600"][style*="color:
 .back-btn svg { display:block; width:10px; height:10px; }
 .back-btn:hover { background:rgba(0,175,115,0.15); border-color:#10B981; }
 .back-btn:disabled, .back-btn[disabled] { opacity:0.4; cursor:not-allowed; pointer-events:none; }
-body.dark .back-btn { background:rgba(0,175,115,0.05); border-color:rgba(0,175,115,0.35); color:#fff; }
-body.dark .back-btn:hover { background:rgba(0,175,115,0.15); border-color:#10B981; }
+/* Dark differs ONLY in the glyph colour — the box is identical in both themes per Figma. */
+body.dark .back-btn { color:#fff; }
 .panel-title { font-size:18px;font-weight:700;color:var(--text-default);margin-bottom:4px;letter-spacing:-0.3px; }
 .panel-sub   { font-size:12px;color:var(--text-sec);margin-bottom:24px; }
 .form-group  { margin-bottom:18px; }
@@ -2511,10 +2524,7 @@ body.dark .back-btn:hover { background:rgba(0,175,115,0.15); border-color:#10B98
 .gm-body .form-input:focus { background:#fff; }
 /* Agentless form inputs share the same flat dark fill as the CM cards. */
 body.dark #v-s-agentless .form-input { background:#0C2123 !important; }
-.toggle-group { display:flex;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden; }
 .mapping-select { border:1px solid var(--border);border-radius:4px;padding:6px 36px 6px 10px;font-size:11px;color:var(--text-default);appearance:none;-webkit-appearance:none;background-color:var(--bg-surface);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer; }
-.toggle-btn   { flex:1;padding:9px 12px;font-size:12px;font-weight:500;color:var(--text-sec);background:var(--bg-surface);cursor:pointer;text-align:center;transition:all 0.15s;border:none;outline:none; }
-.toggle-btn.active { background:var(--green1);color:#fff;font-weight:600; }
 /* SECONDARY direct-auth method chooser — inline radio buttons, subordinate to the primary .toggle-group so it doesn't read as a second peer tab row. */
 .seg-sm-label { font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0; }
 .cred-radio { display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-size:12.5px;color:var(--text-sec);user-select:none;transition:color 0.15s; }
@@ -2522,11 +2532,11 @@ body.dark #v-s-agentless .form-input { background:#0C2123 !important; }
 .cred-radio.active .radio-dot { border-color:var(--green1); }
 .cred-radio.active .radio-dot::after { content:'';width:8px;height:8px;border-radius:50%;background:var(--green1);display:block; }
 .csv-col { font-size:11px;font-family:ui-monospace,monospace;padding:3px 9px;border-radius:5px;background:var(--bg-canvas);border:1px solid var(--border);color:var(--text-default); }
-.csv-col-req { border-color:rgba(251,60,68,0.35);color:#b91c1c;font-weight:600; }
+.csv-col-req { border-color:rgba(251,60,68,0.35);color:var(--status-danger-txt);font-weight:600; }
 .csv-badge { font-size:10px;font-weight:600;border-radius:4px;padding:2px 7px;display:inline-block; }
 .csv-badge-new { background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2); }
 .csv-badge-update { background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2); }
-.csv-badge-error { background:rgba(251,60,68,0.08);color:#b91c1c;border:1px solid rgba(251,60,68,0.2); }
+.csv-badge-error { background:rgba(251,60,68,0.08);color:var(--status-danger-txt);border:1px solid rgba(251,60,68,0.2); }
 .region-pills { display:flex;flex-wrap:wrap;gap:8px; }
 .region-pill  { padding:6px 12px;border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:500;color:var(--text-sec);cursor:pointer;transition:all 0.15s; }
 .region-pill.selected { border-color:var(--green1);background:var(--green-dim);color:var(--green2); }
@@ -2722,7 +2732,6 @@ body.dark .badge-high     { background:rgba(234,88,12,0.14);  color:#F97316;    
 body.dark .badge-low      { background:rgba(37,99,235,0.16);  color:#3B82F6;    border-color:rgba(37,99,235,0.55); }
 body.dark .badge-pass     { background:rgba(16,185,129,0.16); color:#10B981;    border-color:rgba(16,185,129,0.55); }
 body.dark .node-row > div:nth-child(6) { color: var(--p-neutral-50) !important; }
-body.dark #nf-local, body.dark #nf-aws, body.dark #nf-all { color: var(--p-neutral-50) !important; }
 body.dark .score-svg circle:first-child { stroke: #335255; }
 body.dark .score-track { stroke: #335255 !important; }
 body.dark .sev-num-critical { color:#FF4646; }
@@ -2749,8 +2758,9 @@ body.dark .badge-pass svg         { stroke: #10B981 !important; fill: none !impo
 body.dark .stat-bar-wrap      { background: rgba(255,255,255,0.2); }
 
 /* Buttons */
-body.dark .btn-secondary      { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.45); color: var(--p-green-300); }
-body.dark .btn-secondary:hover{ border-color: var(--green1); color: var(--white); background: rgba(16,185,129,0.18); }
+body.dark .btn-secondary      { background: rgba(0,175,115,0.15); border-color: rgba(0,175,115,0.35); color: var(--p-neutral-50); }
+body.dark .btn-secondary .action-arrow { color:#00AF73; }
+body.dark .btn-secondary:hover{ background: rgba(0,175,115,0.20); border-color: rgba(0,175,115,0.41); color: var(--p-neutral-50); }
 body.dark .btn-outline        { border-color: rgba(16,185,129,0.35); color: var(--p-neutral-300); }
 body.dark .btn-outline:hover  { border-color: var(--p-green-300); color: var(--p-neutral-300); }
 
@@ -2763,11 +2773,6 @@ body.dark .empty-title        { color: var(--p-neutral-50); }
 body.dark .form-input         { background: var(--bg-page); border-color: #143A2F; color: var(--p-neutral-50); }
 body.dark .form-input::placeholder { color: rgba(255,255,255,0.35); }
 body.dark .mapping-select     { background-color: var(--bg-page); color: var(--p-neutral-300); border-color: #143A2F; }
-body.dark .toggle-group       { border-color: rgba(16,185,129,0.4); }
-body.dark .toggle-btn         { background: rgba(255,255,255,0.05); color: var(--p-neutral-300); }
-body.dark .toggle-btn:hover   { background: #012F32; color: var(--p-neutral-50); }
-body.dark .toggle-btn.active  { background: var(--green1); color: #fff; font-weight: 600; }
-body.dark .toggle-btn.active:hover { background: var(--green1); color: #fff; }
 
 /* Tables */
 body.dark .j3-table th        { background: var(--table-header-bg); border-color: var(--border); }
@@ -3086,28 +3091,14 @@ body.dark .cm-status[data-s="disabled"]  { background:rgba(148,163,184,0.06); co
 #cmd-actions .btn-outline:hover { border-color:rgba(16,185,129,0.7); color:var(--green1); }
 body.dark #cmd-actions .btn-outline { background:rgba(16,185,129,0.10) !important; border-color:rgba(16,185,129,0.40) !important; color:var(--text-default) !important; }
 body.dark #cmd-actions .btn-outline:hover { background:rgba(16,185,129,0.18) !important; border-color:var(--green1) !important; color:#fff !important; }
-.cm-actions-btn { background:var(--bg-surface); border:1px solid rgba(16,185,129,0.3); border-radius:var(--radius-md); width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:var(--interactive-secondary); font-size:14px; line-height:1; padding:0; transition:all .15s; }
-.cm-actions-btn:hover { border-color:var(--green1); color:var(--green2); }
-body.dark .cm-actions-btn { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.45); color:var(--p-green-300); }
-body.dark .cm-actions-btn:hover { background:rgba(16,185,129,0.18); border-color:var(--green1); color:#fff; }
-#v-cm-list .cm-actions-btn,
-#v-cm-detail .cm-actions-btn,
-#v-credentials .cm-actions-btn { width:34px; height:34px; box-sizing:border-box; background:#F3FAF6; border-color:rgba(16,185,129,0.32); border-radius:8px; color:var(--text-default); box-shadow:none; }
-#v-cm-list .cm-actions-btn:hover,
-#v-cm-detail .cm-actions-btn:hover,
-#v-credentials .cm-actions-btn:hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
-body.dark #v-cm-list .cm-actions-btn,
-body.dark #v-cm-detail .cm-actions-btn,
-body.dark #v-credentials .cm-actions-btn { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark #v-cm-list .cm-actions-btn:hover,
-body.dark #v-cm-detail .cm-actions-btn:hover,
-body.dark #v-credentials .cm-actions-btn:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-/* Shared overflow action — follows the Policies button pattern everywhere. */
-:is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) { width:34px; height:34px; min-width:34px; box-sizing:border-box; padding:0; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid rgba(16,185,129,0.32); border-radius:8px; background:#F3FAF6; color:var(--text-default); cursor:pointer; box-shadow:none; font-family:inherit; line-height:1; transition:background .15s, border-color .15s, color .15s; }
-:is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more):hover { background:rgba(16,185,129,0.16); border-color:var(--green1); color:var(--text-default); box-shadow:none; }
+/* Shared overflow action — DS §6.5 "Back": the only canonical icon-only square (32×32, r10,
+   no label). Same box as .btn-third .bt-ico, so an overflow ⋯ and a back arrow are one shape. */
+:is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) { width:32px; height:32px; min-width:32px; box-sizing:border-box; padding:0; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid rgba(0,175,115,0.35); border-radius:10px; background:rgba(0,175,115,0.05); color:var(--text-default); cursor:pointer; box-shadow:none; font-family:inherit; line-height:1; transition:background .15s, border-color .15s, color .15s; }
+:is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more):hover { background:rgba(0,175,115,0.15); border-color:#10B981; color:var(--text-default); box-shadow:none; }
+:is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more):disabled { opacity:0.4; cursor:not-allowed; }
 :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) svg { width:13px; height:13px; display:block; margin:0; flex-shrink:0; }
-body.dark :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more):hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+body.dark :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) { color:var(--p-neutral-50); }
+body.dark :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more):hover { background:rgba(0,175,115,0.15); border-color:#10B981; color:var(--p-neutral-50); }
 .cm-dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
 /* ── Credential Vault ── */
 .cred-row { display:grid; grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px; min-width:900px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
@@ -3188,10 +3179,21 @@ body.dark #v-s-cm-setup .btn-outline:hover { background:rgba(16,185,129,0.18); b
 
 /* ── Agentless form validation ── */
 .al-field-warn { display:flex; align-items:flex-start; gap:6px; margin-top:7px; font-size:11.5px; line-height:1.45; color:#b45309; }
-.al-field-warn[data-kind="error"] { color:#b91c1c; }
+.al-field-warn[data-kind="error"] { color:var(--status-danger-txt); }
 body.dark .al-field-warn { color:#F59E0B; }
 body.dark .al-field-warn[data-kind="error"] { color:#FB3C44; }
 #al-submit:disabled { opacity:0.5; cursor:not-allowed; }
+
+/* ── Inline validation, form level (DS §5.3 Exceptions) ──
+   Помилка, що стосується форми в цілому, а не окремого поля. Носій — клас,
+   бо блок створюється з JS (vFormError) і має слухати тему. */
+.v-form-err { display:none; align-items:flex-start; gap:6px; margin-bottom:14px; font-size:11.5px; line-height:1.45; color:var(--status-danger-txt); }
+.v-form-err svg { flex-shrink:0; margin-top:1px; }
+body.dark .v-form-err { color:#FB3C44; }
+/* Full-page шасі: submit disabled, поки форма невалідна */
+.v-submit:disabled { opacity:0.5; cursor:not-allowed; }
+.v-req-hint { display:none; align-items:center; gap:7px; font-size:11.5px; color:var(--text-sec); line-height:1.5; }
+.v-req-hint svg { flex-shrink:0; }
 
 /* ── Test-connectivity / scan-readiness (agentless onboarding step) ── */
 .ct-demo { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:8px 12px; margin-bottom:16px; border:1px dashed var(--border); border-radius:var(--radius-md); background:var(--bg-canvas); }
@@ -3221,7 +3223,7 @@ body.dark .ct-chip.active { background:#10B981; border-color:#10B981; color:#042
 .ct-result-title { font-size:14px; font-weight:700; }
 .ct-result[data-kind="ok"] .ct-result-title { color:#047857; }
 .ct-result[data-kind="warn"] .ct-result-title { color:#92400e; }
-.ct-result[data-kind="fail"] .ct-result-title { color:#b91c1c; }
+.ct-result[data-kind="fail"] .ct-result-title { color:var(--status-danger-txt); }
 .ct-result-desc { font-size:12px; color:var(--text-default); margin-top:3px; line-height:1.55; }
 body.dark .ct-ico.ok { background:rgba(16,185,129,0.2); }
 body.dark .ct-ico.fail { background:rgba(251,60,68,0.2); }
@@ -3762,7 +3764,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 #cm-warn-overlay .gm-btn-warning { background:transparent; border:1px solid #D97706; color:#B45309; }
 #cm-warn-overlay .gm-btn-warning:hover { background:var(--bg-subtle); border-color:#F59E0B; color:#92400E; }
 #cm-warn-overlay .gm-btn-destructive { background:transparent; border:1px solid #DC2626; color:#DC2626; }
-#cm-warn-overlay .gm-btn-destructive:hover { background:var(--bg-subtle); border-color:#B91C1C; color:#B91C1C; }
+#cm-warn-overlay .gm-btn-destructive:hover { background:var(--bg-subtle); border-color:var(--status-danger-txt); color:var(--status-danger-txt); }
 body.dark #cm-warn-overlay :is(.gm-btn-warning,.gm-btn-destructive) { background:transparent; }
 body.dark #cm-warn-overlay .gm-btn-warning { color:#FBBF24; border-color:#D97706; }
 body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E11D48; }
@@ -3773,7 +3775,7 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
 .sf-st.notchecked { color:var(--text-muted); background:var(--bg-subtle); border-color:var(--border); }
 .sf-st.ready { color:#15803d; background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3); }
 .sf-st.completed { color:#fff; background:#10B981; border-color:#10B981; }
-.sf-st.blocked { color:#B91C1C; background:rgba(251,60,68,0.08); border-color:rgba(251,60,68,0.22); }
+.sf-st.blocked { color:var(--status-danger-txt); background:rgba(251,60,68,0.08); border-color:rgba(251,60,68,0.22); }
 body.dark .sf-st.needs { color:#F59E0B; background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.4); }
 body.dark .sf-st.notchecked { color:var(--text-sec); }
 body.dark .sf-st.ready { color:#00AF73; background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.4); }
@@ -3951,13 +3953,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     <button onclick="showView(&#39;dashboard&#39;)" style="margin-left:18px;background:none;border:none;font-size:11px;color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.color=&#39;#1a2a3a&#39;;this.style.background=&#39;rgba(0,0,0,0.05)&#39;" onmouseout="this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;none&#39;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Exit</button>
   </div>
   <div class="nav-steps" id="j3-step-nav" style="display:none;">
-    <div class="step-item" id="j3-si0" onclick="go(&#39;j3-connect&#39;)" style="cursor:pointer;"><div class="step-dot">1</div>&nbsp;Connect AWS</div>
+    <div class="step-item" id="j3-si1" onclick="go(&#39;j3-connect&#39;)" style="cursor:pointer;"><div class="step-dot">1</div>&nbsp;Connect AWS</div>
     <div class="step-line"></div>
-    <div class="step-item" id="j3-si1" onclick="go(&#39;j3-syncing&#39;)" style="cursor:pointer;"><div class="step-dot">2</div>&nbsp;Sync Nodes</div>
+    <div class="step-item" id="j3-si2" onclick="go(&#39;j3-syncing&#39;)" style="cursor:pointer;"><div class="step-dot">2</div>&nbsp;Node Discovery</div>
     <div class="step-line"></div>
-    <div class="step-item" id="j3-si3" onclick="go(&#39;j3-scan-config&#39;)" style="cursor:pointer;"><div class="step-dot">3</div>&nbsp;Run Scan</div>
-    <div class="step-line"></div>
-    <div class="step-item" id="j3-si4" onclick="go(&#39;j3-results&#39;)" style="cursor:pointer;"><div class="step-dot">4</div>&nbsp;Results</div>
+    <div class="step-item" id="j3-si3" onclick="go(&#39;j3-inventory&#39;)" style="cursor:pointer;"><div class="step-dot">3</div>&nbsp;Node Inventory</div>
     <button onclick="showView(&#39;dashboard&#39;)" style="margin-left:18px;background:none;border:none;font-size:11px;color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.color=&#39;#1a2a3a&#39;;this.style.background=&#39;rgba(0,0,0,0.05)&#39;" onmouseout="this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;none&#39;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Exit</button>
   </div>
   <div class="nav-steps" id="j4-step-nav" style="display:none;">
@@ -4724,7 +4724,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           </div>
 
           <!-- CTA -->
-          <button class="btn-primary" style="flex-shrink:0;width:auto;padding:10px 20px;font-size:13px;" onclick="showView(&#39;remediation&#39;)">Fix issues now →</button>
+          <button class="btn-primary" style="flex-shrink:0;width:auto;" onclick="showView(&#39;remediation&#39;)">Fix issues now →</button>
         </div>
         <div class="results-body">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
@@ -5263,7 +5263,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
-            <button class="btn-primary" style="width:auto;padding:10px 20px;font-size:13px;" onclick="openAddDeviceModal()">
+            <button class="btn-primary" style="width:auto;" onclick="openAddDeviceModal()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               Add Node
             </button>
@@ -5281,7 +5281,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
         <!-- Back crumb (shown when navigating from +N more) -->
         <div id="consensus-back-crumb" style="display:none;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-md);">
-          <button onclick="hideGroupNodes()" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;font-family:inherit;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Consensus Comparison</button>
+          <button class="btn-third" onclick="hideGroupNodes()"><span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back to Consensus Comparison</button>
           <span style="font-size:12px;color:var(--text-muted);">·</span>
           <span style="font-size:12px;color:var(--text-default);">Viewing: <strong id="crumb-group-name">Windows 11</strong> group</span>
         </div>
@@ -5294,10 +5294,10 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
             <input id="node-search" type="text" placeholder="Search nodes…" oninput="filterNodes()" style="width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;" onfocus="this.style.borderColor='var(--green1)';this.style.boxShadow='0 0 0 3px var(--green-dim)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
           </div>
-          <div style="display:flex;gap:6px;" id="node-filter-btns">
-            <button onclick="setNodeFilter(&#39;all&#39;)" id="nf-all" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid #00D794;cursor:pointer;background:rgba(63,200,120,0.1);color:#15803d;transition:all 0.15s;font-family:inherit;">All</button>
-            <button onclick="setNodeFilter(&#39;local&#39;)" id="nf-local" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);transition:all 0.15s;font-family:inherit;">Local</button>
-            <button onclick="setNodeFilter(&#39;aws&#39;)" id="nf-aws" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);transition:all 0.15s;font-family:inherit;">AWS</button>
+          <div class="seg" id="node-filter-btns" role="group" aria-label="Filter nodes by source">
+            <button onclick="setNodeFilter(&#39;all&#39;)" id="nf-all" class="seg-btn is-active" aria-pressed="true">All</button>
+            <button onclick="setNodeFilter(&#39;local&#39;)" id="nf-local" class="seg-btn" aria-pressed="false">Local</button>
+            <button onclick="setNodeFilter(&#39;aws&#39;)" id="nf-aws" class="seg-btn" aria-pressed="false">AWS</button>
           </div>
           <div style="width:1px;height:20px;background:var(--border);margin:0 2px;"></div>
           <!-- Group custom dropdown -->
@@ -5333,19 +5333,19 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <!-- Selection actions — right side of the SAME filter row (space-between) -->
           <div id="node-action-bar" style="display:none;align-items:center;gap:8px;flex-shrink:0;">
             <span id="node-action-count" style="font-size:12px;font-weight:500;color:var(--text-sec);white-space:nowrap;"></span>
-            <button id="node-action-baseline" onclick="setGroupBaseline()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);font-family:inherit;cursor:not-allowed;opacity:1;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-baseline" class="sel-act-btn" onclick="setGroupBaseline()" disabled="">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
               Set as baseline
             </button>
-            <button id="node-action-compare" onclick="showCompare()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-compare" class="sel-act-btn" onclick="showCompare()" disabled="">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"></path></svg>
               Compare
             </button>
-            <button id="node-action-scan" onclick="go(&#39;s07&#39;)" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-scan" class="sel-act-btn" onclick="go(&#39;s07&#39;)" disabled="">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
               Scan Selected
             </button>
-            <button id="node-action-consensus" onclick="(function(){var n=Array.from(document.querySelectorAll(&#39;.node-checkbox:checked&#39;)).map(function(cb){var r=cb.closest(&#39;.node-row&#39;);return r?(r.dataset.name||&#39;&#39;).split(&#39; &#39;)[0]:&#39;&#39;;}).filter(Boolean);showView(&#39;all-devices&#39;);setNodesTab(&#39;peer&#39;);applySelectionConsensus(n);})()" disabled="" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);font-family:inherit;cursor:not-allowed;white-space:nowrap;transition:all 0.15s;">
+            <button id="node-action-consensus" class="sel-act-btn" onclick="(function(){var n=Array.from(document.querySelectorAll(&#39;.node-checkbox:checked&#39;)).map(function(cb){var r=cb.closest(&#39;.node-row&#39;);return r?(r.dataset.name||&#39;&#39;).split(&#39; &#39;)[0]:&#39;&#39;;}).filter(Boolean);showView(&#39;all-devices&#39;);setNodesTab(&#39;peer&#39;);applySelectionConsensus(n);})()" disabled="">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
               Consensus Comparison
             </button>
@@ -5606,18 +5606,18 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap;min-width:0;">
               <div id="detected-bulk-bar" style="display:none;align-items:center;gap:8px;">
                 <span id="detected-bulk-count" style="font-size:12px;color:var(--text-sec);">0 selected</span>
-                <button onclick="bulkPromote()" class="btn-primary" style="width:auto;padding:7px 14px;font-size:12px;">Promote selected</button>
-                <button onclick="bulkDismiss()" class="btn-outline" style="width:auto;padding:7px 14px;font-size:12px;">Mark as Unmanaged</button>
+                <button onclick="bulkPromote()" class="btn-primary" style="width:auto;">Promote selected</button>
+                <button onclick="bulkDismiss()" class="action-cta detected-bulk-cta" style="width:auto;">Mark as Unmanaged</button>
               </div>
               <div style="position:relative;width:340px;flex-shrink:0;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
                 <input id="detected-search" type="text" placeholder="Search detected nodes…" oninput="filterDetected()" style="width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;" onfocus="this.style.borderColor='var(--green1)';this.style.boxShadow='0 0 0 3px var(--green-dim)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
               </div>
-              <div id="detected-source-btns" role="group" aria-label="Filter detected nodes by source">
-                <button onclick="setDetectedSource(&#39;all&#39;)" id="ds-all" class="detected-source-btn is-active" aria-pressed="true">All</button>
-                <button onclick="setDetectedSource(&#39;agent&#39;)" id="ds-agent" class="detected-source-btn" aria-pressed="false">Agent</button>
-                <button onclick="setDetectedSource(&#39;aws&#39;)" id="ds-aws" class="detected-source-btn" aria-pressed="false">AWS</button>
-                <button onclick="setDetectedSource(&#39;cmdb&#39;)" id="ds-cmdb" class="detected-source-btn" aria-pressed="false">CMDB</button>
+              <div id="detected-source-btns" class="seg" role="group" aria-label="Filter detected nodes by source">
+                <button onclick="setDetectedSource(&#39;all&#39;)" id="ds-all" class="seg-btn detected-source-btn is-active" aria-pressed="true">All</button>
+                <button onclick="setDetectedSource(&#39;agent&#39;)" id="ds-agent" class="seg-btn detected-source-btn" aria-pressed="false">Agent</button>
+                <button onclick="setDetectedSource(&#39;aws&#39;)" id="ds-aws" class="seg-btn detected-source-btn" aria-pressed="false">AWS</button>
+                <button onclick="setDetectedSource(&#39;cmdb&#39;)" id="ds-cmdb" class="seg-btn detected-source-btn" aria-pressed="false">CMDB</button>
               </div>
             </div>
           </div>
@@ -5654,8 +5654,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:12px;color:var(--text-sec);">2 hours ago</div>
               <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
               <div style="display:flex;gap:6px;">
-                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
-                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="dismissNode(this)">Mark as Unmanaged</button>
+                <button class="action-cta detected-row-cta" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+                <button class="action-cta detected-row-cta" onclick="dismissNode(this)">Mark as Unmanaged</button>
               </div>
             </div>
 
@@ -5678,8 +5678,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:12px;color:var(--text-sec);">1 day ago</div>
               <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
               <div style="display:flex;gap:6px;">
-                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
-                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="dismissNode(this)">Mark as Unmanaged</button>
+                <button class="action-cta detected-row-cta" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+                <button class="action-cta detected-row-cta" onclick="dismissNode(this)">Mark as Unmanaged</button>
               </div>
             </div>
 
@@ -5702,8 +5702,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:12px;color:var(--text-sec);">3 days ago</div>
               <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);padding:3px 9px;border-radius:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Awaiting review</span></div>
               <div style="display:flex;gap:6px;">
-                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
-                <button class="action-cta detected-row-cta" style="font-size:11px;" onclick="dismissNode(this)">Mark as Unmanaged</button>
+                <button class="action-cta detected-row-cta" onclick="promoteNode(this)">Promote <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+                <button class="action-cta detected-row-cta" onclick="dismissNode(this)">Mark as Unmanaged</button>
               </div>
             </div>
 
@@ -5725,9 +5725,9 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:14px;font-weight:600;color:var(--text-default);">Consensus Comparison</div>
               <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">Compares each node's attributes against the majority pattern within its group to surface outliers.</div>
             </div>
-            <div style="display:flex;gap:6px;" id="peer-group-btns">
-              <button onclick="setPeerGroup(&#39;os&#39;)" id="pg-os" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid #00D794;cursor:pointer;background:rgba(63,200,120,0.1);color:#15803d;font-family:inherit;">By OS</button>
-              <button onclick="setPeerGroup(&#39;team&#39;)" id="pg-team" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);font-family:inherit;">By Team</button>
+            <div class="seg" id="peer-group-btns" role="group" aria-label="Group peers by">
+              <button onclick="setPeerGroup(&#39;os&#39;)" id="pg-os" class="seg-btn is-active" aria-pressed="true">By OS</button>
+              <button onclick="setPeerGroup(&#39;team&#39;)" id="pg-team" class="seg-btn" aria-pressed="false">By Team</button>
             </div>
           </div>
 
@@ -6173,7 +6173,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:11px;color:var(--intg-aws-sub);">Scan EC2, ECS, EKS, Lambda and RDS for compliance checks</div>
             </div>
           </div>
-          <button class="btn-primary" style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;width:auto;" onclick="go(&#39;j3-connect&#39;)">Connect AWS →</button>
+          <button class="btn-primary" style="white-space:nowrap;flex-shrink:0;width:auto;" onclick="go(&#39;j3-connect&#39;)">Connect AWS →</button>
         </div>
         <!-- AWS Connected card — shown after J3 -->
         <div id="aws-connected-card" style="display:none;background:var(--intg-aws-con-bg);border:1px solid var(--intg-aws-con-bd);border-radius:12px;padding:18px 22px;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;">
@@ -6199,7 +6199,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <div style="font-size:11px;color:var(--intg-sn-sub);">Match detected drift against approved Change Requests to filter out expected changes</div>
             </div>
           </div>
-          <button class="btn-primary" style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;width:auto;" onclick="go(&#39;j4-connect&#39;)">Connect ServiceNow →</button>
+          <button class="btn-primary" style="white-space:nowrap;flex-shrink:0;width:auto;" onclick="go(&#39;j4-connect&#39;)">Connect ServiceNow →</button>
         </div>
         <!-- ServiceNow Connected state — shown after J4 -->
         <div id="sn-connected-card" style="display:none;background:var(--intg-sn-bg);border:1px solid var(--intg-sn-bd);border-radius:12px;padding:18px 22px;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;">
@@ -6764,7 +6764,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         <div id="nd-hist-banner" style="display:none;align-items:center;gap:12px;background:var(--bg-warning);border:1px solid var(--bg-warning-border);border-radius:var(--radius-md);padding:11px 18px;margin-bottom:16px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           <div style="flex:1;font-size:12px;color:#92400e;">Viewing historical scan from <span id="nd-hist-when" style="font-weight:700;"></span> — read-only snapshot.</div>
-          <button onclick="ndSelectScan('now')" class="btn-outline" style="width:auto;padding:5px 12px;font-size:11px;font-weight:600;">Return to latest →</button>
+          <button onclick="ndSelectScan('now')" class="btn-outline" style="width:auto;padding:0 12px;">Return to latest →</button>
         </div>
 
         <!-- Summary strip -->
@@ -6839,7 +6839,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             <span style="font-size:11px;color:#15803d;font-weight:600;">● Linked</span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
-            <button class="btn-secondary" style="font-size:11px;padding:5px 12px;width:auto;" onclick="go(&#39;j4-match&#39;)">Rematch →</button>
+            <button class="btn-secondary" style="width:auto;" onclick="go(&#39;j4-match&#39;)">Rematch →</button>
           </div>
         </div>
 
@@ -7156,7 +7156,12 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 </div>
               </div>
 
-              <div id="nd-attrs-empty" style="display:none;padding:32px;text-align:center;color:var(--text-sec);font-size:12px;">No attributes match your search</div>
+              <div id="nd-attrs-empty" class="es" style="display:none;">
+                <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                <div class="es-title">No attributes match your search</div>
+                <div class="es-sub">Try a shorter term or clear the status filter.</div>
+                <div class="es-act"><button class="btn-outline" style="width:auto;padding:0 14px;" onclick="ndResetAttrFilters()">Reset filters</button></div>
+              </div>
             </div>
           </div>
         </div><!-- end attributes tab -->
@@ -7206,7 +7211,12 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <div><span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">✓ Passing</span></div>
                 <div style="font-size:11px;color:var(--text-sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">7 passing · <span style="color:#15803d;font-weight:600;">0 failing</span></div>
               </div>
-              <div id="nd-policies-empty" style="display:none;padding:32px;text-align:center;color:var(--text-sec);font-size:12px;">No policies match your search</div>
+              <div id="nd-policies-empty" class="es" style="display:none;">
+                <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                <div class="es-title">No policies match your search</div>
+                <div class="es-sub">Try a shorter term or clear the status filter.</div>
+                <div class="es-act"><button class="btn-outline" style="width:auto;padding:0 14px;" onclick="ndResetPolFilters()">Reset filters</button></div>
+              </div>
             </div>
           </div>
         </div><!-- end policies tab -->
@@ -7833,6 +7843,16 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       btn.style.borderColor = 'var(--green2)';
       ndFilterAttrs();
     }
+    function ndResetAttrFilters() {
+      document.getElementById('nd-attr-search').value = '';
+      var all = document.querySelector('.nd-afbtn');
+      if (all) ndAttrFilter('all', all); else ndFilterAttrs();
+    }
+    function ndResetPolFilters() {
+      document.getElementById('nd-pol-search').value = '';
+      var all = document.querySelector('.nd-pfbtn');
+      if (all) ndPolFilter('all', all); else ndFilterPolicies();
+    }
     function ndFilterPolicies() {
       var q = document.getElementById('nd-pol-search').value.toLowerCase();
       var activeFilter = document.querySelector('.nd-pfbtn[data-active]');
@@ -8136,7 +8156,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             <div class="page-sub">Build a custom compliance policy step by step</div>
           </div>
         </div>
-        <button class="btn-outline" onclick="pcBack()" style="font-size:13px;">Cancel</button>
+        <button class="btn-outline" onclick="pcBack()">Cancel</button>
       </div>
 
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -8473,7 +8493,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             Delete policy
           </button>
           <div style="width:1px;height:22px;background:var(--border);margin:0 4px;flex-shrink:0;"></div>
-          <button class="btn-primary" style="font-size:13px;padding:10px 18px;" onclick="showView(&#39;policy-detail&#39;);showToast(&#39;Policy saved successfully&#39;)">Save changes</button>
+          <button class="btn-primary" style="font-size:13px;padding:10px 18px;" onclick="showView(&#39;policy-detail&#39;);showToast(&#39;Policy saved&#39;)">Save changes</button>
         </div>
       </div>
       <!-- Policy-level tags row -->
@@ -9251,7 +9271,6 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       pdFilter('all');
       document.querySelectorAll('#nd-attrs-pop,#nd-policies-pop').forEach(function(el){ el.style.display='none'; });
       showView('policy-detail');
-      document.getElementById('lbl').textContent = 'Policies › ' + shortName;
     }
 
     function setSevFilter(sev, pillEl) {
@@ -9988,14 +10007,28 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     }
     function ssAddFolder() { ssFolders.push(''); renderSSFolders(); }
     function ssRemoveFolder(i) { ssFolders.splice(i, 1); if (!ssFolders.length) ssFolders = ['']; renderSSFolders(); }
+    /* Full-page шасі валідації (DS §5.3): submit disabled, поки бракує
+       обовʼязкових полів, + hint із переліком. Користувач не має натискати,
+       щоб дізнатися про помилку. */
+    function ssValidate() {
+      var submit = document.getElementById('ss-submit');
+      if (!submit) return;
+      var url = (document.getElementById('ss-url') || {}).value || '';
+      var user = (document.getElementById('ss-user') || {}).value || '';
+      var missing = [];
+      if (!url.trim()) missing.push('the instance URL');
+      if (!user.trim()) missing.push('a username');
+      submit.disabled = missing.length > 0;
+      var hint = document.getElementById('ss-req-hint'), htext = document.getElementById('ss-req-hint-text');
+      if (hint) {
+        hint.style.display = missing.length ? 'flex' : 'none';
+        if (htext && missing.length) htext.textContent = 'Add ' + missing.join(' and ') + ' to test the connection.';
+      }
+    }
     function ssSaveConfig() {
       var url = (document.getElementById('ss-url') || {}).value || '';
       var user = (document.getElementById('ss-user') || {}).value || '';
-      if (!url.trim() || !user.trim()) {
-        if (typeof scToast === 'function') scToast('Instance URL and username are required');
-        else showToast('Instance URL and username are required', 'error');
-        return;
-      }
+      if (!url.trim() || !user.trim()) { ssValidate(); return; }
       var folders = ssFolders.filter(function (f) { return f.trim(); });
       var host = url.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
       // Reflect into the connected card on the Integrations page
@@ -10147,7 +10180,12 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         available.forEach(function(p){ html += intgAvailableCard(p); });
         html += '</div>';
       }
-      list.innerHTML = html || '<div class="intg-empty">No integrations yet.</div>';
+      list.innerHTML = html || '<div class="es">'
+        + '<div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path></svg></div>'
+        + '<div class="es-title">No integrations yet</div>'
+        + '<div class="es-sub">Connect a cloud account or CMDB to start importing nodes into Guardian.</div>'
+        + '<div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;" onclick="openIntegrationSetup()">Add integration</button></div>'
+        + '</div>';
       intgInjectLogos();
       // Footer adapts: when every provider is connected, explain the missing Available section.
       var ft = document.getElementById('intg-foot-title'), fs = document.getElementById('intg-foot-sub');
@@ -10236,7 +10274,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         }
         bk.innerHTML = baseRows
           ? baseRows.map(function(r){ return '<div class="id-kv-label">'+r.l+'</div><div class="id-kv-val"'+(r.green?' style="color:#00AF73;"':'')+'>'+r.v+'</div>'; }).join('')
-          : '<div class="id-caps-empty" style="grid-column:1/-1;">No connection details available.</div>';
+          : '<div class="es es-sm" style="grid-column:1/-1;">'
+            + '<div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>'
+            + '<div class="es-title">No connection details</div>'
+            + '<div class="es-sub">This provider has not reported any connection configuration yet.</div>'
+            + '</div>';
       }
       var sb = document.getElementById('id-sync-body');
       if (sb) {
@@ -10248,7 +10290,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             + sy.kv.map(function(r){ return '<div class="id-sync-cell"><div class="id-sync-cell-val">'+r.v+'</div><div class="id-sync-cell-lbl">'+r.l+'</div></div>'; }).join('')
             + '</div>';
         } else {
-          sb.innerHTML = '<div class="id-caps-empty">No syncs yet — enable a capability below to start syncing data from '+p.name+'.</div>';
+          sb.innerHTML = '<div class="es es-sm">'
+            + '<div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></div>'
+            + '<div class="es-title">No syncs yet</div>'
+            + '<div class="es-sub">Enable a capability below to start syncing data from '+p.name+'.</div>'
+            + '</div>';
         }
       }
       // Capabilities
@@ -10273,12 +10319,12 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           var actions = '<div class="id-cap-actions">';
           if (c.enabled) {
             var _mk = c.schema || c.id;
-            if (FM_SCHEMAS[_mk]) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping(\''+_mk+'\')">Manage mapping</button>';
+            if (FM_SCHEMAS[_mk]) actions += '<button class="action-cta" style="width:auto;padding:0 14px;" onclick="openFieldMapping(\''+_mk+'\')">Manage mapping</button>';
             var actView = (c.id==='recon') ? 'changes' : (c.id==='cmdb'||c.id==='cloud-nodes') ? 'all-devices' : '';
-            if (actView) actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView(\''+actView+'\')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>';
-            else actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showToast(\''+c.name+' activity\')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>';
+            if (actView) actions += '<button class="action-cta" style="width:auto;padding:0 14px;" onclick="showView(\''+actView+'\')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>';
+            else actions += '<button class="action-cta" style="width:auto;padding:0 14px;" onclick="showToast(\''+c.name+' activity\')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>';
           } else {
-            actions += '<button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="idSetCap(\''+c.id+'\',true)">Enable</button>';
+            actions += '<button class="action-cta" style="width:auto;padding:0 14px;" onclick="idSetCap(\''+c.id+'\',true)">Enable</button>';
           }
           actions += '</div>';
           return '<div class="id-cap"'+opac+'><div class="id-cap-head"><div class="id-cap-title-row"><div class="id-cap-name">'+c.name+'</div>'+badge+'</div>'+menu+'</div><div class="id-cap-desc">'+c.desc+'</div>'+meta+attention+actions+'</div>';
@@ -10288,7 +10334,11 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         var capsHtml = '';
         if (enCaps.length) capsHtml += '<div class="id-cap-group"><div class="id-cap-group-head">Enabled <span class="id-cap-group-count">'+enCaps.length+'</span></div>'+enCaps.map(renderCap).join('')+'</div>';
         if (avCaps.length) capsHtml += '<div class="id-cap-group"><div class="id-cap-group-head">Available <span class="id-cap-group-count">'+avCaps.length+'</span></div>'+avCaps.map(renderCap).join('')+'</div>';
-        cl.innerHTML = capsHtml || '<div class="id-caps-empty">No capabilities configured yet. Capabilities for '+p.name+' will appear here once set up.</div>';
+        cl.innerHTML = capsHtml || '<div class="es es-sm">'
+          + '<div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg></div>'
+          + '<div class="es-title">No capabilities configured</div>'
+          + '<div class="es-sub">Capabilities for '+p.name+' appear here once the connection is set up.</div>'
+          + '</div>';
       }
       showView('integration-detail');
       intgInjectLogos();
@@ -10524,22 +10574,25 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var backBtn = document.getElementById('fm-btn-back');
       var nextBtn = document.getElementById('fm-btn-next');
       var testBtn = document.getElementById('fm-btn-test');
+      // Обидві помилки стосуються форми в цілому (набір галочок / результат тесту),
+      // а не окремого поля → inline-блок угорі тіла модалки (DS §5.3 Exceptions).
+      var fmBody = ov.querySelector('.gm-body');
       if (cur === 0) {
         _fmCollectSelected(ov);
-        if (!_fmSelected.length) { showToast('Select at least one field', 'error'); return; }
+        if (!_fmSelected.length) { vFormError(fmBody, 'Select at least one field to continue.'); return; }
         gmGoStep(_FM_MODAL, 1);
         if (nextBtn) nextBtn.textContent = 'Next: Review & activate';
         if (backBtn) backBtn.style.display = '';
         if (testBtn) testBtn.style.display = '';
       } else if (cur === 1) {
-        if (_fmTestState === 'error') { showToast('Fix blocking errors before proceeding', 'error'); return; }
+        if (_fmTestState === 'error') { vFormError(fmBody, 'Fix the blocking errors in the test result before continuing.'); return; }
         gmGoStep(_FM_MODAL, 2);
         if (nextBtn) nextBtn.textContent = 'Activate mapping';
         if (testBtn) testBtn.style.display = 'none';
       } else if (cur === 2) {
         var cb = _fmConfig && _fmConfig.onActivate;
         close();
-        if (cb) cb(); else showToast('Mapping activated successfully');
+        if (cb) cb(); else showToast('Mapping activated');
       }
     }
 
@@ -11107,6 +11160,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     function icxSelectProvider(id) {
       ICX.provider = id;
       var ov = document.getElementById(_ICX_MODAL); if (!ov) return;
+      vFormError(ov.querySelector('.gm-body'), null); // вибір зроблено — помилка більше не чинна
       var tiles = ov.querySelectorAll('.icx-ptile');
       for (var i=0;i<tiles.length;i++) tiles[i].classList.toggle('selected', tiles[i].id==='icx-pt-'+id);
       var p = intgProvider(id);
@@ -11150,13 +11204,14 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       if (b) { b.textContent = label; b.disabled = !!disabled; b.style.display = ''; }
     }
     function icxNext() {
+      var ovBody = (document.getElementById(_ICX_MODAL) || document).querySelector('.gm-body');
       if (ICX.step===1) {
-        if (!ICX.provider) { showToast('Select a provider to continue', 'error'); return; }
+        // Провайдер обирається плиткою, а не полем → помилка рівня форми (DS §5.3 Exceptions).
+        if (!ICX.provider) { vFormError(ovBody, 'Select a provider to continue.'); return; }
         icxGoStep(2); return;
       }
       if (ICX.step===2) {
-        var url = (document.getElementById('icx-url')||{}).value||'';
-        if (!url.trim()) { showToast('Enter the instance URL to continue', 'error'); return; }
+        if (vRequire('icx-url')) return;
         icxGoStep(3); return;
       }
       if (ICX.step===3) { icxGoStep(4); return; }
@@ -11488,7 +11543,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         if (foot) {
           if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
             foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>'
-              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">Done</button>';
+              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group</button>';
           } else {
             foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group</button>'
               + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');cmReturnToAddNode()">Continue to Add Node →</button>';
@@ -11910,6 +11965,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       if (!ov) return;
       var panels = ov.querySelectorAll('.gm-panel');
       var steps  = ov.querySelectorAll('.gm-step');
+      vFormError(ov.querySelector('.gm-body'), null); // помилка кроку не переїжджає на наступний (DS §5.3)
       panels.forEach(function(p, i) { p.classList.toggle('is-visible', i === stepIdx); });
       steps.forEach(function(s, i) {
         s.classList.remove('is-active', 'is-done');
@@ -12907,7 +12963,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     }
     // Render initial auth type on page load
-    window.addEventListener('load', function () { try { setScanFailType('auth'); } catch (e) {} });
+    window.addEventListener('load', function () { try { setScanFailType('auth'); } catch (e) {} try { ssValidate(); } catch (e) {} });
 
     var _polActiveTag = '';
     function toggleTagFilter(e) {
@@ -13591,6 +13647,49 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       _toastTimers.push(setTimeout(function(){ t.style.opacity = '1'; }, 10));
       _toastTimers.push(setTimeout(function(){ t.style.opacity = '0'; }, hold));
       _toastTimers.push(setTimeout(function(){ t.style.display = 'none'; }, hold + 300));
+    }
+
+    /* ── Inline validation (DS §5.3) ───────────────────────────────────────
+       Помилка валідації живе біля поля, не в toast. Два шасі:
+       модалка — vRequire() ставить рамку на невалідні поля, фокус на перше,
+       рамка знімається при першому вводі; помилка рівня форми (не привʼязана
+       до конкретного поля) — vFormError() inline-блоком угорі тіла форми. */
+    var _V_ERR_ICO = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+
+    function vMarkField(el) {
+      if (!el) return;
+      el.style.borderColor = '#FB3C44';
+      el.addEventListener('input', function () { el.style.borderColor = ''; }, { once: true });
+    }
+
+    // ids — рядок або масив id обовʼязкових полів. true = знайдено порожні.
+    function vRequire(ids) {
+      var bad = (typeof ids === 'string' ? [ids] : ids)
+        .map(function (id) { return document.getElementById(id); })
+        .filter(function (el) { return el && !String(el.value || '').trim(); });
+      bad.forEach(vMarkField);
+      if (bad.length) bad[0].focus();
+      return bad.length > 0;
+    }
+
+    // host — контейнер форми (напр. .gm-body модалки). msg = null знімає блок.
+    function vFormError(host, msg) {
+      if (!host) return;
+      var box = host.firstElementChild;
+      var has = box && box.classList.contains('v-form-err');
+      if (!msg) { if (has) box.style.display = 'none'; return; }
+      if (!has) {
+        box = document.createElement('div');
+        box.className = 'v-form-err';
+        host.insertBefore(box, host.firstChild);
+      }
+      box.innerHTML = _V_ERR_ICO + '<span></span>';
+      box.lastChild.textContent = msg;
+      box.style.display = 'flex';
+      // Знімається при першій дії користувача — так само, як рамка поля.
+      var clear = function () { box.style.display = 'none'; };
+      host.addEventListener('input', clear, { once: true });
+      host.addEventListener('change', clear, { once: true });
     }
 
     // ── Add check to policy from scan results (right-click context menu) ──
@@ -14376,7 +14475,9 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
       var map = { summary: 'rt-summary', failed: 'rt-failed', full: 'rt-full' };
       Object.keys(map).forEach(function (k) {
         var b = document.getElementById(map[k]);
-        if (b) b.classList.toggle('on', k === type);
+        if (!b) return;
+        b.classList.toggle('is-active', k === type);
+        b.setAttribute('aria-pressed', k === type ? 'true' : 'false');
       });
       var band = document.getElementById('rep-summary-band');
       var policy = document.getElementById('rep-policy-table');
@@ -14462,7 +14563,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         +   '<div style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Export failed</div>'
         +   '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;line-height:1.5;">Couldn\'t reach the scan engine while compiling the report. No file was generated — your data is unchanged.</div>'
         +   '<div style="display:flex;gap:8px;margin-top:20px;">'
-        +     '<button onclick="closeExportModal()" class="btn-outline" style="flex:1;padding:11px;font-size:13px;">Cancel</button>'
+        +     '<button onclick="closeExportModal()" class="btn-outline" style="flex:1;">Cancel</button>'
         +     '<button onclick="exportRetry()" class="btn-primary" style="flex:1;padding:11px;font-size:13px;">Retry</button>'
         +   '</div>'
         + '</div>';
@@ -15091,11 +15192,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               <span id="drift-scope-clear" onclick="clearDriftScope()" title="Clear scope" style="display:none;cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;padding-left:1px;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-muted)&#39;">×</span>
             </div>
             <div id="drift-scope-divider" style="display:none;width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0;"></div>
-            <div class="pill" id="filter-all" style="cursor:pointer;background:rgba(63,200,120,0.1);border-color:var(--p-green-400);color:#15803d;font-weight:600;" onclick="filterChanges(&#39;all&#39;)">All (3)</div>
-            <div class="pill" id="filter-unreconciled" style="cursor:pointer;" onclick="filterChanges(&#39;unreconciled&#39;)">Unreconciled (1)</div>
-            <div class="pill" id="filter-reconciled" style="cursor:pointer;" onclick="filterChanges(&#39;reconciled&#39;)">Reconciled (1)</div>
-            <div class="pill" id="filter-flagged" style="cursor:pointer;" onclick="filterChanges(&#39;flagged&#39;)">Flagged (1)</div>
-            <div class="pill" id="filter-nocr" style="cursor:pointer;" onclick="filterChanges(&#39;nocr&#39;)">No CR (2)</div>
+            <div class="policies-tabs" id="drift-filter-btns">
+              <button class="pol-tab pol-tab-active" id="filter-all" aria-pressed="true" onclick="filterChanges(&#39;all&#39;)">All <span class="pol-tab-count">3</span></button>
+              <button class="pol-tab" id="filter-unreconciled" aria-pressed="false" onclick="filterChanges(&#39;unreconciled&#39;)">Unreconciled <span class="pol-tab-count">1</span></button>
+              <button class="pol-tab" id="filter-reconciled" aria-pressed="false" onclick="filterChanges(&#39;reconciled&#39;)">Reconciled <span class="pol-tab-count">1</span></button>
+              <button class="pol-tab" id="filter-flagged" aria-pressed="false" onclick="filterChanges(&#39;flagged&#39;)">Flagged <span class="pol-tab-count">1</span></button>
+              <button class="pol-tab" id="filter-nocr" aria-pressed="false" onclick="filterChanges(&#39;nocr&#39;)">No CR <span class="pol-tab-count">2</span></button>
+            </div>
             <span onclick="enterReconcileMode()" title="Query, node, type, category &amp; approval filters" style="display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-size:11.5px;font-weight:600;color:var(--green1);cursor:pointer;white-space:nowrap;user-select:none;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
               <span id="drift-morefilters-label">More filters</span>
@@ -15807,8 +15910,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             <div class="form-group">
               <div class="form-label">Authentication Method</div>
               <div class="toggle-group" style="width:fit-content;">
-                <div class="toggle-btn active" id="tog-iam" onclick="switchAwsAuth(&#39;iam&#39;)" style="padding:9px 20px;white-space:nowrap;width:180px;">OIDC (recommended)</div>
-                <div class="toggle-btn" id="tog-keys" onclick="switchAwsAuth(&#39;keys&#39;)" style="padding:9px 20px;white-space:nowrap;width:180px;">Access Keys</div>
+                <div class="toggle-btn active" id="tog-iam" onclick="switchAwsAuth(&#39;iam&#39;)" style="width:180px;">OIDC (recommended)</div>
+                <div class="toggle-btn" id="tog-keys" onclick="switchAwsAuth(&#39;keys&#39;)" style="width:180px;">Access Keys</div>
               </div>
             </div>
 
@@ -16324,9 +16427,9 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
         </div>
 
         <div style="display:flex;align-items:center;justify-content:space-between;">
+          <!-- DS §6.3 — вихід із флоу лишається за `Exit` у stepper, дубля тут немає -->
           <div style="display:flex;align-items:center;gap:16px;">
             <span style="font-size:13px;color:var(--text-sec);font-weight:500;">12 of 14 nodes selected</span>
-            <button style="background:none;border:none;font-size:12px;color:var(--text-sec);cursor:pointer;" onclick="showView(&#39;dashboard&#39;)">Skip for now</button>
           </div>
           <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="go(&#39;j3-scan-config&#39;)">
             Continue to Scan Setup →
@@ -16401,8 +16504,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <td><span style="font-size:11px;color:#d97706;font-weight:600;">⚠ Not found</span></td>
                 <td>
                   <div style="display:flex;gap:6px;">
-                    <button class="btn-outline" style="font-size:11px;padding:5px 10px;">Search CMDB</button>
-                    <button class="btn-outline" style="font-size:11px;padding:5px 10px;color:var(--text-sec);">Skip</button>
+                    <button class="btn-outline" style="padding:0 10px;">Search CMDB</button>
+                    <button class="btn-outline" style="padding:0 10px;">Skip</button>
                   </div>
                 </td>
               </tr>
@@ -16418,8 +16521,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <td><span style="font-size:11px;color:#d97706;font-weight:600;">⚠ Not found</span></td>
                 <td>
                   <div style="display:flex;gap:6px;">
-                    <button class="btn-outline" style="font-size:11px;padding:5px 10px;">Search CMDB</button>
-                    <button class="btn-outline" style="font-size:11px;padding:5px 10px;color:var(--text-sec);">Skip</button>
+                    <button class="btn-outline" style="padding:0 10px;">Search CMDB</button>
+                    <button class="btn-outline" style="padding:0 10px;">Skip</button>
                   </div>
                 </td>
               </tr>
@@ -16782,7 +16885,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
     <div class="view" id="v-j3-results" style="display: none;">
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <button class="btn-outline" onclick="j3ResultsBack()" style="padding:5px 12px;font-size:12px;flex-shrink:0;">← Back</button>
+          <button class="back-btn" onclick="j3ResultsBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
             <div class="page-title">Compliance Policy Results — AWS</div>
             <div class="page-sub">12 nodes · Level 1 · Scanned just now</div>
@@ -17006,7 +17109,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <div style="display:flex;flex-direction:column;gap:10px;">
             <button class="btn-primary" style="width:100%;padding:12px;" onclick="go(&#39;j3-connect&#39;)">Change regions / settings →</button>
             <button class="btn-outline" style="width:100%;padding:12px;" onclick="go(&#39;j3-syncing&#39;)">Retry scan</button>
-            <button style="background:none;border:none;font-size:12px;color:var(--text-sec);cursor:pointer;padding:6px;" onclick="showView(&#39;dashboard&#39;)">Skip for now — return to Dashboard</button>
+            <button style="background:none;border:none;font-size:12px;color:var(--text-sec);cursor:pointer;padding:6px;" onclick="showView(&#39;dashboard&#39;)">Exit</button>
           </div>
         </div>
       </div>
@@ -17043,9 +17146,9 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               </div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn-secondary" style="font-size:11px;padding:5px 12px;">Link to CI0012346 →</button>
-              <button class="btn-secondary" style="font-size:11px;padding:5px 12px;">Search CMDB…</button>
-              <button class="btn-outline" style="font-size:11px;padding:5px 12px;" onclick="this.textContent=&#39;✓ Marked as New&#39;;this.style.opacity=&#39;0.6&#39;;">Mark as New</button>
+              <button class="btn-secondary">Link to CI0012346 →</button>
+              <button class="btn-secondary">Search CMDB…</button>
+              <button class="btn-outline" onclick="this.textContent=&#39;✓ Marked as New&#39;;this.style.opacity=&#39;0.6&#39;;">Mark as New</button>
             </div>
           </div>
           <!-- Row 2 -->
@@ -17058,8 +17161,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               </div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn-secondary" style="font-size:11px;padding:5px 12px;">Search CMDB…</button>
-              <button class="btn-outline" style="font-size:11px;padding:5px 12px;" onclick="this.textContent=&#39;✓ Marked as New&#39;;this.style.opacity=&#39;0.6&#39;;">Mark as New</button>
+              <button class="btn-secondary">Search CMDB…</button>
+              <button class="btn-outline" onclick="this.textContent=&#39;✓ Marked as New&#39;;this.style.opacity=&#39;0.6&#39;;">Mark as New</button>
             </div>
           </div>
           <!-- Row 3 -->
@@ -17072,8 +17175,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               </div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn-secondary" style="font-size:11px;padding:5px 12px;">Search CMDB…</button>
-              <button class="btn-outline" style="font-size:11px;padding:5px 12px;" onclick="this.textContent=&#39;✓ Marked as New&#39;;this.style.opacity=&#39;0.6&#39;;">Mark as New</button>
+              <button class="btn-secondary">Search CMDB…</button>
+              <button class="btn-outline" onclick="this.textContent=&#39;✓ Marked as New&#39;;this.style.opacity=&#39;0.6&#39;;">Mark as New</button>
             </div>
           </div>
         </div>
@@ -17177,7 +17280,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             </div>
           </div>
           <button id="sf-primary-btn" class="btn-primary" style="width:auto;padding:8px 18px;font-size:13px;" onclick="go('secret-server-config')">Update credential</button>
-          <button class="btn-outline" style="width:auto;padding:8px 18px;font-size:13px;" onclick="retryScan(this)">Retry scan</button>
+          <button class="btn-outline" style="width:auto;padding:0 18px;" onclick="retryScan(this)">Retry scan</button>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
@@ -17236,8 +17339,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   <div style="font-size:11px;color:var(--text-muted);">Error code <span id="sf-log-errorcode" style="color:var(--text-default);font-weight:600;font-family:'DM Mono',monospace;margin-left:4px;">0x8009030E</span></div>
                 </div>
                 <div style="display:flex;gap:8px;margin-bottom:12px;">
-                  <button class="btn-outline" style="width:auto;padding:6px 12px;font-size:11px;" onclick="copySfLog(this)">Copy log</button>
-                  <button class="btn-outline" style="width:auto;padding:6px 12px;font-size:11px;" onclick="downloadSfLog()">Download log</button>
+                  <button class="btn-outline" style="width:auto;" onclick="copySfLog(this)">Copy log</button>
+                  <button class="btn-outline" style="width:auto;" onclick="downloadSfLog()">Download log</button>
                 </div>
                 <pre id="sf-raw" style="margin:0;background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-sec);white-space:pre-wrap;overflow-x:auto;">[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 … ok
 [2026-07-03 09:14:03] WinRM negotiate auth … FAILED
@@ -18170,10 +18273,10 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             <div style="width:1px;height:24px;background:var(--border);margin:0 4px;"></div>
             <!-- REPORT VIEW segmented control -->
             <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Report</span>
-            <div class="rep-seg" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
-              <button id="rt-summary" class="rep-seg-btn" onclick="setReportType(&#39;summary&#39;)">Summary</button>
-              <button id="rt-failed" class="rep-seg-btn" onclick="setReportType(&#39;failed&#39;)">Failed checks</button>
-              <button id="rt-full" class="rep-seg-btn on" onclick="setReportType(&#39;full&#39;)">All sections</button>
+            <div class="rep-seg seg" role="group" aria-label="Report view">
+              <button id="rt-summary" class="seg-btn" onclick="setReportType(&#39;summary&#39;)" aria-pressed="false">Summary</button>
+              <button id="rt-failed" class="seg-btn" onclick="setReportType(&#39;failed&#39;)" aria-pressed="false">Failed checks</button>
+              <button id="rt-full" class="seg-btn is-active" onclick="setReportType(&#39;full&#39;)" aria-pressed="true">All sections</button>
             </div>
             <button id="rep-reset" onclick="reportResetScope()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
             <!-- Metadata -->
@@ -18266,13 +18369,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
         <!-- Empty state — no nodes/scans match the current scope -->
         <div id="report-empty" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:56px 24px;text-align:center;">
-          <div style="width:56px;height:56px;margin:0 auto 18px;border-radius:50%;background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          <div style="width:44px;height:44px;margin:0 auto 14px;border-radius:50%;background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
           </div>
-          <div id="report-empty-title" style="font-size:16px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">No data for this scope</div>
-          <div id="report-empty-body" style="font-size:13px;color:var(--text-sec);margin-top:8px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.55;">No scanned nodes match this node group. Adjust the scope filters, or run a scan on nodes in this group first.</div>
-          <div style="display:flex;gap:8px;justify-content:center;margin-top:22px;">
-            <button onclick="reportResetScope()" class="btn-outline" style="width:auto;padding:9px 18px;font-size:13px;">Reset filters</button>
+          <div id="report-empty-title" style="font-size:14px;font-weight:600;color:var(--text-default);margin-bottom:4px;">No data for this scope</div>
+          <div id="report-empty-body" style="font-size:12px;color:var(--text-muted);max-width:380px;margin:0 auto;line-height:1.55;">No scanned nodes match this node group. Adjust the scope filters, or run a scan on nodes in this group first.</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;">
+            <button onclick="reportResetScope()" class="btn-outline" style="width:auto;padding:0 18px;">Reset filters</button>
             <button id="report-empty-scan" onclick="go(&#39;scan-schedule&#39;)" class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;">Set up a scan →</button>
           </div>
         </div>
@@ -18454,7 +18557,12 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             </div>
           </div>
           <div id="cmd-nodes"></div>
-          <div id="cmd-nodes-empty" style="display:none;padding:32px;text-align:center;font-size:12px;color:var(--text-muted);">No nodes assigned to this group</div>
+          <div id="cmd-nodes-empty" class="es" style="display:none;">
+            <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></div>
+            <div class="es-title">No nodes assigned to this group</div>
+            <div class="es-sub">Assign nodes to this group so agentless scans have targets to run against.</div>
+            <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;" onclick="showView('all-devices')">Assign nodes</button></div>
+          </div>
         </div>
 
         <!-- Recent Activity -->
@@ -18549,7 +18657,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   </div>
                 </div>
               </div>
-              <button class="btn-primary" style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;width:auto;" onclick="go(&#39;j4-connect&#39;)">Connect ServiceNow →</button>
+              <button class="btn-primary" style="white-space:nowrap;flex-shrink:0;width:auto;" onclick="go(&#39;j4-connect&#39;)">Connect ServiceNow →</button>
             </div>
           </div>
 
@@ -18568,7 +18676,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 </div>
               </div>
               <div style="display:flex;gap:8px;flex-shrink:0;">
-                <button class="btn-outline" style="font-size:11px;padding:6px 14px;" onclick="go(&#39;j4-connect&#39;)">Edit Config</button>
+                <button class="btn-outline" onclick="go(&#39;j4-connect&#39;)">Edit Config</button>
               </div>
             </div>
             <!-- Config details grid -->
@@ -18606,7 +18714,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   </div>
                 </div>
               </div>
-              <button class="btn-outline" style="font-size:11px;padding:6px 14px;flex-shrink:0;" onclick="viewAwsDetails()">View Details</button>
+              <button class="btn-outline" style="flex-shrink:0;" onclick="viewAwsDetails()">View Details</button>
             </div>
           </div>
 
@@ -18625,7 +18733,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   </div>
                 </div>
               </div>
-              <button class="btn-primary" style="white-space:nowrap;padding:8px 18px;font-size:12px;flex-shrink:0;width:auto;" onclick="showView(&#39;secret-server-config&#39;)">Connect Secret Server →</button>
+              <button class="btn-primary" style="white-space:nowrap;flex-shrink:0;width:auto;" onclick="showView(&#39;secret-server-config&#39;)">Connect Secret Server →</button>
             </div>
           </div>
 
@@ -18645,7 +18753,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 </div>
               </div>
               <div style="display:flex;gap:8px;flex-shrink:0;">
-                <button class="btn-outline" style="font-size:11px;padding:6px 14px;" onclick="showView(&#39;secret-server-config&#39;)">Edit Config</button>
+                <button class="btn-outline" onclick="showView(&#39;secret-server-config&#39;)">Edit Config</button>
               </div>
             </div>
             <!-- Config details grid -->
@@ -18710,9 +18818,9 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 Base configuration
               </div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="action-cta" style="width:auto;padding:5px 12px;font-size:11px;" onclick="showToast('Edit connection settings')">Edit connection</button>
-                <button class="action-cta" style="width:auto;padding:5px 12px;font-size:11px;" onclick="showToast('Update credentials')">Update credentials</button>
-                <button class="action-cta" style="width:auto;padding:5px 12px;font-size:11px;" onclick="idTestConnection()">Test connection</button>
+                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="showToast('Edit connection settings')">Edit connection</button>
+                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="showToast('Update credentials')">Update credentials</button>
+                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="idTestConnection()">Test connection</button>
               </div>
             </div>
             <div class="id-kv" id="id-base-kv">
@@ -18791,8 +18899,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   </div>
                 </div>
                 <div class="id-cap-actions">
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping('cmdb')">Manage mapping</button>
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('all-devices')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+                  <button class="action-cta" style="width:auto;padding:0 14px;" onclick="openFieldMapping('cmdb')">Manage mapping</button>
+                  <button class="action-cta" style="width:auto;padding:0 14px;" onclick="showView('all-devices')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
                 </div>
               </div>
 
@@ -18822,8 +18930,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   <button class="id-cap-attention-btn" onclick="showView('changes')">Review <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
                 </div>
                 <div class="id-cap-actions">
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="openFieldMapping('recon')">Manage mapping</button>
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="showView('changes')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+                  <button class="action-cta" style="width:auto;padding:0 14px;" onclick="openFieldMapping('recon')">Manage mapping</button>
+                  <button class="action-cta" style="width:auto;padding:0 14px;" onclick="showView('changes')">View activity <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
                 </div>
               </div>
               </div>
@@ -18847,7 +18955,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                   </div>
                 </div>
                 <div class="id-cap-actions">
-                  <button class="action-cta" style="width:auto;padding:6px 14px;font-size:11px;" onclick="idSetCap('incident',true)">Enable</button>
+                  <button class="action-cta" style="width:auto;padding:0 14px;" onclick="idSetCap('incident',true)">Enable</button>
                 </div>
               </div>
               </div>
@@ -18917,13 +19025,13 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
               </div>
               <div class="form-group">
                 <label class="form-label" for="ss-url">Instance URL <span style="color:#FB3C44;">*</span></label>
-                <input id="ss-url" class="form-input" type="text" placeholder="https://myserver.com/secretserver">
+                <input id="ss-url" class="form-input" type="text" placeholder="https://myserver.com/secretserver" oninput="ssValidate()">
                 <div style="font-size:11px;color:var(--text-sec);margin-top:6px;">The base URL of your Secret Server instance.</div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                 <div class="form-group">
                   <label class="form-label" for="ss-user">Username <span style="color:#FB3C44;">*</span></label>
-                  <input id="ss-user" class="form-input" type="text" placeholder="svc-guardian">
+                  <input id="ss-user" class="form-input" type="text" placeholder="svc-guardian" oninput="ssValidate()">
                   <div style="font-size:11px;color:var(--text-sec);margin-top:6px;">Service account with access to credential storage.</div>
                 </div>
                 <div class="form-group">
@@ -18980,8 +19088,14 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
 
             <!-- Footer -->
             <div style="border-top:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-              <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Credentials stored securely</div>
-              <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="ssSaveConfig()">Test &amp; Save →</button>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Credentials stored securely</div>
+                <div id="ss-req-hint" class="v-req-hint">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                  <span id="ss-req-hint-text"></span>
+                </div>
+              </div>
+              <button class="btn-primary v-submit" id="ss-submit" style="width:auto;padding:12px 24px;" onclick="ssSaveConfig()">Test &amp; Save →</button>
             </div>
           </div>
         </div>
@@ -19198,7 +19312,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <div class="page-title">Match Guardian Nodes to ServiceNow CIs</div>
           <div class="page-sub">Guardian found 47 nodes already in your CMDB — confirm the mapping to enable Change Reconciliation</div>
         </div>
-        <button class="btn-secondary" style="width:auto;padding:8px 16px;font-size:13px;display:flex;align-items:center;gap:6px;" onclick="this.textContent=&#39;Re-running…&#39;;setTimeout(()=&gt;this.textContent=&#39;Re-run Matching&#39;,1800)">
+        <button class="btn-secondary" style="width:auto;" onclick="this.textContent=&#39;Re-running…&#39;;setTimeout(()=&gt;this.textContent=&#39;Re-run Matching&#39;,1800)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
           Re-run Matching
         </button>
@@ -19740,7 +19854,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             <div class="toggle-group" style="margin-bottom:14px;">
               <button class="toggle-btn active" id="cmdb-win-tab-secret" onclick="setCmdbCred('win','secret')">From Secret Server</button>
               <button class="toggle-btn" id="cmdb-win-tab-direct" onclick="setCmdbCred('win','direct')">Enter directly</button>
-              <button class="toggle-btn" id="cmdb-win-tab-skip" onclick="setCmdbCred('win','skip')">Skip for now</button>
+              <button class="toggle-btn" id="cmdb-win-tab-skip" onclick="setCmdbCred('win','skip')">No credential</button>
             </div>
             <div id="cmdb-win-panel-secret">
               <div class="form-group" style="margin-bottom:0;">
@@ -19775,7 +19889,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
             <div class="toggle-group" style="margin-bottom:14px;">
               <button class="toggle-btn active" id="cmdb-nix-tab-secret" onclick="setCmdbCred('nix','secret')">From Secret Server</button>
               <button class="toggle-btn" id="cmdb-nix-tab-direct" onclick="setCmdbCred('nix','direct')">Enter directly</button>
-              <button class="toggle-btn" id="cmdb-nix-tab-skip" onclick="setCmdbCred('nix','skip')">Skip for now</button>
+              <button class="toggle-btn" id="cmdb-nix-tab-skip" onclick="setCmdbCred('nix','skip')">No credential</button>
             </div>
             <div id="cmdb-nix-panel-secret">
               <div class="form-group" style="margin-bottom:0;">
@@ -20227,7 +20341,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00AF73;margin-right:4px;"></span>CR Matched = drift covered by an approved Change Request</span>
                 <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#d97706;margin-right:4px;"></span>Needs Review = partial match or window mismatch</span>
               </div>
-              <button class="btn-outline" style="font-size:11px;padding:5px 12px;flex-shrink:0;">Export audit log</button>
+              <button class="btn-outline" style="flex-shrink:0;">Export audit log</button>
             </div>
           </div>
           <table class="data-table">
@@ -20328,7 +20442,7 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
           <div style="display:flex;flex-direction:column;gap:10px;">
             <button class="btn-primary" style="width:100%;padding:12px;" onclick="go(&#39;j4-active&#39;)">Back to Recon Status</button>
             <button class="btn-secondary" style="width:100%;padding:12px;" onclick="go(&#39;changes&#39;)">Continue with Manual Review (J2) →</button>
-            <button style="background:none;border:none;font-size:12px;color:var(--text-sec);cursor:pointer;padding:6px;" onclick="showView(&#39;dashboard&#39;)">Skip — return to Dashboard</button>
+            <button style="background:none;border:none;font-size:12px;color:var(--text-sec);cursor:pointer;padding:6px;" onclick="showView(&#39;dashboard&#39;)">Exit</button>
           </div>
         </div>
       </div>
@@ -20355,8 +20469,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <td><span style="font-size:11px;color:#d97706;font-weight:600;">No matching CR</span></td>
                 <td>
                   <div style="display:flex;gap:6px;">
-                    <button class="btn-outline" style="font-size:11px;padding:5px 10px;">Link to CR</button>
-                    <button class="btn-outline" style="font-size:11px;padding:5px 10px;color:var(--text-sec);">Accept as change</button>
+                    <button class="btn-outline" style="padding:0 10px;">Link to CR</button>
+                    <button class="btn-outline" style="padding:0 10px;">Accept as change</button>
                   </div>
                 </td>
               </tr>
@@ -20366,8 +20480,8 @@ body.dark .sf-st.blocked { color:#FB3C44; background:rgba(251,60,68,0.15); borde
                 <td><span style="font-size:11px;color:#FB3C44;font-weight:600;">Outside window</span></td>
                 <td>
                   <div style="display:flex;gap:6px;">
-                    <button class="btn-outline" style="font-size:11px;padding:5px 10px;">Review in J2</button>
-                    <button class="btn-outline" style="font-size:11px;padding:5px 10px;color:var(--text-sec);">Mark as Unmanaged</button>
+                    <button class="btn-outline" style="padding:0 10px;">Review in J2</button>
+                    <button class="btn-outline" style="padding:0 10px;">Mark as Unmanaged</button>
                   </div>
                 </td>
               </tr>
@@ -20520,19 +20634,12 @@ function nodeEnvScope()    { return document.getElementById('node-env-scope')?.v
 function nodeGroupFilter() { return document.getElementById('node-group-filter')?.value || 'all'; }
 function setNodeFilter(f) {
   _nodeFilter = f;
-  const isDark = document.body.classList.contains('dark');
-  const inactiveBg     = isDark ? '#062528' : 'white';
-  const inactiveColor  = isDark ? '#CBD5E1' : 'var(--text-sec)';
-  const inactiveBorder = isDark ? 'rgba(255,255,255,0.12)' : 'var(--border)';
-  const activeBg       = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
-  const activeColor    = isDark ? '#34D399' : '#15803d';
-  const activeBorder   = isDark ? '#00D794' : '#00D794';
+  // Segmented control — appearance lives in the .seg-btn CSS, JS only flags the active segment.
   ['all','local','aws'].forEach(id => {
     const btn = document.getElementById('nf-' + id);
     if (!btn) return;
-    btn.style.background  = id === f ? activeBg : inactiveBg;
-    btn.style.color       = id === f ? activeColor : inactiveColor;
-    btn.style.borderColor = id === f ? activeBorder : inactiveBorder;
+    btn.classList.toggle('is-active', id === f);
+    btn.setAttribute('aria-pressed', id === f ? 'true' : 'false');
   });
   filterNodes();
 }
@@ -20697,10 +20804,6 @@ function go(key) {
   if (isJ3Onboarding) updateJ3Nav(key);
   if (isJ4Onboarding) updateJ4Nav(key);
   if (key === 'cmdb-credentials') renderCmdbCM();
-  var _lblEl = document.getElementById('lbl');
-  _lblEl.textContent = LABELS[key] || key;
-  _lblEl.style.display = (key === 's-agentless') ? 'none' : '';
-
   if (!isOnboarding) {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
     const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
@@ -21221,57 +21324,14 @@ function updateScanSelected() {
   // Selection actions live on the RIGHT of the filter row (same row); filters stay visible.
   if (actionBar) actionBar.style.display = checked > 0 ? 'flex' : 'none';
   if (countEl) countEl.textContent = checked + ' node' + (checked === 1 ? '' : 's') + ' selected';
-  const isDark = document.body.classList.contains('dark');
-  const inactiveBorder = isDark ? 'rgba(255,255,255,0.28)' : 'var(--border)';
-  const inactiveColor  = isDark ? 'rgba(255,255,255,0.65)' : 'var(--text-sec)';
-  // LIGHT: neutral buttons need a white surface fill so they don't blend into the canvas (#F8FAFC).
-  // DARK: transparent-on-panel is intentional.
-  const inactiveBg     = isDark ? 'transparent' : 'var(--bg-surface)';
-  const scanActiveBorder = isDark ? 'rgba(16,185,129,0.45)' : 'var(--green2)';
-  const scanActiveColor  = isDark ? '#34D399' : 'var(--green2)';
-  const scanActiveBg     = isDark ? 'rgba(16,185,129,0.08)' : 'rgba(63,200,120,0.12)';
-  // Scan Selected — active when 1+
-  if (scanBtn) {
-    scanBtn.disabled = checked === 0;
-    scanBtn.style.opacity = '1';
-    scanBtn.style.cursor = checked > 0 ? 'pointer' : 'not-allowed';
-    scanBtn.style.borderColor = checked > 0 ? scanActiveBorder : inactiveBorder;
-    scanBtn.style.color = checked > 0 ? scanActiveColor : inactiveColor;
-    scanBtn.style.background = checked > 0 ? scanActiveBg : inactiveBg;
-  }
-  // Compare — active only when exactly 2
-  if (compareBtn) {
-    const canCompare = checked === 2;
-    compareBtn.disabled = !canCompare;
-    compareBtn.style.opacity = '1';
-    compareBtn.style.cursor = canCompare ? 'pointer' : 'not-allowed';
-    compareBtn.style.borderColor = canCompare ? '#818CF8' : inactiveBorder;
-    compareBtn.style.color = canCompare ? '#818CF8' : inactiveColor;
-    compareBtn.style.background = canCompare ? 'rgba(99,102,241,0.12)' : inactiveBg;
-  }
-  // Set as baseline — active when 1+. NEUTRAL chrome + amber STAR only (never fill the whole
-  // button amber — that reads as a warning/disabled). Enabled/disabled via opacity, like Node Details.
+  // All four toolbar buttons are DS §6.5 "Secondary" (.sel-act-btn) — appearance lives in CSS,
+  // JS only toggles `disabled`, which the stylesheet renders as opacity 0.4.
+  if (scanBtn) scanBtn.disabled = checked === 0;                       // Scan Selected — 1+
+  if (compareBtn) compareBtn.disabled = checked !== 2;                 // Compare — exactly 2
   const baselineBtn = document.getElementById('node-action-baseline');
-  if (baselineBtn) {
-    const bOn = checked > 0;
-    baselineBtn.disabled = !bOn;
-    baselineBtn.style.cursor = bOn ? 'pointer' : 'not-allowed';
-    baselineBtn.style.opacity = bOn ? '1' : '0.5';
-    baselineBtn.style.borderColor = inactiveBorder;
-    baselineBtn.style.color = isDark ? 'rgba(255,255,255,0.92)' : 'var(--text-default)';
-    baselineBtn.style.background = inactiveBg;
-  }
-  // Consensus Comparison — active when 3+
+  if (baselineBtn) baselineBtn.disabled = checked === 0;               // Set as baseline — 1+
   const consensusBtn = document.getElementById('node-action-consensus');
-  if (consensusBtn) {
-    const canConsensus = checked >= 3;
-    consensusBtn.disabled = !canConsensus;
-    consensusBtn.style.opacity = '1';
-    consensusBtn.style.cursor = canConsensus ? 'pointer' : 'not-allowed';
-    consensusBtn.style.borderColor = canConsensus ? (isDark ? 'rgba(52,211,153,0.45)' : '#10B981') : inactiveBorder;
-    consensusBtn.style.color = canConsensus ? (isDark ? '#34D399' : '#059669') : inactiveColor;
-    consensusBtn.style.background = canConsensus ? (isDark ? 'rgba(16,185,129,0.08)' : 'rgba(16,185,129,0.1)') : inactiveBg;
-  }
+  if (consensusBtn) consensusBtn.disabled = checked < 3;               // Consensus — 3+
 
   const btn = document.getElementById('scan-selected-btn');
   const all = document.getElementById('select-all-nodes');
@@ -21502,18 +21562,12 @@ function clearSelectionConsensus() {
 var _peerGroup = 'os';
 function setPeerGroup(g) {
   _peerGroup = g;
-  var isDark = document.body.classList.contains('dark');
-  var inactiveBg = isDark ? '#062528' : 'white';
-  var inactiveColor = isDark ? '#CBD5E1' : 'var(--text-sec)';
-  var inactiveBorder = isDark ? 'rgba(255,255,255,0.12)' : 'var(--border)';
-  var activeBg = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
-  var activeColor = isDark ? '#34D399' : '#15803d';
+  // Segmented control — appearance lives in the .seg-btn CSS, JS only flags the active segment.
   ['os','team'].forEach(function(id) {
     var btn = document.getElementById('pg-' + id);
     if (!btn) return;
-    btn.style.background  = id === g ? activeBg : inactiveBg;
-    btn.style.color       = id === g ? activeColor : inactiveColor;
-    btn.style.borderColor = id === g ? '#00D794' : inactiveBorder;
+    btn.classList.toggle('is-active', id === g);
+    btn.setAttribute('aria-pressed', id === g ? 'true' : 'false');
   });
   var osView   = document.getElementById('peer-os-view');
   var teamView = document.getElementById('peer-team-view');
@@ -21923,7 +21977,7 @@ function renderSchedules() {
       return '<div style="' + grid + '">' + nameCell
         + '<div><span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text-muted);background:rgba(100,116,139,0.06);border:1px dashed var(--border);border-radius:20px;padding:4px 12px;">Not scheduled</span></div>'
         + '<div style="grid-column:3 / 7;font-size:12px;color:var(--text-muted);">No scan schedule set — scans run on demand only</div>'
-        + '<div><button class="action-cta schedule-action-cta" style="font-size:11px;" onclick="openScheduleModal(\'' + g + '\')">Set ' + actionArrow + '</button></div>'
+        + '<div><button class="action-cta schedule-action-cta" onclick="openScheduleModal(\'' + g + '\')">Set ' + actionArrow + '</button></div>'
         + '</div>';
     }
     const pill = s.enabled
@@ -21935,7 +21989,7 @@ function renderSchedules() {
       + '<div style="font-size:12px;color:var(--text-sec);">' + s.time + ' UTC</div>'
       + '<div style="font-size:12px;color:var(--text-sec);">' + (s.last || 'Never') + '</div>'
       + '<div style="font-size:12px;color:var(--text-sec);">' + schedNextRun(s) + '</div>'
-      + '<div><button class="action-cta schedule-action-cta" style="font-size:11px;" onclick="openScheduleModal(\'' + g + '\')">Edit ' + actionArrow + '</button></div>'
+      + '<div><button class="action-cta schedule-action-cta" onclick="openScheduleModal(\'' + g + '\')">Edit ' + actionArrow + '</button></div>'
       + '</div>';
   }).join('');
 }
@@ -22613,8 +22667,25 @@ function applySavedView(i) {
   applyReconSearch(v.search);
 }
 function deleteSavedView(i) {
-  reconSavedViews.splice(i, 1);
-  renderSavedViews();
+  const v = reconSavedViews[i];
+  if (!v) return;
+  const safeName = v.name.replace(/</g, '&lt;');
+  // DS §11.1 — a saved view is a persisted entity, so it is confirmed like any other.
+  openModal({
+    id: 'saved-view-del-overlay',
+    size: 'sm',
+    title: 'Delete “' + safeName + '”?',
+    subtitle: 'This saved view will be removed. Filters currently applied to the list are not affected.',
+    buttons: [
+      { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+      { label: 'Delete view', kind: 'destructive', onClick: function(){
+        closeModal('saved-view-del-overlay');
+        reconSavedViews.splice(i, 1);
+        renderSavedViews();
+        showToast('View deleted · ' + v.name);
+      } }
+    ]
+  });
 }
 function matchesDriftSearch(card) {
   if (driftSearch.include.length === 0 && driftSearch.exclude.length === 0) return true;
@@ -22829,36 +22900,18 @@ function toggleReconPop(popId, btn) {
 
 function applyDriftFilters() {
   const f = driftFilters;
-  const isDark = document.body.classList.contains('dark');
-  const styles = {
-    all:          isDark ? { bg:'rgba(16,185,129,0.18)', border:'#34D399',              color:'#FFFFFF' }
-                         : { bg:'rgba(63,200,120,0.1)',  border:'#3FC878',              color:'#15803d' },
-    unreconciled: isDark ? { bg:'rgba(217,119,6,0.18)',  border:'rgba(245,158,11,0.7)', color:'#FFFFFF' }
-                         : { bg:'rgba(217,119,6,0.07)',  border:'#fde68a',              color:'#b45309' },
-    pending:      isDark ? { bg:'rgba(37,99,235,0.18)',  border:'rgba(147,197,253,0.7)',color:'#FFFFFF' }
-                         : { bg:'rgba(37,99,235,0.07)',  border:'#bfdbfe',              color:'#2563eb' },
-    reconciled:   isDark ? { bg:'rgba(16,185,129,0.18)', border:'#34D399',              color:'#FFFFFF' }
-                         : { bg:'rgba(63,200,120,0.1)',  border:'#3FC878',              color:'#15803d' },
-    flagged:      isDark ? { bg:'rgba(251,60,68,0.18)',  border:'rgba(251,60,68,0.5)',  color:'#FFFFFF' }
-                         : { bg:'rgba(251,60,68,0.07)',  border:'#fca5a5',              color:'#dc2626' },
-    nocr:         isDark ? { bg:'rgba(148,163,184,0.18)',border:'rgba(148,163,184,0.6)',color:'#FFFFFF' }
-                         : { bg:'rgba(100,116,139,0.07)',border:'#cbd5e1',              color:'#475569' },
-  };
   const allNull = !f.status && !f.cr && !f.node && !f.type;
-  // Pill highlights — All when nothing set, status pills for status dim, No CR for cr==='none'
+  // Underline tabs — All when nothing set, status tabs for the status dim, No CR for cr==='none'.
+  // Appearance lives in the .pol-tab CSS; JS only flags the active tab.
   ['all','unreconciled','reconciled','flagged','nocr'].forEach(k => {
-    const pill = document.getElementById('filter-' + k);
-    if (!pill) return;
+    const btn = document.getElementById('filter-' + k);
+    if (!btn) return;
     let on;
     if (k === 'all') on = allNull;
     else if (k === 'nocr') on = f.cr === 'none';
     else on = f.status === k;
-    if (on) {
-      const s = styles[k];
-      pill.style.background = s.bg; pill.style.borderColor = s.border; pill.style.color = s.color; pill.style.fontWeight = '600';
-    } else {
-      pill.style.background = ''; pill.style.borderColor = ''; pill.style.color = ''; pill.style.fontWeight = '';
-    }
+    btn.classList.toggle('pol-tab-active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   // Mirror the active CR/Status/Type filter onto the top reconciliation chip groups
   _syncReconTopChips();
@@ -23294,7 +23347,9 @@ function updateJ4Nav(key) {
 
 // J3 nav step update
 function updateJ3Nav(key) {
-  const stepMap = {'j3-connect':1,'j3-connecting':1,'j3-connected':1,'j3-syncing':2,'j3-inventory':2,'j3-scan-config':3,'j3-scanning':3,'j3-scan-complete':3,'j3-results':4};
+  // Три стадії GWB-6638; назва стадії = дослівний заголовок сторінки (DS §10.1).
+  // Сканування запускається з Node Inventory і власної стадії не має.
+  const stepMap = {'j3-connect':1,'j3-connecting':1,'j3-connected':1,'j3-connect-failed':1,'j3-syncing':2,'j3-inventory':3,'j3-scan-config':3,'j3-scanning':3,'j3-scan-complete':3,'j3-results':3};
   const nav = document.getElementById('j3-step-nav');
   if (!nav || !stepMap[key]) return;
   document.getElementById('j3-step-nav').style.display = 'flex';
@@ -23607,9 +23662,9 @@ function goToDashboardFromJ4() {
   if (scoreNote) scoreNote.innerHTML = '1 unreconciled · <span style="color:#15803d;">2 reconciled via ServiceNow</span>';
   if (scoreDelta) { scoreDelta.textContent = '−2 points'; scoreDelta.style.color = '#d97706'; }
 
-  // Update filter pill counts
-  const filterAll = document.getElementById('filter-all');
-  if (filterAll) filterAll.textContent = '● All (3)';
+  // Update filter tab counts
+  const filterAllCount = document.querySelector('#filter-all .pol-tab-count');
+  if (filterAllCount) filterAllCount.textContent = '3';
 
   // ── 7. Navigate to Changes tab ──
   showView('changes');
@@ -23694,7 +23749,6 @@ function showAuth(id) {
   document.getElementById('auth-ov').style.display = 'block';
   AUTH_SCREENS.forEach(function(s){var el=document.getElementById(s);if(el)el.style.display='none';});
   var el = document.getElementById(id); if(el) el.style.display='flex';
-  document.getElementById('lbl').textContent = id;
 }
 function hideAuth() { var ov=document.getElementById('auth-ov');if(ov)ov.style.display='none'; }
 function authForgotPw() { document.getElementById('auth-forgot-modal').style.display='flex'; }
