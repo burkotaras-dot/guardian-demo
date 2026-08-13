@@ -437,6 +437,8 @@ body.dark .pol-tab-active .pol-tab-count { background:rgba(0,175,115,0.18); colo
 body.dark #v-policies .pol-tab-active .pol-tab-count { color:#fff; }
 body.dark #nodes-tabs .pol-tab-count,
 body.dark #nodes-tabs .pol-tab-active .pol-tab-count { color:#fff; }
+body.dark #node-detail-tabs .pol-tab-count,
+body.dark #node-detail-tabs .pol-tab-active .pol-tab-count { color:#fff; }
 body.dark #results-pills .pol-tab-count,
 body.dark #results-pills .pol-tab-active .pol-tab-count { color:#fff; }
 body.dark #sched-scope-tabs .pol-tab-count,
@@ -6767,11 +6769,11 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
         </div>
 
         <!-- Tab nav -->
-        <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border);background:var(--bg-surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:0 8px;">
-          <button id="nd-tab-btn-overview" onclick="ndTab(&#39;overview&#39;)" style="padding:12px 20px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid var(--green2);margin-bottom:-2px;cursor:pointer;background:none;color:var(--green2);transition:all 0.15s;white-space:nowrap;">Overview</button>
-          <button id="nd-tab-btn-attributes" onclick="ndTab(&#39;attributes&#39;)" style="padding:12px 20px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;background:none;color:var(--text-sec);transition:all 0.15s;white-space:nowrap;">Monitored Attributes <span id="nd-attr-tabcount" style="font-size:10px;background:#e2e8f0;color:var(--p-neutral-500);border-radius:10px;padding:1px 6px;margin-left:4px;">12</span></button>
-          <button id="nd-tab-btn-policies" onclick="ndTab(&#39;policies&#39;)" style="padding:12px 20px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;background:none;color:var(--text-sec);transition:all 0.15s;white-space:nowrap;">Policies <span style="font-size:10px;background:#e2e8f0;color:var(--p-neutral-500);border-radius:10px;padding:1px 6px;margin-left:4px;">4</span></button>
-          <button id="nd-tab-btn-history" onclick="ndTab(&#39;history&#39;)" style="padding:12px 20px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;background:none;color:var(--text-sec);transition:all 0.15s;white-space:nowrap;">History</button>
+        <div id="node-detail-tabs" class="policies-tabs" style="margin-bottom:16px;">
+          <button id="nd-tab-btn-overview" class="pol-tab pol-tab-active" onclick="ndTab(&#39;overview&#39;)">Overview</button>
+          <button id="nd-tab-btn-attributes" class="pol-tab" onclick="ndTab(&#39;attributes&#39;)">Monitored Attributes <span id="nd-attr-tabcount" class="pol-tab-count">12</span></button>
+          <button id="nd-tab-btn-policies" class="pol-tab" onclick="ndTab(&#39;policies&#39;)">Policies <span class="pol-tab-count">4</span></button>
+          <button id="nd-tab-btn-history" class="pol-tab" onclick="ndTab(&#39;history&#39;)">History</button>
         </div>
 
         <!-- Tab: Overview -->
@@ -7146,19 +7148,19 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
 
         <!-- history tab -->
         <div id="nd-tab-history" style="display:none;">
-          <div style="display:flex;flex-direction:column;gap:16px;">
+          <div style="display:flex;flex-direction:column;gap:10px;">
 
             <!-- Scan history list -->
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
-              <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="padding:0 18px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;">
                 <div>
                   <div style="font-size:13px;font-weight:700;color:var(--text-default);">Scan history</div>
                   <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">4 scans recorded for this node</div>
                 </div>
-                <button class="btn-outline" onclick="openReportFromScanHistory()" style="width:auto;display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;white-space:nowrap;" title="Generate a What changed report from this node's scan history"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>What changed report</button>
-              </div>
+                <button class="action-cta" onclick="openReportFromScanHistory()" style="width:auto;padding:0 14px;" title="Generate a What changed report from this node's scan history"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>What changed report</button>
+            </div>
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
               <!-- Header -->
-              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:8px 18px;background:rgba(255,255,255,0.05);border-bottom:2px solid var(--border);">
+              <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;height:34px;box-sizing:border-box;padding:0 18px;background:#F1F5F9;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Date / Time</div>
                 <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Changes</div>
                 <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Score</div>
@@ -7167,9 +7169,12 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
               </div>
               <!-- Row 1 — now (latest / current) -->
               <div data-hist-scan="now" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
-                <div>
-                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">Now · 2 min ago</div>
-                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Latest scan <span class="bdg bdg--green" style="margin-left:4px;">Current</span><span class="nd-hist-star bdg bdg--orange" style="display:none;margin-left:4px;">Baseline</span></div>
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                  <div class="cm-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  <div style="min-width:0;">
+                    <div style="font-size:12px;font-weight:600;color:var(--text-default);">Now · 2 min ago</div>
+                    <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Latest scan <span class="bdg bdg--green" style="margin-left:4px;">Current</span><span class="nd-hist-star bdg bdg--orange" style="display:none;margin-left:4px;">Baseline</span></div>
+                  </div>
                 </div>
                 <div><span style="font-size:12px;font-weight:700;color:#d97706;">3 changes</span></div>
                 <div><span style="font-size:12px;font-weight:700;color:#d97706;">78</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
@@ -7180,9 +7185,12 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
               </div>
               <!-- Row 2 — yesterday -->
               <div data-hist-scan="yest" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
-                <div>
-                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">Yesterday · 18:02</div>
-                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Previous scan<span class="nd-hist-star bdg bdg--orange" style="display:none;margin-left:4px;">Baseline</span></div>
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                  <div class="cm-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  <div style="min-width:0;">
+                    <div style="font-size:12px;font-weight:600;color:var(--text-default);">Yesterday · 18:02</div>
+                    <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Previous scan<span class="nd-hist-star bdg bdg--orange" style="display:none;margin-left:4px;">Baseline</span></div>
+                  </div>
                 </div>
                 <div><span style="font-size:12px;font-weight:700;color:#d97706;">1 change</span></div>
                 <div><span style="font-size:12px;font-weight:700;color:#00AF73;">94</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
@@ -7194,9 +7202,12 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
               </div>
               <!-- Row 3 — 3 days ago (baseline) -->
               <div data-hist-scan="3d" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
-                <div>
-                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">3 days ago · 09:14</div>
-                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Older scan<span class="nd-hist-star bdg bdg--orange" style="display:none;margin-left:4px;">Baseline</span></div>
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                  <div class="cm-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  <div style="min-width:0;">
+                    <div style="font-size:12px;font-weight:600;color:var(--text-default);">3 days ago · 09:14</div>
+                    <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Older scan<span class="nd-hist-star bdg bdg--orange" style="display:none;margin-left:4px;">Baseline</span></div>
+                  </div>
                 </div>
                 <div><span style="font-size:12px;color:var(--text-sec);">0 changes</span></div>
                 <div><span style="font-size:12px;font-weight:700;color:#00AF73;">100</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
@@ -7208,9 +7219,12 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
               </div>
               <!-- Row 4 — 28 May (older) -->
               <div data-hist-scan="28may" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:13px 18px;align-items:center;background:var(--bg-surface);cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">
-                <div>
-                  <div style="font-size:12px;font-weight:600;color:var(--text-default);">28 May · 11:30</div>
-                  <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Older scan<span class="nd-hist-star bdg bdg--orange" style="display:none;margin-left:4px;">Baseline</span></div>
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                  <div class="cm-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  <div style="min-width:0;">
+                    <div style="font-size:12px;font-weight:600;color:var(--text-default);">28 May · 11:30</div>
+                    <div style="font-size:10px;color:var(--text-sec);margin-top:1px;">Older scan<span class="nd-hist-star bdg bdg--orange" style="display:none;margin-left:4px;">Baseline</span></div>
+                  </div>
                 </div>
                 <div><span style="font-size:12px;font-weight:700;color:#d97706;">2 changes</span></div>
                 <div><span style="font-size:12px;font-weight:700;color:#00AF73;">91</span><span style="font-size:11px;color:var(--text-sec);"> /100</span></div>
@@ -7279,9 +7293,11 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
         if (el) el.style.display = (t === tab) ? '' : 'none';
         if (btn) {
           if (t === tab) {
+            btn.classList.add('pol-tab-active');
             btn.style.borderBottomColor = 'var(--green2)';
             btn.style.color = 'var(--green2)';
           } else {
+            btn.classList.remove('pol-tab-active');
             btn.style.borderBottomColor = 'transparent';
             btn.style.color = 'var(--text-sec)';
           }
