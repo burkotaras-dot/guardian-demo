@@ -1506,11 +1506,11 @@ code { font-family:'DM Mono',monospace; }
 /* The action column is FIXED, not auto: the header cell is empty, so an auto column
    would size to 0 there and the header would stop lining up with the rows. */
 .nd-iss-grid { display:grid;grid-template-columns:2fr 1.5fr 2.4fr 0.9fr 72px;gap:12px;align-items:center;padding:0 18px; }
-.nd-iss-row { padding-top:12px;padding-bottom:12px;border-bottom:1px solid var(--border);border-left:3px solid transparent;background:var(--bg-card);cursor:pointer;transition:background .1s; }
-.nd-iss-row--critical { border-left-color:#FB3C44; }
-.nd-iss-row--critical:hover { background:rgba(251,60,68,0.05); }
-.nd-iss-row--medium { border-left-color:#F97316; }
-.nd-iss-row--medium:hover { background:rgba(245,158,11,0.05); }
+.nd-iss-row { padding-top:12px;padding-bottom:12px;border-bottom:1px solid var(--border);background:var(--bg-card);cursor:pointer;transition:background .1s; }
+.nd-iss-row:hover { background:var(--table-row-hover) !important; }
+body.dark .nd-iss-row:hover { background:var(--table-row-hover) !important; }
+.nd-iss-row--critical .cm-ico svg { stroke:#FB3C44 !important; }
+.nd-iss-row--medium .cm-ico svg { stroke:#F97316 !important; }
 .nd-iss-name { display:flex;align-items:center;gap:12px;min-width:0; }
 .nd-iss-name b { display:block;font-size:13px;font-weight:600;color:var(--text-default); }
 .nd-iss-name em { display:block;font-style:normal;font-size:11px;color:var(--text-sec); }
@@ -1536,7 +1536,7 @@ code { font-family:'DM Mono',monospace; }
 body.dark .nd-iss-detail { background:rgba(255,255,255,0.03); }
 /* History scans render read-only rows: no click handler, so no pointer and no hover tint. */
 .nd-iss-row--static { cursor:default; }
-.nd-iss-row--static:hover { background:var(--bg-card); }
+.nd-iss-row--static:hover { background:var(--table-row-hover) !important; }
 /* The only fact the old right panel owned was the policy NAME, so it survives as one
    strip that hands off to the Policies tab instead of a parallel list of controls. */
 .nd-pol-rollup { display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;min-width:0; }
@@ -3410,6 +3410,50 @@ body.dark .na-action.na-primary .na-action-ico { background:#10B981; color:#0424
 body.dark .csel-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
 body.dark .csel-opt { color: #C0C0C0 !important; }
 body.dark .csel-opt.sel { color:var(--p-neutral-50) !important; }
+/* Node detail scan picker — same control treatment as CM Groups filters. */
+.nd-scan-control { display:flex; align-items:center; gap:7px; }
+.nd-scan-control-label { font-size:12px; font-weight:500; color:var(--text-muted); }
+.nd-scan-control .csel-wrap { display:inline-flex; }
+.nd-scan-control .csel-btn {
+  width:176px;
+  height:34px;
+  box-sizing:border-box;
+  padding:0 34px 0 12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#FFFFFF;
+  color:var(--text-default);
+  font-size:12px;
+  font-weight:600;
+}
+.nd-scan-control .csel-btn::after { right:13px; }
+.nd-scan-control .csel-lbl {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.nd-scan-control .csel-menu {
+  top:calc(100% + 6px);
+  left:auto;
+  right:0;
+  width:240px;
+  min-width:240px;
+  box-sizing:border-box;
+  padding:6px;
+  border-radius:var(--radius-md);
+  overflow-x:hidden;
+}
+.nd-scan-control .csel-opt { margin:0; border-radius:6px; }
+body.dark .nd-scan-control .csel-btn {
+  background:#133033 !important;
+  border-color:#42595C !important;
+  color:var(--p-neutral-50) !important;
+}
+body.dark .nd-scan-control .csel-btn:hover {
+  background:#063135 !important;
+  border-color:rgba(0,175,115,.45) !important;
+}
 /* Policy-create step 1: full-width benchmark picker + softer selected Type-card border in dark */
 #pc-cis-dropdown .csel-wrap, #pc-cis-dropdown .csel-btn { display: flex; width: 100%; }
 /* Credential editor type picker: match form-input sizing */
@@ -6903,10 +6947,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:11px;font-weight:600;color:var(--text-sec);">Viewing:</span>
-            <div style="position:relative;">
-              <select id="nd-scan-select" class="csel nd-scan-sel" onchange="ndSelectScan(this.value);ndUpdateBaselineUI()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
+          <div class="nd-scan-control">
+            <span class="nd-scan-control-label">Viewing:</span>
+            <div>
+              <select id="nd-scan-select" class="csel nd-scan-sel" onchange="ndSelectScan(this.value);ndUpdateBaselineUI()">
                 <option value="now">Now · 2 min ago</option>
                 <option value="yest">Yesterday · 18:02</option>
                 <option value="3d">3 days ago · 09:14</option>
@@ -6983,15 +7027,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- ONE full-width issue list. See .nd-iss-* in the stylesheet for why the
              "Failed policies" panel is gone: a failing control is the consequence of a
              change, so it lives as a COLUMN of that change, not as a parallel list. -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
-          <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;">
             <div>
               <div style="font-size:13px;font-weight:700;color:var(--text-default);" id="nd-iss-title">Issues</div>
               <div style="font-size:11px;color:var(--text-sec);margin-top:2px;" id="nd-iss-sub">3 attributes out of policy · 4 failing controls</div>
             </div>
-            <button class="link-cta" onclick="showView(&#39;changes&#39;)"><span class="lc-txt">View full Detected Drift summary</span> <span class="arr">→</span></button>
+            <button class="action-cta" onclick="showView(&#39;changes&#39;)" style="width:auto;padding:0 14px;">View full Detected Drift summary</button>
           </div>
 
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
           <div class="col-thead nd-iss-grid" style="height:34px;box-sizing:border-box;background:#F1F5F9;border-bottom:1px solid var(--border);">
             <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Attribute</div>
             <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Expected → current</div>
@@ -7006,7 +7051,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="position:relative;" role="button" aria-expanded="false" onmouseenter="ndHoverIn(this,&#39;defender&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndToggleDetail(this,&#39;defender&#39;)">
               <div class="nd-iss-grid nd-iss-row nd-iss-row--critical">
                 <div class="nd-iss-name">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.8" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  <div class="cm-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
                   <div style="min-width:0;"><b>Antivirus</b><em>Windows Defender</em></div>
                 </div>
                 <div class="nd-iss-change">
@@ -7028,7 +7073,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="position:relative;" role="button" aria-expanded="false" onmouseenter="ndHoverIn(this,&#39;lock&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndToggleDetail(this,&#39;lock&#39;)">
               <div class="nd-iss-grid nd-iss-row nd-iss-row--medium">
                 <div class="nd-iss-name">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8" style="flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  <div class="cm-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
                   <div style="min-width:0;"><b>Screen Lock</b><em>Lock timeout</em></div>
                 </div>
                 <div class="nd-iss-change">
@@ -7049,7 +7094,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="position:relative;" role="button" aria-expanded="false" onmouseenter="ndHoverIn(this,&#39;users&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndToggleDetail(this,&#39;users&#39;)">
               <div class="nd-iss-grid nd-iss-row nd-iss-row--medium" style="border-bottom:none;">
                 <div class="nd-iss-name">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  <div class="cm-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
                   <div style="min-width:0;"><b>Local Users</b><em>Admin accounts</em></div>
                 </div>
                 <div class="nd-iss-change">
@@ -7079,6 +7124,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
               <button class="link-cta" onclick="ndTab(&#39;policies&#39;)"><span class="lc-txt">View all policies</span> <span class="arr">→</span></button>
             </div>
+          </div>
           </div>
         </div><!-- end overview tab -->
 
