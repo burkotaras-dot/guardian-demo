@@ -193,6 +193,20 @@ Light default: фон `#F1F5F9`, border `#E2E8F0`, radio border `#94A3B8`, title
 
 **Exceptions.** Scans → Filters використовує компактні inline radio/checkbox у popover і має окремий selected-state без постійної фонової заливки (§3.3). Severity selectors у Add/Edit Check лишаються компактними кольоровими pills: це взаємовиключний severity-control, а не content selection card. Full-page agentless onboarding не є модальним flow і не успадковує `.gm-overlay`-правило автоматично.
 
+### 3.6 Text inputs і textarea у модальних вікнах
+
+**Rule.** Усі text-like поля всередині `gm-overlay` використовують єдиний modal-input pattern. Звичайний input має висоту `38px`, горизонтальний padding `14px`, border `1px`, radius `10px`; textarea — `min-height:74px`, padding `10px 14px`. Шрифт поля — DM Sans Regular `13px`. Label — DM Sans Semibold `11px`, uppercase, колір `#94A3B8`, відступ до поля `6px`; required-asterisk — `#FB3C44`. Helper text — DM Sans Regular `11px`, `#94A3B8`, відступ зверху `6px`; character counter — `10px`, `#657387`.
+
+Light default / filled: фон `#F1F5F9`, border `#E2E8F0`, основний текст `#0F172A`, placeholder `#657387`. Light hover/focus: фон `#FFFFFF`, border `rgba(16,185,129,.60)`, ring `0 0 0 3px rgba(16,185,129,.12)`. Dark default / filled: фон `rgba(255,255,255,.05)`, border `rgba(255,255,255,.10)`, основний текст `#F8FAFC`, placeholder `#657387`. Dark hover/focus зберігає темний фон, використовує border `rgba(16,185,129,.40)` і той самий зелений ring.
+
+Стиль застосовується централізовано до text/email/password/url/number/date/time inputs, textarea, `.form-input` та legacy `.icx-input` у shared modal shell. Не дублювати кольори, геометрію чи focus-ring локальними правилами або inline-стилями. Disabled field зберігає структуру компонента, має знижену opacity і не показує hover/focus-ring.
+
+**Reference.** Figma `Guardian UI Design System based on Mantine v5.10`, node `3023:4716` (`Input block`: Input / Description; Default, Hover, Activated; White + Dark).
+
+**Examples.** Policy Create; Add/Edit Check; Edit Credential; Create/Edit CM Group; Incident actions; CMDB/CSV Import; Integrations Setup — усі text-like поля в цих модалках наслідують один `.gm-overlay`-контракт.
+
+**Exceptions.** Dropdown/select triggers регулюються §3.1–3.3; search-поля — §3.4; radio cards — §3.5. Компактні inline-редактори всередині mapping/data-grid (`.fm-edit-input`) можуть мати меншу висоту й padding, бо підпорядковуються геометрії клітинки. Full-page onboarding та auth-форми не є модальними вікнами й не успадковують правило автоматично.
+
 ---
 
 ## 4. Tables
