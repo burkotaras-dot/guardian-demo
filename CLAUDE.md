@@ -79,21 +79,40 @@ Two-layer system:
 
 **Critical gotcha:** Writing any `el.style.X = value` causes the browser to re-serialize the entire inline style attribute (hex → rgb). Always guard with `if (el.style.X !== newValue)` before writing. `_syncInlineTheme` already matches both hex and rgb forms for known colors.
 
-### Badge dark mode rules
+### Badges — canonical component
 
-In dark mode, ALL badges must have:
-- Text: `#fff`
-- Icon/dot (`::before`, SVG strokes): matches the badge border color
+Single component from Figma (`eXz33Qu7v58JjOiatTptAE`, section `2988:70572`), implemented at
+`index.html:1239`. **One geometry · 6 colours · 3 variants.** Any new badge is a `.bdg` —
+never a hand-rolled inline chip. Full spec: `GUARDIAN-DESIGN-SYSTEM.md` §12.
 
-| Severity | Border | Icon color |
-|---|---|---|
-| critical | `rgba(251,60,68,0.55)` | `#FF4646` |
-| high | `rgba(234,88,12,0.55)` | `#F97316` |
-| medium | `rgba(217,119,6,0.55)` | `#F59E0B` |
-| low | `rgba(37,99,235,0.55)` | `#3B82F6` |
-| pass | `rgba(16,185,129,0.55)` | `#10B981` |
-| Compliance Policy | `rgba(167,139,250,0.55)` | `#A78BFA` |
-| Custom (amber) | `rgba(245,158,11,0.55)` | `#F59E0B` |
+Variants:
+- `.bdg` — pill (no dot)
+- `.bdg.bdg--dot` — pill + 5px dot in the text colour
+- `.bdg.bdg--quiet` — **not a pill**: dot + text only, no bg/border/padding. Used for a *value*
+  or a quiet type marker (`.drift-type`, before→after values).
+
+Colours: `.bdg--orange | --purple | --red | --green | --gray | --blue`.
+
+Severity mapping: critical → Red · high + medium → Orange · low → Blue · pass → Green.
+
+**Dark mode needs no overrides.** Colour comes from tokens (`--bdg-{colour}-txt|-bg|-bd`,
+light `index.html:165`, dark `index.html:2642`), so `body.dark` badge rules are obsolete and
+were deleted. Do not reintroduce them — and do not set badge text to `#fff` in dark: the canon
+uses the coloured text token.
+
+**Layout rule:** a row must contain **exactly one** object with a shape (the pill). A value never
+gets a border/background — otherwise data-vs-metadata hierarchy collapses and colour is encoded
+several times over.
+
+Legacy family class names (`.badge-*`, `.drift-stat`, `.intg-status`, `.type-pill`, …) are kept as
+selectors inside the canonical block, so markup and JS class logic stay untouched.
+
+**The only other chip family is `.code-tag`** (`index.html:1348`) — a *literal value* the user types
+or verifies (CSV column name, ServiceNow CI id). DM Mono 11px, case preserved, radius 5px. The badge
+canon deliberately does not apply: 9px UPPERCASE would turn `node_group` into `NODE_GROUP`, and the
+case is significant. `.code-tag--req` = required field. Mono text inside a **table cell** stays plain
+text — the column is already the container. `.code-tag` is **not** documented under Badges: it lives in
+DS **§13 Неклікабельні елементи / §13.1**, because it is not a badge.
 
 ### Key JS function namespaces
 
