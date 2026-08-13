@@ -1445,20 +1445,58 @@ code { font-family:'DM Mono',monospace; }
 .sev-num-low      { color:#3B82F6; }
 .sev-num-pass     { color:#25A760; }
 .results-divider { width:1px; height:52px; background:var(--border); flex-shrink:0; }
+/* Compliance summary = ONE horizontal strip, no heading and no vertical stack:
+   score | breakdown | delta | action. A vertical composition here competed with the
+   page header for weight and burned ~90px before the tabs, which is where the actual
+   work happens. The section needs no title — the whole page is this node's result. */
 .nd-compliance-summary {
-  background:var(--bg-page);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-  padding:18px 0;margin-bottom:20px;display:flex;align-items:center;gap:20px;min-width:0;
+  background:var(--bg-page);border-bottom:1px solid var(--border);
+  padding:0 0 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px;min-width:0;
 }
-.nd-compliance-context { flex-shrink:0;min-width:210px; }
-.nd-compliance-metrics { display:flex;align-items:center;gap:32px;flex:1;min-width:0; }
-.nd-compliance-metric { min-width:64px; }
-.nd-compliance-details { flex-shrink:0;display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right; }
-.nd-compliance-action { align-self:flex-end; }
-@media (max-width:980px) {
-  .nd-compliance-summary { flex-wrap:wrap; }
-  .nd-compliance-metrics { order:3;flex-basis:100%; }
-  .nd-compliance-details { margin-left:auto; }
-}
+/* Smaller ring than the Scans results pages: here it is one segment of a strip, not
+   the hero of a card, so it must not set the height of the whole band. */
+.nd-compliance-summary .score-wrap,
+.nd-compliance-summary .score-svg { width:52px;height:52px; }
+.nd-compliance-summary .score-inner { inset:6px; }
+.nd-compliance-summary .score-num { font-size:16px; }
+.nd-compliance-summary .score-label { font-size:7px; }
+/* The delta is a property of the score, not a metric of its own — it sits inside the
+   score group with no divider, so the two read as one component. */
+.nd-score-group { display:flex;align-items:center;gap:10px;flex-shrink:0; }
+.nd-sum-div { width:1px;height:22px;background:var(--border);flex-shrink:0; }
+/* Severity breakdown as a metric LIST, not four KPI columns: colour lives only on the
+   6px dot (app-wide rule), the label stays secondary, the number stays default text. */
+.nd-sev-list { display:flex;align-items:center;flex-wrap:wrap;gap:6px 18px; }
+.nd-sev-item { display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-sec); }
+.nd-sev-item::before { content:'';width:6px;height:6px;border-radius:50%;background:var(--dot,#94A3B8);flex-shrink:0; }
+.nd-sev-item b { font-size:13px;font-weight:700;color:var(--text-default); }
+.nd-sev-item--critical { --dot:#FB3C44; }
+.nd-sev-item--medium   { --dot:#D97706; }
+.nd-sev-item--low      { --dot:#3B82F6; }
+.nd-sev-item--pass     { --dot:#25A760; }
+.nd-sev-item--zero     { --dot:#94A3B8; }
+/* .stat-link/.link-cta are declared later in the file, so their stat-card margins win on
+   equal specificity — scope this one through the parent to strip them.
+   This one link is deliberately QUIET (secondary text + hover underline) instead of the
+   canonical green Text button: it is a side exit, and in green it competed with
+   "Run Scan Now" for the eye. It also stays flush left with the strip — no margin-left:auto,
+   which stranded it at the far edge with a dead gap in the middle. */
+.nd-compliance-summary .nd-compliance-action { margin:0;padding:0;align-self:center;color:var(--text-sec);font-weight:500; }
+.nd-compliance-summary .nd-compliance-action:hover { color:var(--text-default);text-decoration:underline; }
+/* Node-detail identity metadata row: OS, uptime and the external CMDB reference are ONE
+   row of ambient facts. Baseline is deliberately NOT in here — it is a temporary state
+   that the user changes, so it sits beside the title as a badge instead.
+   Items are separated by a generated middot on every item but the first, so a wrap
+   never leaves a dangling separator at the end of a line. */
+.nd-meta { display:flex;align-items:center;flex-wrap:wrap;gap:4px 9px;margin-top:5px;font-size:11.5px;color:var(--text-sec); }
+.nd-meta-item { display:inline-flex;align-items:center;gap:6px; }
+.nd-meta-item + .nd-meta-item::before { content:'·';color:var(--text-muted);margin-right:3px; }
+.nd-title-row { display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px; }
+.nd-baseline-chip { display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:999px;padding:3px 10px;white-space:nowrap; }
+.nd-baseline-chip b { font-weight:700;color:var(--text-default); }
+/* The top zone (header + alert + summary) shares the page fill so it reads as one
+   summary band; the white cards below it become the anchor for the eye. */
+#v-node-detail > .page-header { background:var(--bg-page);border-bottom:none; }
 
 .severity-row {
   display:flex; align-items:center; justify-content:space-between;
@@ -6798,17 +6836,28 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <div>
-            <div class="page-title">MACBOOK-TARAS</div>
-            <div class="page-sub" id="nd-page-sub">Windows 11 · This node · <span style="color:#00AF73;font-weight:600;">● Online</span> · Last scanned 2 min ago</div>
-            <div id="nd-baseline-badge" style="display:inline-flex;align-items:center;gap:6px;margin-top:7px;font-size:11px;font-weight:600;color:#047857;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:20px;padding:3px 11px;white-space:nowrap;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#047857" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              Baseline: <span id="nd-baseline-when" style="font-weight:700;"></span> · set by you
+            <div class="nd-title-row">
+              <div class="page-title">MACBOOK-TARAS</div>
+              <span class="nd-baseline-chip">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="flex-shrink:0;opacity:0.65;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                Baseline <b id="nd-baseline-when"></b>
+              </span>
+              <button class="link-cta" onclick="ndSetBaseline()" title="Make the currently selected scan the baseline for this node"><span class="lc-txt">Set current</span></button>
+            </div>
+            <div class="nd-meta">
+              <span class="nd-meta-item">Windows 11</span>
+              <span class="nd-meta-item" style="color:#00AF73;font-weight:600;">● Online</span>
+              <span class="nd-meta-item">
+                Linked to ServiceNow
+                <span class="code-tag">CI0043221</span>
+                <button class="link-cta" onclick="go(&#39;j4-match&#39;)"><span class="lc-txt">Rematch</span> <span class="arr">→</span></button>
+              </span>
             </div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
           <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:11px;font-weight:600;color:var(--text-sec);">Scan:</span>
+            <span style="font-size:11px;font-weight:600;color:var(--text-sec);">Viewing:</span>
             <div style="position:relative;">
               <select id="nd-scan-select" class="csel nd-scan-sel" onchange="ndSelectScan(this.value);ndUpdateBaselineUI()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
                 <option value="now">Now · 2 min ago</option>
@@ -6818,29 +6867,23 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </select>
             </div>
           </div>
-          <button class="btn-outline" onclick="showScanCompare()" style="width:auto;padding:8px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;">
+          <button class="btn-outline" onclick="showScanCompare()" style="width:auto;margin-left:10px;padding:8px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
             Compare scans
-          </button>
-          <button class="btn-outline" onclick="ndSetBaseline()" style="width:auto;padding:8px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            Set as baseline
           </button>
           <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:13px;">Run Scan Now</button>
         </div>
       </div>
 
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
+      <div style="flex:1;background:var(--bg-page);padding:16px 24px 24px;overflow-y:auto;">
 
         <!-- Latest scan attempt failed — entry point to diagnostics (item 7) -->
-        <div id="nd-scanfail-banner" style="display:flex;align-items:center;gap:14px;background:var(--bg-surface);border:1px solid var(--border);border-left:3px solid #FB3C44;border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;box-shadow:var(--shadow-sm);">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:13px;font-weight:700;color:var(--text-default);">Scan failed 2h ago <span style="color:#FB3C44;">·</span> authentication error</div>
-            <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">Showing your last successful scan below.</div>
-          </div>
-          <button onclick="showView(&#39;scan-failed&#39;)" class="btn-outline" style="width:auto;padding:6px 14px;font-size:12px;font-weight:600;flex-shrink:0;">Diagnose →</button>
-          <button class="btn-secondary" style="width:auto;padding:6px 16px;font-size:12px;flex-shrink:0;">Retry scan</button>
+        <div id="nd-scanfail-banner" style="display:flex;align-items:center;gap:9px;background:var(--bg-surface);border:1px solid var(--border);border-left:3px solid #FB3C44;border-radius:var(--radius-md);padding:6px 14px;margin-bottom:12px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <div style="flex:1;min-width:0;font-size:12px;color:var(--text-sec);"><b style="font-weight:700;color:var(--text-default);">Authentication failed 2h ago.</b> Showing results from the previous successful scan.</div>
+          <button class="link-cta" style="flex-shrink:0;"><span class="lc-txt">Retry</span></button>
+          <span style="color:var(--text-muted);font-size:11px;flex-shrink:0;">·</span>
+          <button class="link-cta" onclick="showView(&#39;scan-failed&#39;)" style="flex-shrink:0;"><span class="lc-txt">Diagnose</span> <span class="arr">→</span></button>
         </div>
 
         <!-- Historical scan banner -->
@@ -6852,60 +6895,31 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Compliance summary — follows the Scans results pattern -->
         <div class="nd-compliance-summary">
-          <div class="score-wrap">
-            <svg class="score-svg" viewBox="0 0 72 72">
-              <circle cx="36" cy="36" r="30" fill="none" stroke="#E2E6EA" stroke-width="7"></circle>
-              <circle id="nd-sum-ring" cx="36" cy="36" r="30" fill="none" stroke="#25A760" stroke-width="7" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="41.5" transform="rotate(-90 36 36)"></circle>
-            </svg>
-            <div class="score-inner" style="inset:8px;">
-              <div id="nd-sum-score" class="score-num">78</div>
-              <div class="score-label" style="font-size:10px;">/ 100</div>
+          <div class="nd-score-group">
+            <div class="score-wrap">
+              <svg class="score-svg" viewBox="0 0 72 72">
+                <circle cx="36" cy="36" r="30" fill="none" stroke="#E2E6EA" stroke-width="7"></circle>
+                <circle id="nd-sum-ring" cx="36" cy="36" r="30" fill="none" stroke="#25A760" stroke-width="7" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="41.5" transform="rotate(-90 36 36)"></circle>
+              </svg>
+              <div class="score-inner" style="inset:8px;">
+                <div id="nd-sum-score" class="score-num">78</div>
+                <div class="score-label" style="font-size:10px;">/ 100</div>
+              </div>
             </div>
+            <div id="nd-sum-delta" style="font-size:11px;font-weight:600;"></div>
           </div>
-
-          <div class="nd-compliance-context">
-            <div style="font-size:10px;color:var(--green1);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">MACBOOK-TARAS ✓</div>
-            <div style="font-size:15px;font-weight:700;letter-spacing:-0.3px;color:var(--text-default);">Compliance Policy Results</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Windows 11 · This node</div>
-            <div id="nd-sum-delta" style="font-size:10px;font-weight:600;margin-top:2px;"></div>
-            <span id="nd-sum-label" style="display:none;">Good</span>
-            <span id="nd-sum-changes" style="display:none;">3</span>
+          <div class="nd-sum-div"></div>
+          <div class="nd-sev-list">
+            <span id="nd-sev-critical" class="nd-sev-item nd-sev-item--critical"><b id="nd-sum-critical">1</b> Critical</span>
+            <span id="nd-sev-medium" class="nd-sev-item nd-sev-item--medium"><b id="nd-sum-minor">2</b> Medium</span>
+            <span id="nd-sev-low" class="nd-sev-item nd-sev-item--low nd-sev-item--zero"><b>0</b> Low</span>
+            <span id="nd-sev-pass" class="nd-sev-item nd-sev-item--pass"><b id="nd-sum-passing">9</b> Passed</span>
           </div>
-
-          <div class="results-divider"></div>
-
-          <div class="nd-compliance-metrics">
-            <div class="nd-compliance-metric"><div id="nd-sum-critical" class="sev-num sev-num-critical" style="font-size:22px;font-weight:700;line-height:1;">1</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Critical</div></div>
-            <div class="nd-compliance-metric"><div id="nd-sum-minor" class="sev-num sev-num-medium" style="font-size:22px;font-weight:700;line-height:1;">2</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Medium</div></div>
-            <div class="nd-compliance-metric"><div class="sev-num sev-num-low" style="font-size:22px;font-weight:700;line-height:1;">0</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Low</div></div>
-            <div class="nd-compliance-metric"><div id="nd-sum-passing" class="sev-num sev-num-pass" style="font-size:22px;font-weight:700;line-height:1;">9</div><div style="font-size:10px;color:var(--text-sec);margin-top:3px;">Passed</div></div>
-          </div>
-
-          <div class="results-divider"></div>
-          <div class="nd-compliance-details">
-            <div style="font-size:12px;color:var(--text-sec);"><span id="nd-sum-monitored" style="color:var(--green2);font-weight:700;">12</span> attributes monitored</div>
-            <div style="font-size:12px;color:var(--text-sec);"><span style="color:var(--green2);font-weight:700;">4</span> compliance policies</div>
-            <button class="stat-link nd-compliance-action" onclick="openReportFromBaseline()" title="Open a Baseline deviation report scoped to this node"><span class="stat-link-txt">Baseline deviation report</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
-          </div>
-        </div>
-
-        <!-- ServiceNow CI reference strip -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:12px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:16px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-              <span style="font-size:12px;font-weight:600;color:#5B21B6;">ServiceNow CI</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-size:13px;color:var(--text-default);font-weight:500;">MACBOOK-TARAS</span>
-              <span class="code-tag">CI0043221</span>
-              <span style="font-size:11px;color:var(--text-sec);">cmdb_ci_win_server</span>
-            </div>
-            <span style="font-size:11px;color:#15803d;font-weight:600;">● Linked</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <button class="btn-secondary" style="width:auto;" onclick="go(&#39;j4-match&#39;)">Rematch →</button>
-          </div>
+          <div class="nd-sum-div"></div>
+          <span id="nd-sum-label" style="display:none;">Good</span>
+          <span id="nd-sum-changes" style="display:none;">3</span>
+          <span id="nd-sum-monitored" style="display:none;">12</span>
+          <button class="link-cta nd-compliance-action" onclick="openReportFromBaseline()" title="Open a Baseline deviation report scoped to this node"><span class="lc-txt">View baseline deviations</span> <span class="arr">→</span></button>
         </div>
 
         <!-- Tab nav -->
@@ -6919,8 +6933,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Tab: Overview -->
         <div id="nd-tab-overview">
 
-        <!-- 2-panel layout -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
+        <!-- 2-panel layout — drift outweighs the policy list, so ~65/35, not 50/50 -->
+        <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:16px;align-items:start;">
 
           <!-- Left: Changed Attributes -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
@@ -6929,7 +6943,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="font-size:13px;font-weight:700;color:var(--text-default);" id="nd-changed-title">Changed since baseline</div>
                 <div style="font-size:11px;color:var(--text-sec);margin-top:2px;" id="nd-changed-sub">3 changes · compared to baseline</div>
               </div>
-              <span style="font-size:11px;color:var(--text-sec);">Hover or click for details</span>
             </div>
 
             <div id="nd-changed-body">
@@ -7605,16 +7618,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       set('nd-sum-monitored', m.monitored);
       var ring = document.getElementById('nd-sum-ring');
       if (ring) ring.setAttribute('stroke-dashoffset', (188.5 * (1 - m.score / 100)).toFixed(1));
-      var muted = '#94A3B8';
-      var c = document.getElementById('nd-sum-changes'); if (c) c.style.color = m.changes ? '#d97706' : muted;
-      var cr = document.getElementById('nd-sum-critical'); if (cr) cr.style.color = m.critical ? '#FB3C44' : muted;
-      var mi = document.getElementById('nd-sum-minor'); if (mi) mi.style.color = m.minor ? '#d97706' : muted;
+      // Colour lives on the 6px dot only: a zero count greys its dot out instead of
+      // recolouring the number, so the row stays a quiet metric list.
+      var zero = function (id, n) {
+        var e = document.getElementById(id);
+        if (e) e.classList.toggle('nd-sev-item--zero', !n);
+      };
+      zero('nd-sev-critical', m.critical);
+      zero('nd-sev-medium', m.minor);
+      zero('nd-sev-pass', m.passing);
     }
     function ndSelectScan(id) {
       var table = document.getElementById('nd-attrs-table');
       var failed = document.getElementById('nd-failed-body');
       var failedSub = document.getElementById('nd-failed-sub');
-      var sub = document.getElementById('nd-page-sub');
       var toolbar = document.getElementById('nd-attr-toolbar');
       var banner = document.getElementById('nd-hist-banner');
       var changed = document.getElementById('nd-changed-body');
@@ -7627,7 +7644,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           attrs: table.innerHTML,
           failed: failed ? failed.innerHTML : '',
           failedSub: failedSub ? failedSub.textContent : '',
-          sub: sub ? sub.innerHTML : '',
           tabCount: (document.getElementById('nd-attr-tabcount') || {}).textContent,
           changed: changed ? changed.innerHTML : '',
           changedTitle: changedTitle ? changedTitle.textContent : '',
@@ -7641,7 +7657,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         table.innerHTML = __ndNow.attrs;
         if (failed) failed.innerHTML = __ndNow.failed;
         if (failedSub) failedSub.textContent = __ndNow.failedSub;
-        if (sub) sub.innerHTML = __ndNow.sub;
         ndSetTabCount(__ndNow.tabCount);
         ndSetSummary(ND_NOW_META);
         if (changed) changed.innerHTML = __ndNow.changed;
@@ -7656,7 +7671,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       table.innerHTML = ndRenderAttrs(s.attrs);
       if (failed) failed.innerHTML = ndRenderFailed(s.failed);
       if (failedSub) failedSub.textContent = s.failedSub;
-      if (sub) sub.innerHTML = 'Windows 11 · This node · Last scanned ' + s.when;
       ndSetTabCount(s.attrs.length);
       if (s.meta) ndSetSummary(s.meta);
       if (changed) changed.innerHTML = ndRenderChanged(s.attrs);
@@ -7854,7 +7868,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
     function ndUpdateBaselineUI() {
       var bw = document.getElementById('nd-baseline-when');
-      if (bw) bw.textContent = SC_LABELS[ndBaseline] || ndBaseline;
+      // Drop the clock part of the scan label ("3 days ago · 09:14" -> "3 days ago"):
+      // in the header chip WHEN matters, the exact minute does not. Relative labels
+      // like "Now · 2 min ago" have no clock and stay intact.
+      if (bw) bw.textContent = (SC_LABELS[ndBaseline] || ndBaseline).replace(/\s·\s\d{1,2}:\d{2}$/, '');
       var cur = (document.getElementById('nd-scan-select') || {}).value || 'now';
       var de = document.getElementById('nd-sum-delta');
       var cs = scanScore(cur), bs = scanScore(ndBaseline);
