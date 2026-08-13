@@ -114,6 +114,16 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 
 **Exceptions.** Картки, таблиці, sidebar, модальні вікна, dropdown-панелі, hover/selected-стани та інші підняті або інтерактивні surfaces використовують власні семантичні токени й не прирівнюються до основного фону сторінки.
 
+### 2.2 Table row hover
+
+**Rule.** Усі рядки даних у всіх таблицях застосунку мають єдиний hover-фон через семантичний токен `--table-row-hover`: `#F8FAFC` у світлій темі та `rgba(255,255,255,0.05)` у темній. Не задавати локальні hover-кольори, інлайн `onmouseover` або окремі hex/rgba для конкретної таблиці. Native `<table>` покриваються глобально; нові grid-таблиці повинні використовувати клас `.table-row`.
+
+Hover змінює лише поверхню всього рядка. Текст, іконки, баджі та вкладені кнопки не успадковують окремий hover від рядка й зберігають власні інтерактивні стани.
+
+**Reference.** All Nodes → Managed / Detected; MACBOOK-TARAS → Assigned policies / Scan history; CM Groups; Credentials; Scan Schedules; Reports.
+
+**Exceptions.** Заголовки таблиць, footer/summary-рядки, empty states, disabled placeholders та нетабличні картки/списки не отримують table-row hover.
+
 ---
 
 ## 3. Forms
