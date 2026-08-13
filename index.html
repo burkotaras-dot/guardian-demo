@@ -1453,13 +1453,18 @@ code { font-family:'DM Mono',monospace; }
   background:var(--bg-page);border-bottom:1px solid var(--border);
   padding:0 0 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px;min-width:0;
 }
-/* Smaller ring than the Scans results pages: here it is one segment of a strip, not
-   the hero of a card, so it must not set the height of the whole band. */
+/* Smaller than the Scans hero (120px) but not squeezed: at 52px the number had nowhere
+   to breathe, so the ring sets the height of the band and everything else aligns to it. */
 .nd-compliance-summary .score-wrap,
-.nd-compliance-summary .score-svg { width:52px;height:52px; }
-.nd-compliance-summary .score-inner { inset:6px; }
-.nd-compliance-summary .score-num { font-size:16px; }
-.nd-compliance-summary .score-label { font-size:7px; }
+.nd-compliance-summary .score-svg { width:64px;height:64px; }
+/* The disc is inset to the ring's INNER edge, so the hole it fills is exactly the hole
+   the ring leaves. Only the number goes inside — a second "/ 100" line put two baselines
+   into the circle and left the text squeezed against the stroke; the caption beside the
+   ring names the metric instead. */
+.nd-compliance-summary .score-inner { inset:8.7px; }
+/* Caption + delta read as one label for the ring, which is why there is no divider
+   between them and the score group. */
+.nd-score-cap { font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px; }
 /* The delta is a property of the score, not a metric of its own — it sits inside the
    score group with no divider, so the two read as one component. */
 .nd-score-group { display:flex;align-items:center;gap:10px;flex-shrink:0; }
@@ -1477,12 +1482,10 @@ code { font-family:'DM Mono',monospace; }
 .nd-sev-item--zero     { --dot:#94A3B8; }
 /* .stat-link/.link-cta are declared later in the file, so their stat-card margins win on
    equal specificity — scope this one through the parent to strip them.
-   This one link is deliberately QUIET (secondary text + hover underline) instead of the
-   canonical green Text button: it is a side exit, and in green it competed with
-   "Run Scan Now" for the eye. It also stays flush left with the strip — no margin-left:auto,
-   which stranded it at the far edge with a dead gap in the middle. */
-.nd-compliance-summary .nd-compliance-action { margin:0;padding:0;align-self:center;color:var(--text-sec);font-weight:500; }
-.nd-compliance-summary .nd-compliance-action:hover { color:var(--text-default);text-decoration:underline; }
+   Colour and weight come from the canonical Text button — only the stray margins are
+   stripped. It stays flush left with the strip: no margin-left:auto, which stranded it
+   at the far edge with a dead gap in the middle. */
+.nd-compliance-summary .nd-compliance-action { margin:0;padding:0;align-self:center; }
 /* Node-detail identity metadata row: OS, uptime and the external CMDB reference are ONE
    row of ambient facts. Baseline is deliberately NOT in here — it is a temporary state
    that the user changes, so it sits beside the title as a badge instead.
@@ -6988,16 +6991,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div class="nd-compliance-summary">
           <div class="nd-score-group">
             <div class="score-wrap">
+              <!-- 5px stroke on a 64px ring: the old 7/72 was half again as thick and read
+                   as a heavy donut. Track is lighter than --border so the ring, not the
+                   groove, is what the eye lands on. -->
               <svg class="score-svg" viewBox="0 0 72 72">
-                <circle cx="36" cy="36" r="30" fill="none" stroke="#E2E6EA" stroke-width="7"></circle>
-                <circle id="nd-sum-ring" cx="36" cy="36" r="30" fill="none" stroke="#25A760" stroke-width="7" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="41.5" transform="rotate(-90 36 36)"></circle>
+                <circle cx="36" cy="36" r="29" fill="none" stroke="#EBEFF3" stroke-width="5.6"></circle>
+                <circle id="nd-sum-ring" cx="36" cy="36" r="29" fill="none" stroke="#25A760" stroke-width="5.6" stroke-linecap="round" stroke-dasharray="182.2" stroke-dashoffset="40.1" transform="rotate(-90 36 36)"></circle>
               </svg>
-              <div class="score-inner" style="inset:8px;">
+              <div class="score-inner">
                 <div id="nd-sum-score" class="score-num">78</div>
-                <div class="score-label" style="font-size:10px;">/ 100</div>
               </div>
             </div>
-            <div id="nd-sum-delta" style="font-size:11px;font-weight:600;"></div>
+            <div style="min-width:0;">
+              <div class="nd-score-cap">Compliance score</div>
+              <div id="nd-sum-delta" style="font-size:11px;font-weight:600;"></div>
+            </div>
           </div>
           <div class="nd-sum-div"></div>
           <div class="nd-sev-list">
@@ -7010,7 +7018,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span id="nd-sum-label" style="display:none;">Good</span>
           <span id="nd-sum-changes" style="display:none;">3</span>
           <span id="nd-sum-monitored" style="display:none;">12</span>
-          <button class="link-cta nd-compliance-action" onclick="openReportFromBaseline()" title="Open a Baseline deviation report scoped to this node"><span class="lc-txt">View baseline deviations</span> <span class="arr">→</span></button>
+          <button class="link-cta nd-compliance-action" onclick="openReportFromBaseline()" title="Open a Baseline deviation report scoped to this node"><span class="lc-txt">View baseline deviations</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
         </div>
 
         <!-- Tab nav -->
@@ -7670,7 +7678,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       set('nd-sum-passing', m.passing);
       set('nd-sum-monitored', m.monitored);
       var ring = document.getElementById('nd-sum-ring');
-      if (ring) ring.setAttribute('stroke-dashoffset', (188.5 * (1 - m.score / 100)).toFixed(1));
+      if (ring) ring.setAttribute('stroke-dashoffset', (182.2 * (1 - m.score / 100)).toFixed(1));
       // Colour lives on the 6px dot only: a zero count greys its dot out instead of
       // recolouring the number, so the row stays a quiet metric list.
       var zero = function (id, n) {
