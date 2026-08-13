@@ -79,9 +79,26 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 
 ### 1.4 Steppers (multi-step flows)
 
-**Rule.** Кроки багатокрокового flow показує ЄДИНИЙ stepper — `gm-stepper` всередині `openModal` (опція `steps`). НЕ тримати паралельно окремі full-page step-nav елементи для того самого flow.
+**Rule.** Кроки багатокрокового flow показує ЄДИНИЙ stepper — `gm-stepper` всередині `openModal` (опція `steps`). НЕ тримати паралельно окремі full-page step-nav елементи для того самого flow. Візуальний стандарт — Figma `Guardian UI Design System based on Mantine v5.10`, node `3006:2013` (`Counter`).
 
-**Reference.** `openModal` `steps` → `gm-stepper` (`index.html:11616`).
+Канонічна геометрія та токени:
+
+- контейнер: `display:flex`, `gap:12px`, `padding:16px 24px 0`; кожен крок однаково розтягується (`flex:1 0 0`);
+- крок: висота `38px`, контент центрований, gap `8px`, нижній padding `14px`, нижня лінія `2px`;
+- номер: `22×22px`, круг `radius:11px`, DM Sans Bold `11px`;
+- label: DM Sans `12px`; active — Semibold, non-active у dark — Medium;
+- light active: line/circle `#10B981`, circle text `#FFFFFF`, label `#475569`;
+- light non-active: line/circle border `#E2E8F0`, circle background `#FFFFFF`, number/label `#94A3B8`;
+- dark active: line/circle `#10B981`, circle text `#FFFFFF`, label `#F8FAFC`;
+- dark non-active: line `#04363A`, circle transparent із border `rgba(255,255,255,.20)`, number `rgba(255,255,255,.70)`, label `#64748B`;
+- завершений крок використовує active-палітру та check замість номера; клік назад дозволений тільки по завершених кроках;
+- для accessibility контейнер має `role="list"`, а поточний крок — `aria-current="step"`.
+
+**Reference.** `openModal` `steps` → `gm-stepper` (`index.html`, `openModal()`); Figma node `3006:2013`.
+
+**Examples.** Policy Create, CM Groups Create, Integrations Setup, Field Mapping, CMDB Import і CSV Import використовують той самий `.gm-stepper` без локальних перевизначень.
+
+**Exceptions.** Full-page onboarding, який явно зафіксований як виняток у §1.1, може мати власну навігацію кроками; він не є modal wizard і не наслідує `.gm-stepper` автоматично.
 
 **Технічний борг — ✅ усунено (2026-08-07):**
 - ✅ `cm-step-nav`, `pc-step-nav`, `icx-step-nav` — три мертві top-nav step-блоки ВИДАЛЕНО з DOM (CM/PC/ICX тепер overlay-модалки зі своїм `gm-stepper`; `s-cm-setup` = лише прихований DOM-паркінг для вузлів модалки, `go()` туди не навігує). Прибрано і 6 JS-рядків-тоглів у двох nav-функціях. `cmSetStep` лишений як безпечний no-op (`if(!el)continue`). Верифіковано: навігація по всіх flows чиста, j3/j4 stepper на місці, консоль без помилок.
