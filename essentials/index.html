@@ -3900,17 +3900,74 @@ body:not(.dark) input[type="checkbox"]:focus-visible {
 .gm-md { max-width: 480px; }
 .gm-lg { max-width: 600px; }
 .gm-xl { max-width: 960px; }
-.gm-stepper { display: flex; gap: 12px; padding: 16px 24px 0; counter-reset: gm-step; }
-.gm-step { flex: 1; display: flex; align-items: center; gap: 8px; position: relative; padding-bottom: 14px; border-bottom: 2px solid var(--border); cursor: default; transition: border-color .15s; min-width: 0; overflow: hidden; }
-.gm-step.is-done { border-color: var(--green1); cursor: pointer; }
-.gm-step.is-active { border-color: var(--green1); }
-.gm-step-num { width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1.5px solid var(--border); color: var(--text-muted); background: var(--bg-surface); transition: all .15s; }
-body.dark .gm-step-num { background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.25) !important; color: rgba(255,255,255,0.7) !important; }
-.gm-step.is-active .gm-step-num { border-color: var(--green1); background: var(--green1); color: #fff; }
-.gm-step.is-done .gm-step-num { border-color: var(--green1); background: var(--green1); color: #fff; }
-.gm-step-label { font-size: 12px; font-weight: 500; color: var(--text-muted); transition: color .15s; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.gm-step.is-active .gm-step-label { color: var(--text-default); font-weight: 600; }
-.gm-step.is-done .gm-step-label { color: var(--text-default); }
+.gm-stepper {
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:16px 24px 0;
+  counter-reset:gm-step;
+}
+.gm-step {
+  flex:1 0 0;
+  min-width:0;
+  height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  position:relative;
+  padding:0 0 14px;
+  overflow:hidden;
+  border-bottom:2px solid #E2E8F0;
+  cursor:default;
+  transition:border-color .15s;
+}
+.gm-step.is-done { border-color:#10B981; cursor:pointer; }
+.gm-step.is-active { border-color:#10B981; }
+.gm-step-num {
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 22px;
+  border:1px solid #E2E8F0;
+  border-radius:11px;
+  background:#FFFFFF;
+  color:#94A3B8;
+  font-size:11px;
+  font-weight:700;
+  line-height:normal;
+  transition:background-color .15s,border-color .15s,color .15s;
+}
+.gm-step-label {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#94A3B8;
+  font-size:12px;
+  font-weight:600;
+  line-height:normal;
+  transition:color .15s;
+}
+.gm-step.is-active .gm-step-num,
+.gm-step.is-done .gm-step-num { border-color:#10B981; background:#10B981; color:#FFFFFF; }
+.gm-step.is-active .gm-step-label,
+.gm-step.is-done .gm-step-label { color:#475569; font-weight:600; }
+body.dark .gm-step { border-bottom-color:#04363A; }
+body.dark .gm-step-num {
+  background:transparent !important;
+  border-color:rgba(255,255,255,0.20) !important;
+  color:rgba(255,255,255,0.70) !important;
+}
+body.dark .gm-step-label { color:#64748B; font-weight:500; }
+body.dark .gm-step.is-active,
+body.dark .gm-step.is-done { border-bottom-color:#10B981; }
+body.dark .gm-step.is-active .gm-step-num,
+body.dark .gm-step.is-done .gm-step-num { border-color:#10B981 !important; background:#10B981 !important; color:#FFFFFF !important; }
+body.dark .gm-step.is-active .gm-step-label,
+body.dark .gm-step.is-done .gm-step-label { color:#F8FAFC; font-weight:600; }
 .gm-step.is-done .gm-step-num::after { content: '\2713'; }
 .gm-step.is-done .gm-step-numval { display: none; }
 .gm-panel { display: none; }
@@ -11719,7 +11776,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var ov = document.getElementById(_CM_MODAL);
       if (ov) {
         var steps = ov.querySelectorAll('.gm-step');
-        steps.forEach(function(s) { s.classList.remove('is-active'); s.classList.add('is-done'); });
+        steps.forEach(function(s) { s.classList.remove('is-active'); s.classList.add('is-done'); s.removeAttribute('aria-current'); });
       }
     }
     function cmwCopy(btn, text) {
@@ -12048,8 +12105,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }
       var stepperHtml = '';
       if (opts.steps && opts.steps.length) {
-        stepperHtml = '<div class="gm-stepper">' + opts.steps.map(function(s, i) {
-          return '<div class="gm-step' + (i === 0 ? ' is-active' : '') + '" data-gm-step="' + i + '">'
+        stepperHtml = '<div class="gm-stepper" role="list" aria-label="Setup progress">' + opts.steps.map(function(s, i) {
+          return '<div class="gm-step' + (i === 0 ? ' is-active' : '') + '" role="listitem" data-gm-step="' + i + '"' + (i === 0 ? ' aria-current="step"' : '') + '>'
             + '<span class="gm-step-num"><span class="gm-step-numval">' + (i + 1) + '</span></span>'
             + '<span class="gm-step-label">' + s.label + '</span></div>';
         }).join('') + '</div>';
@@ -12132,8 +12189,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       panels.forEach(function(p, i) { p.classList.toggle('is-visible', i === stepIdx); });
       steps.forEach(function(s, i) {
         s.classList.remove('is-active', 'is-done');
+        s.removeAttribute('aria-current');
         if (i < stepIdx) s.classList.add('is-done');
-        if (i === stepIdx) s.classList.add('is-active');
+        if (i === stepIdx) { s.classList.add('is-active'); s.setAttribute('aria-current', 'step'); }
       });
       /* fire step callback if provided */
       if (ov._gmSteps && ov._gmSteps[stepIdx] && ov._gmSteps[stepIdx].onEnter) {
@@ -19603,10 +19661,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
         <button type="button" class="gm-x" aria-label="Close" onclick="closeCmdbImport()">&times;</button>
       </div>
-      <div class="gm-stepper">
-        <div class="gm-step is-active" onclick="if(this.classList.contains('is-done'))go('cmdb-connect')"><span class="gm-step-num"><span class="gm-step-numval">1</span></span><span class="gm-step-label">Connect</span></div>
-        <div class="gm-step" onclick="if(this.classList.contains('is-done'))go('cmdb-browse')"><span class="gm-step-num"><span class="gm-step-numval">2</span></span><span class="gm-step-label">Select nodes</span></div>
-        <div class="gm-step" onclick="if(this.classList.contains('is-done'))go('cmdb-credentials')"><span class="gm-step-num"><span class="gm-step-numval">3</span></span><span class="gm-step-label">Credentials</span></div>
+      <div class="gm-stepper" role="list" aria-label="Import progress">
+        <div class="gm-step is-active" role="listitem" aria-current="step" onclick="if(this.classList.contains('is-done'))go('cmdb-connect')"><span class="gm-step-num"><span class="gm-step-numval">1</span></span><span class="gm-step-label">Connect</span></div>
+        <div class="gm-step" role="listitem" onclick="if(this.classList.contains('is-done'))go('cmdb-browse')"><span class="gm-step-num"><span class="gm-step-numval">2</span></span><span class="gm-step-label">Select nodes</span></div>
+        <div class="gm-step" role="listitem" onclick="if(this.classList.contains('is-done'))go('cmdb-credentials')"><span class="gm-step-num"><span class="gm-step-numval">3</span></span><span class="gm-step-label">Credentials</span></div>
       </div>
       <div class="gm-body" style="padding:0;">
 
@@ -20155,10 +20213,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
         <button type="button" class="gm-x" aria-label="Close" onclick="closeCsvImport()">&times;</button>
       </div>
-      <div class="gm-stepper">
-        <div class="gm-step is-active" onclick="if(this.classList.contains('is-done'))go('csv-import')"><span class="gm-step-num"><span class="gm-step-numval">1</span></span><span class="gm-step-label">Upload</span></div>
-        <div class="gm-step" onclick="if(this.classList.contains('is-done'))go('csv-preview')"><span class="gm-step-num"><span class="gm-step-numval">2</span></span><span class="gm-step-label">Review</span></div>
-        <div class="gm-step" onclick="if(this.classList.contains('is-done'))go('csv-importing')"><span class="gm-step-num"><span class="gm-step-numval">3</span></span><span class="gm-step-label">Import</span></div>
+      <div class="gm-stepper" role="list" aria-label="Import progress">
+        <div class="gm-step is-active" role="listitem" aria-current="step" onclick="if(this.classList.contains('is-done'))go('csv-import')"><span class="gm-step-num"><span class="gm-step-numval">1</span></span><span class="gm-step-label">Upload</span></div>
+        <div class="gm-step" role="listitem" onclick="if(this.classList.contains('is-done'))go('csv-preview')"><span class="gm-step-num"><span class="gm-step-numval">2</span></span><span class="gm-step-label">Review</span></div>
+        <div class="gm-step" role="listitem" onclick="if(this.classList.contains('is-done'))go('csv-importing')"><span class="gm-step-num"><span class="gm-step-numval">3</span></span><span class="gm-step-label">Import</span></div>
       </div>
       <div class="gm-body" style="padding:0;">
 
@@ -23554,8 +23612,9 @@ function cmdbShowPanel(key) {
   var allDone = (key === 'cmdb-complete');
   ov.querySelectorAll('.gm-step').forEach(function(st, i) {
     st.classList.remove('is-active', 'is-done');
+    st.removeAttribute('aria-current');
     if (allDone || i < cur) st.classList.add('is-done');
-    else if (i === cur) st.classList.add('is-active');
+    else if (i === cur) { st.classList.add('is-active'); st.setAttribute('aria-current', 'step'); }
   });
   if (key === 'cmdb-credentials' && typeof renderCmdbCM === 'function') renderCmdbCM();
   var b = ov.querySelector('.gm-body'); if (b) b.scrollTo(0, 0);
@@ -23586,8 +23645,9 @@ function csvShowPanel(key) {
   var allDone = (key === 'csv-complete');
   ov.querySelectorAll('.gm-step').forEach(function(st, i) {
     st.classList.remove('is-active', 'is-done');
+    st.removeAttribute('aria-current');
     if (allDone || i < cur) st.classList.add('is-done');
-    else if (i === cur) st.classList.add('is-active');
+    else if (i === cur) { st.classList.add('is-active'); st.setAttribute('aria-current', 'step'); }
   });
   if (key === 'csv-import' && typeof csvClearFile === 'function') csvClearFile();
   var b = ov.querySelector('.gm-body'); if (b) b.scrollTo(0, 0);
