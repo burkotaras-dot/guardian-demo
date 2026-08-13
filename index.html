@@ -1498,6 +1498,53 @@ code { font-family:'DM Mono',monospace; }
    summary band; the white cards below it become the anchor for the eye. */
 #v-node-detail > .page-header { background:var(--bg-page);border-bottom:none; }
 
+/* Node-detail Overview = ONE full-width issue list.
+   The old right-hand "Failed policies" panel held no facts of its own: every failing
+   control was the consequence of a change already listed on the left, so it could never
+   grow past the left panel and only left a widening empty column. The broken control is
+   now a COLUMN of the change that caused it. */
+/* The action column is FIXED, not auto: the header cell is empty, so an auto column
+   would size to 0 there and the header would stop lining up with the rows. */
+.nd-iss-grid { display:grid;grid-template-columns:2fr 1.5fr 2.4fr 0.9fr 72px;gap:12px;align-items:center;padding:0 18px; }
+.nd-iss-row { padding-top:12px;padding-bottom:12px;border-bottom:1px solid var(--border);border-left:3px solid transparent;background:var(--bg-card);cursor:pointer;transition:background .1s; }
+.nd-iss-row--critical { border-left-color:#FB3C44; }
+.nd-iss-row--critical:hover { background:rgba(251,60,68,0.05); }
+.nd-iss-row--medium { border-left-color:#F97316; }
+.nd-iss-row--medium:hover { background:rgba(245,158,11,0.05); }
+.nd-iss-name { display:flex;align-items:center;gap:12px;min-width:0; }
+.nd-iss-name b { display:block;font-size:13px;font-weight:600;color:var(--text-default); }
+.nd-iss-name em { display:block;font-style:normal;font-size:11px;color:var(--text-sec); }
+.nd-iss-change { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+.nd-iss-breaks { display:flex;flex-direction:column;gap:5px;min-width:0; }
+.nd-iss-break { display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-default);min-width:0; }
+.nd-iss-break > span { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.nd-iss-quiet { font-size:11px;color:var(--text-muted); }
+/* Without a visible affordance the row reads as static text, so every expandable row
+   ends with the canonical Secondary button. It carries no handler of its own — the click
+   bubbles to the row, so button and row can never disagree about the open state. */
+.nd-iss-act { display:flex;justify-content:flex-end; }
+.nd-iss-row--static .nd-iss-act { display:none; }
+/* Detail is inserted as the next sibling of its row, never as a panel at the end of the
+   table — the answer has to stay next to the question when the list is long. */
+.nd-iss-detail { padding:12px 18px 14px 21px;border-bottom:1px solid var(--border);background:var(--bg-canvas); }
+.nd-iss-detail-head { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px; }
+.nd-iss-detail-title { font-size:12px;font-weight:700;color:var(--text-default); }
+.nd-iss-detail-x { background:none;border:none;color:var(--text-sec);cursor:pointer;font-size:16px;line-height:1;padding:0 2px; }
+.nd-iss-detail-desc { font-size:11px;color:var(--text-sec);line-height:1.5; }
+/* In dark, --bg-canvas (#031516) reads as a black hole punched into the card, so the
+   expansion uses the raised card-panel fill instead (same rule as .cd-card). */
+body.dark .nd-iss-detail { background:rgba(255,255,255,0.03); }
+/* History scans render read-only rows: no click handler, so no pointer and no hover tint. */
+.nd-iss-row--static { cursor:default; }
+.nd-iss-row--static:hover { background:var(--bg-card); }
+/* The only fact the old right panel owned was the policy NAME, so it survives as one
+   strip that hands off to the Policies tab instead of a parallel list of controls. */
+.nd-pol-rollup { display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;min-width:0; }
+.nd-pol-chip { display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:999px;padding:3px 10px;cursor:pointer;white-space:nowrap; }
+.nd-pol-chip:hover { border-color:var(--green1);color:var(--text-default); }
+.nd-pol-chip b { font-weight:700;color:var(--text-default); }
+.nd-pol-chip--fail b { color:var(--bdg-red-txt); }
+
 .severity-row {
   display:flex; align-items:center; justify-content:space-between;
   padding:7px 0; border-bottom:1px solid rgba(255,255,255,0.05);
@@ -6867,7 +6914,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </select>
             </div>
           </div>
-          <button class="btn-outline" onclick="showScanCompare()" style="width:auto;margin-left:10px;padding:8px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;">
+          <button class="btn-secondary" onclick="showScanCompare()" style="margin-left:10px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
             Compare scans
           </button>
@@ -6933,150 +6980,106 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Tab: Overview -->
         <div id="nd-tab-overview">
 
-        <!-- 2-panel layout — drift outweighs the policy list, so ~65/35, not 50/50 -->
-        <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:16px;align-items:start;">
-
-          <!-- Left: Changed Attributes -->
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
-            <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <div style="font-size:13px;font-weight:700;color:var(--text-default);" id="nd-changed-title">Changed since baseline</div>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;" id="nd-changed-sub">3 changes · compared to baseline</div>
-              </div>
+        <!-- ONE full-width issue list. See .nd-iss-* in the stylesheet for why the
+             "Failed policies" panel is gone: a failing control is the consequence of a
+             change, so it lives as a COLUMN of that change, not as a parallel list. -->
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-default);" id="nd-iss-title">Issues</div>
+              <div style="font-size:11px;color:var(--text-sec);margin-top:2px;" id="nd-iss-sub">3 attributes out of policy · 4 failing controls</div>
             </div>
+            <button class="link-cta" onclick="showView(&#39;changes&#39;)"><span class="lc-txt">View full Detected Drift summary</span> <span class="arr">→</span></button>
+          </div>
 
-            <div id="nd-changed-body">
-            <!-- Antivirus - Critical -->
-            <div style="position:relative;" onmouseenter="ndHoverIn(this,&#39;defender&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndShowDetail(&#39;defender&#39;)">
-              <div style="cursor:pointer;padding:14px 18px;border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);transition:background 0.1s;" onmouseover="this.style.background=&#39;rgba(251,60,68,0.05)&#39;" onmouseout="this.style.background=&#39;var(--bg-card)&#39;">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                  <div>
-                    <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus</div>
-                    <div style="font-size:11px;color:var(--text-sec);">Windows Defender</div>
-                  </div>
+          <div class="col-thead nd-iss-grid" style="height:34px;box-sizing:border-box;background:#F1F5F9;border-bottom:1px solid var(--border);">
+            <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Attribute</div>
+            <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Expected → current</div>
+            <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Breaks</div>
+            <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Severity</div>
+            <div></div>
+          </div>
+
+          <div id="nd-iss-body">
+            <!-- Antivirus — breaks two controls at once, which is exactly the case the
+                 old two-panel split could not express -->
+            <div style="position:relative;" role="button" aria-expanded="false" onmouseenter="ndHoverIn(this,&#39;defender&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndToggleDetail(this,&#39;defender&#39;)">
+              <div class="nd-iss-grid nd-iss-row nd-iss-row--critical">
+                <div class="nd-iss-name">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.8" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  <div style="min-width:0;"><b>Antivirus</b><em>Windows Defender</em></div>
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;">
+                <div class="nd-iss-change">
                   <span class="bdg bdg--quiet bdg--green">Enabled</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                   <span class="bdg bdg--quiet bdg--red">Disabled</span>
-                  <span class="badge badge-critical" style="margin-left:4px;">Critical</span>
                 </div>
+                <div class="nd-iss-breaks">
+                  <div class="nd-iss-break" title="Compliance Policy · Windows 11 v1.0.0"><span class="code-tag">1.2.3</span> <span>Ensure antivirus is enabled</span></div>
+                  <div class="nd-iss-break" title="Endpoint Protection Policy"><span class="code-tag">EP-01</span> <span>Real-time protection must be active</span></div>
+                </div>
+                <div><span class="badge badge-critical">Critical</span></div>
+                <div class="nd-iss-act"><button class="btn-secondary" type="button" tabindex="-1">Details</button></div>
               </div>
               <div class="nd-tooltip" style="display:none;position:absolute;right:16px;top:-38px;background:#0F172A;color:white;font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:10;">Real-time protection was disabled<div style="position:absolute;bottom:-4px;right:14px;width:8px;height:8px;background:#0F172A;transform:rotate(45deg);"></div></div>
             </div>
 
-            <!-- Screen Lock - Minor -->
-            <div style="position:relative;" onmouseenter="ndHoverIn(this,&#39;lock&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndShowDetail(&#39;lock&#39;)">
-              <div style="cursor:pointer;padding:14px 18px;border-bottom:1px solid var(--border);border-left:3px solid #F97316;display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);transition:background 0.1s;" onmouseover="this.style.background=&#39;rgba(245,158,11,0.05)&#39;" onmouseout="this.style.background=&#39;var(--bg-card)&#39;">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                  <div>
-                    <div style="font-size:13px;font-weight:600;color:var(--text-default);">Screen Lock</div>
-                    <div style="font-size:11px;color:var(--text-sec);">Lock timeout</div>
-                  </div>
+            <!-- Screen Lock -->
+            <div style="position:relative;" role="button" aria-expanded="false" onmouseenter="ndHoverIn(this,&#39;lock&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndToggleDetail(this,&#39;lock&#39;)">
+              <div class="nd-iss-grid nd-iss-row nd-iss-row--medium">
+                <div class="nd-iss-name">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8" style="flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  <div style="min-width:0;"><b>Screen Lock</b><em>Lock timeout</em></div>
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;">
+                <div class="nd-iss-change">
                   <span class="bdg bdg--quiet bdg--green">10 min</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                   <span class="bdg bdg--quiet bdg--red">30 min</span>
-                  <span class="badge badge-medium" style="margin-left:4px;">Minor</span>
                 </div>
+                <div class="nd-iss-breaks">
+                  <div class="nd-iss-break" title="Compliance Policy · Windows 11 v1.0.0"><span class="code-tag">2.1.1</span> <span>Screen lock timeout ≤ 15 min</span></div>
+                </div>
+                <div><span class="badge badge-medium">Medium</span></div>
+                <div class="nd-iss-act"><button class="btn-secondary" type="button" tabindex="-1">Details</button></div>
               </div>
               <div class="nd-tooltip" style="display:none;position:absolute;right:16px;top:-38px;background:#0F172A;color:white;font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:10;">Lock timeout: 10 min → 30 min<div style="position:absolute;bottom:-4px;right:14px;width:8px;height:8px;background:#0F172A;transform:rotate(45deg);"></div></div>
             </div>
 
-            <!-- Local Users - Minor -->
-            <div style="position:relative;" onmouseenter="ndHoverIn(this,&#39;users&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndShowDetail(&#39;users&#39;)">
-              <div style="cursor:pointer;padding:14px 18px;border-left:3px solid #F97316;display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);transition:background 0.1s;" onmouseover="this.style.background=&#39;rgba(245,158,11,0.05)&#39;" onmouseout="this.style.background=&#39;var(--bg-card)&#39;">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                  <div>
-                    <div style="font-size:13px;font-weight:600;color:var(--text-default);">Local Users</div>
-                    <div style="font-size:11px;color:var(--text-sec);">Admin accounts</div>
-                  </div>
+            <!-- Local Users -->
+            <div style="position:relative;" role="button" aria-expanded="false" onmouseenter="ndHoverIn(this,&#39;users&#39;)" onmouseleave="ndHoverOut(this)" onclick="ndToggleDetail(this,&#39;users&#39;)">
+              <div class="nd-iss-grid nd-iss-row nd-iss-row--medium" style="border-bottom:none;">
+                <div class="nd-iss-name">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  <div style="min-width:0;"><b>Local Users</b><em>Admin accounts</em></div>
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;">
+                <div class="nd-iss-change">
                   <span class="bdg bdg--quiet bdg--green">2 users</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                   <span class="bdg bdg--quiet bdg--red">3 users</span>
-                  <span class="badge badge-medium" style="margin-left:4px;">Minor</span>
                 </div>
+                <div class="nd-iss-breaks">
+                  <div class="nd-iss-break" title="Compliance Policy · Windows 11 v1.0.0"><span class="code-tag">5.3.2</span> <span>Limit local admin accounts</span></div>
+                </div>
+                <div><span class="badge badge-medium">Medium</span></div>
+                <div class="nd-iss-act"><button class="btn-secondary" type="button" tabindex="-1">Details</button></div>
               </div>
               <div class="nd-tooltip" style="display:none;position:absolute;right:16px;top:-38px;background:#0F172A;color:white;font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:10;">New admin added: user_temp<div style="position:absolute;bottom:-4px;right:14px;width:8px;height:8px;background:#0F172A;transform:rotate(45deg);"></div></div>
             </div>
 
-            </div><!-- end nd-changed-body -->
+            </div><!-- end nd-iss-body -->
 
-            <!-- Inline detail card -->
-            <div id="nd-detail-card" style="display:none;border-top:2px solid var(--border);background:var(--bg-canvas);">
-              <div style="padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);">
-                <span id="nd-detail-title" style="font-size:12px;font-weight:700;color:var(--text-default);"></span>
-                <button onclick="document.getElementById(&#39;nd-detail-card&#39;).style.display=&#39;none&#39;" style="background:none;border:none;color:var(--text-sec);cursor:pointer;font-size:18px;line-height:1;">×</button>
+            <!-- Policy roll-up: which policies these issues break, and the way through to
+                 the Policies tab, which owns the per-control detail. -->
+            <div style="padding:11px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--bg-canvas);">
+              <div class="nd-pol-rollup" id="nd-pol-rollup">
+                <span class="nd-iss-quiet">Policies</span>
+                <span class="nd-pol-chip nd-pol-chip--fail" onclick="ndTab(&#39;policies&#39;)">Compliance Policy · Windows 11 <b>3 failing</b></span>
+                <span class="nd-pol-chip nd-pol-chip--fail" onclick="ndTab(&#39;policies&#39;)">Endpoint Protection <b>1 failing</b></span>
+                <span class="nd-pol-chip" onclick="ndTab(&#39;policies&#39;)"><b>2</b> passing</span>
               </div>
-              <div style="padding:13px 18px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <span id="nd-detail-before" class="bdg bdg--quiet"></span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                  <span id="nd-detail-after" class="bdg bdg--quiet"></span>
-                </div>
-                <div id="nd-detail-desc" style="font-size:11px;color:var(--text-sec);line-height:1.5;"></div>
-                <div id="nd-detail-viewchange" style="display:none;margin-top:12px;">
-                  <span onclick="goToDriftDetail(&#39;node-attributes&#39;)" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">View change →</span>
-                </div>
-              </div>
-            </div>
-
-            <div style="padding:12px 18px;border-top:1px solid var(--border);text-align:center;">
-              <button class="link-cta" onclick="showView(&#39;changes&#39;)"><span class="lc-txt">View full Detected Drift summary</span> <span class="arr">→</span></button>
+              <button class="link-cta" onclick="ndTab(&#39;policies&#39;)"><span class="lc-txt">View all policies</span> <span class="arr">→</span></button>
             </div>
           </div>
-
-          <!-- Right: Failed Policies -->
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
-            <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
-              <div style="font-size:13px;font-weight:700;color:var(--text-default);">Failed policies</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:2px;" id="nd-failed-sub">2 policies with failing controls</div>
-            </div>
-            <div id="nd-failed-body">
-            <!-- Policy 1 -->
-            <div style="padding:14px 18px;border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div style="font-size:12px;font-weight:600;color:var(--text-default);">Compliance Policy · Windows 11 v1.0.0</div>
-                <span class="badge badge-critical">3 failing</span>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:6px;">
-                <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--p-neutral-800);">
-                  <span class="badge badge-critical">Critical</span>
-                  1.2.3 — Ensure antivirus is enabled
-                </div>
-                <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--p-neutral-800);">
-                  <span class="badge badge-high">High</span>
-                  2.1.1 — Screen lock timeout ≤ 15 min
-                </div>
-                <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--p-neutral-800);">
-                  <span class="badge badge-high">High</span>
-                  5.3.2 — Limit local admin accounts
-                </div>
-              </div>
-            </div>
-            <!-- Policy 2 -->
-            <div style="padding:14px 18px;border-left:3px solid #F97316;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div style="font-size:12px;font-weight:600;color:var(--text-default);">Endpoint Protection Policy</div>
-                <span class="badge badge-medium">1 failing</span>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:6px;">
-                <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--p-neutral-800);">
-                  <span class="badge badge-critical">Critical</span>
-                  EP-01 — Real-time protection must be active
-                </div>
-              </div>
-            </div>
-            </div><!-- end nd-failed-body -->
-          </div>
-
-        </div><!-- end 2-panel grid -->
         </div><!-- end overview tab -->
 
         <!-- Tab: Monitored Attributes -->
@@ -7476,28 +7479,26 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // ── Scan history (Node Details time-travel) ──────────────────────
     var __ndNow = null; // lazily-captured "latest" scan snapshot
     var ND_NOW_META = { score: 78, label: 'Good', changes: 3, critical: 1, minor: 2, passing: 9, monitored: 12 };
+    var ND_POLICY_TOTAL = 4; // policies assigned to this node — see the Policies tab
+    // A deviating attribute carries the controls it breaks. The policy roll-up is derived
+    // from these, so there is no second list to keep in sync.
     var ND_SCAN_HISTORY = {
       yest: {
         when: 'Yesterday · 18:02',
-        failedSub: '1 policy with a failing control',
         meta: { score: 94, label: 'Strong', changes: 1, critical: 0, minor: 1, passing: 5, monitored: 6 },
         attrs: [
           { name: 'Antivirus', sub: 'Windows Defender', current: 'Enabled', expected: 'Enabled', status: 'ok' },
           { name: 'Firewall', sub: 'Domain profile', current: 'Enabled', expected: 'Enabled', status: 'ok' },
           { name: 'BitLocker Encryption', sub: 'OS drive', current: 'On', expected: 'On', status: 'ok' },
-          { name: 'Password Policy', sub: 'Minimum length', current: '8 chars', expected: '14 chars', status: 'changed', lastChanged: '1d ago' },
+          { name: 'Password Policy', sub: 'Minimum length', current: '8 chars', expected: '14 chars', status: 'changed', lastChanged: '1d ago', sev: 'medium', breaks: [
+            { id: '1.4.1', text: 'Password length at least 14 characters', policy: 'Compliance Policy · Windows 11 v1.0.0', short: 'Compliance Policy · Windows 11' }
+          ] },
           { name: 'Screen Lock Timeout', sub: 'Lock timeout', current: '15 min', expected: '≤15 min', status: 'ok' },
           { name: 'Windows Update', sub: 'Patch status', current: 'Up to date', expected: 'Up to date', status: 'ok' }
-        ],
-        failed: [
-          { name: 'Compliance Policy · Windows 11 v1.0.0', count: 1, sev: 'medium', controls: [
-            { sev: 'medium', label: 'Medium', text: '1.4.1 — Ensure password length is at least 14 characters' }
-          ] }
         ]
       },
       '3d': {
         when: '3 days ago · 09:14',
-        failedSub: 'All policies passing',
         meta: { score: 100, label: 'Compliant', changes: 0, critical: 0, minor: 0, passing: 6, monitored: 6 },
         attrs: [
           { name: 'Antivirus', sub: 'Windows Defender', current: 'Enabled', expected: 'Enabled', status: 'ok' },
@@ -7506,26 +7507,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           { name: 'Password Policy', sub: 'Minimum length', current: '14 chars', expected: '14 chars', status: 'ok' },
           { name: 'Screen Lock Timeout', sub: 'Lock timeout', current: '15 min', expected: '≤15 min', status: 'ok' },
           { name: 'Windows Update', sub: 'Patch status', current: 'Up to date', expected: 'Up to date', status: 'ok' }
-        ],
-        failed: []
+        ]
       },
       '28may': {
         when: '28 May · 11:30',
-        failedSub: '1 policy with 2 failing controls',
         meta: { score: 91, label: 'Good', changes: 2, critical: 0, minor: 2, passing: 4, monitored: 6 },
         attrs: [
           { name: 'Antivirus', sub: 'Windows Defender', current: 'Enabled', expected: 'Enabled', status: 'ok' },
           { name: 'Firewall', sub: 'Domain profile', current: 'Enabled', expected: 'Enabled', status: 'ok' },
           { name: 'BitLocker Encryption', sub: 'OS drive', current: 'On', expected: 'On', status: 'ok' },
-          { name: 'Password Policy', sub: 'Minimum length', current: '8 chars', expected: '14 chars', status: 'fail' },
-          { name: 'Screen Lock Timeout', sub: 'Lock timeout', current: '30 min', expected: '≤15 min', status: 'fail' },
+          { name: 'Password Policy', sub: 'Minimum length', current: '8 chars', expected: '14 chars', status: 'fail', sev: 'medium', breaks: [
+            { id: '1.4.1', text: 'Password length at least 14 characters', policy: 'Compliance Policy · Windows 11 v1.0.0', short: 'Compliance Policy · Windows 11' }
+          ] },
+          // Deviating without a covering control — the case the two-panel split could not show
+          { name: 'Screen Lock Timeout', sub: 'Lock timeout', current: '30 min', expected: '≤15 min', status: 'fail', sev: 'medium' },
           { name: 'Windows Update', sub: 'Patch status', current: 'Up to date', expected: 'Up to date', status: 'ok' }
-        ],
-        failed: [
-          { name: 'Compliance Policy · Windows 11 v1.0.0', count: 2, sev: 'medium', controls: [
-            { sev: 'medium', label: 'Medium', text: '1.4.1 — Ensure password length is at least 14 characters' },
-            { sev: 'low', label: 'Low', text: '2.3.1 — Ensure screen lock timeout ≤ 15 minutes' }
-          ] }
         ]
       }
     };
@@ -7570,38 +7566,49 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           + cur + exp + st + last + '</div>';
       }).join('');
     }
-    function ndRenderFailed(policies) {
-      if (!policies || !policies.length) {
-        return '<div style="padding:32px 18px;text-align:center;color:var(--text-muted);font-size:12px;">✓ No failing controls — all assigned policies passing</div>';
-      }
-      return policies.map(function (p) {
-        var controls = p.controls.map(function (c) {
-          return '<div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--p-neutral-800);"><span class="badge badge-' + c.sev + '">' + c.label + '</span> ' + c.text + '</div>';
-        }).join('');
-        return '<div style="padding:14px 18px;border-bottom:1px solid var(--border);border-left:3px solid #D97706;">'
-          + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-          + '<div style="font-size:12px;font-weight:600;color:var(--text-default);">' + p.name + '</div>'
-          + '<span class="badge badge-' + p.sev + '">' + p.count + ' failing</span></div>'
-          + '<div style="display:flex;flex-direction:column;gap:6px;">' + controls + '</div></div>';
-      }).join('');
-    }
-    function ndRenderChanged(attrs) {
+    // One row per deviating attribute; the controls it breaks are a column of that row.
+    // An attribute with no `breaks` still gets a row — the failure exists even when no
+    // policy covers it, which the old two-panel split could not show.
+    function ndRenderIssues(attrs) {
       var dev = attrs.filter(function (a) { return a.status !== 'ok'; });
       if (!dev.length) {
         return '<div style="padding:24px 18px;text-align:center;color:var(--text-muted);font-size:12px;">✓ No deviations — all attributes match expected</div>';
       }
       var chev = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>';
-      return dev.map(function (a) {
-        return '<div style="padding:14px 18px;border-bottom:1px solid var(--border);border-left:3px solid #D97706;display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);">'
-          + '<div style="display:flex;align-items:center;gap:12px;"><div>'
-          + '<div style="font-size:13px;font-weight:600;color:var(--text-default);">' + a.name + '</div>'
-          + '<div style="font-size:11px;color:var(--text-sec);">' + a.sub + '</div></div></div>'
-          + '<div style="display:flex;align-items:center;gap:8px;">'
-          + '<span class="bdg bdg--quiet bdg--red">' + a.current + '</span>'
-          + chev
-          + '<span class="bdg bdg--quiet bdg--green">' + a.expected + '</span>'
-          + '<span class="badge badge-medium" style="margin-left:4px;">Minor</span></div></div>';
+      return dev.map(function (a, i) {
+        var sev = a.sev || 'medium';
+        var breaks = (a.breaks && a.breaks.length)
+          ? a.breaks.map(function (b) {
+              return '<div class="nd-iss-break" title="' + b.policy + '"><span class="code-tag">' + b.id + '</span> <span>' + b.text + '</span></div>';
+            }).join('')
+          : '<span class="nd-iss-quiet">No policy covers this attribute</span>';
+        return '<div class="nd-iss-grid nd-iss-row nd-iss-row--static nd-iss-row--' + sev + '"' + (i === dev.length - 1 ? ' style="border-bottom:none;"' : '') + '>'
+          + '<div class="nd-iss-name">' + ndAttrIcon(a.name) + '<div style="min-width:0;"><b>' + a.name + '</b><em>' + a.sub + '</em></div></div>'
+          + '<div class="nd-iss-change"><span class="bdg bdg--quiet bdg--green">' + a.expected + '</span>' + chev
+          + '<span class="bdg bdg--quiet bdg--red">' + a.current + '</span></div>'
+          + '<div class="nd-iss-breaks">' + breaks + '</div>'
+          + '<div><span class="badge badge-' + sev + '">' + (sev.charAt(0).toUpperCase() + sev.slice(1)) + '</span></div>'
+          + '<div class="nd-iss-act"></div>'
+          + '</div>';
       }).join('');
+    }
+    // Policy names were the only fact the removed "Failed policies" panel owned, so they
+    // survive as a roll-up derived from the same breaks — never a second source of truth.
+    function ndRenderRollup(attrs) {
+      var counts = {}, order = [];
+      attrs.forEach(function (a) {
+        (a.breaks || []).forEach(function (b) {
+          var key = b.short || b.policy;
+          if (!counts[key]) { counts[key] = 0; order.push(key); }
+          counts[key]++;
+        });
+      });
+      var passing = Math.max(0, ND_POLICY_TOTAL - order.length);
+      var chips = order.map(function (name) {
+        return '<span class="nd-pol-chip nd-pol-chip--fail" onclick="ndTab(\'policies\')">' + name + ' <b>' + counts[name] + ' failing</b></span>';
+      }).join('');
+      if (passing) chips += '<span class="nd-pol-chip" onclick="ndTab(\'policies\')"><b>' + passing + '</b> passing</span>';
+      return '<span class="nd-iss-quiet">Policies</span>' + chips;
     }
     function ndSetTabCount(n) {
       var b = document.getElementById('nd-attr-tabcount');
@@ -7630,24 +7637,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
     function ndSelectScan(id) {
       var table = document.getElementById('nd-attrs-table');
-      var failed = document.getElementById('nd-failed-body');
-      var failedSub = document.getElementById('nd-failed-sub');
       var toolbar = document.getElementById('nd-attr-toolbar');
       var banner = document.getElementById('nd-hist-banner');
-      var changed = document.getElementById('nd-changed-body');
-      var changedTitle = document.getElementById('nd-changed-title');
-      var changedSub = document.getElementById('nd-changed-sub');
-      var detailCard = document.getElementById('nd-detail-card');
+      var issues = document.getElementById('nd-iss-body');
+      var issTitle = document.getElementById('nd-iss-title');
+      var issSub = document.getElementById('nd-iss-sub');
+      var rollup = document.getElementById('nd-pol-rollup');
       if (!table) return;
+      ndCloseDetails(); // an open detail must never be baked into the "now" snapshot
       if (!__ndNow) {
         __ndNow = {
           attrs: table.innerHTML,
-          failed: failed ? failed.innerHTML : '',
-          failedSub: failedSub ? failedSub.textContent : '',
           tabCount: (document.getElementById('nd-attr-tabcount') || {}).textContent,
-          changed: changed ? changed.innerHTML : '',
-          changedTitle: changedTitle ? changedTitle.textContent : '',
-          changedSub: changedSub ? changedSub.textContent : ''
+          issues: issues ? issues.innerHTML : '',
+          issTitle: issTitle ? issTitle.textContent : '',
+          issSub: issSub ? issSub.textContent : '',
+          rollup: rollup ? rollup.innerHTML : ''
         };
       }
       var sel = document.getElementById('nd-scan-select');
@@ -7655,13 +7660,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (sel && sel._csel) _cselSyncLabel(sel);
       if (id === 'now') {
         table.innerHTML = __ndNow.attrs;
-        if (failed) failed.innerHTML = __ndNow.failed;
-        if (failedSub) failedSub.textContent = __ndNow.failedSub;
         ndSetTabCount(__ndNow.tabCount);
         ndSetSummary(ND_NOW_META);
-        if (changed) changed.innerHTML = __ndNow.changed;
-        if (changedTitle) changedTitle.textContent = __ndNow.changedTitle;
-        if (changedSub) changedSub.textContent = __ndNow.changedSub;
+        if (issues) issues.innerHTML = __ndNow.issues;
+        if (issTitle) issTitle.textContent = __ndNow.issTitle;
+        if (issSub) issSub.textContent = __ndNow.issSub;
+        if (rollup) rollup.innerHTML = __ndNow.rollup;
         if (toolbar) toolbar.style.display = '';
         if (banner) banner.style.display = 'none';
         return;
@@ -7669,15 +7673,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var s = ND_SCAN_HISTORY[id];
       if (!s) return;
       table.innerHTML = ndRenderAttrs(s.attrs);
-      if (failed) failed.innerHTML = ndRenderFailed(s.failed);
-      if (failedSub) failedSub.textContent = s.failedSub;
       ndSetTabCount(s.attrs.length);
       if (s.meta) ndSetSummary(s.meta);
-      if (changed) changed.innerHTML = ndRenderChanged(s.attrs);
-      if (changedTitle) changedTitle.textContent = 'Deviations at this scan';
+      if (issues) issues.innerHTML = ndRenderIssues(s.attrs);
+      if (rollup) rollup.innerHTML = ndRenderRollup(s.attrs);
+      if (issTitle) issTitle.textContent = 'Issues at this scan';
       var devCount = s.attrs.filter(function (a) { return a.status !== 'ok'; }).length;
-      if (changedSub) changedSub.textContent = devCount + (devCount === 1 ? ' attribute differs from expected' : ' attributes differ from expected');
-      if (detailCard) detailCard.style.display = 'none';
+      var ctlCount = s.attrs.reduce(function (n, a) { return n + ((a.breaks || []).length); }, 0);
+      if (issSub) issSub.textContent = devCount
+        ? devCount + (devCount === 1 ? ' attribute out of policy · ' : ' attributes out of policy · ') + ctlCount + (ctlCount === 1 ? ' failing control' : ' failing controls')
+        : 'All monitored attributes match expected';
       if (toolbar) toolbar.style.display = 'none';
       var when = document.getElementById('nd-hist-when');
       if (when) when.textContent = s.when;
@@ -8015,16 +8020,41 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var tip = wrapper.querySelector('.nd-tooltip');
       if (tip) tip.style.display = 'none';
     }
-    function ndShowDetail(key) {
-      const d = ND_DATA[key];
-      document.getElementById('nd-detail-title').textContent = d.title;
-      const b = document.getElementById('nd-detail-before');
-      b.textContent = d.before; b.className = d.beforeCls;
-      const a = document.getElementById('nd-detail-after');
-      a.textContent = d.after; a.className = d.afterCls;
-      document.getElementById('nd-detail-desc').textContent = d.desc;
-      document.getElementById('nd-detail-viewchange').style.display = (key === 'defender') ? 'block' : 'none';
-      document.getElementById('nd-detail-card').style.display = 'block';
+    // The detail opens directly UNDER the row it belongs to. A single panel pinned to the
+    // bottom of the table only works while the list is short: on a node with hundreds of
+    // issues you would click a row and the answer would appear far below, off screen.
+    function ndToggleDetail(rowWrap, key) {
+      var next = rowWrap.nextElementSibling;
+      var wasOpen = next && next.classList.contains('nd-iss-detail');
+      ndCloseDetails();
+      if (wasOpen) return; // second click on the same row closes it
+      var d = ND_DATA[key];
+      if (!d) return;
+      var chev = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+      var el = document.createElement('div');
+      el.className = 'nd-iss-detail';
+      el.innerHTML = '<div class="nd-iss-detail-head">'
+        + '<span class="nd-iss-detail-title">' + d.title + '</span>'
+        + '<button class="nd-iss-detail-x" aria-label="Close" onclick="ndCloseDetails()">×</button></div>'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+        + '<span class="' + d.beforeCls + '">' + d.before + '</span>' + chev
+        + '<span class="' + d.afterCls + '">' + d.after + '</span></div>'
+        + '<div class="nd-iss-detail-desc">' + d.desc + '</div>'
+        + (key === 'defender' ? '<div style="margin-top:10px;"><button class="link-cta" onclick="goToDriftDetail(\'node-attributes\')"><span class="lc-txt">View change</span> <span class="arr">→</span></button></div>' : '');
+      rowWrap.insertAdjacentElement('afterend', el);
+      var row = rowWrap.querySelector('.nd-iss-row');
+      if (row) row.classList.add('nd-iss-row--open');
+      rowWrap.setAttribute('aria-expanded', 'true');
+      var btn = rowWrap.querySelector('.nd-iss-act button');
+      if (btn) btn.textContent = 'Hide';
+    }
+    function ndCloseDetails() {
+      var body = document.getElementById('nd-iss-body');
+      if (!body) return;
+      body.querySelectorAll('.nd-iss-detail').forEach(function (d) { d.remove(); });
+      body.querySelectorAll('.nd-iss-row--open').forEach(function (r) { r.classList.remove('nd-iss-row--open'); });
+      body.querySelectorAll('[aria-expanded]').forEach(function (w) { w.setAttribute('aria-expanded', 'false'); });
+      body.querySelectorAll('.nd-iss-act button').forEach(function (b) { b.textContent = 'Details'; });
     }
     </script>
 
