@@ -1345,6 +1345,28 @@ body.dark .btn-third { color:#FFFFFF; }
 .bdg--quiet,
 .drift-type, .rc-chg { padding:0; background:none; border-color:transparent; }
 
+/* ═══════════════════════════════════════════════════════════════════
+   CODE TAG — друга (і остання) родина чипів. Це НЕ бадж.
+   .bdg      = статус / класифікація → 9px UPPERCASE, пігулка
+   .code-tag = ЛІТЕРАЛЬНЕ значення, яке користувач вводить або звіряє
+               (назва колонки CSV, ServiceNow CI id) → моноширинний,
+               регістр зберігається, бо він значущий.
+   Канон баджів сюди НЕ застосовується: uppercase зламав би `node_group`.
+   ═══════════════════════════════════════════════════════════════════ */
+.code-tag {
+  display:inline-flex; align-items:center; white-space:nowrap;
+  font-family:'DM Mono',monospace; font-size:11px;
+  padding:2px 8px; border-radius:5px;
+  background:var(--bg-subtle); border:1px solid var(--border);
+  color:var(--text-default);
+}
+/* --status-danger-txt визначений лише для СВІТЛОЇ поверхні, а чип живе в обох темах,
+   тому маркер "required" бере червоний із канону баджів — він theme-aware */
+.code-tag--req { border-color:var(--bdg-red-bd); color:var(--bdg-red-txt); font-weight:500; }
+
+/* моноширинний інлайн у тексті — той самий шрифт, що й у чипа */
+code { font-family:'DM Mono',monospace; }
+
 /* ── SCAN ── */
 .scan-wrap { flex:1; display:flex; align-items:center; justify-content:center; background:var(--bg-page); padding:32px; }
 .scan-card {
@@ -2524,8 +2546,7 @@ body.dark #v-s-agentless .form-input { background:#0C2123 !important; }
 .cred-radio.active { color:var(--text-default);font-weight:600; }
 .cred-radio.active .radio-dot { border-color:var(--green1); }
 .cred-radio.active .radio-dot::after { content:'';width:8px;height:8px;border-radius:50%;background:var(--green1);display:block; }
-.csv-col { font-size:11px;font-family:ui-monospace,monospace;padding:3px 9px;border-radius:5px;background:var(--bg-canvas);border:1px solid var(--border);color:var(--text-default); }
-.csv-col-req { border-color:rgba(251,60,68,0.35);color:var(--status-danger-txt);font-weight:600; }
+/* .csv-col — див. .code-tag у канонічному блоці вище */
 /* .csv-badge — див. канонічний блок BADGE (квадрат 4px зведено до пігулки) */
 .region-pills { display:flex;flex-wrap:wrap;gap:8px; }
 .region-pill  { padding:6px 12px;border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:500;color:var(--text-sec);cursor:pointer;transition:all 0.15s; }
@@ -4235,7 +4256,7 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
             <div id="cred-sshkey-fields" style="display:none;">
               <div class="form-group">
                 <label class="form-label" for="al-key">Private key</label>
-                <textarea id="al-key" class="form-input" rows="3" placeholder="-----BEGIN OPENSSH PRIVATE KEY-----" style="resize:vertical;font-family:ui-monospace,monospace;font-size:12px;" oninput="alValidate()"></textarea>
+                <textarea id="al-key" class="form-input" rows="3" placeholder="-----BEGIN OPENSSH PRIVATE KEY-----" style="resize:vertical;font-family:'DM Mono',monospace;font-size:12px;" oninput="alValidate()"></textarea>
               </div>
               <div class="form-group">
                 <label class="form-label" for="al-key-pass">Key passphrase <span style="text-transform:none;font-weight:400;color:var(--text-sec);">(optional)</span></label>
@@ -6793,7 +6814,7 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
               <span style="font-size:13px;color:var(--text-default);font-weight:500;">MACBOOK-TARAS</span>
-              <span style="font-family:&#39;DM Mono&#39;,monospace;font-size:11px;color:var(--text-sec);background:var(--bg-subtle);border:1px solid var(--border);border-radius:4px;padding:2px 8px;">CI0043221</span>
+              <span class="code-tag">CI0043221</span>
               <span style="font-size:11px;color:var(--text-sec);">cmdb_ci_win_server</span>
             </div>
             <span style="font-size:11px;color:#15803d;font-weight:600;">● Linked</span>
@@ -19023,7 +19044,7 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
             <!-- Secret folders -->
             <div style="padding:20px 24px;background:var(--bg-canvas);">
               <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Secret folder paths</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;">Full path of the folder(s) that hold the secrets Guardian may use — e.g. <code style="font-family:ui-monospace,monospace;">\Personal Folders\Guardian</code>. Secrets in these folders appear when you pick a credential for a node.</div>
+              <div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;">Full path of the folder(s) that hold the secrets Guardian may use — e.g. <code>\Personal Folders\Guardian</code>. Secrets in these folders appear when you pick a credential for a node.</div>
               <div id="ss-folder-list"></div>
               <button onclick="ssAddFolder()" style="background:none;border:1px dashed rgba(63,200,120,0.4);border-radius:6px;font-size:11px;color:var(--green1);cursor:pointer;padding:6px 12px;display:flex;align-items:center;gap:5px;margin-top:4px;">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -19996,17 +20017,17 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
             <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px;">
               <div style="font-size:11px;font-weight:600;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Columns</div>
               <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                <span class="csv-col csv-col-req">name *</span>
-                <span class="csv-col csv-col-req">hostname *</span>
-                <span class="csv-col">os</span>
-                <span class="csv-col">protocol</span>
-                <span class="csv-col">port</span>
-                <span class="csv-col">environment</span>
-                <span class="csv-col">node_group</span>
-                <span class="csv-col">description</span>
-                <span class="csv-col">external_id</span>
+                <span class="code-tag code-tag--req">name *</span>
+                <span class="code-tag code-tag--req">hostname *</span>
+                <span class="code-tag">os</span>
+                <span class="code-tag">protocol</span>
+                <span class="code-tag">port</span>
+                <span class="code-tag">environment</span>
+                <span class="code-tag">node_group</span>
+                <span class="code-tag">description</span>
+                <span class="code-tag">external_id</span>
               </div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:8px;line-height:1.5;"><span style="color:#FB3C44;font-weight:700;">*</span> required. <code style="font-family:ui-monospace,monospace;">protocol</code> is WinRM or SSH (inferred from <code style="font-family:ui-monospace,monospace;">os</code> if blank); <code style="font-family:ui-monospace,monospace;">port</code> defaults per protocol. <code style="font-family:ui-monospace,monospace;">external_id</code> (e.g. a CMDB ref) is used to match existing nodes.</div>
+              <div style="font-size:11px;color:var(--text-sec);margin-top:8px;line-height:1.5;"><span style="color:var(--bdg-red-txt);font-weight:700;">*</span> required. <code>protocol</code> is WinRM or SSH (inferred from <code>os</code> if blank); <code>port</code> defaults per protocol. <code>external_id</code> (e.g. a CMDB ref) is used to match existing nodes.</div>
             </div>
           </div>
 
