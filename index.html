@@ -4058,6 +4058,152 @@ body.dark .gm-step.is-done .gm-step-label { color:#F8FAFC; font-weight:600; }
 .gm-x { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 20px; line-height: 1; margin: -4px -6px 0 0; padding: 0; }
 .gm-x:hover { background: var(--bg-canvas); color: var(--text-default); }
 .gm-body { padding: 14px 24px 4px; overflow-y: auto; flex: 1 1 auto; }
+/* ── Canonical modal inputs ────────────────────────────────────────────────
+   Figma 3023:4716 — Input / Description, White + Dark.
+   Covers every text-like field inside the shared modal shell. Dropdowns,
+   search controls and compact table-cell editors keep their own patterns. */
+.gm-overlay {
+  --gm-input-bg:#F1F5F9;
+  --gm-input-border:#E2E8F0;
+  --gm-input-text:#0F172A;
+  --gm-input-placeholder:#657387;
+  --gm-input-label:#94A3B8;
+  --gm-input-focus-bg:#FFFFFF;
+  --gm-input-focus-border:rgba(16,185,129,0.60);
+  --gm-input-focus-ring:rgba(16,185,129,0.12);
+}
+body.dark .gm-overlay {
+  --gm-input-bg:rgba(255,255,255,0.05);
+  --gm-input-border:rgba(255,255,255,0.10);
+  --gm-input-text:#F8FAFC;
+  --gm-input-placeholder:#657387;
+  --gm-input-focus-bg:rgba(255,255,255,0.05);
+  --gm-input-focus-border:rgba(16,185,129,0.40);
+}
+.gm-overlay :is(
+  .form-label,
+  .icx-label,
+  .gm-input-label,
+  label:not(.gm-radio-card):has(+ input:not([type])),
+  label:not(.gm-radio-card):has(+ input:is([type="text"],[type="email"],[type="password"],[type="url"],[type="number"],[type="date"],[type="time"])),
+  label:not(.gm-radio-card):has(+ textarea)
+) {
+  display:block !important;
+  margin-bottom:6px !important;
+  color:var(--gm-input-label) !important;
+  font-family:'DM Sans',sans-serif !important;
+  font-size:11px !important;
+  font-weight:600 !important;
+  line-height:normal !important;
+  letter-spacing:0 !important;
+  text-transform:uppercase !important;
+}
+.gm-overlay :is(
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  .icx-input
+):not(.fm-edit-input):not(.app-search-input):not([id*="search"]):not([placeholder*="search" i]) {
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid var(--gm-input-border) !important;
+  border-radius:10px;
+  background:var(--gm-input-bg) !important;
+  color:var(--gm-input-text) !important;
+  font-family:'DM Sans',sans-serif !important;
+  font-size:13px !important;
+  font-weight:400 !important;
+  line-height:normal;
+  outline:none;
+  transition:background-color .15s,border-color .15s,box-shadow .15s;
+}
+.gm-overlay :is(
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  .icx-input:not(textarea)
+):not(.fm-edit-input):not(.app-search-input):not([id*="search"]):not([placeholder*="search" i]) {
+  height:38px;
+  padding:0 14px;
+}
+.gm-overlay textarea:not(.fm-edit-input) {
+  min-height:74px;
+  padding:10px 14px;
+  resize:vertical;
+}
+.gm-overlay :is(
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  .icx-input
+):not(.fm-edit-input):not(.app-search-input):not([id*="search"]):not([placeholder*="search" i])::placeholder {
+  color:var(--gm-input-placeholder) !important;
+  opacity:1;
+}
+.gm-overlay :is(
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  .icx-input
+):not(.fm-edit-input):not(.app-search-input):not([id*="search"]):not([placeholder*="search" i]):not(:disabled):is(:hover,:focus) {
+  border-color:var(--gm-input-focus-border) !important;
+  background:var(--gm-input-focus-bg) !important;
+  box-shadow:0 0 0 3px var(--gm-input-focus-ring) !important;
+}
+.gm-overlay :is(
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  .icx-input
+):not(.fm-edit-input):not(.app-search-input):not([id*="search"]):not([placeholder*="search" i]):disabled {
+  opacity:.55;
+  cursor:not-allowed;
+  box-shadow:none !important;
+}
+.gm-overlay :is(.helper-text,.icx-hint,.gm-input-helper) {
+  margin-top:6px;
+  color:#94A3B8;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  font-weight:400;
+  line-height:normal;
+}
+.gm-overlay .gm-input-counter {
+  margin-top:4px;
+  color:#657387;
+  font-size:10px;
+  line-height:normal;
+  text-align:right;
+}
 #export-modal .gm-body { padding-bottom:24px; }
 body.dark #export-modal .export-file-card { background:#133033 !important; border-color:#42595C !important; }
 .gm-foot { display: flex; align-items: center; gap: 8px; padding: 10px 24px 12px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; justify-content: flex-end; }
