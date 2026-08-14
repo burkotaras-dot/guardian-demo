@@ -124,9 +124,7 @@ The in-strip content action is DS §6.5 **Primary, size s** — `.btn-primary.bt
 (32px, `padding:0 20px`, DM Sans 600/12, radius 10, gradient + `0 4px 7px rgba(16,185,129,.3)`).
 Do not substitute the modal-footer `.gm-btn-primary` component, and do not restore the old
 full-width `.btn-primary--large` action.
-Its canonical four-step `gm-stepper` is Add node → Connect → Scan → Results. Do not route these first selection screens back to
-the legacy full-page `v-s02` / `v-s-method` views. The complex agentless setup remains a
-documented full-page exception after the method has been chosen.
+Its canonical four-step `gm-stepper` is Add node → Connect → Scan → Results. Do not route these selection screens back to the legacy full-page `v-s02`, `v-s-method` or `v-s-agentless` views. Choosing `Agentless scan` opens the canonical 600px Connect modal (`#agentless-setup-overlay`, Figma `3171:12282`) with Target, Connection Manager Group and Credentials sections; preserve the same stepper and modal footer.
 
 **Dark mode needs no overrides.** Colour comes from tokens (`--bdg-{colour}-txt|-bg|-bd`,
 light `index.html:165`, dark `index.html:2642`), so `body.dark` badge rules are obsolete and
@@ -148,6 +146,10 @@ Use `openModal()` and `.gm-foot`; source of truth is Figma component set `3023:5
 Third pattern `[32px arrow square] Back`; never hand-code `← Back` in `footerLeftHtml`. Primary and
 optional supportive secondary belong in `.gm-foot-right`, with Primary last. `Cancel`/`Close` remain
 neutral; warning/destructive buttons keep their semantic colour.
+
+Credential selection inside modal wizards must use the custom dropdown pattern from Figma `3171:13726`
+(status dot + two-line credential identity + canonical status badge). Do not use a native `<select>`
+popup for these fields; it cannot match the product styling across browsers or themes.
 
 **The only other chip family is `.code-tag`** (`index.html:1348`) — a *literal value* the user types
 or verifies (CSV column name, ServiceNow CI id). DM Mono 11px, case preserved, radius 5px. The badge

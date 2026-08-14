@@ -51,7 +51,7 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 **Add Node / Step 2 method cards.** Sources of truth — Figma `3164:10368` Light та `3164:10455` Dark. Після **Add Manually** крок 1 завжди показує detected OS / OS cards; лише після вибору ОС крок 2 показує `Install an agent` та `Agentless scan`. Не міняти ці екрани місцями. Method grid `268px 268px`, gap `14px`; card `268 × 204px`, padding `20px`, radius `14px`, icon container `44px` / icon `22px` / radius `12px`, icon `#3FC878` на `rgba(63,200,120,.10)`, title offset `14px` (`DM Sans 700 14/18`), description offset `4px`, meta offset `14px` (`600 12/16`). Light Default — surface `#F8FAFC`, border `1px solid #E2E8F0`, description `#475569` `11/18`; Light Hover — surface `#EDF9F4`, border `1px solid #10B981`, без shadow. Dark Default — surface `#123336` без видимого border, description `#CBD5E1` `12/18`; Dark Hover — success surface/border без shadow. Від нижнього краю карток до footer divider завжди рівно `18px` у двох темах. Method-step shell `600 × 433px` (body `242px`); Back повертає до вибору ОС.
 
 **Exceptions.**
-- **Add node agentlessly після вибору методу** (`v-s-agentless` та connect-test) — поки full-page. Обґрунтування: складний багатосекційний onboarding (Target / CM / Credentials) + connect-test engine. Source choice, OS і method вже перенесені в overlay; detected-OS geometry звірена з Figma `3165:10694`.
+- **Add node agentlessly після вибору методу** — крок `Connect` є canonical overlay `#agentless-setup-overlay` за Figma `3171:12282`: 600 px shell, `Add node → Connect → Scan → Results`, секції Target / Connection Manager Group / Credentials і footer Back / Primary. Старий `v-s-agentless` лишається тільки як прихований DOM/data fallback для prototype engine; напряму з картки методу на нього не навігуємо.
 - Нові винятки додавати сюди ЛИШЕ з явним обґрунтуванням і рішенням user.
 
 **Порушники, які треба привести до правила:**
@@ -1106,6 +1106,15 @@ ServiceNow CI id, шлях до папки секретів), подається
 визначений лише для світлої поверхні (§5.6), а чип живе в обох темах.
 
 **Reference.** `index.html:1348`.
+
+### Modal credential dropdown
+
+The Agentless Connect credential field follows Figma `3171:13726`. It is a custom product dropdown,
+not a native `<select>` popup: the trigger uses the modal-input geometry, while the menu is full-width,
+8px radius, 1px border, clipped rows with 14px horizontal / 8px vertical padding. Each row contains a
+10px status dot, credential name (DM Sans 600/13), type + account (DM Sans 400/11), and the canonical
+status badge. Rows use the global dropdown hover/selected tokens in both themes. Native OS option menus
+must not be used for credential selection in modal windows.
 
 **Examples.** CSV-імпорт «Columns» (9 чипів) · ServiceNow CI id у `v-node-detail`. Інлайн-`<code>`
 у тексті ділить із чипом шрифт через глобальне правило `code { font-family:'DM Mono' }`.
