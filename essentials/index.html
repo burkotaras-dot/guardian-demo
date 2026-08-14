@@ -3722,12 +3722,95 @@ body.dark #v-remediation #remed-result-block [style*="color:var(--p-neutral-600)
 body.dark #v-remediation #remed-result-block [style*="color:var(--p-neutral-500)"] { color: var(--p-neutral-400) !important; }
 body.dark #v-remediation #remed-result-block [style*="stroke:#64748b"] { stroke: var(--p-neutral-400) !important; }
 
-/* Add Device modal */
-body.dark #add-device-modal > div { background: var(--bg-card) !important; }
-/* Cards only (grid children) — not the title wrapper */
-body.dark #add-device-modal > div > div:last-child > div { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.08) !important; }
-body.dark #add-device-modal > div > div:last-child > div:nth-child(1):hover { border-color: #3FC878 !important; background: rgba(63,200,120,0.07) !important; }
-body.dark #add-device-modal > div > div:last-child > div:nth-child(2):hover { border-color: #3B82F6 !important; background: rgba(59,130,246,0.07) !important; }
+/* Add Node modal — one horizontal option-card pattern for every source. */
+#add-device-modal { padding:20px; }
+.add-node-dialog {
+  box-sizing:border-box;
+  width:600px;
+  max-width:100%;
+  max-height:calc(100vh - 40px);
+  overflow-y:auto;
+  padding:24px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--bg-surface);
+  box-shadow:0 20px 60px rgba(0,0,0,.28);
+  animation:fadeUp .2s ease;
+}
+.add-node-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:20px; }
+.add-node-title { color:var(--text-default); font-size:18px; font-weight:700; line-height:1.3; letter-spacing:-.3px; }
+.add-node-subtitle { margin-top:4px; color:var(--text-sec); font-size:12px; line-height:1.5; }
+.add-node-close {
+  width:28px;
+  height:28px;
+  display:flex;
+  flex:0 0 28px;
+  align-items:center;
+  justify-content:center;
+  margin:-2px -4px 0 0;
+  padding:0;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:var(--text-sec);
+  cursor:pointer;
+}
+.add-node-close:hover { background:var(--bg-canvas); color:var(--text-default); }
+.add-node-options { display:flex; flex-direction:column; gap:14px; }
+.add-node-option {
+  box-sizing:border-box;
+  width:100%;
+  min-height:102px;
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr) auto;
+  align-items:center;
+  column-gap:16px;
+  padding:18px 20px;
+  border:1px solid #E2E8F0;
+  border-radius:14px;
+  background:#F8FAFC;
+  color:var(--text-default);
+  font-family:'DM Sans',sans-serif;
+  text-align:left;
+  cursor:pointer;
+  appearance:none;
+  transition:background-color .15s,border-color .15s,box-shadow .15s,transform .15s;
+}
+.add-node-option--manual { border-color:#10B981; }
+.add-node-option--cloud { border-color:#3B82F6; }
+.add-node-option:hover { background:#EDF9F4; border-color:rgba(16,185,129,.60); transform:translateY(-1px); }
+.add-node-option--cloud:hover { border-color:#3B82F6; background:rgba(59,130,246,.06); }
+.add-node-option:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(16,185,129,.14); }
+.add-node-icon {
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  flex-shrink:0;
+}
+.add-node-icon--green { background:rgba(16,185,129,.10); color:#26A257; }
+.add-node-icon--blue { background:rgba(59,130,246,.10); color:#3B82F6; }
+.add-node-icon--purple { background:rgba(139,92,246,.10); color:#8B5CF6; }
+.add-node-copy { min-width:0; }
+.add-node-option-title { display:block; margin-bottom:3px; color:var(--text-default); font-size:13px; font-weight:700; line-height:1.35; }
+.add-node-option-description { display:block; color:var(--text-sec); font-size:12px; font-weight:400; line-height:1.45; }
+.add-node-card-cta {
+  justify-self:end;
+  white-space:nowrap;
+}
+body.dark .add-node-dialog { background:var(--bg-card); border-color:#04363A; }
+body.dark .add-node-option { background:#133033; border-color:#42595C; }
+body.dark .add-node-option--manual { border-color:rgba(16,185,129,.60); }
+body.dark .add-node-option--cloud { border-color:#3B82F6; }
+body.dark .add-node-option:hover { background:rgba(16,185,129,.10); border-color:rgba(16,185,129,.60); }
+body.dark .add-node-option--cloud:hover { background:rgba(59,130,246,.10); border-color:#3B82F6; }
+@media (max-width:640px) {
+  .add-node-dialog { padding:20px; }
+  .add-node-option { grid-template-columns:44px minmax(0,1fr); padding:16px; }
+  .add-node-card-cta { grid-column:2; justify-self:start; margin-top:8px; }
+}
 
 /* Search overlay */
 body.dark #search-overlay > div { background: var(--p-dark-surface) !important; border-color: #143A2F !important; }
@@ -21258,57 +21341,61 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
      ADD DEVICE MODAL
 ═══════════════════════════════════════ -->
 <div id="add-device-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;">
-  <div style="background:var(--bg-surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:520px;max-width:calc(100vw - 40px);padding:32px;animation:fadeUp 0.2s ease;">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;">
+  <div class="add-node-dialog" role="dialog" aria-modal="true" aria-labelledby="add-node-title">
+    <div class="add-node-head">
       <div>
-        <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Add Node</div>
-        <div style="font-size:12px;color:var(--text-sec);margin-top:4px;">Choose how you want to add nodes to Guardian</div>
+        <div class="add-node-title" id="add-node-title">Add Node</div>
+        <div class="add-node-subtitle">Choose how you want to add nodes to Guardian</div>
       </div>
-      <button onclick="closeAddDeviceModal()" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text-sec);">
+      <button class="add-node-close" onclick="closeAddDeviceModal()" aria-label="Close Add Node dialog">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div class="add-node-options">
       <!-- Option 1: Add manually -->
-      <div onclick="closeAddDeviceModal();go(&#39;s02&#39;);" style="border:2px solid var(--border);border-radius:12px;padding:20px 16px;cursor:pointer;transition:all 0.15s;text-align:center;" onmouseover="this.style.borderColor=&#39;#3FC878&#39;;this.style.background=&#39;rgba(63,200,120,0.06)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#26A257" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:6px;">Add Manually</div>
-        <div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Deploy Guardian agent or agentless scan on Windows, Mac, or Linux</div>
-        <div style="margin-top:12px;font-size:11px;font-weight:600;color:#26A257;">Agent · Agentless →</div>
-      </div>
+      <button class="add-node-option add-node-option--manual" onclick="closeAddDeviceModal();go(&#39;s02&#39;);">
+        <span class="add-node-icon add-node-icon--green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+        </span>
+        <span class="add-node-copy">
+          <span class="add-node-option-title">Add Manually</span>
+          <span class="add-node-option-description">Deploy Guardian agent or agentless scan on Windows, Mac, or Linux</span>
+        </span>
+        <span class="link-cta add-node-card-cta"><span class="lc-txt">Agent · Agentless</span><span class="arr" aria-hidden="true">→</span></span>
+      </button>
       <!-- Option 2: Add from Cloud -->
-      <div onclick="closeAddDeviceModal();go(&#39;j3-connect&#39;);" style="border:2px solid var(--border);border-radius:12px;padding:20px 16px;cursor:pointer;transition:all 0.15s;text-align:center;" onmouseover="this.style.borderColor=&#39;#3B82F6&#39;;this.style.background=&#39;rgba(59,130,246,0.06)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"></path></svg>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:6px;">Add from Cloud</div>
-        <div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Connect AWS or Azure to auto-discover and import EC2, ECS, EKS, RDS nodes</div>
-        <div style="margin-top:12px;font-size:11px;font-weight:600;color:var(--status-info);">AWS · Azure →</div>
-      </div>
+      <button class="add-node-option add-node-option--cloud" onclick="closeAddDeviceModal();go(&#39;j3-connect&#39;);">
+        <span class="add-node-icon add-node-icon--blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"></path></svg>
+        </span>
+        <span class="add-node-copy">
+          <span class="add-node-option-title">Add from Cloud</span>
+          <span class="add-node-option-description">Connect AWS or Azure to auto-discover and import EC2, ECS, EKS, RDS nodes</span>
+        </span>
+        <span class="link-cta add-node-card-cta"><span class="lc-txt">AWS · Azure</span><span class="arr" aria-hidden="true">→</span></span>
+      </button>
       <!-- Option 3: Bulk import from ServiceNow -->
-      <div onclick="closeAddDeviceModal();go(&#39;cmdb-connect&#39;);" style="grid-column:1/-1;border:2px solid var(--border);border-radius:12px;padding:18px 16px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:14px;text-align:left;" onmouseover="this.style.borderColor=&#39;#8B5CF6&#39;;this.style.background=&#39;rgba(139,92,246,0.06)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:3px;">Bulk import from ServiceNow</div>
-          <div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Pull nodes from your ServiceNow CMDB into Detected, scanned via a Connection Manager. Needs a CM set up.</div>
-        </div>
-        <div style="font-size:11px;font-weight:600;color:#8B5CF6;white-space:nowrap;">ServiceNow CMDB →</div>
-      </div>
+      <button class="add-node-option" onclick="closeAddDeviceModal();go(&#39;cmdb-connect&#39;);">
+        <span class="add-node-icon add-node-icon--purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg>
+        </span>
+        <span class="add-node-copy">
+          <span class="add-node-option-title">Bulk import from ServiceNow</span>
+          <span class="add-node-option-description">Pull nodes from your ServiceNow CMDB into Detected, scanned via a Connection Manager. Needs a CM set up.</span>
+        </span>
+        <span class="link-cta add-node-card-cta"><span class="lc-txt">ServiceNow CMDB</span><span class="arr" aria-hidden="true">→</span></span>
+      </button>
       <!-- Option 4: Import from CSV -->
-      <div onclick="closeAddDeviceModal();go(&#39;csv-import&#39;);" style="grid-column:1/-1;border:2px solid var(--border);border-radius:12px;padding:18px 16px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:14px;text-align:left;" onmouseover="this.style.borderColor=&#39;#3FC878&#39;;this.style.background=&#39;rgba(63,200,120,0.06)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#26A257" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:3px;">Import from CSV</div>
-          <div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Upload a spreadsheet of nodes. Validated and added straight to Guardian.</div>
-        </div>
-        <div style="font-size:11px;font-weight:600;color:#26A257;white-space:nowrap;">CSV upload →</div>
-      </div>
+      <button class="add-node-option" onclick="closeAddDeviceModal();go(&#39;csv-import&#39;);">
+        <span class="add-node-icon add-node-icon--green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg>
+        </span>
+        <span class="add-node-copy">
+          <span class="add-node-option-title">Import from CSV</span>
+          <span class="add-node-option-description">Upload a spreadsheet of nodes. Validated and added straight to Guardian.</span>
+        </span>
+        <span class="link-cta add-node-card-cta"><span class="lc-txt">CSV upload</span><span class="arr" aria-hidden="true">→</span></span>
+      </button>
     </div>
   </div>
 </div>
