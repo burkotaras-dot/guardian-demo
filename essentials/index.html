@@ -3961,6 +3961,97 @@ body.dark .add-node-flow .os-card:hover {
 body.dark .add-node-method-card { background:#123336; border-color:transparent; }
 body.dark .add-node-method-description { color:#CBD5E1; font-size:12px; }
 body.dark .add-node-method-card:hover { background:rgba(16,185,129,.10); border-color:rgba(16,185,129,.60); box-shadow:none; }
+
+/* Add Node / Agentless Connect — Figma 3171:12282 (light + dark).
+   The card is the canonical 600px wizard shell: 74px head, 54px stepper,
+   scrollable content and a 63px footer. */
+.gm-agentless-setup.gm-card {
+  width:600px;
+  box-sizing:border-box;
+  height:min(976px,calc(100vh - 40px));
+  max-height:calc(100vh - 40px);
+}
+.gm-agentless-setup .gm-head { flex:0 0 74px; height:74px; box-sizing:border-box; }
+.gm-agentless-setup .gm-stepper { flex:0 0 54px; height:54px; box-sizing:border-box; }
+.gm-agentless-setup .gm-body { padding:20px 0 10px; }
+.gm-agentless-setup .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
+.agentless-modal-section { padding:0 24px; }
+.agentless-modal-section + .agentless-modal-section { margin-top:20px; }
+.agentless-modal-section--target { padding-bottom:16px; border-bottom:1px solid #E2E8F0; }
+.agentless-modal-heading { margin:0; color:var(--text-default); font-size:14px; font-weight:700; line-height:18px; }
+.agentless-modal-sub { margin:6px 0 0; color:#475569; font-size:12px; line-height:16px; }
+.agentless-modal-field { margin-top:20px; }
+.agentless-modal-row { display:grid; grid-template-columns:357px 185px; gap:8px; }
+.agentless-modal-hint { margin-top:10px; color:#475569; font-size:11px; line-height:16px; }
+.agentless-modal-radios { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+.agentless-modal-radios .gm-radio-card { height:63px; min-height:63px; }
+.agentless-modal-rec {
+  margin-left:auto; padding:2px 8px; border-radius:999px;
+  background:rgba(16,185,129,.10); color:#059669;
+  font-size:9px; font-weight:700; line-height:14px; text-transform:uppercase;
+}
+.agentless-modal-link {
+  display:inline-flex; margin-top:8px; padding:0; border:0; background:none;
+  color:#059669; font:600 11px/16px 'DM Sans',sans-serif; cursor:pointer;
+}
+.agentless-modal-tabs { width:100% !important; margin-top:12px; }
+.agentless-modal-tabs .gm-tab { flex:1 1 50% !important; }
+.agentless-modal-credential { margin-top:12px; }
+.agentless-credential-picker { position:relative; width:100%; }
+.agentless-modal-select {
+  width:100%; height:38px; box-sizing:border-box; padding:0 14px;
+  display:flex; align-items:center; gap:8px; text-align:left;
+  border:1px solid var(--gm-input-border); border-radius:10px;
+  background-color:var(--gm-input-bg); color:var(--gm-input-text);
+  font:400 13px/normal 'DM Sans',sans-serif; outline:none; cursor:pointer;
+}
+.agentless-modal-select:hover,.agentless-modal-select:focus {
+  border-color:var(--gm-input-focus-border); box-shadow:0 0 0 3px var(--gm-input-focus-ring);
+}
+.agentless-modal-select.is-open { border-color:var(--gm-input-focus-border); }
+.agentless-modal-select-label { min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.agentless-modal-select-label.is-placeholder { color:var(--text-sec); }
+.agentless-modal-select .cvp-dot { width:10px; height:10px; flex:0 0 10px; }
+.agentless-modal-select-chevron { width:14px; height:14px; margin-left:auto; flex:0 0 14px; color:#94A3B8; transition:transform .15s; }
+.agentless-modal-select.is-open .agentless-modal-select-chevron { transform:rotate(180deg); }
+.agentless-credential-menu {
+  position:absolute; z-index:80; top:calc(100% + 6px); left:0; width:100%;
+  box-sizing:border-box; overflow:hidden; border:1px solid #E2E8F0; border-radius:8px;
+  background:#FFF; box-shadow:0 12px 28px rgba(15,23,42,.16);
+}
+.agentless-credential-menu[hidden] { display:none; }
+.agentless-credential-option {
+  width:100%; min-height:49px; box-sizing:border-box; padding:8px 14px;
+  display:flex; align-items:center; gap:8px; border:0; border-bottom:1px solid #E2E8F0;
+  background:#FFF; color:#0F172A; font-family:'DM Sans',sans-serif; text-align:left; cursor:pointer;
+}
+.agentless-credential-option:last-child { border-bottom:0; }
+.agentless-credential-option .cvp-dot { width:10px; height:10px; flex:0 0 10px; }
+.agentless-credential-copy { min-width:0; flex:1; display:flex; flex-direction:column; align-items:flex-start; }
+.agentless-credential-name { display:block; max-width:100%; overflow:hidden; color:#0F172A; font-size:13px; font-weight:600; line-height:normal; text-overflow:ellipsis; white-space:nowrap; }
+.agentless-credential-meta { display:block; max-width:100%; height:16px; padding-top:2px; overflow:hidden; color:#475569; font-size:11px; font-weight:400; line-height:normal; text-overflow:ellipsis; white-space:nowrap; }
+.agentless-credential-option .cred-badge { flex-shrink:0; }
+.agentless-credential-option:hover,
+.agentless-credential-option.is-selected { background:var(--dropdown-option-hover); }
+.agentless-credential-empty { padding:12px 14px; color:var(--text-sec); font-size:12px; line-height:1.5; }
+.agentless-modal-required { display:flex; align-items:center; gap:7px; margin-top:14px; color:#475569; font-size:11px; line-height:16px; }
+.agentless-modal-required::before { content:''; width:7px; height:7px; border:1px solid #94A3B8; border-radius:50%; flex:0 0 7px; }
+body.dark .agentless-modal-section--target { border-bottom-color:#04363A; }
+body.dark .agentless-modal-sub,
+body.dark .agentless-modal-hint,
+body.dark .agentless-modal-required { color:#CBD5E1; }
+body.dark .agentless-modal-rec { background:rgba(16,185,129,.15); color:#6EE7B7; }
+body.dark .agentless-modal-select,
+body.dark .agentless-credential-menu,
+body.dark .agentless-credential-option { background:#133033; border-color:#42595C; }
+body.dark .agentless-credential-name { color:#F8FAFC; }
+body.dark .agentless-credential-meta { color:#CBD5E1; }
+body.dark .agentless-credential-option:hover,
+body.dark .agentless-credential-option.is-selected { background:var(--dropdown-option-hover); }
+@media (max-width:640px) {
+  .gm-agentless-setup.gm-card { width:100%; height:calc(100vh - 40px); }
+  .agentless-modal-row { grid-template-columns:minmax(0,1fr) 110px; }
+}
 @media (max-width:640px) {
   .gm-add-node-wizard.gm-card { width:100%; height:auto; }
   .gm-add-node-wizard.is-method-step { height:auto; }
@@ -24839,8 +24930,181 @@ function addNodeChooseOS(os) {
 }
 function addNodeFinishMethod(method) {
   closeModal('add-node-wizard-overlay');
-  if (method === 'agentless') { selectedCM = null; go('s-agentless'); }
+  if (method === 'agentless') { selectedCM = null; openAgentlessSetupModal(); }
   else { go('s05'); }
+}
+function openAddNodeMethodStep() {
+  openAddNodeWizard();
+  var ov = document.getElementById('add-node-wizard-overlay');
+  if (!ov) return;
+  ov.querySelector('.gm-card').classList.add('is-method-step');
+  gmGoStep('add-node-wizard-overlay', 1);
+}
+function agentlessModalCredentials(kind) {
+  var ov = document.getElementById('agentless-setup-overlay');
+  if (!ov) return;
+  ov.querySelectorAll('[data-agentless-cred-tab]').forEach(function(btn) {
+    var active = btn.getAttribute('data-agentless-cred-tab') === kind;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  var picker = ov.querySelector('#agentless-modal-credential-picker');
+  var value = ov.querySelector('#agentless-modal-credential');
+  if (!picker || !value || typeof CREDENTIALS === 'undefined') return;
+  picker.setAttribute('data-kind', kind);
+  var unreachable = ['invalid','expired','cannot-connect','insufficient'];
+  var list = CREDENTIALS.filter(function(c) {
+    if (selectedCM && c.cm !== selectedCM) return false;
+    return kind === 'ready' ? unreachable.indexOf(c.status) === -1 : unreachable.indexOf(c.status) !== -1;
+  });
+  picker._credentials = list;
+  if (value.value && !list.some(function(c){ return c.id === value.value; })) {
+    value.value = '';
+    agentlessModalCredentialLabel(null);
+  }
+  agentlessModalCredentialRender();
+  agentlessModalCredentialClose();
+}
+function agentlessModalCredentialLabel(credential) {
+  var label = document.getElementById('agentless-modal-credential-label');
+  if (!label) return;
+  if (!credential) {
+    label.className = 'agentless-modal-select-label is-placeholder';
+    label.textContent = 'Select a credential…';
+    return;
+  }
+  var st = (typeof CRED_STATUS !== 'undefined' && CRED_STATUS[credential.status]) || { dot:'#94A3B8' };
+  label.className = 'agentless-modal-select-label';
+  label.innerHTML = '<span class="cvp-dot" style="display:inline-block;vertical-align:-1px;margin-right:8px;background:' + st.dot + '"></span>'
+    + credential.name + ' · ' + credential.type + ' · ' + credential.user;
+}
+function agentlessModalCredentialRender() {
+  var picker = document.getElementById('agentless-modal-credential-picker');
+  var menu = document.getElementById('agentless-modal-credential-menu');
+  var value = document.getElementById('agentless-modal-credential');
+  if (!picker || !menu || !value) return;
+  var list = picker._credentials || [];
+  if (!list.length) {
+    menu.innerHTML = '<div class="agentless-credential-empty">No credentials are available for this Connection Manager.</div>';
+    return;
+  }
+  menu.innerHTML = list.map(function(c) {
+    var st = (typeof CRED_STATUS !== 'undefined' && CRED_STATUS[c.status]) || { label:c.status, dot:'#94A3B8' };
+    return '<button type="button" role="option" aria-selected="' + (value.value === c.id ? 'true' : 'false') + '" class="agentless-credential-option dropdown-option' + (value.value === c.id ? ' is-selected' : '') + '" onclick="agentlessModalCredentialPick(\'' + c.id + '\')">'
+      + '<span class="cvp-dot" style="background:' + st.dot + '"></span>'
+      + '<span class="agentless-credential-copy"><span class="agentless-credential-name">' + c.name + '</span><span class="agentless-credential-meta">' + c.type + ' - ' + c.user + '</span></span>'
+      + '<span class="cred-badge" data-s="' + c.status + '">' + st.label + '</span></button>';
+  }).join('');
+}
+function agentlessModalCredentialToggle(event) {
+  if (event) event.stopPropagation();
+  var trigger = document.getElementById('agentless-modal-credential-trigger');
+  var menu = document.getElementById('agentless-modal-credential-menu');
+  if (!trigger || !menu) return;
+  var opening = menu.hidden;
+  if (!opening) { agentlessModalCredentialClose(); return; }
+  agentlessModalCredentialRender();
+  menu.hidden = false;
+  trigger.classList.add('is-open');
+  trigger.setAttribute('aria-expanded','true');
+  setTimeout(function(){ document.addEventListener('click', agentlessModalCredentialOutside); },0);
+}
+function agentlessModalCredentialOutside(event) {
+  var picker = document.getElementById('agentless-modal-credential-picker');
+  if (picker && picker.contains(event.target)) return;
+  agentlessModalCredentialClose();
+}
+function agentlessModalCredentialClose() {
+  var trigger = document.getElementById('agentless-modal-credential-trigger');
+  var menu = document.getElementById('agentless-modal-credential-menu');
+  if (menu) menu.hidden = true;
+  if (trigger) {
+    trigger.classList.remove('is-open');
+    trigger.setAttribute('aria-expanded','false');
+  }
+  document.removeEventListener('click', agentlessModalCredentialOutside);
+}
+function agentlessModalCredentialPick(id) {
+  var picker = document.getElementById('agentless-modal-credential-picker');
+  var value = document.getElementById('agentless-modal-credential');
+  if (!picker || !value) return;
+  var credential = (picker._credentials || []).filter(function(c){ return c.id === id; })[0];
+  if (!credential) return;
+  value.value = credential.id;
+  agentlessModalCredentialLabel(credential);
+  agentlessModalCredentialRender();
+  agentlessModalCredentialClose();
+}
+function agentlessModalSelectCM(id) {
+  selectedCM = id;
+  var ov = document.getElementById('agentless-setup-overlay');
+  if (!ov) return;
+  ov.querySelectorAll('[data-agentless-cm]').forEach(function(card) {
+    var active = card.getAttribute('data-agentless-cm') === id;
+    card.classList.toggle('is-selected', active);
+    var input = card.querySelector('input[type="radio"]');
+    if (input) input.checked = active;
+  });
+  agentlessModalCredentials('ready');
+}
+function agentlessModalContinue() {
+  var ov = document.getElementById('agentless-setup-overlay');
+  if (!ov) return;
+  var pairs = [
+    ['agentless-modal-name','al-name'],
+    ['agentless-modal-host','al-host'],
+    ['agentless-modal-port','al-port'],
+    ['agentless-modal-credential','al-secret']
+  ];
+  pairs.forEach(function(pair) {
+    var from = document.getElementById(pair[0]);
+    var to = document.getElementById(pair[1]);
+    if (from && to) to.value = from.value;
+  });
+  var vaultTab = document.getElementById('cred-tab-manager');
+  if (vaultTab && !vaultTab.classList.contains('active')) setCredMode('manager');
+  closeModal('agentless-setup-overlay');
+  go('s-connect-test');
+}
+function openAgentlessSetupModal() {
+  var groups = (typeof CONNECTION_MANAGERS !== 'undefined') ? CONNECTION_MANAGERS.filter(_cmCompatible) : [];
+  var recId = (typeof recommendedCMId === 'function') ? recommendedCMId() : (groups[0] && groups[0].id);
+  if (!groups.length && typeof CONNECTION_MANAGERS !== 'undefined') groups = CONNECTION_MANAGERS.slice(0,2);
+  if (!selectedCM) selectedCM = recId || (groups[0] && groups[0].id) || null;
+  var cmHtml = groups.slice(0,2).map(function(c) {
+    var selected = c.id === selectedCM;
+    var osList = (c.os || []).map(function(o){ return OS_LABEL[o] || o; }).join(', ');
+    return '<label class="gm-radio-card' + (selected ? ' is-selected' : '') + '" data-agentless-cm="' + c.id + '" onclick="agentlessModalSelectCM(\'' + c.id + '\')">'
+      + '<input type="radio" name="agentless-cm"' + (selected ? ' checked' : '') + '>'
+      + '<span class="gm-radio-copy"><span class="gm-radio-title">' + c.name + '</span><span class="gm-radio-description">scans ' + osList + ' · ' + c.nodes + ' nodes</span></span>'
+      + (c.id === recId ? '<span class="agentless-modal-rec">Recommended</span>' : '') + '</label>';
+  }).join('');
+  var body = '<section class="agentless-modal-section agentless-modal-section--target">'
+    + '<h3 class="agentless-modal-heading">Target</h3>'
+    + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-name">Node name <span style="color:#FB3C44">*</span></label><input id="agentless-modal-name" type="text" placeholder="e.g. Endpoint Protection Policy"></div>'
+    + '<div class="agentless-modal-row"><div class="agentless-modal-field"><label class="form-label" for="agentless-modal-host">Hostname or IP <span style="color:#FB3C44">*</span></label><input id="agentless-modal-host" type="text" placeholder="e.g. 10.0.4.51 or web-prod-01.corp"></div>'
+    + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-port">Port</label><input id="agentless-modal-port" type="text" value="' + (addNodeOS === 'windows' ? '5985' : '22') + '"></div></div>'
+    + '<div class="agentless-modal-hint">' + (addNodeOS === 'windows' ? 'WinRM — default 5985 (HTTP) or 5986 (HTTPS).' : 'SSH — default 22.') + '</div></section>'
+    + '<section class="agentless-modal-section"><h3 class="agentless-modal-heading">Connection Manager Group</h3><p class="agentless-modal-sub">Select a group that can reach this target.</p>'
+    + '<div class="agentless-modal-radios">' + cmHtml + '</div><button type="button" class="agentless-modal-link" onclick="openCmSetup(\'agentless\')">Don’t see a suitable one? Create a new group →</button></section>'
+    + '<section class="agentless-modal-section"><h3 class="agentless-modal-heading">Credentials</h3><p class="agentless-modal-sub">How the Connection Manager authenticates to this target. Enter them directly, or select a credential saved in the Guardian Credential Vault.</p>'
+    + '<div class="gm-tab-block agentless-modal-tabs" role="tablist" aria-label="Credential availability"><button type="button" class="gm-tab is-active" data-agentless-cred-tab="ready" aria-selected="true" onclick="agentlessModalCredentials(\'ready\')">Ready</button><button type="button" class="gm-tab" data-agentless-cred-tab="unreachable" aria-selected="false" onclick="agentlessModalCredentials(\'unreachable\')">Unreachable</button></div>'
+    + '<div class="agentless-modal-credential"><label class="form-label" for="agentless-modal-credential-trigger">Vault credential</label><div id="agentless-modal-credential-picker" class="agentless-credential-picker" data-kind="ready"><input id="agentless-modal-credential" type="hidden" value=""><button id="agentless-modal-credential-trigger" type="button" class="agentless-modal-select dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" onclick="agentlessModalCredentialToggle(event)"><span id="agentless-modal-credential-label" class="agentless-modal-select-label is-placeholder">Select a credential…</span><svg class="agentless-modal-select-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="agentless-modal-credential-menu" class="agentless-credential-menu" role="listbox" hidden></div></div>'
+    + '<div class="agentless-modal-hint">Reusable credentials stored encrypted, used by the Connection Manager at scan time.<br>Manage them in the <button type="button" class="agentless-modal-link" style="margin-top:0" onclick="closeModal(\'agentless-setup-overlay\');showView(\'credentials\')">Credential Vault</button></div></div>'
+    + '<div class="agentless-modal-required">Add a node name, a hostname or IP and credentials to test the connection.</div></section>';
+  openModal({
+    id:'agentless-setup-overlay', size:'lg', title:'Agentless scan setup',
+    subtitle:'Guardian scans this node remotely through a Connection Manager — a lightweight relay on your network — so no software is installed on the target.',
+    steps:[{label:'Add node',onEnter:function(){ closeModal('agentless-setup-overlay'); openAddNodeWizard(); }},{label:'Connect'},{label:'Scan'},{label:'Results'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ closeModal('agentless-setup-overlay'); openAddNodeMethodStep(); }},
+    buttons:[{label:'Test connection & continue',kind:'primary',onClick:function(){ agentlessModalContinue(); }}],
+    afterMount:function(ov){
+      ov.querySelector('.gm-card').classList.add('gm-agentless-setup');
+      gmGoStep('agentless-setup-overlay',1);
+      agentlessModalCredentials('ready');
+    }
+  });
 }
 // Close modal on backdrop click
 document.getElementById('add-device-modal').addEventListener('click', function(e) {
