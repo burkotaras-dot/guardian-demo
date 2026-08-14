@@ -4418,6 +4418,92 @@ body.dark .gm-overlay .gm-upload-dropzone.is-dragover { background:rgba(16,185,1
 body.dark .gm-overlay .gm-upload-file { background:rgba(16,185,129,0.10); }
 body.dark .gm-overlay .gm-upload-file-icon,
 body.dark .gm-overlay .gm-upload-file-copy { color:#CBD5E1; }
+/* ── Canonical modal tab block ────────────────────────────────────────────
+   Figma 3045:5350 — Tab block, active / inactive, Light + Dark.
+   This contract is intentionally scoped to gm-overlay so page navigation
+   tabs and app-level segmented filters keep their own patterns. */
+.gm-overlay .gm-tab-field { width:100%; }
+.gm-overlay .gm-tab-label {
+  display:block;
+  margin:0 0 8px;
+  color:#94A3B8;
+  font-family:'DM Sans',sans-serif;
+  font-size:9px;
+  font-weight:700;
+  line-height:normal;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+.gm-overlay :is(.gm-tab-block,.toggle-group) {
+  box-sizing:border-box;
+  width:fit-content;
+  max-width:100%;
+  height:32px;
+  display:flex;
+  align-items:stretch;
+  gap:0;
+  overflow:hidden;
+  border:1px solid #E2E8F0;
+  border-radius:8px;
+  background:#F9FAFC;
+}
+.gm-overlay :is(.gm-tab,.toggle-btn) {
+  box-sizing:border-box;
+  min-width:0;
+  height:30px;
+  display:inline-flex;
+  flex:0 1 auto;
+  align-items:center;
+  justify-content:center;
+  padding:0 14px;
+  border:0;
+  border-radius:0;
+  background:#F9FAFC;
+  color:#475569;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  font-weight:600;
+  line-height:normal;
+  text-align:center;
+  white-space:nowrap;
+  cursor:pointer;
+  appearance:none;
+  transition:background-color .12s,color .12s,box-shadow .12s;
+}
+.gm-overlay :is(.gm-tab,.toggle-btn) + :is(.gm-tab,.toggle-btn) {
+  border-left:1px solid #E2E8F0;
+}
+.gm-overlay :is(.gm-tab,.toggle-btn):not(.active):not(.is-active):not([aria-selected="true"]):hover {
+  background:rgba(0,175,115,.05);
+  color:#0F172A;
+}
+.gm-overlay :is(.gm-tab,.toggle-btn):is(.active,.is-active,[aria-selected="true"]) {
+  background:rgba(0,175,115,.10);
+  color:#15803D;
+}
+.gm-overlay :is(.gm-tab,.toggle-btn):focus-visible {
+  position:relative;
+  z-index:1;
+  outline:none;
+  box-shadow:inset 0 0 0 2px rgba(16,185,129,.60);
+}
+body.dark .gm-overlay :is(.gm-tab-block,.toggle-group) {
+  border-color:#04363A;
+  border-radius:10px;
+  background:rgba(255,255,255,.05);
+}
+body.dark .gm-overlay :is(.gm-tab,.toggle-btn) {
+  background:rgba(255,255,255,.05);
+  color:#FFFFFF;
+}
+body.dark .gm-overlay :is(.gm-tab,.toggle-btn) + :is(.gm-tab,.toggle-btn) {
+  border-left-color:#04363A;
+}
+body.dark .gm-overlay :is(.gm-tab,.toggle-btn):not(.active):not(.is-active):not([aria-selected="true"]):hover,
+body.dark .gm-overlay :is(.gm-tab,.toggle-btn):is(.active,.is-active,[aria-selected="true"]) {
+  background:rgba(0,175,115,.15);
+  color:#FFFFFF;
+}
 #export-modal .gm-body { padding-bottom:24px; }
 body.dark #export-modal .export-file-card { background:#133033 !important; border-color:#42595C !important; }
 .gm-foot { display: flex; align-items: center; gap: 8px; padding: 10px 24px 12px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; justify-content: flex-end; }
@@ -11741,10 +11827,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + '</div>'
         /* Panel 3: credentials */
         + '<div class="gm-panel" data-icx="3">'
-        +   '<div class="icx-field"><label class="icx-label">Authentication</label>'
-        +     '<div style="display:flex;gap:8px;">'
-        +       '<button class="intg-cat active" id="icx-auth-oauth" onclick="icxSetAuth(\'oauth\')">OAuth 2.0</button>'
-        +       '<button class="intg-cat" id="icx-auth-basic" onclick="icxSetAuth(\'basic\')">Basic auth</button>'
+        +   '<div class="icx-field gm-tab-field"><label class="icx-label gm-tab-label">Authentication</label>'
+        +     '<div class="gm-tab-block" role="tablist" aria-label="Authentication method">'
+        +       '<button class="gm-tab active" id="icx-auth-oauth" role="tab" aria-selected="true" onclick="icxSetAuth(\'oauth\')">OAuth 2.0</button>'
+        +       '<button class="gm-tab" id="icx-auth-basic" role="tab" aria-selected="false" onclick="icxSetAuth(\'basic\')">Basic auth</button>'
         +     '</div></div>'
         +   '<div id="icx-auth-oauth-fields">'
         +     '<div class="icx-field"><label class="icx-label">Client ID</label>'
@@ -11829,8 +11915,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     function icxSetAuth(m) {
       ICX.auth = m;
       var o = document.getElementById('icx-auth-oauth'), b = document.getElementById('icx-auth-basic');
-      if (o) o.classList.toggle('active', m==='oauth');
-      if (b) b.classList.toggle('active', m==='basic');
+      if (o) { o.classList.toggle('active', m==='oauth'); o.setAttribute('aria-selected', m==='oauth' ? 'true' : 'false'); }
+      if (b) { b.classList.toggle('active', m==='basic'); b.setAttribute('aria-selected', m==='basic' ? 'true' : 'false'); }
       var of = document.getElementById('icx-auth-oauth-fields'), bf = document.getElementById('icx-auth-basic-fields');
       if (of) of.style.display = m==='oauth' ? '' : 'none';
       if (bf) bf.style.display = m==='basic' ? '' : 'none';
@@ -11982,7 +12068,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       ['secret', 'direct', 'skip'].forEach(function (m) {
         var tab = document.getElementById('cmdb-' + os + '-tab-' + m);
         var panel = document.getElementById('cmdb-' + os + '-panel-' + m);
-        if (tab) tab.classList.toggle('active', m === mode);
+        if (tab) {
+          tab.classList.toggle('active', m === mode);
+          tab.setAttribute('aria-selected', m === mode ? 'true' : 'false');
+        }
         if (panel) panel.style.display = m === mode ? '' : 'none';
       });
     }
@@ -20517,10 +20606,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="font-size:11px;color:var(--text-sec);" id="cmdb-win-count">credentials for all detected Windows nodes</div>
               </div>
             </div>
-            <div class="toggle-group" style="margin-bottom:14px;">
-              <button class="toggle-btn active" id="cmdb-win-tab-secret" onclick="setCmdbCred('win','secret')">From Secret Server</button>
-              <button class="toggle-btn" id="cmdb-win-tab-direct" onclick="setCmdbCred('win','direct')">Enter directly</button>
-              <button class="toggle-btn" id="cmdb-win-tab-skip" onclick="setCmdbCred('win','skip')">No credential</button>
+            <div class="toggle-group gm-tab-block" role="tablist" aria-label="Windows credential source" style="margin-bottom:14px;">
+              <button class="toggle-btn gm-tab active" id="cmdb-win-tab-secret" role="tab" aria-selected="true" onclick="setCmdbCred('win','secret')">From Secret Server</button>
+              <button class="toggle-btn gm-tab" id="cmdb-win-tab-direct" role="tab" aria-selected="false" onclick="setCmdbCred('win','direct')">Enter directly</button>
+              <button class="toggle-btn gm-tab" id="cmdb-win-tab-skip" role="tab" aria-selected="false" onclick="setCmdbCred('win','skip')">No credential</button>
             </div>
             <div id="cmdb-win-panel-secret">
               <div class="form-group" style="margin-bottom:0;">
@@ -20552,10 +20641,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="font-size:11px;color:var(--text-sec);" id="cmdb-nix-count">credentials for all detected Linux &amp; macOS nodes</div>
               </div>
             </div>
-            <div class="toggle-group" style="margin-bottom:14px;">
-              <button class="toggle-btn active" id="cmdb-nix-tab-secret" onclick="setCmdbCred('nix','secret')">From Secret Server</button>
-              <button class="toggle-btn" id="cmdb-nix-tab-direct" onclick="setCmdbCred('nix','direct')">Enter directly</button>
-              <button class="toggle-btn" id="cmdb-nix-tab-skip" onclick="setCmdbCred('nix','skip')">No credential</button>
+            <div class="toggle-group gm-tab-block" role="tablist" aria-label="Linux and macOS credential source" style="margin-bottom:14px;">
+              <button class="toggle-btn gm-tab active" id="cmdb-nix-tab-secret" role="tab" aria-selected="true" onclick="setCmdbCred('nix','secret')">From Secret Server</button>
+              <button class="toggle-btn gm-tab" id="cmdb-nix-tab-direct" role="tab" aria-selected="false" onclick="setCmdbCred('nix','direct')">Enter directly</button>
+              <button class="toggle-btn gm-tab" id="cmdb-nix-tab-skip" role="tab" aria-selected="false" onclick="setCmdbCred('nix','skip')">No credential</button>
             </div>
             <div id="cmdb-nix-panel-secret">
               <div class="form-group" style="margin-bottom:0;">
@@ -20570,9 +20659,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div id="cmdb-nix-panel-direct" style="display:none;">
               <div class="form-group">
                 <label class="form-label">Authentication</label>
-                <div class="toggle-group">
-                  <button class="toggle-btn active" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Username &amp; password</button>
-                  <button class="toggle-btn" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">SSH key</button>
+                <div class="toggle-group gm-tab-block" role="tablist" aria-label="Linux and macOS authentication method">
+                  <button class="toggle-btn gm-tab active" role="tab" aria-selected="true" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});this.classList.add('active');this.setAttribute('aria-selected','true');">Username &amp; password</button>
+                  <button class="toggle-btn gm-tab" role="tab" aria-selected="false" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});this.classList.add('active');this.setAttribute('aria-selected','true');">SSH key</button>
                 </div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">

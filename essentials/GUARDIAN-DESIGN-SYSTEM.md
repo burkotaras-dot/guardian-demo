@@ -237,6 +237,20 @@ Selected-file row замінює dropzone, але зберігає title та he
 
 **Exceptions.** Кнопка завантаження готового звіту, attachments list, інтеграційні source cards і звичайні file links не є Upload block. Full-page onboarding може використовувати цей компонент лише явно; правило автоматично діє тільки всередині `gm-overlay`.
 
+### 3.9 Tab block у модальних вікнах
+
+**Rule.** Взаємовиключні режими всередині `gm-overlay` оформлюються єдиним сегментованим `.gm-tab-block`; кожен пункт — `.gm-tab`. Legacy `.toggle-group` / `.toggle-btn` у модалці автоматично наслідує цей контракт. Контейнер має висоту `32px`, border `1px`, overflow hidden та щільно зʼєднані сегменти без gap. Кнопка має внутрішню висоту `30px`, horizontal padding `14px`, DM Sans Semibold `11px`; сусідні кнопки розділяє border `1px`. Активність позначається `.active`, `.is-active` або `aria-selected="true"`; `role="tablist"`, `role="tab"` і синхронний `aria-selected` є обовʼязковими для нових tab blocks.
+
+Опційний заголовок `.gm-tab-label` розташовується на `8px` вище від контейнера: DM Sans Bold `9px`, uppercase, tracking `0.6px`, колір `#94A3B8`.
+
+Light: container radius `8px`, border/divider `#E2E8F0`, default background `#F9FAFC`, default text `#475569`; active background `rgba(0,175,115,.10)`, active text `#15803D`. Dark: container radius `10px`, border/divider `#04363A`, default background `rgba(255,255,255,.05)`, text `#FFFFFF`; active background `rgba(0,175,115,.15)`, text `#FFFFFF`.
+
+**Reference.** Figma `Guardian UI Design System based on Mantine v5.10`, node `3045:5350` (`Tab block`: Active / Inactive; Light + Dark).
+
+**Examples.** Integrations Setup → Authentication; CMDB Import → Windows/Linux credential source та authentication method. Усі ці modal flows використовують однакові розміри, dividers і theme states.
+
+**Exceptions.** Верхньорівневі таби сторінок, navigation tabs, table filters, status/severity pills, radio cards та full-page segmented controls не є modal Tab block і не успадковують це правило. Для них діють власні компоненти; scoped-селектори `.gm-overlay` не повинні змінювати їхню геометрію.
+
 ---
 
 ## 4. Tables
