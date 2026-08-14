@@ -4204,6 +4204,88 @@ body.dark .gm-overlay {
   line-height:normal;
   text-align:right;
 }
+/* ── Canonical modal tags ──────────────────────────────────────────────────
+   Figma 3023:13076 — Tag, Default / Active, Light + Dark.
+   Semantic tags only: status badges, severity pills and filters are separate. */
+.gm-overlay :is(.gm-tag-group,.tagpick) {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+}
+.gm-overlay .form-label:has(+ :is(.gm-tag-group,.tagpick)) {
+  margin-bottom:8px !important;
+  letter-spacing:.5px !important;
+}
+.gm-overlay :is(.gm-tag,.tagpick-chip) {
+  box-sizing:border-box;
+  min-width:0;
+  height:26px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:0 12px !important;
+  margin:0;
+  border:1px solid #E2E8F0 !important;
+  border-radius:20px !important;
+  background:#F1F5F9 !important;
+  color:#475569 !important;
+  font-family:'DM Sans',sans-serif !important;
+  font-size:12px !important;
+  font-weight:400 !important;
+  line-height:normal;
+  white-space:nowrap;
+  text-decoration:none;
+  cursor:pointer;
+  user-select:none;
+  appearance:none;
+  transition:background-color .12s,border-color .12s,color .12s,box-shadow .12s;
+}
+.gm-overlay :is(.gm-tag,.tagpick-chip):not(.is-active):not(.is-on):not([aria-pressed="true"]):hover {
+  border-color:rgba(16,185,129,0.60) !important;
+}
+.gm-overlay :is(.gm-tag,.tagpick-chip):is(.is-active,.is-on,[aria-pressed="true"]) {
+  height:28px;
+  background:rgba(16,185,129,0.12) !important;
+  border-color:#10B981 !important;
+  color:#0F172A !important;
+  font-weight:600 !important;
+}
+.gm-overlay :is(.gm-tag,.tagpick-chip):focus-visible {
+  outline:none;
+  box-shadow:0 0 0 3px rgba(16,185,129,0.12);
+}
+.gm-overlay :is(.gm-tag-check,.tagpick-check) {
+  width:12px;
+  height:12px;
+  display:none !important;
+  flex:0 0 12px;
+  color:#059669;
+}
+.gm-overlay :is(.gm-tag,.tagpick-chip):is(.is-active,.is-on,[aria-pressed="true"]) :is(.gm-tag-check,.tagpick-check) {
+  display:block !important;
+}
+body.dark .gm-overlay :is(.gm-tag,.tagpick-chip) {
+  height:28px;
+  background:rgba(255,255,255,0.05) !important;
+  border-color:rgba(255,255,255,0.18) !important;
+  color:#CBD5E1 !important;
+}
+body.dark .gm-overlay :is(.gm-tag,.tagpick-chip):not(.is-active):not(.is-on):not([aria-pressed="true"]):hover {
+  border-color:rgba(0,175,115,0.50) !important;
+}
+body.dark .gm-overlay :is(.gm-tag,.tagpick-chip):is(.is-active,.is-on,[aria-pressed="true"]) {
+  background:rgba(0,175,115,0.15) !important;
+  border-color:rgba(0,175,115,0.50) !important;
+  color:#F8FAFC !important;
+}
+body.dark .gm-overlay :is(.gm-tag-check,.tagpick-check) {
+  width:11px;
+  height:11px;
+  flex-basis:11px;
+  color:#00AF73;
+}
 #export-modal .gm-body { padding-bottom:24px; }
 body.dark #export-modal .export-file-card { background:#133033 !important; border-color:#42595C !important; }
 .gm-foot { display: flex; align-items: center; gap: 8px; padding: 10px 24px 12px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; justify-content: flex-end; }
@@ -9525,8 +9607,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div class="form-group">
               <label class="form-label">Tags</label>
               <div id="ec-tags" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg-subtle);color:var(--p-neutral-500);cursor:pointer;border:1px solid var(--border-default);">Security ×</span>
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg-subtle);color:var(--p-neutral-500);cursor:pointer;border:1px solid var(--border-default);">Compliance ×</span>
+                <button type="button" class="gm-tag is-active" aria-pressed="true" onclick="peRemoveTag(this)" title="Click to remove"><svg class="gm-tag-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Security</button>
+                <button type="button" class="gm-tag is-active" aria-pressed="true" onclick="peRemoveTag(this)" title="Click to remove"><svg class="gm-tag-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Compliance</button>
                 <button onclick="peAddTagMenu(this,-1)" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ Add tag</button>
               </div>
             </div>
@@ -13787,8 +13869,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     function peApplyTag(name, bg, color) {
       if(!_peTagTarget) return;
       var span = document.createElement('span');
-      span.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;';
-      span.textContent = name + ' ×';
+      var inModal = !!_peTagTarget.closest('.gm-overlay');
+      if (inModal) {
+        span.className = 'gm-tag is-active';
+        span.setAttribute('role','button');
+        span.setAttribute('tabindex','0');
+        span.setAttribute('aria-pressed','true');
+        span.setAttribute('title','Click to remove');
+        span.innerHTML = '<svg class="gm-tag-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' + name;
+        span.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); peRemoveTag(span); } };
+      } else {
+        span.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;';
+        span.textContent = name + ' ×';
+      }
       span.onclick = function(){ peRemoveTag(span); };
       _peTagTarget.insertBefore(span, _peTagTarget.lastElementChild);
       document.getElementById('pe-tag-pop').style.display = 'none';
@@ -13805,14 +13898,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var html = '';
         TAGPICK_APPROVED.forEach(function(t){
           var on = sel.indexOf(t) >= 0;
-          html += '<span class="tagpick-chip' + (on ? ' is-on' : '') + '" data-val="' + t + '" onclick="tagpickToggle(this)">' +
+          html += '<span class="tagpick-chip' + (on ? ' is-on' : '') + '" data-val="' + t + '" role="button" tabindex="0" aria-pressed="' + (on ? 'true' : 'false') + '" onclick="tagpickToggle(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();tagpickToggle(this)}">' +
                   '<svg class="tagpick-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
                   t + '</span>';
         });
         root.innerHTML = html;
       });
     }
-    function tagpickToggle(chip){ chip.classList.toggle('is-on'); }
+    function tagpickToggle(chip){
+      chip.classList.toggle('is-on');
+      chip.setAttribute('aria-pressed', chip.classList.contains('is-on') ? 'true' : 'false');
+    }
     function tagpickSelected(root){
       return Array.prototype.map.call(root.querySelectorAll('.tagpick-chip.is-on'), function(c){ return c.getAttribute('data-val'); });
     }

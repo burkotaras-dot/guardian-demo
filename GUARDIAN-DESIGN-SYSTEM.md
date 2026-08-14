@@ -207,6 +207,20 @@ Light default / filled: фон `#F1F5F9`, border `#E2E8F0`, основний т�
 
 **Exceptions.** Dropdown/select triggers регулюються §3.1–3.3; search-поля — §3.4; radio cards — §3.5. Компактні inline-редактори всередині mapping/data-grid (`.fm-edit-input`) можуть мати меншу висоту й padding, бо підпорядковуються геометрії клітинки. Full-page onboarding та auth-форми не є модальними вікнами й не успадковують правило автоматично.
 
+### 3.7 Tags у модальних вікнах
+
+**Rule.** Усі семантичні теги всередині `gm-overlay` використовують компонент `.gm-tag`; legacy `.tagpick-chip` у модалці автоматично наслідує той самий контракт. Tag — це компактний інтерактивний pill для вибору класифікації, а не status badge чи filter button. Label має відступ `8px` до групи; `.gm-tag-group` / `.tagpick` використовує flex-wrap і gap `6px`. Геометрія tag: horizontal padding `12px`, internal gap `6px`, border `1px`, radius `20px`; текст — DM Sans Regular `12px`. Default не має іконки; Active має галочку `12×12px` у light / `11×11px` у dark, DM Sans Semibold `12px` і видимий selected-state. Інтерактивний tag використовує `aria-pressed`; `.is-active`, `.is-on` та `[aria-pressed="true"]` є еквівалентними active-станами.
+
+Light Default: висота `26px`, фон `#F1F5F9`, border `#E2E8F0`, текст `#475569`. Light Active: висота `28px`, фон `rgba(16,185,129,.12)`, border `#10B981`, текст `#0F172A`, галочка `#059669`. Dark Default: висота `28px`, фон `rgba(255,255,255,.05)`, border `rgba(255,255,255,.18)`, текст `#CBD5E1`. Dark Active: висота `28px`, фон `rgba(0,175,115,.15)`, border `rgba(0,175,115,.50)`, текст `#F8FAFC`, галочка `#00AF73`.
+
+Усі нові modal tag selectors будуються через `.gm-tag` / `.gm-tag-group`; активність не оформлюється inline-стилями та не позначається лише кольором тексту. Видалення вже вибраного tag може виконуватися кліком по active-tag, але візуальним індикатором вибору залишається галочка, а не символ `×` у назві.
+
+**Reference.** Figma `Guardian UI Design System based on Mantine v5.10`, node `3023:13076` (`Tag`: Default / Active; Light + Dark).
+
+**Examples.** Create New Policy → Policy tags; Edit Check → Tags. Обидва modal flows використовують однаковий default/active компонент у світлій і темній темах.
+
+**Exceptions.** Status/severity badges (`.bdg`), severity selectors, filter pills, removable free-form chips, code/literal tags (`.code-tag`) та dropdown options мають іншу семантику й не наслідують `.gm-tag`. Посилання `Manage approved tags` є окремою текстовою дією; воно не є tag-компонентом і може бути відсутнє в конкретному flow.
+
 ---
 
 ## 4. Tables
