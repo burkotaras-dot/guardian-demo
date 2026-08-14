@@ -1121,7 +1121,18 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
   font-size:14px;
   line-height:18px;
 }
+/* DS §6.5 Primary, size s=32 — the inline variant, for an action that sits inside a
+   strip or row rather than owning its own line. Same padding/type as the base; only
+   the height is pinned and the width stops stretching. */
+.btn-primary--s {
+  height:32px;
+  width:auto;
+  flex:0 0 auto;
+  padding:0 20px;
+  line-height:1;
+}
 .btn-primary--arrow::after { content:'\2192'; font-size:14px; line-height:1; }
+.btn-primary--s.btn-primary--arrow::after { font-size:12px; }
 
 /* DS §6.5 "Secondary" (s=32) */
 .btn-secondary {
@@ -3756,12 +3767,13 @@ body.dark #v-remediation #remed-result-block [style*="stroke:#64748b"] { stroke:
 .add-node-option {
   box-sizing:border-box;
   width:100%;
-  min-height:102px;
+  height:94px;
+  min-height:94px;
   display:grid;
   grid-template-columns:44px minmax(0,1fr) auto;
   align-items:center;
   column-gap:16px;
-  padding:18px 20px;
+  padding:14px 20px;
   border:1px solid #E2E8F0;
   border-radius:14px;
   background:#F8FAFC;
@@ -3819,14 +3831,14 @@ body.dark .gm-add-node-choice .add-node-option--servicenow:nth-child(n+3):hover 
 }
 .gm-add-node-choice .gm-body { padding-top:20px; padding-bottom:24px; }
 .gm-add-node-choice .add-node-options { width:100%; }
-.gm-add-node-choice .add-node-option { min-height:103px; }
+.gm-add-node-choice .add-node-option { height:94px; min-height:94px; padding-block:14px; }
 
 /* Add Node / detected OS — Figma component frame 3165:10694
    (reference instances 3154:27407 Light / 3154:27537 Dark).
    Exact 600×537 geometry: head 74, stepper 54, body 346, footer 63. */
 .gm-add-node-wizard.gm-card {
   width:600px;
-  height:537px;
+  height:473px;
   max-height:calc(100vh - 40px);
 }
 .gm-add-node-wizard .gm-head {
@@ -3840,8 +3852,8 @@ body.dark .gm-add-node-choice .add-node-option--servicenow:nth-child(n+3):hover 
   box-sizing:border-box;
 }
 .gm-add-node-wizard .gm-body {
-  flex:0 0 346px;
-  height:346px;
+  flex:0 0 282px;
+  height:282px;
   box-sizing:border-box;
   padding:0;
 }
@@ -3858,7 +3870,7 @@ body.dark .gm-add-node-choice .add-node-option--servicenow:nth-child(n+3):hover 
 }
 .add-node-flow {
   box-sizing:border-box;
-  min-height:346px;
+  min-height:282px;
   padding:20px 24px 18px;
 }
 .add-node-detected {
@@ -3873,9 +3885,10 @@ body.dark .gm-add-node-choice .add-node-option--servicenow:nth-child(n+3):hover 
 .add-node-detected-icon svg { width:16px; height:16px; }
 .add-node-detected-title { display:block; color:var(--text-default); font-size:13px; font-weight:600; line-height:17px; }
 .add-node-detected-sub { display:block; margin-top:0; color:#475569; font-size:10px; line-height:15px; }
-.add-node-continue {
-  width:100%; max-width:none; margin-top:20px;
-}
+.add-node-detected-text { flex:1; min-width:0; }
+/* The action lives INSIDE the detected strip: the strip states what we found and the
+   button acts on that same statement, so they belong in one object, not two stacked ones. */
+.add-node-continue { margin-left:auto; }
 .add-node-flow-note {
   box-sizing:border-box; height:22px; padding-top:8px; color:#475569;
   font-size:11px; line-height:14px;
@@ -3959,7 +3972,7 @@ body.dark .add-node-method-card:hover { background:rgba(16,185,129,.10); border-
 }
 @media (max-width:640px) {
   .add-node-dialog { padding:20px; }
-  .add-node-option { grid-template-columns:44px minmax(0,1fr); padding:16px; }
+  .add-node-option { height:auto; min-height:94px; grid-template-columns:44px minmax(0,1fr); padding:14px 20px; }
   .add-node-card-cta { grid-column:2; justify-self:start; margin-top:8px; }
 }
 
@@ -24780,8 +24793,8 @@ function openAddNodeWizard() {
   var agentIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>';
   var remoteIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h12"></path><polyline points="13 6 19 12 13 18"></polyline><circle cx="4" cy="12" r="1.6"></circle></svg>';
   var body = '<section class="gm-panel add-node-flow" data-add-node-step="os">'
-    + '<div class="add-node-detected"><span class="add-node-detected-icon">' + windowsIcon + '</span><span><span class="add-node-detected-title">Windows 11 detected</span><span class="add-node-detected-sub">Auto-detected from your browser</span></span></div>'
-    + '<button type="button" class="btn-primary btn-primary--large btn-primary--arrow add-node-continue" onclick="addNodeChooseOS(\'windows\')">Continue with Windows 11</button>'
+    + '<div class="add-node-detected"><span class="add-node-detected-icon">' + windowsIcon + '</span><span class="add-node-detected-text"><span class="add-node-detected-title">Windows 11 detected</span><span class="add-node-detected-sub">Auto-detected from your browser</span></span>'
+    + '<button type="button" class="btn-primary btn-primary--s btn-primary--arrow add-node-continue" onclick="addNodeChooseOS(\'windows\')">Continue</button></div>'
     + '<div class="add-node-flow-note">Downloads a small agent (~8 MB) · No manual config needed</div>'
     + '<div class="add-node-flow-separator"></div><div class="add-node-flow-label">Not right? Choose your OS:</div>'
     + '<div class="os-grid"><button type="button" class="os-card" onclick="addNodeChooseOS(\'windows\')">' + windowsIcon + '<h4>Windows 11 / 10</h4></button>'
