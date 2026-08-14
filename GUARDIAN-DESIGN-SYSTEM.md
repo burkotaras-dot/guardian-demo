@@ -221,6 +221,22 @@ Light Default: висота `26px`, фон `#F1F5F9`, border `#E2E8F0`, текс
 
 **Exceptions.** Status/severity badges (`.bdg`), severity selectors, filter pills, removable free-form chips, code/literal tags (`.code-tag`) та dropdown options мають іншу семантику й не наслідують `.gm-tag`. Посилання `Manage approved tags` є окремою текстовою дією; воно не є tag-компонентом і може бути відсутнє в конкретному flow.
 
+### 3.8 Upload block у модальних вікнах
+
+**Rule.** Завантаження файла всередині `gm-overlay` будується як один компонент `.gm-upload-block`: `.gm-upload-title`, інтерактивна `.gm-upload-dropzone`, helper `.gm-upload-helper` та альтернативний selected-state `.gm-upload-file`. Не оформлювати dropzone inline-стилями й не змінювати кольори через `onmouseover` / `onmouseout`. Dropzone має підтримувати click, Enter / Space, drag-over і drop; hover та drag-over використовують той самий візуальний стан.
+
+Геометрія Default: ширина `100%`, min-height `145px`, padding `32px 20px`, dashed border `2px`, radius `14px`. Upload icon — `28×28px`, відступ до тексту `10px`; primary text — DM Sans Semibold `13px`; meta — DM Sans Regular `11px`, margin-top `3px`. Заголовок секції — DM Sans Bold `13px`, відступ до dropzone `10px`. Helper розташований під dropzone або selected-file row з margin-top `8px`, DM Sans Regular `11px`, line-height `16.5px`.
+
+Light Default: прозорий фон, border `rgba(100,116,139,.45)`, primary `#0F172A`, secondary/helper `#475569`, icon `#94A3B8`. Light Hover / Drag-over: фон `rgba(16,185,129,.12)`, border `rgba(16,185,129,.60)`. Dark Default: прозорий фон, той самий neutral dashed border, primary `#F8FAFC`, secondary `#CBD5E1`, helper `#94A3B8`, icon `#94A3B8`. Dark Hover / Drag-over: фон `rgba(16,185,129,.10)`, border `rgba(16,185,129,.60)`.
+
+Selected-file row замінює dropzone, але зберігає title та helper. Геометрія: padding `10px 14px`, gap `10px`, solid border `1px rgba(16,185,129,.60)`, radius `10px`, file icon `16×16px`; filename — Bold `12px`, metadata — Regular `12px`, Remove — Semibold `12px`. Light background `rgba(16,185,129,.12)`, text `#065F46`; Dark background `rgba(16,185,129,.10)`, file text/icon `#CBD5E1`; Remove в обох темах `#059669`.
+
+**Reference.** Figma `Guardian UI Design System based on Mantine v5.10`, node `3071:11173` (`Upload block`: Default / Hover / Selected; Light + Dark).
+
+**Example.** CSV Import modal → Upload step. Dropzone, selected-file row та helper text наслідують один `.gm-upload-*` контракт у світлій і темній темах.
+
+**Exceptions.** Кнопка завантаження готового звіту, attachments list, інтеграційні source cards і звичайні file links не є Upload block. Full-page onboarding може використовувати цей компонент лише явно; правило автоматично діє тільки всередині `gm-overlay`.
+
 ---
 
 ## 4. Tables

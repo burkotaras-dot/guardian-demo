@@ -4286,6 +4286,138 @@ body.dark .gm-overlay :is(.gm-tag-check,.tagpick-check) {
   flex-basis:11px;
   color:#00AF73;
 }
+/* ── Canonical modal upload block ──────────────────────────────────────────
+   Figma 3071:11173 — Upload block, Default / Hover / Selected, Light + Dark. */
+.gm-overlay .gm-upload-block {
+  width:100%;
+  padding-top:18px;
+  margin-bottom:16px;
+  border-top:1px solid #E2E8F0;
+}
+.gm-overlay .gm-upload-title {
+  margin:0 0 10px;
+  color:#0F172A;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  line-height:normal;
+}
+.gm-overlay .gm-upload-dropzone {
+  box-sizing:border-box;
+  width:100%;
+  min-height:145px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:32px 20px;
+  border:2px dashed rgba(100,116,139,0.45);
+  border-radius:14px;
+  background:transparent;
+  color:#0F172A;
+  text-align:center;
+  cursor:pointer;
+  transition:background-color .15s,border-color .15s,box-shadow .15s;
+}
+.gm-overlay .gm-upload-dropzone:hover,
+.gm-overlay .gm-upload-dropzone.is-dragover {
+  border-color:rgba(16,185,129,0.60);
+  background:rgba(16,185,129,0.12);
+}
+.gm-overlay .gm-upload-dropzone:focus-visible {
+  outline:none;
+  border-color:rgba(16,185,129,0.60);
+  box-shadow:0 0 0 3px rgba(16,185,129,0.12);
+}
+.gm-overlay .gm-upload-icon {
+  width:28px;
+  height:28px;
+  margin-bottom:10px;
+  flex:0 0 28px;
+  color:#94A3B8;
+}
+.gm-overlay .gm-upload-primary {
+  color:#0F172A;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  line-height:normal;
+}
+.gm-overlay .gm-upload-meta {
+  margin-top:3px;
+  color:#475569;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  font-weight:400;
+  line-height:normal;
+}
+.gm-overlay .gm-upload-helper {
+  margin-top:8px;
+  color:#475569;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  font-weight:400;
+  line-height:16.5px;
+}
+.gm-overlay .gm-upload-file {
+  box-sizing:border-box;
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:12px;
+  padding:10px 14px;
+  border:1px solid rgba(16,185,129,0.60);
+  border-radius:10px;
+  background:rgba(16,185,129,0.12);
+}
+.gm-overlay .gm-upload-file-icon {
+  width:16px;
+  height:16px;
+  flex:0 0 16px;
+  color:#059669;
+}
+.gm-overlay .gm-upload-file-copy {
+  min-width:0;
+  flex:1;
+  overflow:hidden;
+  color:#065F46;
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  font-weight:400;
+  line-height:normal;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.gm-overlay .gm-upload-file-name { font-weight:700; }
+.gm-overlay .gm-upload-remove {
+  flex:0 0 auto;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#059669;
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  line-height:normal;
+  cursor:pointer;
+}
+.gm-overlay .gm-upload-remove:hover { color:#047857; }
+.gm-overlay .gm-upload-remove:focus-visible {
+  outline:none;
+  border-radius:4px;
+  box-shadow:0 0 0 3px rgba(16,185,129,0.12);
+}
+body.dark .gm-overlay .gm-upload-block { border-top-color:rgba(255,255,255,0.06); }
+body.dark .gm-overlay .gm-upload-title,
+body.dark .gm-overlay .gm-upload-primary { color:#F8FAFC; }
+body.dark .gm-overlay .gm-upload-meta { color:#CBD5E1; }
+body.dark .gm-overlay .gm-upload-helper { color:#94A3B8; }
+body.dark .gm-overlay .gm-upload-dropzone:hover,
+body.dark .gm-overlay .gm-upload-dropzone.is-dragover { background:rgba(16,185,129,0.10); }
+body.dark .gm-overlay .gm-upload-file { background:rgba(16,185,129,0.10); }
+body.dark .gm-overlay .gm-upload-file-icon,
+body.dark .gm-overlay .gm-upload-file-copy { color:#CBD5E1; }
 #export-modal .gm-body { padding-bottom:24px; }
 body.dark #export-modal .export-file-card { background:#133033 !important; border-color:#42595C !important; }
 .gm-foot { display: flex; align-items: center; gap: 8px; padding: 10px 24px 12px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; justify-content: flex-end; }
@@ -11867,7 +11999,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var row = document.getElementById('csv-file-row');
       if (row) row.style.display = 'none';
       var dz = document.getElementById('csv-dropzone');
-      if (dz) dz.style.display = 'block';
+      if (dz) dz.style.removeProperty('display');
       var btn = document.getElementById('csv-continue-btn');
       if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
     }
@@ -20570,22 +20702,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- Step 2: upload -->
-          <div style="border-top:1px solid var(--border);padding-top:18px;margin-bottom:16px;">
-            <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:10px;">2 · Upload your file</div>
-            <div id="csv-dropzone" onclick="csvPickFile()" style="border:2px dashed rgba(100,116,139,0.45);border-radius:var(--radius-lg);padding:32px 20px;text-align:center;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--green1)';this.style.background='rgba(63,200,120,0.04)';" onmouseout="this.style.borderColor='rgba(100,116,139,0.45)';this.style.background='transparent';">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.6" style="margin-bottom:10px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              <div style="font-size:13px;font-weight:600;color:var(--text-default);margin-bottom:3px;">Drag a CSV here, or click to browse</div>
-              <div style="font-size:11px;color:var(--text-sec);">.csv only · one node per row</div>
+          <div class="gm-upload-block">
+            <div class="gm-upload-title">2 · Upload your file</div>
+            <div id="csv-dropzone" class="gm-upload-dropzone" role="button" tabindex="0" aria-label="Upload CSV file" onclick="csvPickFile()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();csvPickFile()}" ondragover="event.preventDefault();this.classList.add('is-dragover')" ondragleave="this.classList.remove('is-dragover')" ondrop="event.preventDefault();this.classList.remove('is-dragover');csvPickFile()">
+              <svg class="gm-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <div class="gm-upload-primary">Drag a CSV here, or click to browse</div>
+              <div class="gm-upload-meta">.csv only · one node per row</div>
             </div>
-            <div id="csv-file-row" style="display:none;align-items:center;gap:10px;margin-top:12px;padding:10px 14px;background:var(--bg-success);border:1px solid var(--bg-success-border);border-radius:var(--radius-md);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" style="flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-              <div style="flex:1;font-size:12px;color:#065f46;"><strong>nodes-import.csv</strong> · 24 rows</div>
-              <button onclick="event.stopPropagation();csvClearFile()" style="background:none;border:none;color:#065f46;cursor:pointer;font-size:11px;">Remove</button>
+            <div id="csv-file-row" class="gm-upload-file" style="display:none;">
+              <svg class="gm-upload-file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              <div class="gm-upload-file-copy"><span class="gm-upload-file-name">nodes-import.csv</span> · 24 rows</div>
+              <button type="button" class="gm-upload-remove" onclick="event.stopPropagation();csvClearFile()">Remove</button>
             </div>
+            <div class="gm-upload-helper">Credentials aren't read from the file. Set them after import — per node, or in bulk from Detected.</div>
           </div>
 
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-            <div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Credentials aren't read from the file. Set them after import — per node, or in bulk from Detected.</div>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap;">
             <button id="csv-continue-btn" class="btn-primary" style="width:auto;padding:12px 24px;opacity:0.4;pointer-events:none;" onclick="go(&#39;csv-preview&#39;)">Validate &amp; preview →</button>
           </div>
 
