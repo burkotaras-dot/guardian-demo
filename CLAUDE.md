@@ -109,6 +109,8 @@ Light OS cards follow Figma `3154:26383`: default `#F8FAFC` / `#E2E8F0`, hover
 Dark OS cards follow Figma `3154:27718`: default surface `#123336` with no visible border;
 hover surface `rgba(16,185,129,.10)` with `rgba(16,185,129,.60)` border; icons remain
 `#6EE7B7`, titles white, subtitles `#94A3B8`, and no shadow.
+Add Node source cards follow Figma `3145:24091`: exact desktop height 94px, 14px vertical and
+20px horizontal padding, a 64px content row, 1px border, 14px radius, 44px icon, and 16px column gap.
 In the dark Add Node source-choice modal (Figma `3145:24948`), only the two lower default cards
 (ServiceNow and CSV) use `#123336` with a transparent border; keep the semantic hover borders.
 After Add Manually, step 1 is always detected OS / OS selection; step 2 is the method choice.
