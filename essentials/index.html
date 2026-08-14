@@ -1233,7 +1233,7 @@ body.dark .btn-third { color:#FFFFFF; }
   border-radius:var(--radius-md); padding:14px;
   cursor:pointer; transition:all 0.15s;
 }
-.os-card:hover { border-color:var(--green1); background:rgba(63,200,120,0.03); box-shadow:0 2px 12px rgba(63,200,120,0.1); }
+.os-card:hover { border-color:rgba(16,185,129,.60); background:#EDF9F4; box-shadow:0 2px 12px rgba(16,185,129,.10); }
 .os-card h4 { font-size:13px; font-weight:600; color:var(--text-default); margin-top:8px; }
 .os-card p  { font-size:10px; color:var(--text-sec); margin-top:2px; }
 
@@ -3740,22 +3740,6 @@ body.dark #v-remediation #remed-result-block [style*="stroke:#64748b"] { stroke:
 .add-node-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:20px; }
 .add-node-title { color:var(--text-default); font-size:18px; font-weight:700; line-height:1.3; letter-spacing:-.3px; }
 .add-node-subtitle { margin-top:4px; color:var(--text-sec); font-size:12px; line-height:1.5; }
-.add-node-close {
-  width:28px;
-  height:28px;
-  display:flex;
-  flex:0 0 28px;
-  align-items:center;
-  justify-content:center;
-  margin:-2px -4px 0 0;
-  padding:0;
-  border:0;
-  border-radius:6px;
-  background:transparent;
-  color:var(--text-sec);
-  cursor:pointer;
-}
-.add-node-close:hover { background:var(--bg-canvas); color:var(--text-default); }
 .add-node-options { display:flex; flex-direction:column; gap:14px; }
 .add-node-option {
   box-sizing:border-box;
@@ -3781,7 +3765,6 @@ body.dark #v-remediation #remed-result-block [style*="stroke:#64748b"] { stroke:
 .add-node-option:hover { background:#EDF9F4; border-color:rgba(16,185,129,.60); transform:translateY(-1px); }
 .add-node-option--cloud:hover { border-color:#3B82F6; background:rgba(59,130,246,.06); }
 .add-node-option--servicenow:hover { border-color:#8B5CF6; background:rgba(139,92,246,.06); }
-.add-node-option--servicenow:hover .link-cta { color:#8B5CF6; }
 .add-node-option:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(16,185,129,.14); }
 .add-node-option--servicenow:focus-visible { box-shadow:0 0 0 3px rgba(139,92,246,.14); }
 .add-node-icon {
@@ -3810,7 +3793,6 @@ body.dark .add-node-option--cloud { border-color:#3B82F6; }
 body.dark .add-node-option:hover { background:rgba(16,185,129,.10); border-color:rgba(16,185,129,.60); }
 body.dark .add-node-option--cloud:hover { background:rgba(59,130,246,.10); border-color:#3B82F6; }
 body.dark .add-node-option--servicenow:hover { background:rgba(139,92,246,.10); border-color:#8B5CF6; }
-body.dark .add-node-option--servicenow:hover .link-cta { color:#A78BFA; }
 @media (max-width:640px) {
   .add-node-dialog { padding:20px; }
   .add-node-option { grid-template-columns:44px minmax(0,1fr); padding:16px; }
@@ -4143,8 +4125,48 @@ body.dark .gm-step.is-done .gm-step-label { color:#F8FAFC; font-weight:600; }
 .gm-titles { flex: 1; min-width: 0; }
 .gm-title { font-size: 15px; font-weight: 600; color: var(--text-default); line-height: 1.3; }
 .gm-sub { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 4px; }
-.gm-x { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 20px; line-height: 1; margin: -4px -6px 0 0; padding: 0; }
-.gm-x:hover { background: var(--bg-canvas); color: var(--text-default); }
+/* ── Canonical modal Close button ─────────────────────────────────────────
+   Figma 3147:10053 — 28×28 control, 18×18 icon, radius 6. The shared
+   geometry and theme states cover both the gm shell and Add Node modal. */
+.gm-x,
+.add-node-close {
+  flex:0 0 28px;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:#475569;
+  cursor:pointer;
+  font-size:0;
+  line-height:1;
+  transition:background-color .15s,color .15s;
+}
+.gm-x { margin:-4px -6px 0 0; }
+.add-node-close { margin:-2px -4px 0 0; }
+.gm-x::before,
+.add-node-close::before {
+  content:"";
+  width:18px;
+  height:18px;
+  display:block;
+  background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'%3E%3Cpath d='M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") center/18px 18px no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'%3E%3Cpath d='M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") center/18px 18px no-repeat;
+}
+.add-node-close > svg { display:none; }
+.gm-x:hover,
+.add-node-close:hover { background:#F1F5F9; color:#0F172A; }
+.gm-x:focus-visible,
+.add-node-close:focus-visible { outline:2px solid rgba(16,185,129,.60); outline-offset:2px; }
+body.dark .gm-x,
+body.dark .add-node-close { color:#CBD5E1; }
+body.dark .gm-x:hover,
+body.dark .add-node-close:hover { background:rgba(255,255,255,.06); color:#F8FAFC; }
 .gm-body { padding: 14px 24px 4px; overflow-y: auto; flex: 1 1 auto; }
 /* ── Canonical modal inputs ────────────────────────────────────────────────
    Figma 3023:4716 — Input / Description, White + Dark.
@@ -21352,7 +21374,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div class="add-node-title" id="add-node-title">Add Node</div>
         <div class="add-node-subtitle">Choose how you want to add nodes to Guardian</div>
       </div>
-      <button class="add-node-close" onclick="closeAddDeviceModal()" aria-label="Close Add Node dialog">
+      <button type="button" class="add-node-close" onclick="closeAddDeviceModal()" aria-label="Close Add Node dialog">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
