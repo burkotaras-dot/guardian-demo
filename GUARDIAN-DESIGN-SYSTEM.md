@@ -44,8 +44,14 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 
 **Import sub-pattern (reference).** **CMDB Import** — ✅ сконвертований в overlay (`#cmdb-modal`, gm-* shell + 3-крокний `gm-stepper`, driver `cmdbShowPanel()`), тепер є **canonical reference для всіх import-flows**; **CSV Import** — ✅ conform-нутий під нього (`#csv-modal`, той самий gm-* shell + 3-крокний stepper Upload→Review→Import, driver `csvShowPanel()`).
 
+**Add Node sub-pattern (reference).** Figma `Guardian UI Design System based on Mantine v5.10`, component frame `3165:10694` (reference modal instances `3154:27407` Light / `3154:27537` Dark). Detected-OS wizard має desktop shell `600 × 537px`: header `74px`, stepper `54px`, content `346px`, footer `63px`. Усередині: detected-OS block `550 × 60px`, full-width Primary action `550 × 44px`, OS cards `269 × 95px` з gap `14px`; від нижнього краю карток до footer divider завжди `18px`. Content Primary використовує лише канонічний `.btn-primary` з варіантами `.btn-primary--large.btn-primary--arrow`: padding `13px 24px`, gap `8px`, `DM Sans 600 14px`, gradient `#10B981 → #059669`, radius `10px`, shadow `0 4px 7px rgba(16,185,129,.30)`. Не підміняти його footer-компонентом `.gm-btn-primary`. Картка завжди має вертикальний left-aligned layout: inset `14px`, іконка `20 × 20px`, title під іконкою через `8px`, optional subtitle через `2px`. Канонічні light-theme стани беруться з Figma card components `3154:26383`: **Default** (`3150:26310`, `3150:26328`) — surface `#F8FAFC`, border `1px solid #E2E8F0`, icon `#334155`; **Hover** (`3150:26312`, `3150:26352`) — surface `#EDF9F4`, border `1px solid rgba(16,185,129,.60)`, icon `#10B981`, без shadow. Канонічні dark-theme стани беруться з Figma `3154:27718`: **Default** (`3154:27720`, `3154:27729`) — surface `#123336`, без видимого border, icon `#6EE7B7`, title `#FFFFFF`, subtitle `#94A3B8`; **Hover** (`3154:27741`, `3154:27735`) — surface `rgba(16,185,129,.10)`, border `1px solid rgba(16,185,129,.60)`, ті самі text/icon colors, без shadow. Чотири кроки: `Add node → Connect → Scan → Results`; канонічний footer містить `Back`. На вузьких екранах fixed-height вимикається й компоненти складаються вертикально. Світла й темна теми мають однакову геометрію; змінюються лише surface/border/text tokens.
+
+**Add Node source cards / Dark.** За Figma `3145:24948` дві нижні default-картки — `Bulk import from ServiceNow` та `Import from CSV` — мають surface `#123336` і не мають видимого бордера. Верхні source-картки зберігають семантичні green/blue borders; на hover нижні картки можуть показувати відповідний semantic border.
+
+**Add Node / Step 2 method cards.** Sources of truth — Figma `3164:10368` Light та `3164:10455` Dark. Після **Add Manually** крок 1 завжди показує detected OS / OS cards; лише після вибору ОС крок 2 показує `Install an agent` та `Agentless scan`. Не міняти ці екрани місцями. Method grid `268px 268px`, gap `14px`; card `268 × 204px`, padding `20px`, radius `14px`, icon container `44px` / icon `22px` / radius `12px`, icon `#3FC878` на `rgba(63,200,120,.10)`, title offset `14px` (`DM Sans 700 14/18`), description offset `4px`, meta offset `14px` (`600 12/16`). Light Default — surface `#F8FAFC`, border `1px solid #E2E8F0`, description `#475569` `11/18`; Light Hover — surface `#EDF9F4`, border `1px solid #10B981`, без shadow. Dark Default — surface `#123336` без видимого border, description `#CBD5E1` `12/18`; Dark Hover — success surface/border без shadow. Від нижнього краю карток до footer divider завжди рівно `18px` у двох темах. Method-step shell `600 × 433px` (body `242px`); Back повертає до вибору ОС.
+
 **Exceptions.**
-- **Add node agentlessly** (`v-s-agentless` та супутні) — full-page. Обґрунтування: складний багатосекційний onboarding (Target / CM / Credentials) + connect-test engine, не вміщується коректно в модалку.
+- **Add node agentlessly після вибору методу** (`v-s-agentless` та connect-test) — поки full-page. Обґрунтування: складний багатосекційний onboarding (Target / CM / Credentials) + connect-test engine. Source choice, OS і method вже перенесені в overlay; detected-OS geometry звірена з Figma `3165:10694`.
 - Нові винятки додавати сюди ЛИШЕ з явним обґрунтуванням і рішенням user.
 
 **Порушники, які треба привести до правила:**
@@ -510,7 +516,8 @@ warning/error 3800 мс — помилка має жити довше, бо на
 **Rule.** Головна дія екрана або кроку — **праворуч**, вторинні — ліворуч від неї, у тому самому ряду.
 Порядок: `[вторинні …, головна]`, головна завжди остання. Дві головні дії в одному ряду не існують.
 
-- **Overlay-модалка:** дії в `gm-foot`, праворуч; `Cancel` ліворуч від головної.
+- **Overlay-модалка:** дії в `gm-foot`; Back — у `.gm-foot-left`, основна група — у
+  `.gm-foot-right`. `Cancel` або supportive secondary стоїть ліворуч від Primary у правій групі.
 - **Full-page екран:** головна дія праворуч у хедері, навігація назад — ліворуч (див. 1.2).
 - Destructive-дія займає позицію головної, але має `kind:'destructive'`.
 
@@ -523,6 +530,34 @@ warning/error 3800 мс — помилка має жити довше, бо на
 
 **Exceptions.** Toolbar-кнопки над таблицею та row-level actions не є footer-діями і живуть за
 власним правилом 6.4.
+
+#### Канонічний footer модального вікна
+
+**Source of truth:** Figma `eXz33Qu7v58JjOiatTptAE`, component set `3023:5088`.
+
+Footer відділений від body однією верхньою лінією: Light `#E2E8F0`, Dark
+`rgba(255,255,255,0.06)`. Геометрія незмінна між темами: `padding:10px 24px 12px`, мінімальна
+висота `54px`; усі кнопки `h32`, `radius:10px`, `DM Sans 600 12px`. Gap усередині лівої групи —
+`8px`, між двома правими кнопками — `10px`.
+
+Дозволені лише чотири композиції:
+
+1. одна Primary праворуч;
+2. Back ліворуч + Primary праворуч;
+3. Back ліворуч + supportive Secondary і Primary праворуч;
+4. лише Back ліворуч.
+
+Back у footer — це `Third`, а не нейтральна прямокутна кнопка: квадрат `32×32` зі стрілкою +
+підпис **поза рамкою**, gap `8px`. У `openModal` використовувати `backButton`, не вставляти
+`← Back` вручну через `footerLeftHtml`. Primary: gradient `#10B981 → #059669`, horizontal padding
+`20px`, білий текст, стрілка праворуч, shadow `0 4px 7px rgba(16,185,129,.30)`. Supportive
+Secondary: Light `rgba(0,175,115,.05)` / `#9DE0C9`; Dark `rgba(0,175,115,.15)` /
+`rgba(0,175,115,.35)`.
+
+`Cancel` / `Close` залишаються нейтральними, бо вони не мають читатися як друга позитивна дія.
+Warning і destructive дії зберігають семантичний колір; геометрія footer-кнопки лишається
+канонічною. Довільний HTML у `footerLeftHtml` дозволений лише для контекстної допоміжної дії
+(наприклад, Test), але не для Back або основних submit-дій.
 
 ### 6.2 Лейбли термінальних дій
 

@@ -95,6 +95,33 @@ Colours: `.bdg--orange | --purple | --red | --green | --gray | --blue`.
 
 Severity mapping: critical → Red · high + medium → Orange · low → Blue · pass → Green.
 
+### Add Node modal flow
+
+The Add Node detected-OS flow follows Figma component frame `3165:10694` (modal instances
+`3154:27407` Light / `3154:27537` Dark): `openAddNodeWizard()` uses an
+600×537px desktop shell (74px header, 54px stepper, 346px body, 63px footer), with a
+550×60px detected block, 550×44px primary action and two 269×95px OS cards separated by 14px.
+Keep exactly 18px between the bottom of the OS cards and the footer divider.
+Light OS cards follow Figma `3154:26383`: default `#F8FAFC` / `#E2E8F0`, hover
+`#EDF9F4` / `rgba(16,185,129,.60)` with a `#10B981` icon and no hover shadow.
+Dark OS cards follow Figma `3154:27718`: default surface `#123336` with no visible border;
+hover surface `rgba(16,185,129,.10)` with `rgba(16,185,129,.60)` border; icons remain
+`#6EE7B7`, titles white, subtitles `#94A3B8`, and no shadow.
+In the dark Add Node source-choice modal (Figma `3145:24948`), only the two lower default cards
+(ServiceNow and CSV) use `#123336` with a transparent border; keep the semantic hover borders.
+After Add Manually, step 1 is always detected OS / OS selection; step 2 is the method choice.
+Never swap them. Method cards follow Figma `3164:10455`: 268px wide, 14px apart, 20px padded,
+14px radius, with 44/22px icon geometry. Cards are 204px high; keep
+exactly 18px from their bottom edge to the footer divider. The resulting method shell is 600×433px.
+Dark method cards use `#123336` with no visible default border.
+Its Light source is Figma `3164:10368`: default `#F8FAFC` / `#E2E8F0`, hover
+`#EDF9F4` / solid `#10B981`, no shadow; descriptions are `#475569` at 11/18.
+The 550×44 content action must use `.btn-primary.btn-primary--large.btn-primary--arrow`; do not
+substitute the 32px modal-footer `.gm-btn-primary` component.
+Its canonical four-step `gm-stepper` is Add node → Connect → Scan → Results. Do not route these first selection screens back to
+the legacy full-page `v-s02` / `v-s-method` views. The complex agentless setup remains a
+documented full-page exception after the method has been chosen.
+
 **Dark mode needs no overrides.** Colour comes from tokens (`--bdg-{colour}-txt|-bg|-bd`,
 light `index.html:165`, dark `index.html:2642`), so `body.dark` badge rules are obsolete and
 were deleted. Do not reintroduce them — and do not set badge text to `#fff` in dark: the canon
@@ -106,6 +133,15 @@ several times over.
 
 Legacy family class names (`.badge-*`, `.drift-stat`, `.intg-status`, `.type-pill`, …) are kept as
 selectors inside the canonical block, so markup and JS class logic stay untouched.
+
+### Modal footer actions — canonical component
+
+Use `openModal()` and `.gm-foot`; source of truth is Figma component set `3023:5088` and
+`GUARDIAN-DESIGN-SYSTEM.md` §6.1. Footer geometry is `padding:10px 24px 12px`, buttons are 32px high,
+10px radius, DM Sans 600/12. Back belongs on the left via `backButton` and renders as the canonical
+Third pattern `[32px arrow square] Back`; never hand-code `← Back` in `footerLeftHtml`. Primary and
+optional supportive secondary belong in `.gm-foot-right`, with Primary last. `Cancel`/`Close` remain
+neutral; warning/destructive buttons keep their semantic colour.
 
 **The only other chip family is `.code-tag`** (`index.html:1348`) — a *literal value* the user types
 or verifies (CSV column name, ServiceNow CI id). DM Mono 11px, case preserved, radius 5px. The badge
