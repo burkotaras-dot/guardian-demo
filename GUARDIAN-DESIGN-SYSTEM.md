@@ -73,7 +73,15 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 
 **Rule.** Overlay-модалки закриваються трьома шляхами (усі дає `openModal`): `gm-x` (×) у `gm-head`, клік по затемненню `gm-overlay`, клавіша `Esc`. За наявності незбережених змін — `confirmDirty` показує «Discard unsaved changes?». `dismissable:false` вимикає backdrop/Esc для критичних кроків.
 
-**Reference.** `openModal` requestClose — `index.html:11633`.
+Усі іконки закриття модальних вікон використовують один компонент **Close button** (`.gm-x`; legacy Add Node `.add-node-close` наслідує той самий контракт). Геометрія: control `28×28px`, icon `18×18px`, stroke `1.5px`, radius `6px`, без border. Хрестик будується з двох діагоналей із round line-cap; текстові символи `×` як видима іконка не використовуються.
+
+- Light Default: прозорий фон, icon `#475569`.
+- Light Hover: фон `#F1F5F9`, icon `#0F172A`.
+- Dark Default: прозорий фон, icon `#CBD5E1`.
+- Dark Hover: фон `rgba(255,255,255,.06)`, icon `#F8FAFC`.
+- Компонент лишається нативною `<button type="button">`, має описовий `aria-label`, видимий `:focus-visible` і не застосовується до remove/clear-кнопок усередині полів, тегів чи рядків.
+
+**Reference.** Figma `Guardian UI Design System based on Mantine v5.10`, node `3147:10053` (`Close button`: Default / Hover; Light + Dark). Поведінка закриття — `openModal` requestClose.
 
 **Exceptions.** Full-page create/onboarding (agentless) не має `gm-x` — вихід через Back/Cancel у хедері. Це наслідок full-page винятку 1.1.
 
