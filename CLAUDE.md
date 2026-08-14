@@ -99,8 +99,10 @@ Severity mapping: critical → Red · high + medium → Orange · low → Blue �
 
 The Add Node detected-OS flow follows Figma component frame `3165:10694` (modal instances
 `3154:27407` Light / `3154:27537` Dark): `openAddNodeWizard()` uses an
-600×537px desktop shell (74px header, 54px stepper, 346px body, 63px footer), with a
-550×60px detected block, 550×44px primary action and two 269×95px OS cards separated by 14px.
+600×473px desktop shell (74px header, 54px stepper, 282px body, 63px footer), with a
+550×60px detected block and two 269×95px OS cards separated by 14px. The primary action lives
+**inside** the detected block, right-aligned — the strip states what we found and the button acts
+on that same statement, so they are one object rather than two stacked ones.
 Keep exactly 18px between the bottom of the OS cards and the footer divider.
 Light OS cards follow Figma `3154:26383`: default `#F8FAFC` / `#E2E8F0`, hover
 `#EDF9F4` / `rgba(16,185,129,.60)` with a `#10B981` icon and no hover shadow.
@@ -116,8 +118,10 @@ exactly 18px from their bottom edge to the footer divider. The resulting method 
 Dark method cards use `#123336` with no visible default border.
 Its Light source is Figma `3164:10368`: default `#F8FAFC` / `#E2E8F0`, hover
 `#EDF9F4` / solid `#10B981`, no shadow; descriptions are `#475569` at 11/18.
-The 550×44 content action must use `.btn-primary.btn-primary--large.btn-primary--arrow`; do not
-substitute the 32px modal-footer `.gm-btn-primary` component.
+The in-strip content action is DS §6.5 **Primary, size s** — `.btn-primary.btn-primary--s.btn-primary--arrow`
+(32px, `padding:0 20px`, DM Sans 600/12, radius 10, gradient + `0 4px 7px rgba(16,185,129,.3)`).
+Do not substitute the modal-footer `.gm-btn-primary` component, and do not restore the old
+full-width `.btn-primary--large` action.
 Its canonical four-step `gm-stepper` is Add node → Connect → Scan → Results. Do not route these first selection screens back to
 the legacy full-page `v-s02` / `v-s-method` views. The complex agentless setup remains a
 documented full-page exception after the method has been chosen.
