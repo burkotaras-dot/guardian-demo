@@ -1113,6 +1113,15 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
 }
 .btn-primary:active { transform:translateY(0); }
 .btn-primary:disabled, .btn-primary[disabled] { opacity:0.4; cursor:not-allowed; transform:none; }
+/* DS Primary / Large — full-width content action from Figma 3165:10694. */
+.btn-primary--large {
+  height:44px;
+  padding:13px 24px;
+  gap:8px;
+  font-size:14px;
+  line-height:18px;
+}
+.btn-primary--arrow::after { content:'\2192'; font-size:14px; line-height:1; }
 
 /* DS §6.5 "Secondary" (s=32) */
 .btn-secondary {
@@ -2952,6 +2961,9 @@ body.dark .sev-num-medium   { color:#F59E0B; }
 body.dark .sev-num-low      { color:#3B82F6; }
 body.dark .sev-num-pass     { color:#10B981; }
 body.dark .btn-primary, body.dark .btn-primary:hover { box-shadow: none; }
+/* Large content Primary keeps the Figma component shadow in both themes. */
+body.dark .btn-primary--large,
+body.dark .btn-primary--large:hover { box-shadow:0 4px 7px rgba(16,185,129,.30); }
 body.dark .issue-row          { background: var(--issue-row-bg); border-color: transparent; border-left-color: var(--sev-critical); }
 body.dark .issue-row:hover    { background: var(--issue-row-bg-hover); }
 body.dark .issue-name         { color: var(--p-neutral-50); }
@@ -3790,9 +3802,161 @@ body.dark .add-node-dialog { background:var(--bg-card); border-color:#04363A; }
 body.dark .add-node-option { background:#133033; border-color:#42595C; }
 body.dark .add-node-option--manual { border-color:rgba(16,185,129,.60); }
 body.dark .add-node-option--cloud { border-color:#3B82F6; }
+body.dark .gm-add-node-choice .add-node-option:nth-child(n+3) {
+  background:#123336;
+  border-color:transparent;
+}
 body.dark .add-node-option:hover { background:rgba(16,185,129,.10); border-color:rgba(16,185,129,.60); }
 body.dark .add-node-option--cloud:hover { background:rgba(59,130,246,.10); border-color:#3B82F6; }
 body.dark .add-node-option--servicenow:hover { background:rgba(139,92,246,.10); border-color:#8B5CF6; }
+body.dark .gm-add-node-choice .add-node-option:nth-child(n+3):hover {
+  background:rgba(16,185,129,.10);
+  border-color:rgba(16,185,129,.60);
+}
+body.dark .gm-add-node-choice .add-node-option--servicenow:nth-child(n+3):hover {
+  background:rgba(139,92,246,.10);
+  border-color:#8B5CF6;
+}
+.gm-add-node-choice .gm-body { padding-top:20px; padding-bottom:24px; }
+.gm-add-node-choice .add-node-options { width:100%; }
+.gm-add-node-choice .add-node-option { min-height:103px; }
+
+/* Add Node / detected OS — Figma component frame 3165:10694
+   (reference instances 3154:27407 Light / 3154:27537 Dark).
+   Exact 600×537 geometry: head 74, stepper 54, body 346, footer 63. */
+.gm-add-node-wizard.gm-card {
+  width:600px;
+  height:537px;
+  max-height:calc(100vh - 40px);
+}
+.gm-add-node-wizard .gm-head {
+  flex:0 0 74px;
+  height:74px;
+  box-sizing:border-box;
+}
+.gm-add-node-wizard .gm-stepper {
+  flex:0 0 54px;
+  height:54px;
+  box-sizing:border-box;
+}
+.gm-add-node-wizard .gm-body {
+  flex:0 0 346px;
+  height:346px;
+  box-sizing:border-box;
+  padding:0;
+}
+.gm-add-node-wizard .gm-foot {
+  flex:0 0 63px;
+  height:63px;
+  min-height:63px;
+  margin-top:0;
+}
+.gm-add-node-wizard.is-method-step { height:433px; }
+.gm-add-node-wizard.is-method-step .gm-body {
+  flex-basis:242px;
+  height:242px;
+}
+.add-node-flow {
+  box-sizing:border-box;
+  min-height:346px;
+  padding:20px 24px 18px;
+}
+.add-node-detected {
+  width:100%; height:60px; box-sizing:border-box; display:flex; align-items:center; gap:12px;
+  padding:12px 16px; border:1px solid rgba(16,185,129,.20); border-radius:10px;
+  background:rgba(16,185,129,.06);
+}
+.add-node-detected-icon {
+  width:34px; height:34px; flex:0 0 34px; display:flex; align-items:center; justify-content:center;
+  border-radius:6px; color:#10B981; background:rgba(16,185,129,.10);
+}
+.add-node-detected-icon svg { width:16px; height:16px; }
+.add-node-detected-title { display:block; color:var(--text-default); font-size:13px; font-weight:600; line-height:17px; }
+.add-node-detected-sub { display:block; margin-top:0; color:#475569; font-size:10px; line-height:15px; }
+.add-node-continue {
+  width:100%; max-width:none; margin-top:20px;
+}
+.add-node-flow-note {
+  box-sizing:border-box; height:22px; padding-top:8px; color:#475569;
+  font-size:11px; line-height:14px;
+}
+.add-node-flow-separator { height:1px; margin:20px 0 0; background:#E2E8F0; }
+.add-node-flow-label {
+  height:14px; margin:18px 0 14px; color:#475569;
+  font-size:11px; font-weight:500; line-height:14px;
+}
+.add-node-flow .os-grid { grid-template-columns:269px 269px; gap:14px; }
+.add-node-flow .os-card {
+  width:269px; height:95px; min-height:95px; box-sizing:border-box;
+  display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start;
+  padding:14px; border:1px solid #E2E8F0; border-radius:10px;
+  background:#F8FAFC; box-shadow:none; color:var(--text-default);
+  font-family:'DM Sans',sans-serif; text-align:left; appearance:none;
+  transition:background-color .15s ease,border-color .15s ease;
+}
+.add-node-flow .os-card svg {
+  display:block; width:20px; height:20px; flex:0 0 20px;
+  color:#334155;
+}
+.add-node-flow .os-card svg[fill="currentColor"] { stroke:none !important; }
+.add-node-flow .os-card:hover {
+  background:#EDF9F4;
+  border-color:rgba(16,185,129,.60);
+  box-shadow:none;
+}
+.add-node-flow .os-card:hover svg { color:#10B981; stroke:currentColor !important; }
+.add-node-flow .os-card:hover svg[fill="currentColor"] { fill:currentColor; stroke:none !important; }
+.add-node-flow .os-card h4 {
+  display:block; margin:8px 0 0; color:var(--text-default);
+  font-size:13px; font-weight:600; line-height:17px;
+}
+.add-node-flow .os-card p {
+  display:block; margin:2px 0 0; color:var(--text-sec);
+  font-size:10px; font-weight:400; line-height:14px;
+}
+.add-node-flow--method { min-height:242px; padding:20px 24px 18px; }
+.add-node-method-icon {
+  width:44px; height:44px; flex:0 0 44px; display:flex; align-items:center; justify-content:center;
+  border-radius:12px; color:#3FC878; background:rgba(63,200,120,.10);
+}
+.add-node-method-icon svg { width:22px; height:22px; }
+.add-node-method-grid { display:grid; grid-template-columns:268px 268px; gap:14px; }
+.add-node-method-card {
+  width:268px; height:204px; min-height:204px; box-sizing:border-box; display:flex; flex-direction:column; align-items:flex-start;
+  padding:20px; border:1px solid #E2E8F0; border-radius:14px; background:#F8FAFC;
+  color:var(--text-default); font-family:'DM Sans',sans-serif; text-align:left; cursor:pointer;
+  transition:background-color .15s,border-color .15s,box-shadow .15s;
+}
+.add-node-method-card:hover { background:#EDF9F4; border-color:#10B981; box-shadow:none; }
+.add-node-method-title { margin-top:14px; font-size:14px; font-weight:700; line-height:18px; }
+.add-node-method-description { margin-top:4px; color:#475569; font-size:11px; line-height:18px; }
+.add-node-method-meta { margin-top:auto; padding-top:14px; color:#3FC878; font-size:12px; font-weight:600; line-height:16px; }
+body.dark .add-node-detected { background:#133033; border-color:#42595C; }
+body.dark .add-node-flow .os-card { background:#123336; border-color:transparent; }
+body.dark .add-node-detected { background:rgba(16,185,129,.06); border-color:rgba(16,185,129,.20); }
+body.dark .add-node-flow-separator { background:#04363A; }
+body.dark .add-node-flow .os-card svg { color:#6EE7B7; stroke:currentColor !important; }
+body.dark .add-node-flow .os-card svg[fill="currentColor"] { stroke:none !important; }
+body.dark .add-node-detected-sub,
+body.dark .add-node-flow-note,
+body.dark .add-node-flow-label { color:#CBD5E1; }
+body.dark .add-node-flow .os-card:hover {
+  background:rgba(16,185,129,.10);
+  border-color:rgba(16,185,129,.60);
+  box-shadow:none;
+}
+body.dark .add-node-method-card { background:#123336; border-color:transparent; }
+body.dark .add-node-method-description { color:#CBD5E1; font-size:12px; }
+body.dark .add-node-method-card:hover { background:rgba(16,185,129,.10); border-color:rgba(16,185,129,.60); box-shadow:none; }
+@media (max-width:640px) {
+  .gm-add-node-wizard.gm-card { width:100%; height:auto; }
+  .gm-add-node-wizard.is-method-step { height:auto; }
+  .gm-add-node-wizard .gm-body { flex:1 1 auto; height:auto; }
+  .add-node-flow .os-grid { grid-template-columns:1fr; }
+  .add-node-flow .os-card { width:100%; }
+  .add-node-method-grid { grid-template-columns:1fr; }
+  .add-node-method-card { width:100%; height:auto; min-height:174px; }
+}
 @media (max-width:640px) {
   .add-node-dialog { padding:20px; }
   .add-node-option { grid-template-columns:44px minmax(0,1fr); padding:16px; }
@@ -4616,14 +4780,40 @@ body.dark .gm-overlay :is(.gm-tab,.toggle-btn):is(.active,.is-active,[aria-selec
 }
 #export-modal .gm-body { padding-bottom:24px; }
 body.dark #export-modal .export-file-card { background:#133033 !important; border-color:#42595C !important; }
-.gm-foot { display: flex; align-items: center; gap: 8px; padding: 10px 24px 12px; border-top: 1px solid var(--border); margin-top: 8px; flex-shrink: 0; justify-content: flex-end; }
-.gm-foot-right { display: flex; gap: 8px; margin-left: auto; }
-.gm-btn { padding: 7px 16px; font-size: 12px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-.gm-btn-secondary { border: 1px solid var(--border); background: #F1F5F9; color: var(--text-default); }
-.gm-btn-secondary:hover { background: #E2E8F0; }
-body.dark .gm-btn-secondary { background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.16); }
-body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !important; }
-.gm-btn-primary { border: none; background: var(--green1); color: #fff; }
+.gm-foot {
+  display:flex; align-items:center; gap:8px; flex-shrink:0;
+  min-height:54px; box-sizing:border-box;
+  padding:10px 24px 12px; margin-top:8px;
+  border-top:1px solid #E2E8F0;
+}
+.gm-foot-left { display:flex; align-items:center; gap:8px; min-width:0; }
+.gm-foot-right { display:flex; align-items:center; gap:10px; margin-left:auto; }
+.gm-btn {
+  height:32px; box-sizing:border-box; padding:0 14px;
+  display:inline-flex; align-items:center; justify-content:center; gap:4px;
+  border-radius:10px; cursor:pointer; white-space:nowrap;
+  font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
+  transition:background .15s, border-color .15s, color .15s, transform .15s;
+}
+.gm-btn-secondary { border:1px solid var(--border); background:#F1F5F9; color:var(--text-default); }
+.gm-btn-secondary:hover { background:#E2E8F0; border-color:var(--text-muted); }
+/* Optional supportive action beside Primary in a modal footer (Figma 3023:5088). */
+.gm-btn-tertiary { border:1px solid #9DE0C9; background:rgba(0,175,115,.05); color:#334155; padding-inline:20px; }
+.gm-btn-tertiary:hover { background:rgba(0,175,115,.15); border-color:rgba(0,175,115,.35); }
+body.dark .gm-foot { border-top-color:rgba(255,255,255,.06); }
+body.dark .gm-btn-secondary { background:rgba(255,255,255,.08) !important; border-color:rgba(255,255,255,.16); color:#FFFFFF; }
+body.dark .gm-btn-secondary:hover { background:rgba(255,255,255,.13) !important; }
+body.dark .gm-btn-tertiary { background:rgba(0,175,115,.15); border-color:rgba(0,175,115,.35); color:#FFFFFF; }
+body.dark .gm-btn-tertiary:hover { background:rgba(0,175,115,.20); border-color:rgba(0,175,115,.41); }
+.gm-btn-primary {
+  border:none; padding-inline:20px; color:#fff; background:var(--btn-grad);
+  box-shadow:0 4px 7px rgba(16,185,129,.30);
+}
+.gm-btn-primary::after { content:'\2192'; font-size:14px; line-height:1; }
+.gm-btn-primary:hover { background:var(--btn-grad-h); transform:translateY(-1px); }
+.gm-btn-primary:active { transform:translateY(0); }
+.gm-foot-back:focus-visible,
+.gm-btn:focus-visible { outline:2px solid rgba(16,185,129,.55); outline-offset:2px; }
 .gm-btn-warning { border: none; background: #F59E0B; color: #fff; font-weight: 500; }
 .gm-btn-destructive { border: none; background: #dc2626; color: #fff; }
 #cm-warn-overlay .gm-btn-warning { background:transparent; border:1px solid #D97706; color:#B45309; }
@@ -4633,7 +4823,7 @@ body.dark .gm-btn-secondary:hover { background: rgba(255,255,255,0.13) !importan
 body.dark #cm-warn-overlay :is(.gm-btn-warning,.gm-btn-destructive) { background:transparent; }
 body.dark #cm-warn-overlay .gm-btn-warning { color:#FBBF24; border-color:#D97706; }
 body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E11D48; }
-.gm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.gm-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
 /* Scan-failed remediation checklist status pills */
 /* .sf-st — статус кроку налаштування; геометрія й палітра з канону .bdg */
 
@@ -10306,7 +10496,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         hint: 'Credentials are pre-filled. Run in Terminal with sudo.'
       }
     };
-    function selectOS(os) {
+    function applyOSConfig(os) {
       var cfg = OS_CONFIG[os] || OS_CONFIG.windows;
       var set = function(id, val){ var el = document.getElementById(id); if (el) el.textContent = val; };
       set('install-sub', cfg.sub);
@@ -10323,6 +10513,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       switchMethod('installer');
       addNodeOS = os;
       selectedCM = null;
+    }
+    function selectOS(os) {
+      applyOSConfig(os);
       go('s-method');
     }
 
@@ -11417,8 +11610,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           { label: 'Save draft', kind: 'secondary', id: 'fm-btn-draft', onClick: function(e, close) { showToast('Draft saved'); close(); } },
           { label: 'Next: Configure mapping', kind: 'primary', id: 'fm-btn-next', onClick: _fmNext }
         ],
-        footerLeftHtml: '<button type="button" class="gm-btn gm-btn-secondary" id="fm-btn-back" style="display:none;" onclick="fmBack()">← Back</button>'
-          + '<button type="button" class="gm-btn gm-btn-secondary" id="fm-btn-test" style="display:none;" onclick="fmRunTest()">Test mapping</button>',
+        backButton: { label: 'Back', id: 'fm-btn-back', hidden: true, onClick: function() { fmBack(); } },
+        footerLeftHtml: '<button type="button" class="gm-btn gm-btn-tertiary" id="fm-btn-test" style="display:none;" onclick="fmRunTest()">Test mapping</button>',
         afterMount: function(ov) { _fmRenderStep1(ov, 0); }
       });
     }
@@ -12363,7 +12556,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         if (ov) {
           var foot = ov.querySelector('.gm-foot');
           if (foot) {
-            foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>';
+            foot.innerHTML = '<div class="gm-foot-left"><button class="btn-third gm-foot-back" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')"><span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back to groups</button></div>';
           }
         }
         return;
@@ -12401,11 +12594,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var foot = ov.querySelector('.gm-foot');
         if (foot) {
           if (_cmSetupOrigin === 'cm-list' || _cmSetupOrigin === 'cm-detail') {
-            foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Back to groups</button>'
-              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group</button>';
+            foot.innerHTML = '<div class="gm-foot-left"><button class="btn-third gm-foot-back" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')"><span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back to groups</button></div>'
+              + '<div class="gm-foot-right"><button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group</button></div>';
           } else {
-            foot.innerHTML = '<button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group</button>'
-              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');cmReturnToAddNode()">Continue to Add Node →</button>';
+            foot.innerHTML = '<div class="gm-foot-right"><button class="gm-btn gm-btn-secondary" onclick="closeModal(\'' + _CM_MODAL + '\');showCMDetail(\'' + newId + '\')">View group</button>'
+              + '<button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');cmReturnToAddNode()">Continue to Add Node</button></div>';
           }
         }
       }
@@ -12701,7 +12894,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
     // ── Unified modal shell ──────────────────────────────────────────────
     // opts: { id, size:'sm'|'md'|'lg', title, subtitle, bodyHtml,
-    //         footerLeftHtml, buttons:[{label,kind,onClick(e,close),id,disabled}],
+    //         backButton:{label,id,hidden,onClick(e,close)}, footerLeftHtml,
+    //         buttons:[{label,kind,onClick(e,close),id,disabled}],
     //         dismissable:bool (Esc/backdrop/X, default true),
     //         confirmDirty:bool (ask before discarding edits),
     //         afterMount(overlayEl), onClose() }
@@ -12731,14 +12925,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       ov.className = 'gm-overlay';
       ov.id = id;
       var footHtml = '';
-      if (opts.buttons && opts.buttons.length) {
-        var right = opts.buttons.map(function(b, i) {
+      if ((opts.buttons && opts.buttons.length) || opts.backButton || opts.footerLeftHtml) {
+        var back = opts.backButton
+          ? '<button type="button" class="btn-third gm-foot-back" data-gm-back="1"'
+            + (opts.backButton.id ? ' id="' + opts.backButton.id + '"' : '')
+            + (opts.backButton.hidden ? ' style="display:none;"' : '')
+            + (opts.backButton.disabled ? ' disabled' : '') + '>'
+            + '<span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>'
+            + (opts.backButton.label || 'Back') + '</button>'
+          : '';
+        var right = (opts.buttons || []).map(function(b, i) {
           return '<button type="button" class="gm-btn gm-btn-' + (b.kind || 'secondary') + '"'
             + (b.id ? ' id="' + b.id + '"' : '') + ' data-gm-btn="' + i + '"'
             + (b.disabled ? ' disabled' : '') + '>' + b.label + '</button>';
         }).join('');
-        footHtml = '<div class="gm-foot">' + (opts.footerLeftHtml || '')
-          + '<div class="gm-foot-right">' + right + '</div></div>';
+        footHtml = '<div class="gm-foot"><div class="gm-foot-left">' + back + (opts.footerLeftHtml || '') + '</div>'
+          + (right ? '<div class="gm-foot-right">' + right + '</div>' : '') + '</div>';
       }
       var stepperHtml = '';
       if (opts.steps && opts.steps.length) {
@@ -12769,6 +12971,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           var el = ov.querySelector('[data-gm-btn="' + i + '"]');
           if (el && b.onClick) el.addEventListener('click', function(e) { b.onClick(e, function() { closeModal(id); }); });
         });
+      }
+      var backEl = ov.querySelector('[data-gm-back]');
+      if (backEl && opts.backButton && opts.backButton.onClick) {
+        backEl.addEventListener('click', function(e) { opts.backButton.onClick(e, function() { closeModal(id); }); });
       }
       ov.querySelector('[data-gm-x]').addEventListener('click', requestClose);
       ov.addEventListener('mousedown', function(e) { if (e.target === ov) requestClose(); });
@@ -21380,7 +21586,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     </div>
     <div class="add-node-options">
       <!-- Option 1: Add manually -->
-      <button class="add-node-option add-node-option--manual" onclick="closeAddDeviceModal();go(&#39;s02&#39;);">
+      <button class="add-node-option add-node-option--manual" onclick="openAddNodeWizard();">
         <span class="add-node-icon add-node-icon--green">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
         </span>
@@ -21391,7 +21597,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <span class="link-cta add-node-card-cta"><span class="lc-txt">Agent · Agentless</span><span class="arr" aria-hidden="true">→</span></span>
       </button>
       <!-- Option 2: Add from Cloud -->
-      <button class="add-node-option add-node-option--cloud" onclick="closeAddDeviceModal();go(&#39;j3-connect&#39;);">
+      <button class="add-node-option add-node-option--cloud" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;j3-connect&#39;);">
         <span class="add-node-icon add-node-icon--blue">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"></path></svg>
         </span>
@@ -21402,7 +21608,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <span class="link-cta add-node-card-cta"><span class="lc-txt">AWS · Azure</span><span class="arr" aria-hidden="true">→</span></span>
       </button>
       <!-- Option 3: Bulk import from ServiceNow -->
-      <button class="add-node-option add-node-option--servicenow" onclick="closeAddDeviceModal();go(&#39;cmdb-connect&#39;);">
+      <button class="add-node-option add-node-option--servicenow" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;cmdb-connect&#39;);">
         <span class="add-node-icon add-node-icon--purple">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg>
         </span>
@@ -21413,7 +21619,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <span class="link-cta add-node-card-cta"><span class="lc-txt">ServiceNow CMDB</span><span class="arr" aria-hidden="true">→</span></span>
       </button>
       <!-- Option 4: Import from CSV -->
-      <button class="add-node-option" onclick="closeAddDeviceModal();go(&#39;csv-import&#39;);">
+      <button class="add-node-option" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;csv-import&#39;);">
         <span class="add-node-icon add-node-icon--green">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg>
         </span>
@@ -24551,12 +24757,77 @@ function goToDashboardFromJ4() {
 
 // ── Add Device Modal ──
 function openAddDeviceModal() {
-  const modal = document.getElementById('add-device-modal');
-  if (modal) { modal.style.display = 'flex'; }
+  var source = document.querySelector('#add-device-modal .add-node-options');
+  openModal({
+    id: 'add-node-choice-overlay',
+    size: 'lg',
+    title: 'Add Node',
+    subtitle: 'Choose how you want to add nodes to Guardian',
+    bodyHtml: source ? source.outerHTML : '',
+    afterMount: function(ov) { ov.querySelector('.gm-card').classList.add('gm-add-node-choice'); }
+  });
 }
 function closeAddDeviceModal() {
   const modal = document.getElementById('add-device-modal');
   if (modal) { modal.style.display = 'none'; }
+  closeModal('add-node-choice-overlay');
+}
+function openAddNodeWizard() {
+  closeModal('add-node-choice-overlay');
+  closeAddDeviceModal();
+  var windowsIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg>';
+  var macIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.84 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"></path></svg>';
+  var agentIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>';
+  var remoteIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h12"></path><polyline points="13 6 19 12 13 18"></polyline><circle cx="4" cy="12" r="1.6"></circle></svg>';
+  var body = '<section class="gm-panel add-node-flow" data-add-node-step="os">'
+    + '<div class="add-node-detected"><span class="add-node-detected-icon">' + windowsIcon + '</span><span><span class="add-node-detected-title">Windows 11 detected</span><span class="add-node-detected-sub">Auto-detected from your browser</span></span></div>'
+    + '<button type="button" class="btn-primary btn-primary--large btn-primary--arrow add-node-continue" onclick="addNodeChooseOS(\'windows\')">Continue with Windows 11</button>'
+    + '<div class="add-node-flow-note">Downloads a small agent (~8 MB) · No manual config needed</div>'
+    + '<div class="add-node-flow-separator"></div><div class="add-node-flow-label">Not right? Choose your OS:</div>'
+    + '<div class="os-grid"><button type="button" class="os-card" onclick="addNodeChooseOS(\'windows\')">' + windowsIcon + '<h4>Windows 11 / 10</h4></button>'
+    + '<button type="button" class="os-card" onclick="addNodeChooseOS(\'macos\')">' + macIcon + '<h4>macOS 12+</h4><p>Monterey or later</p></button></div></section>'
+    + '<section class="gm-panel add-node-flow add-node-flow--method" data-add-node-step="method"><div class="add-node-method-grid">'
+    + '<button type="button" class="add-node-method-card" onclick="addNodeFinishMethod(\'agent\')"><span class="add-node-method-icon">' + agentIcon + '</span><span class="add-node-method-title">Install an agent</span><span class="add-node-method-description">A lightweight agent runs on the node and reports in. Best for nodes you manage directly.</span><span class="add-node-method-meta">Recommended · ~2 min →</span></button>'
+    + '<button type="button" class="add-node-method-card" onclick="addNodeFinishMethod(\'agentless\')"><span class="add-node-method-icon">' + remoteIcon + '</span><span class="add-node-method-title">Agentless scan</span><span class="add-node-method-description">Scan remotely over WinRM/SSH through a Connection Manager — nothing installed on the node.</span><span class="add-node-method-meta">ⓘ Requires a Connection Manager</span></button>'
+    + '</div></section>';
+  openModal({
+    id: 'add-node-wizard-overlay',
+    size: 'lg',
+    title: 'Add this node',
+    subtitle: 'We detected your OS automatically.',
+    steps: [
+      { label: 'Add node' },
+      { label: 'Connect' },
+      { label: 'Scan' },
+      { label: 'Results' }
+    ],
+    bodyHtml: body,
+    backButton: {
+      label: 'Back',
+      onClick: function() {
+        var ov = document.getElementById('add-node-wizard-overlay');
+        if (ov && ov._gmCurrentStep > 0) {
+          ov.querySelector('.gm-card').classList.remove('is-method-step');
+          gmGoStep('add-node-wizard-overlay', ov._gmCurrentStep - 1);
+        }
+        else { closeModal('add-node-wizard-overlay'); openAddDeviceModal(); }
+      }
+    },
+    afterMount: function(ov) {
+      ov.querySelector('.gm-card').classList.add('gm-add-node-wizard');
+    }
+  });
+}
+function addNodeChooseOS(os) {
+  applyOSConfig(os);
+  var ov = document.getElementById('add-node-wizard-overlay');
+  if (ov) ov.querySelector('.gm-card').classList.add('is-method-step');
+  gmGoStep('add-node-wizard-overlay', 1);
+}
+function addNodeFinishMethod(method) {
+  closeModal('add-node-wizard-overlay');
+  if (method === 'agentless') { selectedCM = null; go('s-agentless'); }
+  else { go('s05'); }
 }
 // Close modal on backdrop click
 document.getElementById('add-device-modal').addEventListener('click', function(e) {
