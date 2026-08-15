@@ -10,29 +10,53 @@ This is a **single-file HTML prototype** for Guardian — a security compliance/
 
 **Local preview:** Claude Code has a built-in preview server. Use `preview_list` to find the active port (typically 8080, name `guardian-demo`).
 
-### ⛔ CRITICAL: `dev` is NOT a deploy source — it holds work the client must NOT see
+### ⛔ CRITICAL: two different pages live in one repository
 
-`dev` contains **Detected Drift / Reconciliation** work that is explicitly **NOT approved for production**. Only **dashboard** work is approved for prod. `dev` and `main` therefore **intentionally diverge**, and `main` is **not** a fast-forward of `dev`.
+GitHub Pages serves the **`public`** branch, and `public` mirrors `main`'s tree. That tree contains
+**two independent pages**:
 
-- ❌ **NEVER** run `git merge dev` / `git merge dev --ff-only` into `main` or `public`. It drags every un-deployed `dev` commit (all the Detected Drift work) onto prod, where the client will see it. (This bug happened 2026-06-26 and required a force-push recovery.)
-- ✅ Deploy a dashboard change by **cherry-picking only that commit** onto `main`.
+| URL | file in the served tree | what it is |
+|---|---|---|
+| `https://burkotaras-dot.github.io/guardian-demo/` | **root `index.html`** | the **client-facing** page |
+| `https://burkotaras-dot.github.io/guardian-demo/essentials/` | **`essentials/index.html`** | **our prototype** |
 
-**Deploy chain (cherry-pick, per-commit):**
+Work from the `essentials` branch deploys to **`essentials/index.html` only**.
+**Never write to the root `index.html`** — it is a different product surface and the client reads it.
+
+**How to tell a clean root from a contaminated one.** The client page has exactly **6 sidebar items**:
+`dashboard · all-devices · results · changes · policies · integrations`. The prototype has 10.
+If `sb-reports`, `sb-scan-schedule`, `sb-cm-list` or `sb-credentials` appear in the root — or any of
+`nd-iss-`, `bdg--quiet`, `gm-add-node-wizard`, `gm-agentless-testing`, `btn-primary--s` — the prototype
+has leaked into it.
+
 ```
-# on dev: commit the dashboard change as usual, then deploy ONLY that commit:
-git checkout main   && git cherry-pick -x <dashboard-sha>
-git checkout public && git reset --hard main          # public mirrors main's tree
-git push origin main && git push --force-with-lease origin public
-git checkout dev
+curl -s https://burkotaras-dot.github.io/guardian-demo/ | grep -oE 'id="sb-[a-z-]+"'
+```
+
+Clean-root reference blob = **`4e5a9cf3`** (14 211 lines), commit `15ed43d`.
+
+**Deploy an `essentials` change — always through a worktree**, because the `essentials` working tree
+usually holds uncommitted WIP that `git checkout main` would drag onto prod:
+```
+git worktree add /tmp/gd-deploy main
+cd /tmp/gd-deploy
+git show essentials:index.html > essentials/index.html          # ONLY paths under essentials/
+git diff --stat -- index.html                                    # MUST be empty: root untouched
+git commit -am "deploy(essentials): ..." && git push origin main
+git checkout public && git reset --hard main && git push --force-with-lease origin public
+cd - && git worktree remove /tmp/gd-deploy --force
 ```
 
 - `main` push triggers the GitHub Actions (`deploy.yml`) Pages deploy; **`public` is the served branch**.
-- `public` diverged from history, so it needs `--force-with-lease`. `main` is normally a clean fast-forward of itself (no force) once it only carries cherry-picked dashboard commits.
-- Last drift-free prod baseline = commit `d08d0e2`; its Detected Drift view is the "old" version the client is allowed to see.
+- `public` diverged from history, so it needs `--force-with-lease`; `main` fast-forwards normally.
+- **Verify against the live URL, not the branch** — `curl -s <url> | wc -l` plus a marker `grep`.
+  A correct git blob does not prove the page is serving it.
+- **Before reverting the root, inspect the target's contents.** "The state before my mistake" is not
+  the same as "a correct state" — `d529b58` predates the leak commits yet already carried 4 prototype
+  sections.
 
-GitHub Pages serves the `public` branch at https://burkotaras-dot.github.io/guardian-demo/
-
-GitHub Actions (`deploy.yml`) auto-deploys to Pages on every push to `main`.
+The older `dev` branch and its cherry-pick chain are **historical**; `dev` is not a deploy source and
+is not used by this workflow.
 
 **Quick prototype navigation (browser console):**
 ```js
