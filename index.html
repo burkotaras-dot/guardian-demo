@@ -4048,9 +4048,93 @@ body.dark .agentless-credential-name { color:#F8FAFC; }
 body.dark .agentless-credential-meta { color:#CBD5E1; }
 body.dark .agentless-credential-option:hover,
 body.dark .agentless-credential-option.is-selected { background:var(--dropdown-option-hover); }
+
+/* Add Node / Testing connection — Figma 3173:13780.
+   This is the next state of the same 600px modal wizard, never a full-page view. */
+.gm-agentless-testing.gm-card {
+  width:600px;
+  height:min(609px,calc(100vh - 40px));
+  max-height:calc(100vh - 40px);
+  box-sizing:border-box;
+}
+.gm-agentless-testing .gm-head { flex:0 0 92px; height:92px; box-sizing:border-box; }
+.gm-agentless-testing .gm-stepper { flex:0 0 54px; height:54px; box-sizing:border-box; }
+.gm-agentless-testing .gm-body { flex:1 1 auto; padding:20px 0 10px; overflow-y:auto; }
+.gm-agentless-testing .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
+.gm-agentless-setup .gm-step.is-done .gm-step-num::after,
+.gm-agentless-testing .gm-step.is-done .gm-step-num::after { content:none; }
+.gm-agentless-setup .gm-step.is-done .gm-step-numval,
+.gm-agentless-testing .gm-step.is-done .gm-step-numval { display:inline; }
+.agentless-test-demo,
+.agentless-test-content { padding:0 24px; }
+.agentless-test-demo-label {
+  margin:0 0 8px; color:#94A3B8;
+  font-size:9px; font-weight:700; line-height:12px; letter-spacing:.6px; text-transform:uppercase;
+}
+.agentless-test-tabs {
+  width:100%; height:34px; box-sizing:border-box;
+  display:grid; grid-template-columns:73px 92px 73px 85px 114px minmax(0,1fr);
+  overflow:hidden; border:1px solid #E2E8F0; border-radius:10px; background:#FFF;
+}
+.agentless-test-tab {
+  min-width:0; height:32px; padding:0 8px; border:0; border-left:1px solid #E2E8F0;
+  background:#FFF; color:#475569; font:600 11px/1 'DM Sans',sans-serif;
+  white-space:nowrap; cursor:pointer;
+}
+.agentless-test-tab:first-child { border-left:0; }
+.agentless-test-tab:hover,
+.agentless-test-tab.is-active { background:#EDF9F4; color:#059669; }
+.agentless-test-content { margin-top:16px; }
+.agentless-test-list {
+  overflow:hidden; border:1px solid #E2E8F0; border-radius:14px; background:#FFF;
+}
+.agentless-test-row {
+  height:63px; box-sizing:border-box; display:flex; align-items:flex-start; gap:12px;
+  padding:13px 18px; border-bottom:1px solid #E2E8F0;
+}
+.agentless-test-row:last-child { border-bottom:0; }
+.agentless-test-icon {
+  width:22px; height:22px; flex:0 0 22px; display:flex; align-items:center; justify-content:center;
+  border-radius:11px; background:rgba(16,185,129,.14); color:#059669;
+}
+.agentless-test-icon svg { width:12px; height:12px; }
+.agentless-test-icon.is-pending { border:1px solid #CBD5E1; background:transparent; color:#94A3B8; }
+.agentless-test-icon.is-fail { background:rgba(251,60,68,.12); color:#FB3C44; }
+.agentless-test-icon.is-warn { background:rgba(245,158,11,.14); color:#D97706; }
+.agentless-test-status-icon,
+.agentless-test-result-icon { display:flex; flex:0 0 22px; }
+.agentless-test-copy { min-width:0; flex:1; display:block; }
+.agentless-test-title { display:block; color:var(--text-default); font-size:13px; font-weight:600; line-height:17px; }
+.agentless-test-sub { display:block; margin-top:2px; color:#475569; font-size:11.5px; font-weight:400; line-height:18px; }
+.agentless-test-result {
+  min-height:93px; box-sizing:border-box; margin-top:16px; padding:16px 18px;
+  display:flex; align-items:flex-start; gap:12px; border:1px solid rgba(16,185,129,.40);
+  border-radius:10px; background:rgba(16,185,129,.10);
+}
+.agentless-test-result[data-kind="fail"] { border-color:#E2E8F0; background:#F8FAFC; }
+.agentless-test-result[data-kind="warn"] { border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.08); }
+.agentless-test-result-title { display:block; color:#059669; font-size:14px; font-weight:700; line-height:18px; }
+.agentless-test-result[data-kind="fail"] .agentless-test-result-title { color:#FB3C44; }
+.agentless-test-result[data-kind="warn"] .agentless-test-result-title { color:#D97706; }
+.agentless-test-result-desc { display:block; margin-top:3px; color:#475569; font-size:12px; line-height:19px; }
+body.dark .gm-agentless-testing .gm-body { background:#062528; }
+body.dark .agentless-test-tabs { border-color:#04363A; background:#062528; }
+body.dark .agentless-test-tab { border-left-color:#04363A; background:rgba(255,255,255,.05); color:#FFF; }
+body.dark .agentless-test-tab:hover,
+body.dark .agentless-test-tab.is-active { background:rgba(0,175,115,.15); color:#FFF; }
+body.dark .agentless-test-list { border-color:#04363A; background:#062528; }
+body.dark .agentless-test-row { border-bottom-color:#04363A; }
+body.dark .agentless-test-sub,
+body.dark .agentless-test-result-desc { color:#CBD5E1; }
+body.dark .agentless-test-icon.is-pending { border-color:rgba(255,255,255,.20); color:#94A3B8; }
+body.dark .agentless-test-result[data-kind="fail"] { border-color:#04363A; background:rgba(255,255,255,.05); }
+body.dark .agentless-test-result[data-kind="warn"] { border-color:rgba(245,158,11,.40); background:rgba(245,158,11,.10); }
 @media (max-width:640px) {
-  .gm-agentless-setup.gm-card { width:100%; height:calc(100vh - 40px); }
+  .gm-agentless-setup.gm-card,
+  .gm-agentless-testing.gm-card { width:100%; height:calc(100vh - 40px); }
   .agentless-modal-row { grid-template-columns:minmax(0,1fr) 110px; }
+  .agentless-test-tabs { display:flex; overflow-x:auto; }
+  .agentless-test-tab { flex:0 0 auto; padding-inline:12px; }
 }
 @media (max-width:640px) {
   .gm-add-node-wizard.gm-card { width:100%; height:auto; }
@@ -25063,12 +25147,125 @@ function agentlessModalContinue() {
   });
   var vaultTab = document.getElementById('cred-tab-manager');
   if (vaultTab && !vaultTab.classList.contains('active')) setCredMode('manager');
+  openAgentlessTestingModal();
+}
+function agentlessTestEscape(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+  });
+}
+function agentlessTestIcon(state) {
+  if (state === 'ok') return '<span class="agentless-test-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 6 2 2 4-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+  if (state === 'fail') return '<span class="agentless-test-icon is-fail"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3.5 3.5 5 5m0-5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>';
+  if (state === 'warn') return '<span class="agentless-test-icon is-warn"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 3.2v3.3M6 8.8h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>';
+  return '<span class="agentless-test-icon is-pending"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg></span>';
+}
+function agentlessTestContext() {
+  var cm = (typeof CONNECTION_MANAGERS !== 'undefined') ? CONNECTION_MANAGERS.filter(function(c){ return c.id === selectedCM; })[0] : null;
+  var name = (document.getElementById('al-name') || {}).value || '';
+  var host = (document.getElementById('al-host') || {}).value || '';
+  return {
+    cm: cm ? cm.name : 'the Connection Manager',
+    target: name || host || 'this node',
+    proto: addNodeOS === 'windows' ? 'WinRM' : 'SSH'
+  };
+}
+function agentlessTestScenarios(ctx) {
+  return {
+    ready: {
+      kind:'ok', title:'Ready to scan',
+      desc:ctx.target + ' responded, authenticated, and Guardian can read its configuration. Add the node to finish onboarding.',
+      rows:[['ok','Reach the target','Host reachable · responded in 42 ms'],['ok','Authenticate','Authenticated over ' + ctx.proto],['ok','Verify scan permissions','Account can read system configuration']]
+    },
+    unreachable: {
+      kind:'fail', title:'Target unreachable',
+      desc:ctx.cm + ' could not reach ' + ctx.target + '. Check the address, port, firewall and network route, then retry.',
+      rows:[['fail','Reach the target','No route to host'],['pending','Authenticate','Waiting for target connectivity'],['pending','Verify scan permissions','Not checked']]
+    },
+    timeout: {
+      kind:'fail', title:'Connection timed out',
+      desc:'The target did not respond within 30 seconds. Check its firewall and network route, then retry.',
+      rows:[['fail','Reach the target','Timed out after 30 s'],['pending','Authenticate','Waiting for target connectivity'],['pending','Verify scan permissions','Not checked']]
+    },
+    'cm-offline': {
+      kind:'fail', title:'Connection Manager offline',
+      desc:ctx.cm + ' is not responding. Bring the Connection Manager online before running the test again.',
+      rows:[['fail','Reach the target','Connection Manager not responding'],['pending','Authenticate','Not checked'],['pending','Verify scan permissions','Not checked']]
+    },
+    'bad-credentials': {
+      kind:'fail', title:'Authentication failed',
+      desc:'The target was reached, but the selected credential was rejected. Choose a valid credential and retry.',
+      rows:[['ok','Reach the target','Host reachable · responded in 42 ms'],['fail','Authenticate','Credential rejected'],['pending','Verify scan permissions','Not checked']]
+    },
+    'no-permissions': {
+      kind:'warn', title:'Insufficient permissions',
+      desc:'Authentication succeeded, but the account cannot read the configuration Guardian needs. Grant read access or use another credential.',
+      rows:[['ok','Reach the target','Host reachable · responded in 42 ms'],['ok','Authenticate','Authenticated over ' + ctx.proto],['warn','Verify scan permissions','Read access denied']]
+    }
+  };
+}
+function agentlessTestSetScenario(key) {
+  var ov = document.getElementById('agentless-setup-overlay');
+  if (!ov) return;
+  var scenario = agentlessTestScenarios(agentlessTestContext())[key] || agentlessTestScenarios(agentlessTestContext()).ready;
+  ov.querySelectorAll('[data-agentless-test-state]').forEach(function(btn) {
+    var active = btn.getAttribute('data-agentless-test-state') === key;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  var rows = ov.querySelectorAll('.agentless-test-row');
+  scenario.rows.forEach(function(row, index) {
+    if (!rows[index]) return;
+    rows[index].querySelector('.agentless-test-status-icon').innerHTML = agentlessTestIcon(row[0]);
+    rows[index].querySelector('.agentless-test-title').textContent = row[1];
+    rows[index].querySelector('.agentless-test-sub').textContent = row[2];
+  });
+  var result = ov.querySelector('.agentless-test-result');
+  if (result) {
+    result.setAttribute('data-kind', scenario.kind);
+    result.querySelector('.agentless-test-result-icon').innerHTML = agentlessTestIcon(scenario.kind === 'ok' ? 'ok' : scenario.kind);
+    result.querySelector('.agentless-test-result-title').textContent = scenario.title;
+    result.querySelector('.agentless-test-result-desc').textContent = scenario.desc;
+  }
+  var addButton = ov.querySelector('[data-gm-btn="0"]');
+  if (addButton) addButton.disabled = key !== 'ready';
+}
+function agentlessModalAddNode() {
   closeModal('agentless-setup-overlay');
-  go('s-connect-test');
+  alAddNode();
+}
+function openAgentlessTestingModal() {
+  var ctx = agentlessTestContext();
+  var states = [
+    ['ready','Ready'],['unreachable','Unreachable'],['timeout','Timeout'],
+    ['cm-offline','CM offline'],['bad-credentials','Bad credentials'],['no-permissions','No permissions']
+  ];
+  var body = '<section class="agentless-test-demo"><p class="agentless-test-demo-label">Demo state</p><div class="agentless-test-tabs" role="tablist" aria-label="Connection test demo state">'
+    + states.map(function(state){ return '<button type="button" class="agentless-test-tab' + (state[0] === 'ready' ? ' is-active' : '') + '" data-agentless-test-state="' + state[0] + '" role="tab" aria-selected="' + (state[0] === 'ready' ? 'true' : 'false') + '" onclick="agentlessTestSetScenario(\'' + state[0] + '\')">' + state[1] + '</button>'; }).join('')
+    + '</div></section><section class="agentless-test-content"><div class="agentless-test-list">'
+    + [0,1,2].map(function(index){ return '<div class="agentless-test-row"><span class="agentless-test-status-icon">' + agentlessTestIcon('ok') + '</span><span class="agentless-test-copy"><span class="agentless-test-title"></span><span class="agentless-test-sub"></span></span></div>'; }).join('')
+    + '</div><div class="agentless-test-result" data-kind="ok"><span class="agentless-test-result-icon">' + agentlessTestIcon('ok') + '</span><span class="agentless-test-copy"><span class="agentless-test-result-title"></span><span class="agentless-test-result-desc"></span></span></div></section>';
+  openModal({
+    id:'agentless-setup-overlay', size:'lg', title:'Testing connection',
+    subtitle:'Before the first scan, Guardian checks that <b>' + agentlessTestEscape(ctx.cm) + '</b> can reach <b>' + agentlessTestEscape(ctx.target) + '</b> and authenticate.',
+    steps:[{label:'Add node',onEnter:function(){ closeModal('agentless-setup-overlay'); openAddNodeWizard(); }},{label:'Connect'},{label:'Scan'},{label:'Results'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ closeModal('agentless-setup-overlay'); openAgentlessSetupModal(); }},
+    buttons:[{label:'Add node',kind:'primary',onClick:function(){ agentlessModalAddNode(); }}],
+    afterMount:function(ov){
+      ov.querySelector('.gm-card').classList.add('gm-agentless-testing');
+      gmGoStep('agentless-setup-overlay',1);
+      agentlessTestSetScenario('ready');
+    }
+  });
 }
 function openAgentlessSetupModal() {
   var groups = (typeof CONNECTION_MANAGERS !== 'undefined') ? CONNECTION_MANAGERS.filter(_cmCompatible) : [];
   var recId = (typeof recommendedCMId === 'function') ? recommendedCMId() : (groups[0] && groups[0].id);
+  var savedName = (document.getElementById('al-name') || {}).value || '';
+  var savedHost = (document.getElementById('al-host') || {}).value || '';
+  var savedPort = (document.getElementById('al-port') || {}).value || (addNodeOS === 'windows' ? '5985' : '22');
+  var savedCredential = (document.getElementById('al-secret') || {}).value || '';
   if (!groups.length && typeof CONNECTION_MANAGERS !== 'undefined') groups = CONNECTION_MANAGERS.slice(0,2);
   if (!selectedCM) selectedCM = recId || (groups[0] && groups[0].id) || null;
   var cmHtml = groups.slice(0,2).map(function(c) {
@@ -25081,15 +25278,15 @@ function openAgentlessSetupModal() {
   }).join('');
   var body = '<section class="agentless-modal-section agentless-modal-section--target">'
     + '<h3 class="agentless-modal-heading">Target</h3>'
-    + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-name">Node name <span style="color:#FB3C44">*</span></label><input id="agentless-modal-name" type="text" placeholder="e.g. Endpoint Protection Policy"></div>'
-    + '<div class="agentless-modal-row"><div class="agentless-modal-field"><label class="form-label" for="agentless-modal-host">Hostname or IP <span style="color:#FB3C44">*</span></label><input id="agentless-modal-host" type="text" placeholder="e.g. 10.0.4.51 or web-prod-01.corp"></div>'
-    + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-port">Port</label><input id="agentless-modal-port" type="text" value="' + (addNodeOS === 'windows' ? '5985' : '22') + '"></div></div>'
+    + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-name">Node name <span style="color:#FB3C44">*</span></label><input id="agentless-modal-name" type="text" value="' + agentlessTestEscape(savedName) + '" placeholder="e.g. Endpoint Protection Policy"></div>'
+    + '<div class="agentless-modal-row"><div class="agentless-modal-field"><label class="form-label" for="agentless-modal-host">Hostname or IP <span style="color:#FB3C44">*</span></label><input id="agentless-modal-host" type="text" value="' + agentlessTestEscape(savedHost) + '" placeholder="e.g. 10.0.4.51 or web-prod-01.corp"></div>'
+    + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-port">Port</label><input id="agentless-modal-port" type="text" value="' + agentlessTestEscape(savedPort) + '"></div></div>'
     + '<div class="agentless-modal-hint">' + (addNodeOS === 'windows' ? 'WinRM — default 5985 (HTTP) or 5986 (HTTPS).' : 'SSH — default 22.') + '</div></section>'
     + '<section class="agentless-modal-section"><h3 class="agentless-modal-heading">Connection Manager Group</h3><p class="agentless-modal-sub">Select a group that can reach this target.</p>'
     + '<div class="agentless-modal-radios">' + cmHtml + '</div><button type="button" class="agentless-modal-link" onclick="openCmSetup(\'agentless\')">Don’t see a suitable one? Create a new group →</button></section>'
     + '<section class="agentless-modal-section"><h3 class="agentless-modal-heading">Credentials</h3><p class="agentless-modal-sub">How the Connection Manager authenticates to this target. Enter them directly, or select a credential saved in the Guardian Credential Vault.</p>'
     + '<div class="gm-tab-block agentless-modal-tabs" role="tablist" aria-label="Credential availability"><button type="button" class="gm-tab is-active" data-agentless-cred-tab="ready" aria-selected="true" onclick="agentlessModalCredentials(\'ready\')">Ready</button><button type="button" class="gm-tab" data-agentless-cred-tab="unreachable" aria-selected="false" onclick="agentlessModalCredentials(\'unreachable\')">Unreachable</button></div>'
-    + '<div class="agentless-modal-credential"><label class="form-label" for="agentless-modal-credential-trigger">Vault credential</label><div id="agentless-modal-credential-picker" class="agentless-credential-picker" data-kind="ready"><input id="agentless-modal-credential" type="hidden" value=""><button id="agentless-modal-credential-trigger" type="button" class="agentless-modal-select dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" onclick="agentlessModalCredentialToggle(event)"><span id="agentless-modal-credential-label" class="agentless-modal-select-label is-placeholder">Select a credential…</span><svg class="agentless-modal-select-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="agentless-modal-credential-menu" class="agentless-credential-menu" role="listbox" hidden></div></div>'
+    + '<div class="agentless-modal-credential"><label class="form-label" for="agentless-modal-credential-trigger">Vault credential</label><div id="agentless-modal-credential-picker" class="agentless-credential-picker" data-kind="ready"><input id="agentless-modal-credential" type="hidden" value="' + agentlessTestEscape(savedCredential) + '"><button id="agentless-modal-credential-trigger" type="button" class="agentless-modal-select dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" onclick="agentlessModalCredentialToggle(event)"><span id="agentless-modal-credential-label" class="agentless-modal-select-label is-placeholder">Select a credential…</span><svg class="agentless-modal-select-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="agentless-modal-credential-menu" class="agentless-credential-menu" role="listbox" hidden></div></div>'
     + '<div class="agentless-modal-hint">Reusable credentials stored encrypted, used by the Connection Manager at scan time.<br>Manage them in the <button type="button" class="agentless-modal-link" style="margin-top:0" onclick="closeModal(\'agentless-setup-overlay\');showView(\'credentials\')">Credential Vault</button></div></div>'
     + '<div class="agentless-modal-required">Add a node name, a hostname or IP and credentials to test the connection.</div></section>';
   openModal({
@@ -25103,6 +25300,10 @@ function openAgentlessSetupModal() {
       ov.querySelector('.gm-card').classList.add('gm-agentless-setup');
       gmGoStep('agentless-setup-overlay',1);
       agentlessModalCredentials('ready');
+      if (savedCredential && typeof CREDENTIALS !== 'undefined') {
+        var saved = CREDENTIALS.filter(function(c){ return c.id === savedCredential; })[0];
+        if (saved) agentlessModalCredentialLabel(saved);
+      }
     }
   });
 }

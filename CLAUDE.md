@@ -124,7 +124,7 @@ The in-strip content action is DS §6.5 **Primary, size s** — `.btn-primary.bt
 (32px, `padding:0 20px`, DM Sans 600/12, radius 10, gradient + `0 4px 7px rgba(16,185,129,.3)`).
 Do not substitute the modal-footer `.gm-btn-primary` component, and do not restore the old
 full-width `.btn-primary--large` action.
-Its canonical four-step `gm-stepper` is Add node → Connect → Scan → Results. Do not route these selection screens back to the legacy full-page `v-s02`, `v-s-method` or `v-s-agentless` views. Choosing `Agentless scan` opens the canonical 600px Connect modal (`#agentless-setup-overlay`, Figma `3171:12282`) with Target, Connection Manager Group and Credentials sections; preserve the same stepper and modal footer.
+Its canonical four-step `gm-stepper` is Add node → Connect → Scan → Results. Do not route these selection screens back to the legacy full-page `v-s02`, `v-s-method`, `v-s-agentless` or `v-s-connect-test` views. Choosing `Agentless scan` opens the canonical 600px Connect modal (`#agentless-setup-overlay`, Figma `3171:12282`) with Target, Connection Manager Group and Credentials sections; continuing replaces it with the `Testing connection` state in the same overlay (Figma `3173:13780`, 600 × 609px). Preserve the same stepper and modal footer throughout.
 
 **Dark mode needs no overrides.** Colour comes from tokens (`--bdg-{colour}-txt|-bg|-bd`,
 light `index.html:165`, dark `index.html:2642`), so `body.dark` badge rules are obsolete and

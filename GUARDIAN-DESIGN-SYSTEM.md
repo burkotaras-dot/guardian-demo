@@ -52,6 +52,7 @@ UX consistency audit (`CONSISTENCY-BACKLOG.md`) і входу розробки G
 
 **Exceptions.**
 - **Add node agentlessly після вибору методу** — крок `Connect` є canonical overlay `#agentless-setup-overlay` за Figma `3171:12282`: 600 px shell, `Add node → Connect → Scan → Results`, секції Target / Connection Manager Group / Credentials і footer Back / Primary. Старий `v-s-agentless` лишається тільки як прихований DOM/data fallback для prototype engine; напряму з картки методу на нього не навігуємо.
+- **Agentless / Testing connection** — наступний стан того самого overlay за Figma `3173:13780`, а не окрема сторінка: shell `600 × 609px`, header `92px`, stepper `54px`, footer `63px`. Усередині розміщені segmented demo-state tabs, три status rows по `63px` та result block `93px`; `Back` повертає до Connect form, Primary `Add node` доступна лише у стані Ready. Старий `v-s-connect-test` зберігається лише як data/prototype fallback і не є цільовим UI маршрутом.
 - Нові винятки додавати сюди ЛИШЕ з явним обґрунтуванням і рішенням user.
 
 **Порушники, які треба привести до правила:**
