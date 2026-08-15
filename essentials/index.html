@@ -4031,6 +4031,7 @@ body.dark .add-node-method-card:hover { background:rgba(16,185,129,.10); border-
 .agentless-credential-name { display:block; max-width:100%; overflow:hidden; color:#0F172A; font-size:13px; font-weight:600; line-height:normal; text-overflow:ellipsis; white-space:nowrap; }
 .agentless-credential-meta { display:block; max-width:100%; height:16px; padding-top:2px; overflow:hidden; color:#475569; font-size:11px; font-weight:400; line-height:normal; text-overflow:ellipsis; white-space:nowrap; }
 .agentless-credential-option .cred-badge { flex-shrink:0; }
+.agentless-credential-option--new { min-height:44px; gap:7px; color:var(--green1); font-size:12px; font-weight:600; }
 .agentless-credential-option:hover,
 .agentless-credential-option.is-selected { background:var(--dropdown-option-hover); }
 .agentless-credential-empty { padding:12px 14px; color:var(--text-sec); font-size:12px; line-height:1.5; }
@@ -13386,7 +13387,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       scToast(_credEditId ? 'Credential updated' : 'Credential saved');
       renderCredentials();
       _credReturnToPicker = false;
-      if (backToPicker && _newCred && window.alCredPick) alCredPick(_newCred.id);
+      if (backToPicker && _newCred) {
+        // The same "New credential" row exists in the full-page picker and in the Agentless
+        // modal, so the new credential is handed back to whichever one asked for it.
+        if (document.getElementById('agentless-modal-credential-picker') && window.agentlessModalCredentialPick) {
+          agentlessModalCredentialsList();
+          agentlessModalCredentialPick(_newCred.id);
+        }
+        else if (window.alCredPick) alCredPick(_newCred.id);
+      }
     }
 
     // ── Credential management actions (Step 4) ──
@@ -25027,23 +25036,30 @@ function openAddNodeMethodStep() {
   ov.querySelector('.gm-card').classList.add('is-method-step');
   gmGoStep('add-node-wizard-overlay', 1);
 }
-function agentlessModalCredentials(kind) {
+/* The tabs pick where the credential comes from — typed in here, or taken from the vault —
+   mirroring the full-page form. They are not a filter over credential health. */
+function agentlessModalCredentials(mode) {
   var ov = document.getElementById('agentless-setup-overlay');
   if (!ov) return;
+  if (mode !== 'vault') mode = 'direct';
   ov.querySelectorAll('[data-agentless-cred-tab]').forEach(function(btn) {
-    var active = btn.getAttribute('data-agentless-cred-tab') === kind;
+    var active = btn.getAttribute('data-agentless-cred-tab') === mode;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
   });
+  var direct = ov.querySelector('#agentless-modal-cred-direct');
+  var vault = ov.querySelector('#agentless-modal-cred-vault');
+  if (direct) direct.hidden = mode !== 'direct';
+  if (vault) vault.hidden = mode !== 'vault';
+  agentlessModalCredentialsList();
+}
+function agentlessModalCredentialsList() {
+  var ov = document.getElementById('agentless-setup-overlay');
+  if (!ov) return;
   var picker = ov.querySelector('#agentless-modal-credential-picker');
   var value = ov.querySelector('#agentless-modal-credential');
   if (!picker || !value || typeof CREDENTIALS === 'undefined') return;
-  picker.setAttribute('data-kind', kind);
-  var unreachable = ['invalid','expired','cannot-connect','insufficient'];
-  var list = CREDENTIALS.filter(function(c) {
-    if (selectedCM && c.cm !== selectedCM) return false;
-    return kind === 'ready' ? unreachable.indexOf(c.status) === -1 : unreachable.indexOf(c.status) !== -1;
-  });
+  var list = CREDENTIALS.filter(function(c) { return !selectedCM || c.cm === selectedCM; });
   picker._credentials = list;
   if (value.value && !list.some(function(c){ return c.id === value.value; })) {
     value.value = '';
@@ -25071,17 +25087,24 @@ function agentlessModalCredentialRender() {
   var value = document.getElementById('agentless-modal-credential');
   if (!picker || !menu || !value) return;
   var list = picker._credentials || [];
+  var newRow = '<button type="button" class="agentless-credential-option agentless-credential-option--new dropdown-option" onclick="agentlessModalCredentialNew()">'
+    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New credential</button>';
   if (!list.length) {
-    menu.innerHTML = '<div class="agentless-credential-empty">No credentials are available for this Connection Manager.</div>';
+    menu.innerHTML = '<div class="agentless-credential-empty">No credentials are available for this Connection Manager.</div>' + newRow;
     return;
   }
   menu.innerHTML = list.map(function(c) {
     var st = (typeof CRED_STATUS !== 'undefined' && CRED_STATUS[c.status]) || { label:c.status, dot:'#94A3B8' };
     return '<button type="button" role="option" aria-selected="' + (value.value === c.id ? 'true' : 'false') + '" class="agentless-credential-option dropdown-option' + (value.value === c.id ? ' is-selected' : '') + '" onclick="agentlessModalCredentialPick(\'' + c.id + '\')">'
       + '<span class="cvp-dot" style="background:' + st.dot + '"></span>'
-      + '<span class="agentless-credential-copy"><span class="agentless-credential-name">' + c.name + '</span><span class="agentless-credential-meta">' + c.type + ' - ' + c.user + '</span></span>'
+      + '<span class="agentless-credential-copy"><span class="agentless-credential-name">' + c.name + '</span><span class="agentless-credential-meta">' + c.type + ' · ' + c.user + '</span></span>'
       + '<span class="cred-badge" data-s="' + c.status + '">' + st.label + '</span></button>';
-  }).join('');
+  }).join('') + newRow;
+}
+function agentlessModalCredentialNew() {
+  agentlessModalCredentialClose();
+  if (window.credOpenEditor) credOpenEditor(null);
+  _credReturnToPicker = true;
 }
 function agentlessModalCredentialToggle(event) {
   if (event) event.stopPropagation();
@@ -25132,7 +25155,7 @@ function agentlessModalSelectCM(id) {
     var input = card.querySelector('input[type="radio"]');
     if (input) input.checked = active;
   });
-  agentlessModalCredentials('ready');
+  agentlessModalCredentialsList();
 }
 function agentlessModalContinue() {
   var ov = document.getElementById('agentless-setup-overlay');
@@ -25141,15 +25164,17 @@ function agentlessModalContinue() {
     ['agentless-modal-name','al-name'],
     ['agentless-modal-host','al-host'],
     ['agentless-modal-port','al-port'],
-    ['agentless-modal-credential','al-secret']
+    ['agentless-modal-credential','al-secret'],
+    ['agentless-modal-user','al-user'],
+    ['agentless-modal-pass','al-pass']
   ];
   pairs.forEach(function(pair) {
     var from = document.getElementById(pair[0]);
     var to = document.getElementById(pair[1]);
     if (from && to) to.value = from.value;
   });
-  var vaultTab = document.getElementById('cred-tab-manager');
-  if (vaultTab && !vaultTab.classList.contains('active')) setCredMode('manager');
+  var vaultMode = !!ov.querySelector('[data-agentless-cred-tab="vault"].is-active');
+  if (typeof setCredMode === 'function') setCredMode(vaultMode ? 'manager' : 'direct');
   openAgentlessTestingModal();
 }
 function agentlessTestEscape(value) {
@@ -25297,6 +25322,8 @@ function openAgentlessSetupModal() {
   var savedHost = (document.getElementById('al-host') || {}).value || '';
   var savedPort = (document.getElementById('al-port') || {}).value || (addNodeOS === 'windows' ? '5985' : '22');
   var savedCredential = (document.getElementById('al-secret') || {}).value || '';
+  var savedUser = (document.getElementById('al-user') || {}).value || '';
+  var savedPass = (document.getElementById('al-pass') || {}).value || '';
   if (!groups.length && typeof CONNECTION_MANAGERS !== 'undefined') groups = CONNECTION_MANAGERS.slice(0,2);
   if (!selectedCM) selectedCM = recId || (groups[0] && groups[0].id) || null;
   var cmHtml = groups.slice(0,2).map(function(c) {
@@ -25316,8 +25343,12 @@ function openAgentlessSetupModal() {
     + '<section class="agentless-modal-section"><h3 class="agentless-modal-heading">Connection Manager Group</h3><p class="agentless-modal-sub">Select a group that can reach this target.</p>'
     + '<div class="agentless-modal-radios">' + cmHtml + '</div><button type="button" class="agentless-modal-link" onclick="openCmSetup(\'agentless\')">Don’t see a suitable one? Create a new group →</button></section>'
     + '<section class="agentless-modal-section"><h3 class="agentless-modal-heading">Credentials</h3><p class="agentless-modal-sub">How the Connection Manager authenticates to this target. Enter them directly, or select a credential saved in the Guardian Credential Vault.</p>'
-    + '<div class="gm-tab-block agentless-modal-tabs" role="tablist" aria-label="Credential availability"><button type="button" class="gm-tab is-active" data-agentless-cred-tab="ready" aria-selected="true" onclick="agentlessModalCredentials(\'ready\')">Ready</button><button type="button" class="gm-tab" data-agentless-cred-tab="unreachable" aria-selected="false" onclick="agentlessModalCredentials(\'unreachable\')">Unreachable</button></div>'
-    + '<div class="agentless-modal-credential"><label class="form-label" for="agentless-modal-credential-trigger">Vault credential</label><div id="agentless-modal-credential-picker" class="agentless-credential-picker" data-kind="ready"><input id="agentless-modal-credential" type="hidden" value="' + agentlessTestEscape(savedCredential) + '"><button id="agentless-modal-credential-trigger" type="button" class="agentless-modal-select dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" onclick="agentlessModalCredentialToggle(event)"><span id="agentless-modal-credential-label" class="agentless-modal-select-label is-placeholder">Select a credential…</span><svg class="agentless-modal-select-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="agentless-modal-credential-menu" class="agentless-credential-menu" role="listbox" hidden></div></div>'
+    + '<div class="gm-tab-block agentless-modal-tabs" role="tablist" aria-label="Credential source"><button type="button" class="gm-tab is-active" data-agentless-cred-tab="direct" aria-selected="true" onclick="agentlessModalCredentials(\'direct\')">Enter directly</button><button type="button" class="gm-tab" data-agentless-cred-tab="vault" aria-selected="false" onclick="agentlessModalCredentials(\'vault\')">Credential Vault</button></div>'
+    + '<div id="agentless-modal-cred-direct" class="agentless-modal-credential"><div class="agentless-modal-row">'
+    + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-user">Username</label><input id="agentless-modal-user" type="text" value="' + agentlessTestEscape(savedUser) + '" placeholder="e.g. Administrator or root"></div>'
+    + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-pass">Password</label><input id="agentless-modal-pass" type="password" value="' + agentlessTestEscape(savedPass) + '" placeholder="••••••••••••"></div>'
+    + '</div></div>'
+    + '<div id="agentless-modal-cred-vault" class="agentless-modal-credential" hidden><label class="form-label" for="agentless-modal-credential-trigger">Vault credential</label><div id="agentless-modal-credential-picker" class="agentless-credential-picker"><input id="agentless-modal-credential" type="hidden" value="' + agentlessTestEscape(savedCredential) + '"><button id="agentless-modal-credential-trigger" type="button" class="agentless-modal-select dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" onclick="agentlessModalCredentialToggle(event)"><span id="agentless-modal-credential-label" class="agentless-modal-select-label is-placeholder">Select a credential…</span><svg class="agentless-modal-select-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="agentless-modal-credential-menu" class="agentless-credential-menu" role="listbox" hidden></div></div>'
     + '<div class="agentless-modal-hint">Reusable credentials stored encrypted, used by the Connection Manager at scan time.<br>Manage them in the <button type="button" class="agentless-modal-link" style="margin-top:0" onclick="closeModal(\'agentless-setup-overlay\');showView(\'credentials\')">Credential Vault</button></div></div>'
     + '<div class="agentless-modal-required">Add a node name, a hostname or IP and credentials to test the connection.</div></section>';
   openModal({
@@ -25330,7 +25361,7 @@ function openAgentlessSetupModal() {
     afterMount:function(ov){
       ov.querySelector('.gm-card').classList.add('gm-agentless-setup');
       gmGoStep('agentless-setup-overlay',1);
-      agentlessModalCredentials('ready');
+      agentlessModalCredentials(savedCredential ? 'vault' : 'direct');
       if (savedCredential && typeof CREDENTIALS !== 'undefined') {
         var saved = CREDENTIALS.filter(function(c){ return c.id === savedCredential; })[0];
         if (saved) agentlessModalCredentialLabel(saved);
