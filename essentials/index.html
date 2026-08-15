@@ -4101,6 +4101,10 @@ body.dark .agentless-credential-option.is-selected { background:var(--dropdown-o
 .agentless-test-icon.is-pending { border:1px solid #CBD5E1; background:transparent; color:#94A3B8; }
 .agentless-test-icon.is-fail { background:rgba(251,60,68,.12); color:#FB3C44; }
 .agentless-test-icon.is-warn { background:rgba(245,158,11,.14); color:#D97706; }
+.agentless-test-icon.is-running {
+  border:2px solid #E2E8F0; border-top-color:#10B981; background:transparent;
+  animation:spin .7s linear infinite;
+}
 .agentless-test-status-icon,
 .agentless-test-result-icon { display:flex; flex:0 0 22px; }
 .agentless-test-copy { min-width:0; flex:1; display:block; }
@@ -4108,14 +4112,13 @@ body.dark .agentless-credential-option.is-selected { background:var(--dropdown-o
 .agentless-test-sub { display:block; margin-top:2px; color:#475569; font-size:11.5px; font-weight:400; line-height:18px; }
 .agentless-test-result {
   min-height:93px; box-sizing:border-box; margin-top:16px; padding:16px 18px;
-  display:flex; align-items:flex-start; gap:12px; border:1px solid rgba(16,185,129,.40);
-  border-radius:10px; background:rgba(16,185,129,.10);
+  display:flex; align-items:flex-start; gap:12px; border:1px solid #E2E8F0;
+  border-radius:10px; background:#F8FAFC;
 }
-.agentless-test-result[data-kind="fail"] { border-color:#E2E8F0; background:#F8FAFC; }
-.agentless-test-result[data-kind="warn"] { border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.08); }
 .agentless-test-result-title { display:block; color:#059669; font-size:14px; font-weight:700; line-height:18px; }
 .agentless-test-result[data-kind="fail"] .agentless-test-result-title { color:#FB3C44; }
 .agentless-test-result[data-kind="warn"] .agentless-test-result-title { color:#D97706; }
+.agentless-test-result[data-kind="running"] .agentless-test-result-title { color:var(--text-default); }
 .agentless-test-result-desc { display:block; margin-top:3px; color:#475569; font-size:12px; line-height:19px; }
 body.dark .gm-agentless-testing .gm-body { background:#062528; }
 body.dark .agentless-test-tabs { border-color:#04363A; background:#062528; }
@@ -4127,8 +4130,8 @@ body.dark .agentless-test-row { border-bottom-color:#04363A; }
 body.dark .agentless-test-sub,
 body.dark .agentless-test-result-desc { color:#CBD5E1; }
 body.dark .agentless-test-icon.is-pending { border-color:rgba(255,255,255,.20); color:#94A3B8; }
-body.dark .agentless-test-result[data-kind="fail"] { border-color:#04363A; background:rgba(255,255,255,.05); }
-body.dark .agentless-test-result[data-kind="warn"] { border-color:rgba(245,158,11,.40); background:rgba(245,158,11,.10); }
+body.dark .agentless-test-icon.is-running { border-color:rgba(255,255,255,.20); border-top-color:#34D399; }
+body.dark .agentless-test-result { border-color:#04363A; background:rgba(255,255,255,.05); }
 @media (max-width:640px) {
   .gm-agentless-setup.gm-card,
   .gm-agentless-testing.gm-card { width:100%; height:calc(100vh - 40px); }
@@ -25158,6 +25161,7 @@ function agentlessTestIcon(state) {
   if (state === 'ok') return '<span class="agentless-test-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 6 2 2 4-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
   if (state === 'fail') return '<span class="agentless-test-icon is-fail"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3.5 3.5 5 5m0-5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>';
   if (state === 'warn') return '<span class="agentless-test-icon is-warn"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 3.2v3.3M6 8.8h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>';
+  if (state === 'running') return '<span class="agentless-test-icon is-running" aria-hidden="true"></span>';
   return '<span class="agentless-test-icon is-pending"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg></span>';
 }
 function agentlessTestContext() {
@@ -25204,31 +25208,58 @@ function agentlessTestScenarios(ctx) {
     }
   };
 }
+/* Every scenario is played back rather than shown as a finished list: each check spins,
+   resolves, and only then hands over to the next one. The chain stops at the first failure,
+   so the reason a later step was never reached stays visible. */
+var AGENTLESS_TEST_TIMERS = [];
+var AGENTLESS_TEST_RUNNING_SUBS = ['Contacting host…', 'Signing in…', 'Checking read access…'];
+var AGENTLESS_TEST_STEP_MS = 700;
+function agentlessTestPaintRow(row, state, title, sub) {
+  if (!row) return;
+  row.querySelector('.agentless-test-status-icon').innerHTML = agentlessTestIcon(state);
+  row.querySelector('.agentless-test-title').textContent = title;
+  row.querySelector('.agentless-test-sub').textContent = sub;
+}
+function agentlessTestPaintResult(ov, kind, title, desc) {
+  var result = ov.querySelector('.agentless-test-result');
+  if (!result) return;
+  result.setAttribute('data-kind', kind);
+  result.querySelector('.agentless-test-result-icon').innerHTML = agentlessTestIcon(kind);
+  result.querySelector('.agentless-test-result-title').textContent = title;
+  result.querySelector('.agentless-test-result-desc').textContent = desc;
+}
 function agentlessTestSetScenario(key) {
   var ov = document.getElementById('agentless-setup-overlay');
   if (!ov) return;
-  var scenario = agentlessTestScenarios(agentlessTestContext())[key] || agentlessTestScenarios(agentlessTestContext()).ready;
+  var all = agentlessTestScenarios(agentlessTestContext());
+  var scenario = all[key] || all.ready;
+  AGENTLESS_TEST_TIMERS.forEach(clearTimeout);
+  AGENTLESS_TEST_TIMERS = [];
   ov.querySelectorAll('[data-agentless-test-state]').forEach(function(btn) {
     var active = btn.getAttribute('data-agentless-test-state') === key;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
   });
   var rows = ov.querySelectorAll('.agentless-test-row');
-  scenario.rows.forEach(function(row, index) {
-    if (!rows[index]) return;
-    rows[index].querySelector('.agentless-test-status-icon').innerHTML = agentlessTestIcon(row[0]);
-    rows[index].querySelector('.agentless-test-title').textContent = row[1];
-    rows[index].querySelector('.agentless-test-sub').textContent = row[2];
-  });
-  var result = ov.querySelector('.agentless-test-result');
-  if (result) {
-    result.setAttribute('data-kind', scenario.kind);
-    result.querySelector('.agentless-test-result-icon').innerHTML = agentlessTestIcon(scenario.kind === 'ok' ? 'ok' : scenario.kind);
-    result.querySelector('.agentless-test-result-title').textContent = scenario.title;
-    result.querySelector('.agentless-test-result-desc').textContent = scenario.desc;
-  }
   var addButton = ov.querySelector('[data-gm-btn="0"]');
-  if (addButton) addButton.disabled = key !== 'ready';
+  if (addButton) addButton.disabled = true;
+  scenario.rows.forEach(function(row, index) { agentlessTestPaintRow(rows[index], 'pending', row[1], ''); });
+  agentlessTestPaintResult(ov, 'running', 'Testing connection…', 'Guardian is checking the target, the credential and read access.');
+  var runStep = function(index) {
+    var row = scenario.rows[index];
+    agentlessTestPaintRow(rows[index], 'running', row[1], AGENTLESS_TEST_RUNNING_SUBS[index]);
+    AGENTLESS_TEST_TIMERS.push(setTimeout(function() {
+      if (!document.body.contains(ov)) return;
+      agentlessTestPaintRow(rows[index], row[0], row[1], row[2]);
+      if (row[0] === 'ok' && index < scenario.rows.length - 1) { runStep(index + 1); return; }
+      for (var rest = index + 1; rest < scenario.rows.length; rest++) {
+        agentlessTestPaintRow(rows[rest], scenario.rows[rest][0], scenario.rows[rest][1], scenario.rows[rest][2]);
+      }
+      agentlessTestPaintResult(ov, scenario.kind, scenario.title, scenario.desc);
+      if (addButton) addButton.disabled = key !== 'ready';
+    }, AGENTLESS_TEST_STEP_MS));
+  };
+  runStep(0);
 }
 function agentlessModalAddNode() {
   closeModal('agentless-setup-overlay');
