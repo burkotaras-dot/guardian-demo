@@ -567,6 +567,40 @@ body.dark .intg-logo svg path[fill="#4D4D4D"] { fill:#e6e9ef; }
 .es-act { margin-top:16px; }
 .es-sm { padding:24px 12px; }
 
+/* Only icon — canonical sixth button type, DS §6.5 (Figma 3204:13731). The only NEUTRAL type:
+   32×32, radius 8 (deliberate exception to the radius-10 rule), 16px glyph, no label. */
+.btn-icon { display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box;
+  width:32px; height:32px; padding:6px; flex-shrink:0;
+  background:var(--bg-surface); border:1px solid var(--border); border-radius:8px;
+  color:#64748B; cursor:pointer; transition:background .12s, border-color .12s, color .12s; }
+.btn-icon svg { width:16px; height:16px; display:block; }
+.btn-icon:hover { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:var(--text-default); }
+.btn-icon:disabled { opacity:.4; cursor:not-allowed; }
+body.dark .btn-icon { background:rgba(255,255,255,0.05); border-color:#04363A; color:rgba(255,255,255,0.7); }
+body.dark .btn-icon:hover { background:rgba(255,255,255,0.05); border-color:rgba(16,185,129,0.30); color:#FFFFFF; }
+
+/* Collapsible search — an Only icon button that grows leftward into a field.
+   It grows to the LEFT because the toolbar group is right-aligned, so extra width
+   can only be taken from the free space on its left. */
+.isearch { position:relative; width:32px; overflow:hidden; transition:width .22s ease, background .12s, border-color .12s, color .12s; }
+.isearch-ico { position:absolute; left:7px; top:50%; transform:translateY(-50%); pointer-events:none; }
+.isearch-input { width:100%; height:100%; padding:0 10px 0 26px; border:0; background:none; outline:none;
+  font-family:inherit; font-size:13px; opacity:0; transition:opacity .12s; }
+/* Text and placeholder colour come from the app-wide search rule (--search-text / --search-placeholder). */
+.isearch.is-open { width:240px; cursor:text; }
+.isearch.is-open .isearch-input { opacity:1; }
+/* Once open it is a field, not a button — drop the button hover and use the canonical focus ring. */
+.isearch.is-open:hover { background:var(--bg-surface); border-color:var(--border); }
+.isearch:focus-within, .isearch.is-open:focus-within:hover { background:var(--bg-surface); border-color:var(--green1); box-shadow:0 0 0 3px var(--green-dim); }
+body.dark .isearch.is-open:hover { background:rgba(255,255,255,0.05); border-color:#04363A; }
+body.dark .isearch:focus-within, body.dark .isearch.is-open:focus-within:hover { background:rgba(255,255,255,0.07); border-color:var(--green1); }
+
+/* Tab intro — name + one-line description on the left of a toolbar row, controls on the right.
+   Same type scale as the empty state, one step below the page header. */
+.tab-intro { min-width:0; }
+.tab-intro-title { font-size:14px; font-weight:600; color:var(--text-default); }
+.tab-intro-sub { font-size:12px; color:var(--text-muted); line-height:1.5; margin-top:2px; max-width:560px; }
+
 /* ── Integration Detail page (id-*) ── */
 .id-head { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
 .id-head-info { flex:1; min-width:0; display:flex; align-items:center; gap:14px; }
@@ -6591,12 +6625,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
 
-        <!-- Inline search + filter -->
-        <div id="node-filter-row" style="display:flex;gap:10px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <div style="position:relative;flex:1 1 180px;min-width:140px;max-width:280px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-            <input id="node-search" type="text" placeholder="Search nodes…" oninput="filterNodes()" style="width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);color:var(--text-default);outline:none;box-sizing:border-box;font-family:inherit;" onfocus="this.style.borderColor='var(--green1)';this.style.boxShadow='0 0 0 3px var(--green-dim)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+        <!-- Tab intro on the left, all controls on the right -->
+        <div id="node-filter-row" style="display:flex;gap:16px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+          <div class="tab-intro">
+            <div class="tab-intro-title">Managed nodes</div>
+            <div class="tab-intro-sub">Scanned, scored and tracked</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+          <div id="node-search-wrap" class="btn-icon isearch" role="search" onclick="openNodeSearch()">
+            <svg class="isearch-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+            <input id="node-search" class="isearch-input" type="text" placeholder="Search nodes…" aria-label="Search nodes" oninput="filterNodes()" onblur="closeNodeSearch()" onkeydown="if(event.key==='Escape'){this.value='';filterNodes();this.blur();}">
           </div>
           <div class="seg" id="node-filter-btns" role="group" aria-label="Filter nodes by source">
             <button onclick="setNodeFilter(&#39;all&#39;)" id="nf-all" class="seg-btn is-active" aria-pressed="true">All</button>
@@ -6627,9 +6665,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div class="ne-opt" data-val="development" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Development</div>
             </div>
           </div>
-          </div><!-- end left group -->
-          <!-- Selection actions — right side of the SAME filter row (space-between) -->
-          <div id="node-action-bar" style="display:none;align-items:center;gap:8px;flex-shrink:0;">
+          <!-- Selection actions — same right group, appears in front of the filters -->
+          <div id="node-action-bar" style="display:none;align-items:center;gap:8px;flex-shrink:0;order:-1;">
             <span id="node-action-count" style="font-size:12px;font-weight:500;color:var(--text-sec);white-space:nowrap;"></span>
             <button id="node-action-baseline" class="sel-act-btn" onclick="setGroupBaseline()" disabled="">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
@@ -6648,6 +6685,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               Consensus Comparison
             </button>
           </div>
+          </div><!-- end right group -->
         </div><!-- end filter row -->
 
         <!-- Device list -->
@@ -22009,8 +22047,21 @@ function filterNodes() {
   empty.style.display = visible === 0 ? '' : 'none';
 }
 
+// Collapsed, the node search is a canonical Only icon button; opening it grows the field leftward.
+// It stays open while it holds a query — collapsing would hide a filter that is still applied.
+function openNodeSearch() {
+  document.getElementById('node-search-wrap').classList.add('is-open');
+  document.getElementById('node-search').focus();
+}
+function closeNodeSearch() {
+  var i = document.getElementById('node-search');
+  if (i.value.trim()) return;
+  document.getElementById('node-search-wrap').classList.remove('is-open');
+}
+
 function nodesResetFilters() {
   var s = document.getElementById('node-search'); if (s) s.value = '';
+  var sw = document.getElementById('node-search-wrap'); if (sw) sw.classList.remove('is-open');
   document.querySelectorAll('#v-all-devices .ng-opt').forEach(function(o){ var a=o.dataset.val==='all'; o.classList.toggle('ng-opt-active',a); var c=o.querySelector('.ng-check'); if(c)c.style.visibility=a?'visible':'hidden'; o.style.background=a?'rgba(0,175,115,0.08)':''; });
   document.querySelectorAll('#v-all-devices .ne-opt').forEach(function(o){ var a=o.dataset.val==='all'; o.classList.toggle('ne-opt-active',a); var c=o.querySelector('.ne-check'); if(c)c.style.visibility=a?'visible':'hidden'; o.style.background=a?'rgba(0,175,115,0.08)':''; });
   nodeScopeLabel();
