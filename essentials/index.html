@@ -24511,6 +24511,7 @@ go = function(key) {
   if (key === 'j3-connected') { openAwsConnectedModal(); return; }
   if (key === 'j3-syncing') { openAwsSyncingModal(); return; }
   if (key === 'j3-inventory') { openAwsInventoryModal(); return; }
+  if (key === 'j3-scan-config') { openAwsScanConfigModal(); return; }
   _origGo(key);
   if (key === 'j4-connect') {
     // Reset CI types to defaults and close popover on every visit
@@ -25734,7 +25735,48 @@ function openAwsInventoryModal() {
     steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
     bodyHtml:body,
     backButton:{label:'Back',onClick:function(){ go('j3-syncing'); }},
-    buttons:[{label:'Continue to Scan Setup',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); _origGo('j3-scan-config'); }}],
+    buttons:[{label:'Continue to Scan Setup',kind:'primary',onClick:function(){ openAwsScanConfigModal(); }}],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
+  });
+}
+function awsScanRadio(el){
+  var group = el.closest('.radio-group'); if(!group) return;
+  group.querySelectorAll('.radio-item').forEach(function(r){ r.classList.remove('selected'); });
+  el.classList.add('selected');
+  group.querySelectorAll('[data-node-type-opts]').forEach(function(o){ o.style.display='none'; });
+  var opts = el.querySelector('[data-node-type-opts]');
+  if(opts) opts.style.display='block';
+}
+function openAwsScanConfigModal() {
+  var ri = function(selected, inner){ return '<div class="radio-item' + (selected?' selected':'') + '" onclick="awsScanRadio(this)"><div class="radio-dot"></div>' + inner + '</div>'; };
+  var lbl = function(checked, name, count){ return '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-default);cursor:pointer;"><input type="checkbox"' + (checked?' checked':'') + '> ' + name + ' <span style="font-size:10px;color:var(--text-sec);">(' + count + ')</span></label>'; };
+  var level = '<div class="form-group"><div class="form-label">Compliance Policy Level</div><div class="radio-group">'
+    + ri(true, '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Level 1 <span style="font-size:10px;font-weight:500;color:#15803d;background:rgba(37,167,96,0.1);border-radius:10px;padding:2px 8px;">recommended</span></div><div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Basic security hygiene, minimal operational impact</div></div>')
+    + ri(false, '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Level 2</div><div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Defense-in-depth, may impact functionality</div></div>')
+    + '</div></div>';
+  var scope = '<div class="form-group"><div class="form-label">Scope</div><div class="radio-group">'
+    + ri(true, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">All selected nodes (12)</div>')
+    + ri(false, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Select subset</div>')
+    + '<div class="radio-item" onclick="awsScanRadio(this)"><div class="radio-dot"></div><div style="width:100%;"><div style="font-size:13px;font-weight:600;color:var(--text-default);">By node type</div><div data-node-type-opts style="display:none;margin-top:10px;"><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">'
+    +   lbl(true,'EC2 instances','8') + lbl(false,'RDS databases','2') + lbl(false,'EKS clusters','1') + lbl(false,'ECS services','1')
+    + '</div></div></div></div>'
+    + '</div>'
+    + '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px;display:flex;align-items:flex-start;gap:8px;"><span style="font-size:13px;">💡</span><span style="font-size:11px;color:var(--text-sec);line-height:1.5;">For best performance, we recommend scanning by node type. Start with EC2 instances.</span></div>'
+    + '</div>';
+  var schedule = '<div class="form-group" style="margin-bottom:0;"><div class="form-label">Schedule</div><div class="radio-group">'
+    + ri(true, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Now</div>')
+    + ri(false, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Daily</div>')
+    + ri(false, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Weekly</div>')
+    + '</div></div>';
+  var estimate = '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--radius-md);padding:12px 16px;margin-top:16px;display:flex;align-items:center;gap:10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span style="font-size:12px;color:var(--text-sec);font-weight:500;">Estimated time: ~8 minutes for 12 nodes</span></div>';
+  var body = level + scope + schedule + estimate;
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Scan Configuration',
+    subtitle:'Configure Compliance Policy scan for 12 AWS nodes.',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ go('j3-inventory'); }},
+    buttons:[{label:'Start Scan',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); go('j3-scanning'); }}],
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
   });
 }
