@@ -24510,6 +24510,7 @@ go = function(key) {
   if (key === 'j3-connecting') { openAwsTestingModal(); return; }
   if (key === 'j3-connected') { openAwsConnectedModal(); return; }
   if (key === 'j3-syncing') { openAwsSyncingModal(); return; }
+  if (key === 'j3-inventory') { openAwsInventoryModal(); return; }
   _origGo(key);
   if (key === 'j4-connect') {
     // Reset CI types to defaults and close popover on every visit
@@ -25694,9 +25695,47 @@ function openAwsSyncingModal() {
     backButton:{label:'Back',onClick:function(){ go('j3-connected'); }},
     buttons:[
       {label:'No resources state',kind:'secondary',onClick:function(){ closeModal('aws-connect-overlay'); showView('j3-no-resources'); }},
-      {label:'Continue when ready',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); _origGo('j3-inventory'); }}
+      {label:'Continue when ready',kind:'primary',onClick:function(){ openAwsInventoryModal(); }}
     ],
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',1); }
+  });
+}
+function openAwsInventoryModal() {
+  var pill = function(label, active){ return '<div class="pill' + (active?' active':'') + '">' + label + '</div>'; };
+  var row = function(name, bcls, btxt, region, os, status, statusColor, checked, dim){
+    return '<tr' + (dim?' style="opacity:0.55;"':'') + '>'
+      + '<td><span style="font-family:\'DM Sans\',sans-serif;font-size:12px;font-weight:600;">' + name + '</span></td>'
+      + '<td><span class="badge ' + bcls + '">' + btxt + '</span></td>'
+      + '<td style="font-family:\'DM Sans\',sans-serif;font-size:11px;">' + region + '</td>'
+      + '<td style="font-size:11px;color:var(--text-sec);">' + os + '</td>'
+      + '<td><span style="font-size:11px;color:' + statusColor + ';font-weight:600;">' + status + '</span></td>'
+      + '<td><input type="checkbox"' + (checked?' checked':'') + ' style="width:15px;height:15px;accent-color:var(--green2);"></td>'
+      + '</tr>';
+  };
+  var body = '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:10px 12px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">'
+    +   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
+    +   '<span style="font-size:12px;color:var(--text-sec);line-height:1.5;">Selected nodes will be added to Guardian as monitored nodes. Unselected nodes will be ignored and not added.</span>'
+    + '</div>'
+    + '<div class="filter-pills" style="margin-bottom:16px;">' + pill('All (14)', true) + pill('EC2 (12)') + pill('ECS (3)') + pill('EKS (1)') + pill('Lambda (2)') + '</div>'
+    + '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">'
+    +   '<table class="data-table"><thead><tr><th>RESOURCE</th><th>TYPE</th><th>REGION</th><th>OS</th><th>STATUS</th><th>SELECT</th></tr></thead><tbody>'
+    +     row('web-prod-01','badge-pass','EC2','us-east-1','Amazon Linux 2','Ready','#15803d',true)
+    +     row('web-prod-02','badge-pass','EC2','us-east-1','Amazon Linux 2','Ready','#15803d',true)
+    +     row('api-server-01','badge-pass','EC2','eu-west-1','Ubuntu 22.04','Ready','#15803d',true)
+    +     row('ecs-cluster-prod','badge-low','ECS','us-east-1','—','Ready','#15803d',true)
+    +     row('eks-prod','bdg--purple','EKS','us-east-1','—','Ready','#15803d',true)
+    +     row('db-replica-01','badge-medium','RDS','eu-west-1','—','Excluded','var(--muted)',false,true)
+    +   '</tbody></table>'
+    + '</div>'
+    + '<div style="margin-top:14px;font-size:13px;color:var(--text-sec);font-weight:500;">12 of 14 nodes selected</div>';
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Node Inventory',
+    subtitle:'14 resources discovered across 2 regions.',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ go('j3-syncing'); }},
+    buttons:[{label:'Continue to Scan Setup',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); _origGo('j3-scan-config'); }}],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
   });
 }
 function openAwsConnectModal() {
