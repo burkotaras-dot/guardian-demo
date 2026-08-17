@@ -3280,6 +3280,12 @@ body.dark .ac-sec-opt:hover { background:rgba(255,255,255,0.05); }
 body.dark #ac-type-pop, body.dark .ec-type-pop { scrollbar-color:rgba(255,255,255,0.18) transparent; }
 body.dark #ac-type-pop::-webkit-scrollbar-thumb, body.dark .ec-type-pop::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.18); }
 body.dark #ac-type-pop::-webkit-scrollbar-thumb:hover, body.dark .ec-type-pop::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,0.3); }
+/* Modal body + inner code/pre blocks — thin dark scrollbars (no bright OS default in dark) */
+body.dark .gm-body, body.dark .gm-body pre, body.dark .gm-body code[id] { scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.18) transparent; color-scheme:dark; }
+body.dark .gm-body::-webkit-scrollbar, body.dark .gm-body pre::-webkit-scrollbar, body.dark .gm-body code[id]::-webkit-scrollbar { width:8px; height:8px; }
+body.dark .gm-body::-webkit-scrollbar-track, body.dark .gm-body pre::-webkit-scrollbar-track, body.dark .gm-body code[id]::-webkit-scrollbar-track { background:transparent; }
+body.dark .gm-body::-webkit-scrollbar-thumb, body.dark .gm-body pre::-webkit-scrollbar-thumb, body.dark .gm-body code[id]::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.18); border-radius:4px; }
+body.dark .gm-body::-webkit-scrollbar-thumb:hover, body.dark .gm-body pre::-webkit-scrollbar-thumb:hover, body.dark .gm-body code[id]::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,0.3); }
 /* Policy-edit column header row and section headers — make dividers visible in dark mode */
 body.dark div:has(> #pe-col-header) { border-bottom-color: rgba(255,255,255,0.12) !important; }
 body.dark [onclick^="peToggleSec"] { border-bottom-color: rgba(255,255,255,0.12) !important; }
@@ -24502,6 +24508,8 @@ const _origGo = go;
 go = function(key) {
   if (key === 'j3-connect') { openAwsConnectModal(); return; }
   if (key === 'j3-connecting') { openAwsTestingModal(); return; }
+  if (key === 'j3-connected') { openAwsConnectedModal(); return; }
+  if (key === 'j3-syncing') { openAwsSyncingModal(); return; }
   _origGo(key);
   if (key === 'j4-connect') {
     // Reset CI types to defaults and close popover on every visit
@@ -25633,8 +25641,62 @@ function openAwsTestingModal() {
     afterMount:function(ov){
       ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect');
       gmGoStep('aws-connect-overlay',0);
-      setTimeout(function(){ closeModal('aws-connect-overlay'); _origGo('j3-connected'); }, 2000);
+      setTimeout(function(){ openAwsConnectedModal(); }, 2000);
     }
+  });
+}
+function openAwsConnectedModal() {
+  var detailRow = function(label, val, valStyle){ return '<div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-sec);">' + label + '</span><span style="font-size:13px;font-weight:600;' + (valStyle||'color:var(--text-default);') + '">' + val + '</span></div>'; };
+  var body = '<div style="text-align:center;">'
+    + '<div class="success-circle" style="margin:0 auto 20px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
+    + '<div style="font-size:22px;font-weight:700;color:var(--text-default);margin-bottom:6px;letter-spacing:-0.4px;">Connected successfully</div>'
+    + '<div style="font-size:13px;color:var(--text-sec);margin-bottom:24px;">Authentication successful · All permissions validated</div>'
+    + '<div style="border:1px solid var(--border);border-radius:var(--radius-md);text-align:left;margin-bottom:20px;overflow:hidden;">'
+    +   detailRow('Account ID', '123456789012')
+    +   detailRow('Regions', 'us-east-1, eu-west-1')
+    +   '<div style="display:flex;justify-content:space-between;padding:12px 16px;"><span style="font-size:13px;color:var(--text-sec);">IAM Permissions</span><span style="font-size:13px;color:var(--success);font-weight:600;">All validated ✓</span></div>'
+    + '</div>'
+    + '<div style="background:rgba(37,167,96,0.06);border:1px solid rgba(37,167,96,0.2);border-radius:var(--radius-md);padding:12px 14px;font-size:12px;color:var(--success);text-align:left;display:flex;align-items:center;gap:10px;"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Node sync starting automatically…</div>'
+    + '</div>';
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Configure AWS Integration',
+    subtitle:'Your IAM role has been validated. Guardian can now discover and scan your AWS resources.',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    buttons:[{label:'View synced nodes',kind:'primary',onClick:function(){ go('j3-syncing'); }}],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',0); }
+  });
+}
+function openAwsSyncingModal() {
+  var resIco = function(bg, svg){ return '<div style="width:32px;height:32px;background:' + bg + ';border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + svg + '</div>'; };
+  var check = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var row = function(ico, name, region, right, last){ return '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;' + (last?'':'border-bottom:1px solid var(--border);') + '"><div style="display:flex;align-items:center;gap:12px;">' + ico + '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">' + name + '</div><div style="font-size:11px;color:var(--text-sec);">' + region + '</div></div></div>' + right + '</div>'; };
+  var found = function(n){ return '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;font-weight:700;color:var(--text-default);">' + n + ' found</span>' + check + '</div>'; };
+  var body = '<div class="auto-banner" style="margin-bottom:20px;"><svg class="spin-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Auto: Discovering AWS Resources</div>'
+    + '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm);">'
+    +   '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-sec);margin-bottom:8px;"><span style="font-weight:600;color:var(--text-default);">Scanning regions…</span><span>us-east-1 · eu-west-1</span></div>'
+    +   '<div style="height:6px;background:var(--bg-page);border-radius:3px;overflow:hidden;margin-bottom:6px;"><div style="height:100%;background:var(--btn-grad);border-radius:3px;animation:scanBar 4s ease forwards;box-shadow:0 0 8px rgba(63,200,120,0.4);"></div></div>'
+    +   '<div style="font-size:11px;color:var(--text-sec);">Discovering resources…</div>'
+    + '</div>'
+    + '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">'
+    +   '<div style="padding:14px 16px;border-bottom:1px solid var(--border);background:var(--bg-canvas);"><div style="font-size:13px;font-weight:700;color:var(--text-default);">Resources Discovered</div></div>'
+    +   row(resIco('rgba(37,167,96,0.1)','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>'),'EC2 Instances','us-east-1 · eu-west-1',found(12))
+    +   row(resIco('rgba(37,167,96,0.1)','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>'),'ECS Clusters','us-east-1',found(3))
+    +   row(resIco('rgba(37,167,96,0.1)','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg>'),'EKS Clusters','us-east-1',found(1))
+    +   row(resIco('rgba(59,130,246,0.1)','<svg class="spin-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.6"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>'),'Lambda Functions','us-east-1','<span style="font-size:12px;color:var(--status-info);font-weight:600;animation:pulse 1s infinite;">Scanning…</span>')
+    +   row(resIco('rgba(139,155,176,0.1)','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.6"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>'),'RDS Instances','eu-west-1','<span style="font-size:12px;color:var(--muted);font-weight:500;">Pending…</span>',true)
+    + '</div>';
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Node Discovery',
+    subtitle:'Auto-discovering AWS resources across selected regions.',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ go('j3-connected'); }},
+    buttons:[
+      {label:'No resources state',kind:'secondary',onClick:function(){ closeModal('aws-connect-overlay'); showView('j3-no-resources'); }},
+      {label:'Continue when ready',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); _origGo('j3-inventory'); }}
+    ],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',1); }
   });
 }
 function openAwsConnectModal() {
@@ -25674,8 +25736,13 @@ function openAwsConnectModal() {
     + '<div class="agentless-modal-field"><label class="form-label">Assume-role ARN</label><input class="form-input" type="text" placeholder="arn:aws:iam::123456789012:role/GuardianRole"><div class="agentless-modal-hint">Guardian uses the access key to assume this role for discovery and scanning.</div></div>'
     + '</div>';
 
-  var perms = '<div class="collapsible-header" id="aws-modal-permToggle" onclick="awsModalTogglePerms()"><span>IAM Permissions required</span><svg id="aws-modal-permChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div>'
-    + '<div class="collapsible-body" id="aws-modal-permBody" style="display:none;">'
+  var perms = '<div style="border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">'
+    + '<div id="aws-modal-permToggle" onclick="awsModalTogglePerms()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;">'
+    +   '<span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(59,130,246,0.12);color:#3B82F6;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><circle cx="12" cy="7.5" r="0.8" fill="currentColor" stroke="none"></circle></svg></span>'
+    +   '<span style="flex:1;min-width:0;"><span style="display:block;font-size:12px;font-weight:600;color:var(--text-default);">IAM Permissions required</span><span style="display:block;font-size:11px;color:var(--text-sec);margin-top:1px;">Reference — no action needed</span></span>'
+    +   '<svg id="aws-modal-permChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>'
+    + '</div>'
+    + '<div id="aws-modal-permBody" style="display:none;padding:8px 14px 12px;border-top:1px solid var(--border);">'
     + ['ec2:Describe*','ecs:List*','eks:Describe*','lambda:List*','rds:Describe*'].map(function(p){ return '<div class="perm-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>' + p + '</div>'; }).join('')
     + '</div>';
 
