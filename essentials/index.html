@@ -24500,10 +24500,9 @@ function togglePerms() {
 // Auto-advance connecting → connected
 const _origGo = go;
 go = function(key) {
+  if (key === 'j3-connect') { openAwsConnectModal(); return; }
+  if (key === 'j3-connecting') { openAwsTestingModal(); return; }
   _origGo(key);
-  if (key === 'j3-connecting') {
-    setTimeout(() => _origGo('j3-connected'), 2000);
-  }
   if (key === 'j4-connect') {
     // Reset CI types to defaults and close popover on every visit
     _ciSelected = ['cmdb_ci_server','cmdb_ci_computer'];
@@ -25590,6 +25589,112 @@ function openAgentlessSetupModal() {
         if (saved) agentlessModalCredentialLabel(saved);
       }
     }
+  });
+}
+// ── AWS Connect modal (converted from full-page v-j3-connect, Add-Manually chrome) ──
+function awsModalSwitchAuth(method) {
+  var ov = document.getElementById('aws-connect-overlay'); if (!ov) return;
+  var ti = ov.querySelector('[data-aws-auth-tab="iam"]');
+  var tk = ov.querySelector('[data-aws-auth-tab="keys"]');
+  if (ti) { ti.classList.toggle('is-active', method === 'iam'); ti.setAttribute('aria-selected', method === 'iam'); }
+  if (tk) { tk.classList.toggle('is-active', method === 'keys'); tk.setAttribute('aria-selected', method === 'keys'); }
+  var fi = document.getElementById('aws-modal-iam');
+  var fk = document.getElementById('aws-modal-keys');
+  if (fi) fi.style.display = method === 'iam' ? '' : 'none';
+  if (fk) fk.style.display = method === 'keys' ? '' : 'none';
+}
+function awsModalTogglePerms() {
+  var body = document.getElementById('aws-modal-permBody');
+  var chev = document.getElementById('aws-modal-permChevron');
+  if (!body) return;
+  var open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if (chev) chev.style.transform = open ? '' : 'rotate(180deg)';
+}
+function awsModalRegion(el) { el.classList.toggle('selected'); }
+function awsModalContinue() { go('j3-connecting'); }
+function openAwsTestingModal() {
+  var body = '<div class="connecting-wrap" style="text-align:center;max-width:360px;width:100%;margin:0 auto;">'
+    + '<div class="connecting-ring"></div>'
+    + '<div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Testing connection…</div>'
+    + '<div style="font-size:13px;color:var(--text-sec);">Verifying IAM permissions</div>'
+    + '<div class="progress-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>'
+    + '<div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 20px;width:100%;text-align:left;">'
+    +   '<div style="font-size:11px;color:var(--text-sec);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Progress</div>'
+    +   '<div style="font-size:12px;color:var(--text-default);margin-bottom:6px;display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Connecting to AWS API</div>'
+    +   '<div style="font-size:12px;color:var(--text-default);display:flex;align-items:center;gap:8px;animation:pulse 1s infinite;"><svg class="spin-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Verifying IAM Role ARN</div>'
+    + '</div></div>';
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Configure AWS Integration',
+    subtitle:'Testing your IAM credentials and verifying permissions…',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    buttons:[{label:'Cancel',kind:'secondary',onClick:function(){ closeModal('aws-connect-overlay'); showView('dashboard'); }}],
+    afterMount:function(ov){
+      ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect');
+      gmGoStep('aws-connect-overlay',0);
+      setTimeout(function(){ closeModal('aws-connect-overlay'); _origGo('j3-connected'); }, 2000);
+    }
+  });
+}
+function openAwsConnectModal() {
+  var copyBtn = 'border:none;border-left:1px solid var(--border);background:var(--bg-surface);padding:0 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-sec);font-family:inherit;';
+  var copyJsonBtn = 'border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text-sec);font-family:inherit;';
+  var copyJsonBtnSm = 'border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text-sec);font-family:inherit;';
+  var codeRow = 'display:flex;align-items:stretch;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg-subtle);';
+  var preStyle = 'margin:0;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:8px;max-height:220px;overflow:auto;font-size:11px;line-height:1.5;color:var(--text-default);';
+  var preStyleSm = 'margin:0;padding:10px 12px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:6px;max-height:160px;overflow:auto;font-size:11px;line-height:1.45;color:var(--text-default);';
+  var stepBox = 'border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;';
+
+  var trustPolicy = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Principal": { "Federated": "arn:aws:iam::123456789012:oidc-provider/static.cloudhouse.com" },\n      "Action": "sts:AssumeRoleWithWebIdentity",\n      "Condition": {\n        "StringEquals": {\n          "static.cloudhouse.com:aud": "sts.amazonaws.com",\n          "static.cloudhouse.com:sub": "guardian-service/acme-corp"\n        }\n      }\n    }\n  ]\n}';
+  var policyJson = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Sid": "GuardianReadOnly",\n      "Effect": "Allow",\n      "Action": [\n        "ec2:Describe*", "ec2:GetConsoleOutput",\n        "ecs:ListClusters", "ecs:DescribeClusters",\n        "eks:ListClusters", "eks:DescribeCluster",\n        "rds:DescribeDBInstances", "rds:DescribeDBClusters",\n        "lambda:ListFunctions", "lambda:GetFunction",\n        "s3:ListAllMyBuckets", "s3:GetBucketPolicy",\n        "iam:GetUser", "iam:GetRole",\n        "sts:GetCallerIdentity", "sts:GetAccessKeyInfo"\n      ],\n      "Resource": "*"\n    }\n  ]\n}';
+  var keysTrust = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Principal": { "AWS": "arn:aws:iam::123456789012:user/Guardian" },\n      "Action": "sts:AssumeRole"\n    }\n  ]\n}';
+  var keysAssume = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Action": "sts:AssumeRole",\n      "Resource": "arn:aws:iam::123456789012:role/GuardianRole"\n    }\n  ]\n}';
+
+  var iam = '<div id="aws-modal-iam">'
+    + '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:10px 12px;margin-top:20px;margin-bottom:16px;font-size:12px;color:var(--text-sec);line-height:1.55;"><strong style="color:var(--text-default);">One-time setup in your AWS account.</strong> Enter your account ID above, then create an OIDC identity provider and an IAM role from the values below and paste the role ARN back here. Guardian exchanges a short-lived OIDC token for STS credentials — no long-lived keys are stored.</div>'
+    + '<div class="form-label" style="margin-bottom:8px;">Step 1 — Add an OIDC identity provider <span style="font-weight:400;color:var(--text-sec);">(IAM → Identity providers → Add provider → OpenID Connect)</span></div>'
+    + '<div class="agentless-modal-field"><label class="form-label">Provider URL</label><div style="' + codeRow + '"><code id="aws-modal-oidc-url" style="flex:1;padding:9px 12px;font-size:12px;color:var(--text-default);overflow:auto;white-space:nowrap;">https://static.cloudhouse.com</code><button type="button" onclick="copyTextFrom(\'aws-modal-oidc-url\')" style="' + copyBtn + '">Copy</button></div></div>'
+    + '<div class="agentless-modal-field"><label class="form-label">Audience</label><div style="' + codeRow + '"><code id="aws-modal-oidc-aud" style="flex:1;padding:9px 12px;font-size:12px;color:var(--text-default);overflow:auto;white-space:nowrap;">sts.amazonaws.com</code><button type="button" onclick="copyTextFrom(\'aws-modal-oidc-aud\')" style="' + copyBtn + '">Copy</button></div></div>'
+    + '<div class="form-label" style="margin-top:6px;margin-bottom:8px;">Step 2 — Create an IAM role with this trust policy <span style="font-weight:400;color:var(--text-sec);">(IAM → Roles → Create role → Custom trust policy)</span></div>'
+    + '<div class="agentless-modal-field"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label class="form-label" style="margin:0;">Trust policy JSON</label><button type="button" onclick="copyTextFrom(\'aws-modal-oidc-trust\')" style="' + copyJsonBtn + '">Copy JSON</button></div><pre id="aws-modal-oidc-trust" style="' + preStyle + '">' + trustPolicy + '</pre><div class="agentless-modal-hint">The trust policy only controls who may assume the role. Also attach a permission policy (e.g. SecurityAudit or ReadOnlyAccess) granting the AWS actions Guardian scans with.</div></div>'
+    + '<div class="agentless-modal-field"><label class="form-label">Step 3 — Trust role ARN</label><input class="form-input" type="text" placeholder="arn:aws:iam::123456789012:role/guardian-oidc"><div class="agentless-modal-hint">ARN of the role you created above. Guardian assumes it via web-identity to run discovery and scans.</div></div>'
+    + '</div>';
+
+  var keys = '<div id="aws-modal-keys" style="display:none;">'
+    + '<div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:10px 12px;margin-top:20px;margin-bottom:16px;font-size:12px;color:var(--text-sec);line-height:1.55;"><strong style="color:var(--text-default);">One-time setup in your AWS account.</strong> Create an IAM user with a read-only policy and a role Guardian can assume, then paste the access key and role ARN below.</div>'
+    + '<div class="form-label" style="margin-bottom:8px;">Set up in AWS <span style="font-weight:400;color:var(--text-sec);">(IAM Console)</span></div>'
+    + '<div style="' + stepBox + '"><div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:2px;">1 · Create an IAM user</div><div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Programmatic access only — no console access. Name it <code>Guardian</code>. Permissions are attached in step 4.</div></div>'
+    + '<div style="' + stepBox + '"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="font-size:12px;font-weight:600;color:var(--text-default);">2 · Create a read-only IAM policy <span style="font-weight:400;color:var(--text-sec);">GuardianReadOnlyAccess</span></div><button type="button" onclick="copyTextFrom(\'aws-modal-keys-policy\')" style="' + copyJsonBtnSm + '">Copy JSON</button></div><pre id="aws-modal-keys-policy" style="' + preStyleSm + '">' + policyJson + '</pre></div>'
+    + '<div style="' + stepBox + '"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="font-size:12px;font-weight:600;color:var(--text-default);">3 · Create an IAM role <span style="font-weight:400;color:var(--text-sec);">GuardianRole</span> with this trust policy</div><button type="button" onclick="copyTextFrom(\'aws-modal-keys-trust\')" style="' + copyJsonBtnSm + '">Copy JSON</button></div><div style="font-size:11px;color:var(--text-sec);line-height:1.5;margin-bottom:6px;">Custom trust policy, so the Guardian user can assume the role. On the permissions step, attach <code>GuardianReadOnlyAccess</code>.</div><pre id="aws-modal-keys-trust" style="' + preStyleSm + '">' + keysTrust + '</pre></div>'
+    + '<div style="' + stepBox + '"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="font-size:12px;font-weight:600;color:var(--text-default);">4 · Let the user assume the role <span style="font-weight:400;color:var(--text-sec);">inline policy: GuardianAssumeRole</span></div><button type="button" onclick="copyTextFrom(\'aws-modal-keys-assume\')" style="' + copyJsonBtnSm + '">Copy JSON</button></div><pre id="aws-modal-keys-assume" style="' + preStyleSm + '">' + keysAssume + '</pre></div>'
+    + '<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:16px;"><div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:2px;">5 · Create access keys</div><div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Use case "Application running outside AWS". Copy the key ID and secret — the secret is only shown once.</div></div>'
+    + '<div class="agentless-modal-field"><label class="form-label">Access Key ID</label><input class="form-input" type="text" placeholder="AKIAIOSFODNN7EXAMPLE"></div>'
+    + '<div class="agentless-modal-field"><label class="form-label">Secret Access Key</label><input class="form-input" type="password" placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"></div>'
+    + '<div class="agentless-modal-field"><label class="form-label">Assume-role ARN</label><input class="form-input" type="text" placeholder="arn:aws:iam::123456789012:role/GuardianRole"><div class="agentless-modal-hint">Guardian uses the access key to assume this role for discovery and scanning.</div></div>'
+    + '</div>';
+
+  var perms = '<div class="collapsible-header" id="aws-modal-permToggle" onclick="awsModalTogglePerms()"><span>IAM Permissions required</span><svg id="aws-modal-permChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div>'
+    + '<div class="collapsible-body" id="aws-modal-permBody" style="display:none;">'
+    + ['ec2:Describe*','ecs:List*','eks:Describe*','lambda:List*','rds:Describe*'].map(function(p){ return '<div class="perm-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>' + p + '</div>'; }).join('')
+    + '</div>';
+
+  var body = '<section class="agentless-modal-section">'
+    + '<h3 class="agentless-modal-heading">Authentication method</h3>'
+    + '<div class="gm-tab-block agentless-modal-tabs" role="tablist" aria-label="Authentication method"><button type="button" class="gm-tab is-active" data-aws-auth-tab="iam" aria-selected="true" onclick="awsModalSwitchAuth(\'iam\')">OIDC (recommended)</button><button type="button" class="gm-tab" data-aws-auth-tab="keys" aria-selected="false" onclick="awsModalSwitchAuth(\'keys\')">Access Keys</button></div>'
+    + '<div class="agentless-modal-field"><label class="form-label">AWS Account ID</label><input class="form-input" type="text" placeholder="123456789012" value="123456789012"></div>'
+    + '<div class="agentless-modal-field"><label class="form-label">Region(s)</label><div class="region-pills"><div class="region-pill selected" onclick="awsModalRegion(this)">us-east-1 ✓</div><div class="region-pill" onclick="awsModalRegion(this)">eu-west-1</div><div class="region-pill" onclick="awsModalRegion(this)">ap-southeast-1</div></div></div>'
+    + iam + keys + '</section>'
+    + '<section class="agentless-modal-section">' + perms + '</section>';
+
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Configure AWS Integration',
+    subtitle:'Authenticate securely to begin resource discovery. Guardian scans EC2, ECS, EKS, Lambda and RDS nodes for compliance checks — no agent needed.',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ closeModal('aws-connect-overlay'); showView('dashboard'); }},
+    buttons:[{label:'Test Connection',kind:'primary',onClick:function(){ awsModalContinue(); }}],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',0); }
   });
 }
 // Close modal on backdrop click
