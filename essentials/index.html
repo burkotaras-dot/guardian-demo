@@ -3531,7 +3531,24 @@ body.dark .cm-rec-badge { color:#6EE7B7; background:rgba(16,185,129,0.12); borde
 .na-action.na-primary:hover { border-color:var(--green1); background:rgba(5,150,105,0.12); }
 body.dark .na-action:hover { border-color:rgba(16,185,129,0.5); background:rgba(16,185,129,0.06); }
 body.dark .na-action.na-primary { border-color:rgba(16,185,129,0.6); background:rgba(16,185,129,0.1); }
-body.dark .na-action.na-primary .na-action-ico { background:#10B981; color:#04241f; }
+body.dark .na-action.na-primary .na-action-ico { background:#10B981; color:#fff; }
+
+/* Node-added as the Results step of the Add-node modal (Figma 3233:20061) */
+.gm-node-added .gm-body { padding-bottom:20px; }
+.na-modal-hero { display:flex; flex-direction:column; align-items:center; text-align:center; margin:6px 0 20px; }
+.na-modal-check { width:44px; height:44px; border-radius:50%; background:rgba(16,185,129,0.13); display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+.na-modal-title { font-size:18px; font-weight:700; color:var(--text-default); }
+.na-modal-sub { font-size:12.5px; color:var(--text-sec); margin-top:5px; line-height:1.5; max-width:360px; }
+.na-modal-summary { display:grid; grid-template-columns:auto 1fr; gap:9px 16px; font-size:12.5px; background:var(--bg-subtle); border-radius:12px; padding:16px 20px; margin-bottom:18px; }
+body.dark .na-modal-summary { background:rgba(255,255,255,0.04); }
+.na-modal-actions { display:flex; flex-direction:column; gap:10px; }
+/* On the white modal card the neutral rows need a subtle grey chip (Figma 3233:20061),
+   otherwise white-on-white makes them read as borderless. Primary keeps its green tint. */
+.gm-node-added .na-action:not(.na-primary) { background:#F8F9FA; }
+body.dark .gm-node-added .na-action:not(.na-primary) { background:rgba(255,255,255,0.04); }
+.gm-node-added .na-action-ico { background:rgba(16,185,129,0.10); color:var(--green1); }
+.na-modal-add-another { text-align:center; margin-top:16px; }
+.na-modal-add-another button { background:none; border:none; color:var(--green1); font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit; }
 
 /* Reusable custom select (.csel) — unified styled dropdown replacing native <select> */
 .csel-wrap { position: relative; display: inline-block; vertical-align: middle; }
@@ -4093,9 +4110,11 @@ body.dark .agentless-credential-option.is-selected { background:var(--dropdown-o
 .gm-agentless-testing .gm-body { flex:1 1 auto; padding:20px 0 10px; overflow-y:auto; }
 .gm-agentless-testing .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
 .gm-agentless-setup .gm-step.is-done .gm-step-num::after,
-.gm-agentless-testing .gm-step.is-done .gm-step-num::after { content:none; }
+.gm-agentless-testing .gm-step.is-done .gm-step-num::after,
+.gm-node-added .gm-step.is-done .gm-step-num::after { content:none; }
 .gm-agentless-setup .gm-step.is-done .gm-step-numval,
-.gm-agentless-testing .gm-step.is-done .gm-step-numval { display:inline; }
+.gm-agentless-testing .gm-step.is-done .gm-step-numval,
+.gm-node-added .gm-step.is-done .gm-step-numval { display:inline; }
 .agentless-test-demo,
 .agentless-test-content { padding:0 24px; }
 .agentless-test-demo-label {
@@ -10995,7 +11014,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var user = _alVal('al-user');
       return 'Direct · ' + (sshkey ? 'SSH key' : 'Password') + (user ? ' · ' + user : '');
     }
-    function alAddNode() {
+    function _buildAddedNode() {
       var cm = (typeof CONNECTION_MANAGERS !== 'undefined') ? CONNECTION_MANAGERS.filter(function (c) { return c.id === selectedCM; })[0] : null;
       var name = _alVal('al-name'), host = _alVal('al-host');
       var port = _alVal('al-port') || (addNodeOS === 'windows' ? '5985' : '22');
@@ -11011,6 +11030,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         cred: _alCredSummary()
       };
       if (name && EXISTING_NODES.indexOf(name.toUpperCase()) === -1) EXISTING_NODES.push(name.toUpperCase());
+    }
+    function alAddNode() {
+      _buildAddedNode();
       go('s-node-added');
     }
     function renderNodeAdded() {
@@ -25317,8 +25339,42 @@ function agentlessTestSetScenario(key) {
   runStep(0);
 }
 function agentlessModalAddNode() {
-  closeModal('agentless-setup-overlay');
-  alAddNode();
+  _buildAddedNode();
+  openNodeAddedModal();
+}
+function openNodeAddedModal() {
+  var n = _addedNode || { name:'This node', host:'—', port:'—', proto:'—', os:'—', cm:'—', cred:'—' };
+  var esc = agentlessTestEscape;
+  var rows = [
+    ['Node', n.name],
+    ['Address', n.host + ':' + n.port + ' · ' + n.proto],
+    ['Operating system', n.os],
+    ['Connection Manager', n.cm],
+    ['Credential', n.cred]
+  ];
+  var summary = rows.map(function(r){ return '<div class="na-summary-k">' + esc(r[0]) + '</div><div class="na-summary-v">' + esc(String(r[1])) + '</div>'; }).join('');
+  var chev = '<svg class="na-action-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+  var body = ''
+    + '<div class="na-modal-hero">'
+    +   '<div class="na-modal-check"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
+    +   '<div class="na-modal-title">Node added</div>'
+    +   '<div class="na-modal-sub"><b style="color:var(--text-default);">' + esc(n.name) + '</b> is now monitored by Guardian and ready for its first scan.</div>'
+    + '</div>'
+    + '<div class="na-modal-summary">' + summary + '</div>'
+    + '<div class="na-modal-actions">'
+    +   '<button class="na-action na-primary" onclick="closeModal(\'agentless-setup-overlay\');go(\'s07\')"><div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div><div class="na-action-txt"><div class="na-action-title">Run first scan now</div><div class="na-action-sub">Check this node against your Compliance Policies right away</div></div>' + chev + '</button>'
+    +   '<button class="na-action" onclick="closeModal(\'agentless-setup-overlay\');showView(\'scan-schedule\')"><div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><div class="na-action-txt"><div class="na-action-title">Schedule scan</div><div class="na-action-sub">Run it later or on a recurring cadence</div></div>' + chev + '</button>'
+    +   '<button class="na-action" onclick="closeModal(\'agentless-setup-overlay\');showView(\'node-detail\')"><div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></div><div class="na-action-txt"><div class="na-action-title">View node details</div><div class="na-action-sub">See configuration, history and assigned policies</div></div>' + chev + '</button>'
+    + '</div>'
+    + '<div class="na-modal-add-another"><button type="button" onclick="closeModal(\'agentless-setup-overlay\');openAddNodeWizard()">+ Add another node</button></div>';
+  openModal({
+    id:'agentless-setup-overlay', size:'lg', title:'Add this node',
+    subtitle:'We detected your OS automatically.',
+    steps:[{label:'Add node'},{label:'Connect'},{label:'Scan'},{label:'Results'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ openAgentlessTestingModal(); }},
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-node-added'); gmGoStep('agentless-setup-overlay',2); }
+  });
 }
 function openAgentlessTestingModal() {
   var ctx = agentlessTestContext();
