@@ -25624,22 +25624,28 @@ function awsModalTogglePerms() {
 function awsModalRegion(el) { el.classList.toggle('selected'); }
 function awsModalContinue() { go('j3-connecting'); }
 function openAwsTestingModal() {
-  var body = '<div class="connecting-wrap" style="text-align:center;max-width:360px;width:100%;margin:0 auto;">'
-    + '<div class="connecting-ring"></div>'
-    + '<div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Testing connection…</div>'
-    + '<div style="font-size:13px;color:var(--text-sec);">Verifying IAM permissions</div>'
-    + '<div class="progress-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>'
-    + '<div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 20px;width:100%;text-align:left;">'
-    +   '<div style="font-size:11px;color:var(--text-sec);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Progress</div>'
-    +   '<div style="font-size:12px;color:var(--text-default);margin-bottom:6px;display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Connecting to AWS API</div>'
-    +   '<div style="font-size:12px;color:var(--text-default);display:flex;align-items:center;gap:8px;animation:pulse 1s infinite;"><svg class="spin-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Verifying IAM Role ARN</div>'
-    + '</div></div>';
+  var body = '<div style="text-align:center;padding-top:20px;padding-bottom:32px;">'
+    + '<div class="connecting-ring" style="width:56px;height:56px;border-width:2px;margin:0 auto;"></div>'
+    + '<div style="margin-top:20px;font-size:20px;font-weight:800;color:var(--text-default);">Testing connection…</div>'
+    + '<div style="margin-top:8px;font-size:14px;color:var(--text-sec);">Verifying IAM permissions</div>'
+    + '<div style="margin:28px auto 0;width:405px;max-width:100%;text-align:left;">'
+    +   '<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);">'
+    +     '<div style="width:20px;height:20px;border-radius:10px;background:rgba(37,167,96,0.1);border:1px solid rgba(37,167,96,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--bdg-green-txt)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
+    +     '<span style="font-size:12.5px;color:var(--bdg-green-txt);">Connecting to AWS API</span>'
+    +   '</div>'
+    +   '<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);">'
+    +     '<div style="width:20px;height:20px;border-radius:10px;background:transparent;border:2px solid #10B981;opacity:0.72;box-shadow:0 0 6px rgba(63,200,120,0.3);flex-shrink:0;"></div>'
+    +     '<span style="font-size:12.5px;font-weight:500;color:var(--text-default);">Verifying IAM Role ARN</span>'
+    +   '</div>'
+    + '</div>'
+    + '</div>';
   openModal({
     id:'aws-connect-overlay', size:'lg', title:'Configure AWS Integration',
     subtitle:'Testing your IAM credentials and verifying permissions…',
     steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
     bodyHtml:body,
-    buttons:[{label:'Cancel',kind:'secondary',onClick:function(){ closeModal('aws-connect-overlay'); showView('dashboard'); }}],
+    backButton:{label:'Back',onClick:function(){ go('j3-connect'); }},
+    buttons:[],
     afterMount:function(ov){
       ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect');
       gmGoStep('aws-connect-overlay',0);
