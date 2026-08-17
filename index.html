@@ -4063,6 +4063,8 @@ body.dark .add-node-method-card:hover { background:rgba(16,185,129,.10); border-
 .gm-agentless-setup .gm-body { padding:20px 0 10px; }
 .aws-sync-banner { background:#F8FAFC; }
 body.dark .aws-sync-banner { background:rgba(255,255,255,0.05); }
+.aws-scan-card { background:#F8FAFC; }
+body.dark .aws-scan-card { background:#123033; }
 .gm-agentless-setup .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
@@ -25688,24 +25690,29 @@ function openAwsConnectedModal() {
   });
 }
 function openAwsSyncingModal() {
-  var resIco = function(bg, svg){ return '<div style="width:32px;height:32px;background:' + bg + ';border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + svg + '</div>'; };
+  var resIco = function(svg){ return '<div style="width:32px;height:32px;background:var(--bg-subtle);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + svg + '</div>'; };
   var check = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
   var row = function(ico, name, region, right, last){ return '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;' + (last?'':'border-bottom:1px solid var(--border);') + '"><div style="display:flex;align-items:center;gap:12px;">' + ico + '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">' + name + '</div><div style="font-size:11px;color:var(--text-sec);">' + region + '</div></div></div>' + right + '</div>'; };
   var found = function(n){ return '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;font-weight:700;color:var(--text-default);">' + n + ' found</span>' + check + '</div>'; };
-  var body = '<div class="auto-banner" style="margin-bottom:20px;"><svg class="spin-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Auto: Discovering AWS Resources</div>'
-    + '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm);">'
-    +   '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-sec);margin-bottom:8px;"><span style="font-weight:600;color:var(--text-default);">Scanning regions…</span><span>us-east-1 · eu-west-1</span></div>'
-    +   '<div style="height:6px;background:var(--bg-page);border-radius:3px;overflow:hidden;margin-bottom:6px;"><div style="height:100%;background:var(--btn-grad);border-radius:3px;animation:scanBar 4s ease forwards;box-shadow:0 0 8px rgba(63,200,120,0.4);"></div></div>'
-    +   '<div style="font-size:11px;color:var(--text-sec);">Discovering resources…</div>'
+  var body = '<div style="padding:0 24px;margin-bottom:20px;"><span class="bdg bdg--dot bdg--purple">Auto: Discovering AWS Resources</span></div>'
+    + '<div style="padding:0 24px;margin-bottom:20px;">'
+    +   '<div class="aws-scan-card" style="border:1px solid var(--border);border-radius:14px;padding:20px 16px;">'
+    +     '<div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;color:var(--text-default);">Scanning regions…</span><span style="font-size:12px;color:var(--text-sec);">us-east-1 · eu-west-1</span></div>'
+    +     '<div style="height:8px;background:var(--progress-track,#e2e8f0);border-radius:4px;overflow:hidden;margin-top:10px;"><div style="height:100%;background:var(--btn-grad);border-radius:4px;animation:scanBar 4s ease forwards;box-shadow:0 0 8px rgba(63,200,120,0.4);"></div></div>'
+    +     '<div style="font-size:11px;color:var(--text-sec);margin-top:6px;">Discovering resources…</div>'
+    +   '</div>'
     + '</div>'
-    + '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">'
-    +   '<div style="padding:14px 16px;border-bottom:1px solid var(--border);background:var(--bg-canvas);"><div style="font-size:13px;font-weight:700;color:var(--text-default);">Resources Discovered</div></div>'
-    +   row(resIco('rgba(37,167,96,0.1)','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>'),'EC2 Instances','us-east-1 · eu-west-1',found(12))
-    +   row(resIco('rgba(37,167,96,0.1)','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>'),'ECS Clusters','us-east-1',found(3))
-    +   row(resIco('rgba(37,167,96,0.1)','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg>'),'EKS Clusters','us-east-1',found(1))
-    +   row(resIco('rgba(59,130,246,0.1)','<svg class="spin-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.6"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>'),'Lambda Functions','us-east-1','<span style="font-size:12px;color:var(--status-info);font-weight:600;animation:pulse 1s infinite;">Scanning…</span>')
-    +   row(resIco('rgba(139,155,176,0.1)','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.6"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>'),'RDS Instances','eu-west-1','<span style="font-size:12px;color:var(--muted);font-weight:500;">Pending…</span>',true)
-    + '</div>';
+    + '<div style="padding:0 24px;margin-bottom:10px;"><div style="font-size:13px;font-weight:700;color:var(--text-default);">Resources Discovered</div></div>'
+    + '<div style="padding:0 24px;">'
+    +   '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;">'
+    +     row(resIco('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>'),'EC2 Instances','us-east-1 · eu-west-1',found(12))
+    +     row(resIco('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>'),'ECS Clusters','us-east-1',found(3))
+    +     row(resIco('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="1.6"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg>'),'EKS Clusters','us-east-1',found(1))
+    +     row(resIco('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" style="animation:spin 0.9s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>'),'Lambda Functions','us-east-1','<span style="font-size:12px;color:var(--bdg-green-txt);font-weight:600;animation:pulse 1s infinite;">Scanning…</span>')
+    +     row(resIco('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.6"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>'),'RDS Instances','eu-west-1','<span style="font-size:12px;color:var(--muted);font-weight:500;">Pending…</span>',true)
+    +   '</div>'
+    + '</div>'
+    + '<div style="padding:12px 24px 0;"><button style="background:none;border:none;padding:0;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--bdg-red-txt);cursor:pointer;font-family:inherit;" onclick="closeModal(\'aws-connect-overlay\');showView(\'j3-scan-failed\');">Scan failed state <span style="font-size:11px;">&#8594;</span></button></div>';
   openModal({
     id:'aws-connect-overlay', size:'lg', title:'Node Discovery',
     subtitle:'Auto-discovering AWS resources across selected regions.',
@@ -25713,7 +25720,6 @@ function openAwsSyncingModal() {
     bodyHtml:body,
     backButton:{label:'Back',onClick:function(){ go('j3-connected'); }},
     buttons:[
-      {label:'No resources state',kind:'secondary',onClick:function(){ closeModal('aws-connect-overlay'); showView('j3-no-resources'); }},
       {label:'Continue when ready',kind:'primary',onClick:function(){ openAwsInventoryModal(); }}
     ],
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',1); }
