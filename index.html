@@ -2482,8 +2482,8 @@ body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.
 /* Form controls: light bg + dark raised bg */
 .dk-form { background:#F1F5F9; }
 /* Toolbar dropdown triggers — white fill on light (dark keeps --bg-subtle standard). */
-#node-group-btn, #node-env-btn, #cm-status-btn, #cm-availability-btn { background:var(--bg-surface); }
-body.dark #node-group-btn, body.dark #node-env-btn, body.dark #cm-status-btn, body.dark #cm-availability-btn { background:var(--bg-subtle); }
+#cm-status-btn, #cm-availability-btn { background:var(--bg-surface); }
+body.dark #cm-status-btn, body.dark #cm-availability-btn { background:var(--bg-subtle); }
 /* App-wide dropdown trigger hover. Bespoke dropdowns must use .dropdown-trigger. */
 :is(select, .dropdown-trigger, .dk-form, .csel-btn, .ms-btn, .tag-filter-btn, .scan-menu-trigger, .pe-sev-btn, .cvp-btn):not(:disabled):hover {
   border-color:var(--dropdown-hover-border) !important;
@@ -2496,33 +2496,34 @@ body.dark #cred-edit-overlay .csel-btn:hover,
 body.dark #search-filter-btn.dropdown-trigger:hover {
   border-color:var(--dropdown-hover-border) !important;
 }
-/* Scans toolbar dropdowns — same visual language as All Nodes environment selector. */
-#v-results .scan-menu-trigger {
+/* Filter menu — one trigger, one panel, categories inside. Used by the Scans toolbar and by
+   the All Nodes group/environment filter, so the chrome is not scoped to a single view. */
+.scan-menu-trigger {
   height:34px; box-sizing:border-box; display:inline-flex; align-items:center; gap:6px;
   padding:7px 14px; border:1px solid var(--border); border-radius:8px;
   background:var(--bg-surface); color:var(--text-default); font:inherit; font-size:12px;
   cursor:pointer; white-space:nowrap; user-select:none; transition:border-color .15s, background .15s;
 }
-#v-results .scan-menu-trigger.is-open { border-color:var(--green1); }
-#v-results .scan-menu-trigger .scan-menu-chevron { transition:transform .15s; }
-#v-results .scan-menu-trigger.is-open .scan-menu-chevron { transform:rotate(180deg); }
-#v-results .scan-menu-panel {
+.scan-menu-trigger.is-open { border-color:var(--green1); }
+.scan-menu-trigger .scan-menu-chevron { transition:transform .15s; }
+.scan-menu-trigger.is-open .scan-menu-chevron { transform:rotate(180deg); }
+.scan-menu-panel {
   position:absolute; top:calc(100% + 6px); right:0; width:220px;
   max-width:calc(100vw - 24px); max-height:calc(100vh - 24px); overflow-y:auto;
   box-sizing:border-box; padding:8px; background:var(--bg-surface); border:1px solid var(--border);
   border-radius:var(--radius-lg); box-shadow:0 8px 24px rgba(0,0,0,.12); z-index:100;
 }
-#v-results .scan-menu-section { padding:4px 12px 6px; font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:.5px; }
-#v-results .scan-menu-section:not(:first-child) { padding-top:10px; }
-#v-results .scan-menu-option,
-#v-results .scan-filter-choice {
+.scan-menu-section { padding:4px 12px 6px; font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:.5px; }
+.scan-menu-section:not(:first-child) { padding-top:10px; }
+.scan-menu-option,
+.scan-filter-choice {
   width:100%; box-sizing:border-box; display:flex; align-items:center; gap:8px;
   margin:0; padding:8px 12px; border:0; border-radius:6px; background:transparent;
   color:var(--text-default); font:inherit; font-size:12px; text-align:left; cursor:pointer;
 }
-#v-results .scan-menu-option:hover,
-#v-results .scan-filter-choice:hover { background:rgba(0,175,115,.08); }
-#v-results .scan-menu-option svg { color:var(--green1); flex-shrink:0; }
+.scan-menu-option:hover,
+.scan-filter-choice:hover { background:rgba(0,175,115,.08); }
+.scan-menu-option svg { color:var(--green1); flex-shrink:0; }
 #v-results .scan-filter-choice input[type="radio"] {
   appearance:none; -webkit-appearance:none; width:15px; height:15px; margin:0;
   box-sizing:border-box; flex:0 0 15px; border:2px solid var(--text-muted); border-radius:50%;
@@ -2542,8 +2543,8 @@ body.dark #v-results .scan-filter-choice input[type="radio"]:checked {
   border-color:#00AF73;
   background:radial-gradient(circle, #00AF73 0 3.5px, transparent 3.6px);
 }
-body.dark #v-results .scan-menu-trigger { background:var(--bg-subtle); }
-body.dark #v-results .scan-menu-panel { background:var(--bg-surface); box-shadow:0 8px 24px rgba(0,0,0,.5); }
+body.dark .scan-menu-trigger { background:var(--bg-subtle); }
+body.dark .scan-menu-panel { background:var(--bg-surface); box-shadow:0 8px 24px rgba(0,0,0,.5); }
 /* RULE (app-wide, 2026-07-21): in DARK, EVERY dropdown/select CONTROL trigger uses var(--bg-subtle)
    (#081E18) as its fill — the green-tinted subtle, NEVER grey rgba(255,255,255,0.07). Add any new
    select/dropdown trigger to this list. Toggles (.hh-toggle) are NOT dropdowns → stay grey. */
@@ -3806,10 +3807,20 @@ body.dark #v-remediation #remed-result-block [style*="stroke:#64748b"] { stroke:
 .add-node-copy { min-width:0; }
 .add-node-option-title { display:block; margin-bottom:3px; color:var(--text-default); font-size:13px; font-weight:700; line-height:1.35; }
 .add-node-option-description { display:block; color:var(--text-sec); font-size:12px; font-weight:400; line-height:1.45; }
+/* The whole card is the button, so the right edge only signals "this leads somewhere".
+   A labelled CTA here would be a second target in a row that has one, and every label
+   repeated copy already present in the title or description. */
 .add-node-card-cta {
   justify-self:end;
-  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  color:var(--text-muted);
+  transition:color .12s,transform .12s;
 }
+.add-node-option:hover .add-node-card-cta { color:var(--text-default); transform:translateX(2px); }
+/* --text-muted is too dim on the raised dark card; #94A3B8 is the grey these cards
+   already use for secondary text in dark, one step below the description. */
+body.dark .add-node-card-cta { color:#94A3B8; }
 body.dark .add-node-dialog { background:var(--bg-card); border-color:#04363A; }
 body.dark .add-node-option { background:#133033; border-color:#42595C; }
 body.dark .add-node-option--manual { border-color:rgba(16,185,129,.60); }
@@ -4151,8 +4162,7 @@ body.dark .agentless-test-result { border-color:#04363A; background:rgba(255,255
 }
 @media (max-width:640px) {
   .add-node-dialog { padding:20px; }
-  .add-node-option { height:auto; min-height:94px; grid-template-columns:44px minmax(0,1fr); padding:14px 20px; }
-  .add-node-card-cta { grid-column:2; justify-self:start; margin-top:8px; }
+  .add-node-option { height:auto; min-height:94px; padding:14px 20px; }
 }
 
 /* Search overlay */
@@ -6594,33 +6604,27 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <button onclick="setNodeFilter(&#39;aws&#39;)" id="nf-aws" class="seg-btn" aria-pressed="false">AWS</button>
           </div>
           <div style="width:1px;height:20px;background:var(--border);margin:0 2px;"></div>
-          <!-- Group custom dropdown -->
+          <!-- Group + environment in one filter menu -->
           <div style="position:relative;flex-shrink:0;">
-            <div id="node-group-btn" class="dk-form" onclick="toggleNodeGroupDrop(this)" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-              <span id="node-group-label">All groups</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div id="node-group-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:160px;z-index:100;">
-              <div class="ng-opt ng-opt-active" data-val="all" onclick="pickNodeGroup(this,&#39;All groups&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All groups</div>
-              <div class="ng-opt" data-val="Windows Laptops" onclick="pickNodeGroup(this,&#39;Windows Laptops&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Windows Laptops</div>
-              <div class="ng-opt" data-val="Developer Macs" onclick="pickNodeGroup(this,&#39;Developer Macs&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Developer Macs</div>
-              <div class="ng-opt" data-val="Windows Desktops" onclick="pickNodeGroup(this,&#39;Windows Desktops&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Windows Desktops</div>
-              <div class="ng-opt" data-val="AWS Web Servers" onclick="pickNodeGroup(this,&#39;AWS Web Servers&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS Web Servers</div>
-              <div class="ng-opt" data-val="AWS API Servers" onclick="pickNodeGroup(this,&#39;AWS API Servers&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS API Servers</div>
-              <div class="ng-opt" data-val="AWS Containers" onclick="pickNodeGroup(this,&#39;AWS Containers&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS Containers</div>
-            </div>
-          </div>
-          <!-- Environment custom dropdown -->
-          <div style="position:relative;flex-shrink:0;">
-            <div id="node-env-btn" class="dk-form" onclick="toggleNodeEnvDrop(this)" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-              <span id="node-env-label">All environments</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div id="node-env-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:180px;z-index:100;">
-              <div class="ne-opt ne-opt-active" data-val="all" onclick="pickNodeEnv(this,&#39;All environments&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All environments</div>
-              <div class="ne-opt" data-val="production" onclick="pickNodeEnv(this,&#39;Production&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Production</div>
-              <div class="ne-opt" data-val="staging" onclick="pickNodeEnv(this,&#39;Staging&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Staging</div>
-              <div class="ne-opt" data-val="development" onclick="pickNodeEnv(this,&#39;Development&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Development</div>
+            <button id="node-scope-btn" class="scan-menu-trigger" onclick="toggleScanDropdown('node-scope-panel', this)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
+              <span id="node-scope-label">Filters</span>
+              <svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div id="node-scope-panel" class="scan-menu-panel" style="display:none;">
+              <div class="scan-menu-section">Group</div>
+              <div class="ng-opt ng-opt-active" data-val="all" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All groups</div>
+              <div class="ng-opt" data-val="Windows Laptops" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Windows Laptops</div>
+              <div class="ng-opt" data-val="Developer Macs" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Developer Macs</div>
+              <div class="ng-opt" data-val="Windows Desktops" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Windows Desktops</div>
+              <div class="ng-opt" data-val="AWS Web Servers" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS Web Servers</div>
+              <div class="ng-opt" data-val="AWS API Servers" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS API Servers</div>
+              <div class="ng-opt" data-val="AWS Containers" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS Containers</div>
+              <div class="scan-menu-section">Environment</div>
+              <div class="ne-opt ne-opt-active" data-val="all" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All environments</div>
+              <div class="ne-opt" data-val="production" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Production</div>
+              <div class="ne-opt" data-val="staging" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Staging</div>
+              <div class="ne-opt" data-val="development" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Development</div>
             </div>
           </div>
           </div><!-- end left group -->
@@ -21794,7 +21798,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span class="add-node-option-title">Add Manually</span>
           <span class="add-node-option-description">Deploy Guardian agent or agentless scan on Windows, Mac, or Linux</span>
         </span>
-        <span class="link-cta add-node-card-cta"><span class="lc-txt">Agent · Agentless</span><span class="arr" aria-hidden="true">→</span></span>
+        <span class="add-node-card-cta" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>
       </button>
       <!-- Option 2: Add from Cloud -->
       <button class="add-node-option add-node-option--cloud" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;j3-connect&#39;);">
@@ -21805,7 +21809,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span class="add-node-option-title">Add from Cloud</span>
           <span class="add-node-option-description">Connect AWS or Azure to auto-discover and import EC2, ECS, EKS, RDS nodes</span>
         </span>
-        <span class="link-cta add-node-card-cta"><span class="lc-txt">AWS · Azure</span><span class="arr" aria-hidden="true">→</span></span>
+        <span class="add-node-card-cta" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>
       </button>
       <!-- Option 3: Bulk import from ServiceNow -->
       <button class="add-node-option add-node-option--servicenow" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;cmdb-connect&#39;);">
@@ -21816,7 +21820,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span class="add-node-option-title">Bulk import from ServiceNow</span>
           <span class="add-node-option-description">Pull nodes from your ServiceNow CMDB into Detected, scanned via a Connection Manager. Needs a CM set up.</span>
         </span>
-        <span class="link-cta add-node-card-cta"><span class="lc-txt">ServiceNow CMDB</span><span class="arr" aria-hidden="true">→</span></span>
+        <span class="add-node-card-cta" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>
       </button>
       <!-- Option 4: Import from CSV -->
       <button class="add-node-option" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;csv-import&#39;);">
@@ -21827,7 +21831,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span class="add-node-option-title">Import from CSV</span>
           <span class="add-node-option-description">Upload a spreadsheet of nodes. Validated and added straight to Guardian.</span>
         </span>
-        <span class="link-cta add-node-card-cta"><span class="lc-txt">CSV upload</span><span class="arr" aria-hidden="true">→</span></span>
+        <span class="add-node-card-cta" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>
       </button>
     </div>
   </div>
@@ -21944,46 +21948,29 @@ function sortNodes(col) {
   rows.forEach(function(row) { wrap.insertBefore(row, awsSection || null); });
 }
 
-function toggleNodeGroupDrop(btn) {
-  var dd = document.getElementById('node-group-dropdown');
-  var open = dd.style.display !== 'none';
-  document.getElementById('node-env-dropdown').style.display = 'none';
-  dd.style.display = open ? 'none' : 'block';
-  if (!open) setTimeout(function() {
-    document.addEventListener('click', function h(e) {
-      if (!dd.contains(e.target) && e.target !== btn) { dd.style.display = 'none'; document.removeEventListener('click', h); }
-    });
-  }, 10);
-}
-function pickNodeGroup(el, label) {
-  document.querySelectorAll('.ng-opt').forEach(function(o) {
-    o.classList.remove('ng-opt-active'); o.querySelector('.ng-check').style.visibility = 'hidden'; o.style.background = '';
+// Group and environment share one menu, so the trigger has to say what is selected.
+// Nothing selected → the menu title; otherwise the chosen values joined.
+function nodeScopeLabel() {
+  var lbl = document.getElementById('node-scope-label');
+  if (!lbl) return;
+  var parts = [];
+  ['.ng-opt-active', '.ne-opt-active'].forEach(function(sel) {
+    var o = document.querySelector('#node-scope-panel ' + sel);
+    if (o && o.dataset.val !== 'all') parts.push(o.textContent.trim());
   });
-  el.classList.add('ng-opt-active'); el.querySelector('.ng-check').style.visibility = 'visible'; el.style.background = 'var(--dropdown-option-hover)';
-  document.getElementById('node-group-label').textContent = label;
-  document.getElementById('node-group-dropdown').style.display = 'none';
+  lbl.textContent = parts.length ? parts.join(' · ') : 'Filters';
+}
+function nodeScopePick(el, optClass, checkClass) {
+  document.querySelectorAll('#node-scope-panel .' + optClass).forEach(function(o) {
+    o.classList.remove(optClass + '-active'); o.querySelector('.' + checkClass).style.visibility = 'hidden'; o.style.background = '';
+  });
+  el.classList.add(optClass + '-active'); el.querySelector('.' + checkClass).style.visibility = 'visible'; el.style.background = 'rgba(0,175,115,0.08)';
+  nodeScopeLabel();
   filterNodes();
 }
-function toggleNodeEnvDrop(btn) {
-  var dd = document.getElementById('node-env-dropdown');
-  var open = dd.style.display !== 'none';
-  document.getElementById('node-group-dropdown').style.display = 'none';
-  dd.style.display = open ? 'none' : 'block';
-  if (!open) setTimeout(function() {
-    document.addEventListener('click', function h(e) {
-      if (!dd.contains(e.target) && e.target !== btn) { dd.style.display = 'none'; document.removeEventListener('click', h); }
-    });
-  }, 10);
-}
-function pickNodeEnv(el, label) {
-  document.querySelectorAll('.ne-opt').forEach(function(o) {
-    o.classList.remove('ne-opt-active'); o.querySelector('.ne-check').style.visibility = 'hidden'; o.style.background = '';
-  });
-  el.classList.add('ne-opt-active'); el.querySelector('.ne-check').style.visibility = 'visible'; el.style.background = 'var(--dropdown-option-hover)';
-  document.getElementById('node-env-label').textContent = label;
-  document.getElementById('node-env-dropdown').style.display = 'none';
-  filterNodes();
-}
+// The panel stays open: both categories are usually set in the same visit.
+function pickNodeGroup(el) { nodeScopePick(el, 'ng-opt', 'ng-check'); }
+function pickNodeEnv(el) { nodeScopePick(el, 'ne-opt', 'ne-check'); }
 
 function filterNodes() {
   const q = (document.getElementById('node-search')?.value || '').toLowerCase();
@@ -22026,8 +22013,7 @@ function nodesResetFilters() {
   var s = document.getElementById('node-search'); if (s) s.value = '';
   document.querySelectorAll('#v-all-devices .ng-opt').forEach(function(o){ var a=o.dataset.val==='all'; o.classList.toggle('ng-opt-active',a); var c=o.querySelector('.ng-check'); if(c)c.style.visibility=a?'visible':'hidden'; o.style.background=a?'rgba(0,175,115,0.08)':''; });
   document.querySelectorAll('#v-all-devices .ne-opt').forEach(function(o){ var a=o.dataset.val==='all'; o.classList.toggle('ne-opt-active',a); var c=o.querySelector('.ne-check'); if(c)c.style.visibility=a?'visible':'hidden'; o.style.background=a?'rgba(0,175,115,0.08)':''; });
-  var gl=document.getElementById('node-group-label'); if(gl)gl.textContent='All groups';
-  var el=document.getElementById('node-env-label'); if(el)el.textContent='All environments';
+  nodeScopeLabel();
   setNodeFilter('all');
 }
 
