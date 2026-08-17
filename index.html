@@ -3550,6 +3550,14 @@ body.dark .gm-node-added .na-action:not(.na-primary) { background:rgba(255,255,2
 .na-modal-add-another { text-align:center; margin-top:16px; }
 .na-modal-add-another button { background:none; border:none; color:var(--green1); font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit; }
 
+/* Scanning step of the Add-node modal (Figma 3235:21812) — reuses the theme-aware .scan-* classes */
+.na-scan { display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:12px; }
+.na-scan .scan-ring { width:56px; height:56px; margin:0 0 20px; }
+.na-scan .scan-title { margin-bottom:8px; }
+.na-scan .scan-sub { max-width:430px; margin-bottom:28px; }
+.na-scan-progress { width:405px; max-width:100%; margin:0 auto; }
+.na-scan-progress .scan-items { margin-top:8px; }
+
 /* Reusable custom select (.csel) — unified styled dropdown replacing native <select> */
 .csel-wrap { position: relative; display: inline-block; vertical-align: middle; }
 .csel-btn { display: inline-flex; align-items: center; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 28px 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: #F9FAFC; color: var(--text-default); cursor: pointer; outline: none; white-space: nowrap; position: relative; text-align: left; }
@@ -4111,10 +4119,12 @@ body.dark .agentless-credential-option.is-selected { background:var(--dropdown-o
 .gm-agentless-testing .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
 .gm-agentless-setup .gm-step.is-done .gm-step-num::after,
 .gm-agentless-testing .gm-step.is-done .gm-step-num::after,
-.gm-node-added .gm-step.is-done .gm-step-num::after { content:none; }
+.gm-node-added .gm-step.is-done .gm-step-num::after,
+.gm-scanning .gm-step.is-done .gm-step-num::after { content:none; }
 .gm-agentless-setup .gm-step.is-done .gm-step-numval,
 .gm-agentless-testing .gm-step.is-done .gm-step-numval,
-.gm-node-added .gm-step.is-done .gm-step-numval { display:inline; }
+.gm-node-added .gm-step.is-done .gm-step-numval,
+.gm-scanning .gm-step.is-done .gm-step-numval { display:inline; }
 .agentless-test-demo,
 .agentless-test-content { padding:0 24px; }
 .agentless-test-demo-label {
@@ -25362,18 +25372,46 @@ function openNodeAddedModal() {
     + '</div>'
     + '<div class="na-modal-summary">' + summary + '</div>'
     + '<div class="na-modal-actions">'
-    +   '<button class="na-action na-primary" onclick="closeModal(\'agentless-setup-overlay\');go(\'s07\')"><div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div><div class="na-action-txt"><div class="na-action-title">Run first scan now</div><div class="na-action-sub">Check this node against your Compliance Policies right away</div></div>' + chev + '</button>'
+    +   '<button class="na-action na-primary" onclick="openScanningModal()"><div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div><div class="na-action-txt"><div class="na-action-title">Run first scan now</div><div class="na-action-sub">Check this node against your Compliance Policies right away</div></div>' + chev + '</button>'
     +   '<button class="na-action" onclick="closeModal(\'agentless-setup-overlay\');showView(\'scan-schedule\')"><div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><div class="na-action-txt"><div class="na-action-title">Schedule scan</div><div class="na-action-sub">Run it later or on a recurring cadence</div></div>' + chev + '</button>'
     +   '<button class="na-action" onclick="closeModal(\'agentless-setup-overlay\');showView(\'node-detail\')"><div class="na-action-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></div><div class="na-action-txt"><div class="na-action-title">View node details</div><div class="na-action-sub">See configuration, history and assigned policies</div></div>' + chev + '</button>'
     + '</div>'
     + '<div class="na-modal-add-another"><button type="button" onclick="closeModal(\'agentless-setup-overlay\');openAddNodeWizard()">+ Add another node</button></div>';
   openModal({
     id:'agentless-setup-overlay', size:'lg', title:'Add this node',
-    subtitle:'We detected your OS automatically.',
+    subtitle:'Choose what happens next.',
     steps:[{label:'Add node'},{label:'Connect'},{label:'Scan'},{label:'Results'}],
     bodyHtml:body,
     backButton:{label:'Back',onClick:function(){ openAgentlessTestingModal(); }},
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-node-added'); gmGoStep('agentless-setup-overlay',2); }
+  });
+}
+function openScanningModal() {
+  var n = _addedNode || { name:'This node' };
+  var esc = agentlessTestEscape;
+  var body = ''
+    + '<div class="na-scan">'
+    +   '<div class="scan-ring"></div>'
+    +   '<div class="scan-title">Scanning your node</div>'
+    +   '<div class="scan-sub"><b style="color:var(--text-default);">' + esc(n.name) + '</b> is being checked against your Compliance Policies…</div>'
+    +   '<div class="na-scan-progress">'
+    +     '<div class="scan-bar-wrap"><div class="scan-bar-fill"></div></div>'
+    +     '<div class="scan-eta">~2 minutes remaining · Do not close this tab</div>'
+    +     '<div class="scan-items">'
+    +       '<div class="scan-row done"><div class="check-circle"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>Pending</div>'
+    +       '<div class="scan-row doing"><div class="active-circle"></div>In progress</div>'
+    +       '<div class="scan-row"><div class="pending-circle"></div>Complete</div>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>';
+  openModal({
+    id:'agentless-setup-overlay', size:'lg', title:'Add this node',
+    subtitle:'Running the first compliance scan.',
+    steps:[{label:'Add node'},{label:'Connect'},{label:'Scan'},{label:'Results'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ openNodeAddedModal(); }},
+    buttons:[{label:'Simulate: Scan Complete',kind:'primary',onClick:function(){ closeModal('agentless-setup-overlay'); go('s-scan-complete'); }}],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-scanning'); gmGoStep('agentless-setup-overlay',2); }
   });
 }
 function openAgentlessTestingModal() {
