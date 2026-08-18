@@ -4066,6 +4066,60 @@ body.dark .aws-sync-banner { background:rgba(255,255,255,0.05); }
 .aws-scan-card { background:#F8FAFC; }
 body.dark .aws-scan-card { background:#123033; }
 .gm-agentless-setup .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
+/* ── AWS step 3 «Node Inventory» — Figma 3274:16576 (light) / 3274:16875 (dark) ── */
+.gm-aws-inv-block { padding:0 24px; }
+.gm-aws-inv-note {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; border:1px solid var(--border); border-radius:10px;
+  background:#F8FAFC;
+}
+body.dark .gm-aws-inv-note { background:rgba(255,255,255,0.05); }
+.gm-aws-inv-note svg { flex:0 0 14px; }
+.gm-aws-inv-note span { font:400 12px/normal 'DM Sans',sans-serif; color:rgba(15,23,42,0.6); }
+body.dark .gm-aws-inv-note span { color:#CBD5E1; }
+.gm-aws-inv-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:20px; }
+.gm-aws-inv-tag {
+  padding:4px 12px; border:1px solid var(--border); border-radius:20px;
+  font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-sec);
+  background:#F1F5F9; cursor:pointer;
+  transition:background .12s, border-color .12s, color .12s;
+}
+body.dark .gm-aws-inv-tag { background:rgba(255,255,255,0.05); }
+.gm-aws-inv-tag:hover { border-color:var(--text-muted); }
+.gm-aws-inv-tag.is-active {
+  background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.45);
+  color:#059669; font-weight:600;
+}
+body.dark .gm-aws-inv-tag.is-active { background:rgba(16,185,129,0.15); color:#34D399; }
+.gm-aws-inv-row.gm-aws-inv-row--hidden { display:none; }
+/* 34 (шапка) + 6×49 (рядки) = висота слота з Figma; решта рядків скролиться, оболонка не росте. */
+.gm-aws-inv-table { margin-top:16px; border-top:1px solid var(--border); max-height:328px; overflow-y:auto; }
+.gm-aws-inv-row--head { position:sticky; top:0; z-index:1; }
+/* Гнучка — Resource; решта фіксовані, інакше шапка й тіло (окремі гріди) порахують
+   max-content по-різному й розʼїдуться. Status 96px = найширший бейдж EXCLUDED (87) + запас. */
+.gm-aws-inv-row { display:grid; grid-template-columns:minmax(0,1fr) 100px 100px 96px; }
+.gm-aws-inv-row > div {
+  display:flex; align-items:center; box-sizing:border-box;
+  padding:10px 8px; border-bottom:1px solid var(--border);
+}
+.gm-aws-inv-row--head > div {
+  height:34px; background:#F8FAFC;
+  font:700 10px/normal 'DM Sans',sans-serif; letter-spacing:0.5px;
+  text-transform:uppercase; color:var(--text-muted);
+}
+body.dark .gm-aws-inv-row--head > div { background:#063135; }
+.gm-aws-inv-row--head > div:first-child { padding-left:39px; }
+.gm-aws-inv-row--body > div { height:49px; }
+.gm-aws-inv-name { gap:16px; }
+/* 15px замість канонічних 16 — так у Figma; специфічність через body, бо глобальне правило нижче. */
+.gm-aws-inv-row .gm-aws-inv-name input[type="checkbox"] { width:15px; height:15px; flex:0 0 15px; margin:0; }
+.gm-aws-inv-name b { display:block; font:700 12px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+.gm-aws-inv-name small { display:block; padding-top:2px; font:400 10px/16.1px 'DM Sans',sans-serif; color:var(--text-sec); }
+.gm-aws-inv-region { font:400 11px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+/* Форма в рядку рівно одна й вона на Status (він веде до дії); Type — тихий маркер. DS §12. */
+.gm-aws-inv-row--dim .gm-aws-inv-name b { color:rgba(15,23,42,0.4); }
+body.dark .gm-aws-inv-row--dim .gm-aws-inv-name b { color:rgba(248,250,252,0.4); }
+.gm-aws-inv-count { padding:10px 0; font:400 11px/normal 'DM Sans',sans-serif; color:var(--text-sec); }
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
 .agentless-modal-section--target { padding-bottom:16px; border-bottom:1px solid #E2E8F0; }
@@ -5112,6 +5166,26 @@ body.dark #cm-warn-overlay :is(.gm-btn-warning,.gm-btn-destructive) { background
 body.dark #cm-warn-overlay .gm-btn-warning { color:#FBBF24; border-color:#D97706; }
 body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E11D48; }
 .gm-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
+/* ── CMDB import modal — canonical gm-* shell (DS §14) ── */
+#cmdb-modal .cmdb-foot-note { font-size:12px; color:var(--text-sec); white-space:nowrap; }
+/* Canonical body slot: no horizontal padding — each content block takes its own 0 24px. */
+#cmdb-modal .gm-body { padding:20px 0 10px; }
+#cmdb-modal .cmdb-section-title { font-size:13px; font-weight:700; color:var(--text-default); margin-bottom:16px; }
+/* Neutral info strip — same surface as the AWS-connect node-sync banner, never a colour tint. */
+#cmdb-modal .cmdb-note { background:var(--bg-subtle); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 14px; }
+#cmdb-modal .cmdb-note-title { font-size:11px; font-weight:700; color:var(--text-default); margin-bottom:6px; }
+#cmdb-modal .cmdb-note-tags { display:flex; flex-wrap:wrap; gap:6px; }
+/* Credential pickers are custom selects, never a native <select> popup (DS §6.1). */
+#cmdb-modal .csel-wrap, #cmdb-modal .csel-btn { display:flex; width:100%; box-sizing:border-box; }
+#cmdb-modal .csel-btn { padding:10px 28px 10px 14px; font-size:13px; font-weight:400; border-radius:var(--radius-md); background:var(--bg-subtle); }
+body.dark #cmdb-modal .csel-btn { background:rgba(255,255,255,0.05) !important; border-color:rgba(255,255,255,0.2) !important; color:var(--p-neutral-50); }
+#cmdb-modal .cmdb-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+#cmdb-modal .cmdb-kpi { background:var(--bg-subtle); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; text-align:center; }
+#cmdb-modal .cmdb-kpi-num { font-size:22px; font-weight:800; color:var(--text-default); line-height:1.1; }
+#cmdb-modal .cmdb-kpi-lbl { font-size:11px; color:var(--text-sec); font-weight:600; margin-top:3px; }
+.cmdb-progress-track { height:6px; border-radius:99px; overflow:hidden; background:var(--bg-subtle); }
+.cmdb-progress-fill { height:100%; border-radius:99px; background:var(--btn-grad); transition:width .3s; }
+body.dark .cmdb-progress-track { background:rgba(255,255,255,0.08); }
 /* Scan-failed remediation checklist status pills */
 /* .sf-st — статус кроку налаштування; геометрія й палітра з канону .bdg */
 
@@ -20815,16 +20889,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div class="gm-step" role="listitem" onclick="if(this.classList.contains('is-done'))go('cmdb-browse')"><span class="gm-step-num"><span class="gm-step-numval">2</span></span><span class="gm-step-label">Select nodes</span></div>
         <div class="gm-step" role="listitem" onclick="if(this.classList.contains('is-done'))go('cmdb-credentials')"><span class="gm-step-num"><span class="gm-step-numval">3</span></span><span class="gm-step-label">Credentials</span></div>
       </div>
-      <div class="gm-body" style="padding:0;">
+      <div class="gm-body">
 
       <!-- STEP 1 · Connect -->
       <div class="cmdbm-panel" id="v-cmdb-connect">
-      <div style="padding:24px;display:flex;flex-direction:column;align-items:center;">
+      <div style="padding:0 24px;display:flex;flex-direction:column;align-items:center;">
         <div style="max-width:520px;width:100%;">
-          <div style="margin-bottom:16px;">
-            <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:16px;">ServiceNow Instance</div>
-            <div style="margin-bottom:14px;">
-              <label style="display:block;font-size:11px;font-weight:600;color:var(--text-sec);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Instance URL</label>
+          <div>
+            <div class="cmdb-section-title">ServiceNow Instance</div>
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label">Instance URL</label>
               <input class="form-input" type="text" value="https://company.service-now.com" style="font-size:12px;">
             </div>
             <div class="gm-radio-group" style="display:grid;grid-template-columns:1fr 1fr;margin-bottom:16px;">
@@ -20837,24 +20911,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <span class="gm-radio-title">Basic Auth</span>
               </label>
             </div>
-            <div style="margin-bottom:14px;">
-              <label style="display:block;font-size:11px;font-weight:600;color:var(--text-sec);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Client ID</label>
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label">Client ID</label>
               <input class="form-input" type="text" placeholder="Enter client ID" style="font-size:12px;">
             </div>
-            <div style="margin-bottom:20px;">
-              <label style="display:block;font-size:11px;font-weight:600;color:var(--text-sec);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Client Secret</label>
+            <div class="form-group" style="margin-bottom:16px;">
+              <label class="form-label">Client Secret</label>
               <input class="form-input" type="password" placeholder="Enter client secret" style="font-size:12px;">
             </div>
-            <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:20px;">
-              <div style="font-size:11px;font-weight:700;color:#7C3AED;margin-bottom:4px;">Required permissions</div>
-              <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                <span style="font-size:11px;background:var(--bg-surface);border:1px solid rgba(139,92,246,0.2);border-radius:4px;padding:2px 8px;color:var(--text-default);">cmdb_ci.read</span>
-                <span style="font-size:11px;background:var(--bg-surface);border:1px solid rgba(139,92,246,0.2);border-radius:4px;padding:2px 8px;color:var(--text-default);">sys_user.read</span>
-              </div>
-            </div>
-            <div style="display:flex;justify-content:flex-end;gap:10px;">
-              <button style="background:none;border:none;font-size:11px;color:#FB3C44;cursor:pointer;white-space:nowrap;" onclick="go(&#39;cmdb-connect-failed&#39;)">↗ Error state</button>
-              <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="go(&#39;cmdb-connecting&#39;)">Test Connection →</button>
+            <div class="cmdb-note">
+              <div class="cmdb-note-title">Required permissions</div>
+              <div class="cmdb-note-tags"><span class="code-tag">cmdb_ci.read</span><span class="code-tag">sys_user.read</span></div>
             </div>
           </div>
         </div>
@@ -20863,48 +20930,44 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
       <!-- STEP · Connecting (transient) -->
       <div class="cmdbm-panel" id="v-cmdb-connecting" style="display:none;">
-      <div style="padding:40px 24px;display:flex;align-items:center;justify-content:center;">
+      <div style="padding:20px 24px;display:flex;align-items:center;justify-content:center;">
         <div style="text-align:center;max-width:400px;width:100%;">
           <div style="margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
             <div class="spin-icon" style="width:40px;height:40px;border:3px solid rgba(37,167,96,0.2);border-top-color:var(--green2);border-radius:50%;"></div>
           </div>
-          <div style="font-size:16px;font-weight:700;color:var(--text-default);margin-bottom:8px;">Connecting…</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-bottom:24px;">Validating credentials and CMDB permissions</div>
-          <button class="btn-primary" onclick="go(&#39;cmdb-browse&#39;)" style="width:100%;padding:12px;">Continue →</button>
+          <div style="font-size:12px;color:var(--text-sec);">Validating credentials and CMDB permissions</div>
         </div>
       </div>
     </div>
 
       <!-- STEP · Connect failed (error) -->
       <div class="cmdbm-panel" id="v-cmdb-connect-failed" style="display:none;">
-      <div style="padding:40px 24px;display:flex;align-items:center;justify-content:center;">
+      <div style="padding:20px 24px;display:flex;align-items:center;justify-content:center;">
         <div style="text-align:center;max-width:400px;width:100%;">
           <div style="width:56px;height:56px;border-radius:50%;background:rgba(251,60,68,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           </div>
-          <div style="font-size:16px;font-weight:700;color:var(--text-default);margin-bottom:8px;">Connection failed</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-bottom:24px;">Check your credentials and instance URL</div>
-          <button class="btn-primary" onclick="go(&#39;cmdb-connect&#39;)" style="width:100%;padding:12px;">Try again →</button>
+          <div style="font-size:12px;color:var(--text-sec);">Check your credentials and instance URL</div>
         </div>
       </div>
     </div>
 
       <!-- STEP 2 · Select nodes -->
       <div class="cmdbm-panel" id="v-cmdb-browse" style="display:none;">
-      <div style="padding:20px 24px;display:flex;flex-direction:column;">
+      <div style="padding:0 24px;display:flex;flex-direction:column;">
         <div style="width:100%;display:flex;flex-direction:column;flex:1;">
 
           <!-- CLASS SELECTION VIEW -->
           <div id="cmdb-class-view">
             <!-- Column headers -->
-            <div class="col-thead" style="display:grid;grid-template-columns:32px 1fr 100px 140px 130px 90px;gap:0;padding:8px 18px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
+            <div class="col-thead" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;gap:0;padding:8px 18px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
               <div></div><div>Class</div><div style="text-align:right;">Records</div><div style="text-align:center;">Selection</div><div></div><div style="text-align:right;">Action</div>
             </div>
 
             <div style="border-top:1px solid var(--border);margin-bottom:20px;">
 
               <!-- Linux Servers -->
-              <div id="cls-linux" style="display:grid;grid-template-columns:32px 1fr 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
+              <div id="cls-linux" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
                 <input type="checkbox" id="cb-linux" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Linux Servers&#39;,this)">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <div style="width:32px;height:32px;border-radius:7px;background:rgba(63,200,120,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -20919,7 +20982,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
 
               <!-- Windows Servers -->
-              <div id="cls-windows" style="display:grid;grid-template-columns:32px 1fr 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
+              <div id="cls-windows" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
                 <input type="checkbox" id="cb-windows" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Windows Servers&#39;,this)">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <div style="width:32px;height:32px;border-radius:7px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -20934,7 +20997,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
 
               <!-- Network Devices -->
-              <div id="cls-network" style="display:grid;grid-template-columns:32px 1fr 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
+              <div id="cls-network" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
                 <input type="checkbox" id="cb-network" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Network Devices&#39;,this)">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <div style="width:32px;height:32px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -20949,7 +21012,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
 
               <!-- Virtual Machines -->
-              <div id="cls-vm" style="display:grid;grid-template-columns:32px 1fr 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
+              <div id="cls-vm" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
                 <input type="checkbox" id="cb-vm" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Virtual Machines&#39;,this)">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <div style="width:32px;height:32px;border-radius:7px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -20964,7 +21027,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
 
               <!-- Storage Devices -->
-              <div id="cls-storage" style="display:grid;grid-template-columns:32px 1fr 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
+              <div id="cls-storage" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
                 <input type="checkbox" id="cb-storage" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Storage Devices&#39;,this)">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <div style="width:32px;height:32px;border-radius:7px;background:rgba(236,72,153,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -20979,7 +21042,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
 
               <!-- Databases -->
-              <div id="cls-db" style="display:grid;grid-template-columns:32px 1fr 100px 140px 130px 90px;align-items:center;padding:13px 18px;gap:0;transition:background 0.15s;">
+              <div id="cls-db" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;gap:0;transition:background 0.15s;">
                 <input type="checkbox" id="cb-db" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Databases&#39;,this)">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <div style="width:32px;height:32px;border-radius:7px;background:rgba(20,184,166,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -20995,7 +21058,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
               <!-- SHARED ACCORDION PANEL — JS moves this after the active row -->
               <div id="cmdb-accordion-panel" style="display:none;">
-                <div style="background:var(--bg-surface);border:1px solid #d1d5db;border-top:none;border-left:3px solid var(--green1);border-radius:0 0 6px 6px;box-shadow:0 4px 12px rgba(0,0,0,0.06);position:relative;">
+                <div style="background:var(--bg-surface);border:1px solid var(--border);border-top:none;border-left:3px solid var(--green1);border-radius:0 0 6px 6px;box-shadow:0 4px 12px rgba(0,0,0,0.06);position:relative;">
                   <!-- Header: class label + search + count -->
                   <div style="padding:10px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-wrap:wrap;">
                     <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
@@ -21010,7 +21073,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                     <span id="accord-showing" style="font-size:11px;color:var(--text-sec);white-space:nowrap;flex-shrink:0;">Showing 1–10 of 2,341</span>
                   </div>
                   <!-- Bulk actions bar -->
-                  <div style="padding:6px 18px;background:#f0f2f5;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                  <div style="padding:6px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
                     <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-default);cursor:pointer;font-weight:500;padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:var(--bg-surface);white-space:nowrap;">
                       <input type="checkbox" id="accord-page-cb" style="accent-color:var(--green2);" onchange="accordSelectPage(this)"> Select page (8)
                     </label>
@@ -21024,16 +21087,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <tr><th style="width:32px;"></th><th>NAME</th><th>IP ADDRESS</th><th>OS</th><th>GUARDIAN STATUS</th></tr>
                     </thead>
                     <tbody id="accord-tbody">
-                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);" id="accord-r1">prod-web-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.11</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-web-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.12</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.2.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-12</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.30</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-13</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.31</td><td style="font-size:11px;color:var(--text-sec);">CentOS 8</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.9.20</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: PROD-DB-02</div></td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.2.11<div style="font-size:10px;color:#d97706;">Guardian: 10.0.2.15</div></td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td><span style="font-size:10px;background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">◑ Partial match</span></td></tr>
-                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">api-gateway-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: API-GW-02</div></td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.4.20<div style="font-size:10px;color:#d97706;">Guardian: 10.1.4.22</div></td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">◑ Partial match</span></td></tr>
-                      <tr style="opacity:0.4;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.7.14</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                      <tr style="opacity:0.4;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-03</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.3</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);" id="accord-r1">prod-web-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.11</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-web-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.12</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.2.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-12</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.30</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-13</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.31</td><td style="font-size:11px;color:var(--text-sec);">CentOS 8</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.9.20</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: PROD-DB-02</div></td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.2.11<div style="font-size:10px;color:#d97706;">Guardian: 10.0.2.15</div></td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td><span class="bdg bdg--blue bdg--dot">Partial match</span></td></tr>
+                      <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">api-gateway-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: API-GW-02</div></td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.4.20<div style="font-size:10px;color:#d97706;">Guardian: 10.1.4.22</div></td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--blue bdg--dot">Partial match</span></td></tr>
+                      <tr style="opacity:0.4;pointer-events:none;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:var(--text-muted);">prod-api-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.7.14</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
+                      <tr style="opacity:0.4;pointer-events:none;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:var(--text-muted);">legacy-srv-03</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.3</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
                     </tbody>
                   </table>
                   <!-- Pagination + collapse -->
@@ -21056,10 +21119,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
             </div>
 
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-size:12px;color:var(--text-sec);" id="cmdb-total-selected-label">0 nodes selected across all classes</span>
-              <button id="cmdb-import-btn" class="btn-primary" style="width:auto;padding:12px 24px;opacity:0.4;pointer-events:none;" onclick="go(&#39;cmdb-credentials&#39;)">Add to Guardian (0) →</button>
-            </div>
           </div>
 
           <!-- NODE LIST VIEW (removed — now accordion inline) -->
@@ -21110,21 +21169,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                     </tr>
                   </thead>
                   <tbody id="cmdb-node-tbody">
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-web-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.11</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-web-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.12</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.2.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">dev-linux-05</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.4.50</td><td style="font-size:11px;color:var(--text-sec);">Debian 12</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-12</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.30</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-13</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.31</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-14</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.32</td><td style="font-size:11px;color:var(--text-sec);">CentOS 8</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">db-replica-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.8.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 9</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">db-replica-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.8.11</td><td style="font-size:11px;color:var(--text-sec);">RHEL 9</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.9.20</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.9.21</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">build-srv-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.0.5</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">monitor-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.1.10</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 20.04</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">log-aggregator-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.2.5</td><td style="font-size:11px;color:var(--text-sec);">CentOS 7</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">mail-relay-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.3.8</td><td style="font-size:11px;color:var(--text-sec);">Debian 12</td><td><span style="font-size:10px;background:rgba(37,167,96,0.1);color:#15803d;border:1px solid rgba(37,167,96,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">● New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-web-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.11</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-web-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.12</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.2.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">dev-linux-05</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.4.50</td><td style="font-size:11px;color:var(--text-sec);">Debian 12</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-12</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.30</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-13</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.31</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-14</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.32</td><td style="font-size:11px;color:var(--text-sec);">CentOS 8</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">db-replica-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.8.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 9</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">db-replica-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.8.11</td><td style="font-size:11px;color:var(--text-sec);">RHEL 9</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.9.20</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.9.21</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">build-srv-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.0.5</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">monitor-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.1.10</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 20.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">log-aggregator-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.2.5</td><td style="font-size:11px;color:var(--text-sec);">CentOS 7</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
+                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">mail-relay-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.3.8</td><td style="font-size:11px;color:var(--text-sec);">Debian 12</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
                     <!-- Partial match -->
                     <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td>
                       <td style="font-size:12px;font-weight:600;color:var(--text-default);">win-app-01<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: WIN-APP-01</div></td>
@@ -21142,14 +21201,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <td style="font-size:12px;font-weight:600;color:var(--text-default);">api-gateway-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: API-GW-02</div></td>
                       <td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.4.20<div style="font-size:10px;color:#d97706;">Guardian: 10.1.4.22</div></td>
                       <td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td>
-                      <td><span style="font-size:10px;background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2);border-radius:4px;padding:2px 7px;font-weight:600;">◑ Partial match</span><div style="font-size:10px;color:#6b7280;margin-top:2px;">IP differs — will update existing record</div></td>
+                      <td><span class="bdg bdg--blue bdg--dot">Partial match</span><div style="font-size:10px;color:#6b7280;margin-top:2px;">IP differs — will update existing record</div></td>
                     </tr>
                     <!-- Already monitored — disabled -->
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">infra-node-08</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.5.22</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 20.04</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.7.14</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.7.15</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-03</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.3</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-04</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.4</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span style="font-size:10px;background:#f3f4f6;color:var(--text-muted);border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-weight:600;">— Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">infra-node-08</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.5.22</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 20.04</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.7.14</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.7.15</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-03</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.3</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
+                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-04</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.4</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
                   </tbody>
                 </table>
               </div>
@@ -21169,18 +21228,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
 
-            <!-- Footer -->
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <span style="font-size:12px;font-weight:600;color:var(--text-default);" id="cmdb-node-footer-label">0 nodes selected in this class</span>
-                <span style="font-size:11px;color:var(--text-sec);margin-left:8px;" id="cmdb-global-footer-label"></span>
-              </div>
-              <div style="display:flex;gap:10px;">
-                <button onclick="backToCMDBClasses()" class="btn-outline" style="padding:10px 20px;font-size:12px;">← Back to Classes</button>
-                <button id="cmdb-confirm-class-btn" class="btn-primary" style="width:auto;padding:10px 20px;font-size:12px;opacity:0.4;pointer-events:none;" onclick="go(&#39;cmdb-credentials&#39;)">Add to Guardian (0) →</button>
-              </div>
-            </div>
-
           </div>
 
         </div>
@@ -21189,13 +21236,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
       <!-- STEP 3 · Credentials -->
       <div class="cmdbm-panel" id="v-cmdb-credentials" style="display:none;">
-      <div style="padding:24px;">
+      <div style="padding:0 24px;">
         <div style="max-width:720px;margin:0 auto;">
 
           <!-- Why this differs from cloud -->
-          <div style="display:flex;align-items:flex-start;gap:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.18);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:20px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            <div style="font-size:12px;color:#5b21b6;line-height:1.5;">Unlike cloud discovery, ServiceNow nodes are scanned over WinRM/SSH through a <strong>Connection Manager</strong>. Pick one below and set the credentials those scans should use — you can change them per node later.</div>
+          <div class="cmdb-note" style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Unlike cloud discovery, ServiceNow nodes are scanned over WinRM/SSH through a <strong style="color:var(--text-default);">Connection Manager</strong>. Pick one below and set the credentials those scans should use — you can change them per node later.</div>
           </div>
 
           <!-- Connection Manager (required) -->
@@ -21230,7 +21277,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div id="cmdb-win-panel-secret">
               <div class="form-group" style="margin-bottom:0;">
                 <label class="form-label">Secret (Secret Server)</label>
-                <select class="form-input" style="appearance:auto;-webkit-appearance:auto;cursor:pointer;">
+                <select class="form-input csel">
                   <option>\Windows\Prod\domain-scan-account</option>
                   <option>\Windows\svc-guardian-winrm</option>
                 </select>
@@ -21265,7 +21312,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div id="cmdb-nix-panel-secret">
               <div class="form-group" style="margin-bottom:0;">
                 <label class="form-label">Secret (Secret Server)</label>
-                <select class="form-input" style="appearance:auto;-webkit-appearance:auto;cursor:pointer;">
+                <select class="form-input csel">
                   <option>\Linux\Prod\ssh-scan-key</option>
                   <option>\Linux\svc-guardian-ssh</option>
                 </select>
@@ -21288,11 +21335,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div id="cmdb-nix-panel-skip" style="display:none;font-size:12px;color:var(--text-sec);line-height:1.5;">No default set. You can add Linux/macOS credentials later — per node, or in bulk from the Detected tab.</div>
           </div>
 
-          <!-- Footer -->
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:4px;">
-            <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Credentials are fetched at scan time, never stored in plain text</div>
-            <button id="cmdb-cred-continue" class="btn-primary" style="width:auto;padding:12px 24px;" onclick="go(&#39;cmdb-importing&#39;)">Import to Detected →</button>
-          </div>
+          <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;margin-top:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Credentials are fetched at scan time, never stored in plain text</div>
 
         </div>
       </div>
@@ -21300,50 +21343,40 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
       <!-- STEP · Importing (transient) -->
       <div class="cmdbm-panel" id="v-cmdb-importing" style="display:none;">
-      <div style="padding:40px 24px;display:flex;align-items:center;justify-content:center;">
+      <div style="padding:20px 24px;display:flex;align-items:center;justify-content:center;">
         <div style="text-align:center;max-width:420px;width:100%;">
           <div style="margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
             <div class="spin-icon" style="width:40px;height:40px;border:3px solid rgba(37,167,96,0.2);border-top-color:var(--green2);border-radius:50%;"></div>
           </div>
-          <div style="font-size:16px;font-weight:700;color:var(--text-default);margin-bottom:8px;">Importing nodes…</div>
           <div style="font-size:12px;color:var(--text-sec);margin-bottom:20px;">Syncing 5 nodes from ServiceNow CMDB</div>
-          <div style="background:var(--bg-page);border-radius:99px;height:6px;overflow:hidden;margin-bottom:20px;">
-            <div style="height:100%;width:70%;background:linear-gradient(90deg,#8B5CF6,#7C3AED);border-radius:99px;transition:width 0.3s;"></div>
-          </div>
-          <button class="btn-primary" onclick="go(&#39;cmdb-complete&#39;)" style="width:100%;padding:12px;">Continue →</button>
+          <div class="cmdb-progress-track"><div class="cmdb-progress-fill" style="width:70%;"></div></div>
         </div>
       </div>
     </div>
 
       <!-- STEP · Complete -->
       <div class="cmdbm-panel" id="v-cmdb-complete" style="display:none;">
-      <div style="padding:40px 24px;display:flex;align-items:center;justify-content:center;">
+      <div style="padding:20px 24px;display:flex;align-items:center;justify-content:center;">
         <div style="text-align:center;max-width:440px;width:100%;">
           <div style="width:56px;height:56px;border-radius:50%;background:rgba(37,167,96,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
           </div>
-          <div style="font-size:20px;font-weight:800;color:var(--text-default);margin-bottom:6px;">5 nodes added to Detected ✓</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-bottom:24px;">Imported from ServiceNow with default credentials applied. Review them in the Detected tab and promote the ones you want to monitor.</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px;">
-            <div style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;text-align:center;">
-              <div style="font-size:22px;font-weight:800;color:var(--text-default);">5</div>
-              <div style="font-size:10px;color:var(--text-sec);font-weight:600;margin-top:2px;">NODES ADDED</div>
-            </div>
-            <div style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;text-align:center;">
-              <div style="font-size:22px;font-weight:800;color:#7C3AED;">2</div>
-              <div style="font-size:10px;color:var(--text-sec);font-weight:600;margin-top:2px;">LINUX</div>
-            </div>
-            <div style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;text-align:center;">
-              <div style="font-size:22px;font-weight:800;color:#7C3AED;">3</div>
-              <div style="font-size:10px;color:var(--text-sec);font-weight:600;margin-top:2px;">WINDOWS</div>
-            </div>
+          <div style="font-size:12px;color:var(--text-sec);margin-bottom:20px;">Imported from ServiceNow with default credentials applied. Review them in the Detected tab and promote the ones you want to monitor.</div>
+          <div class="cmdb-kpi-row">
+            <div class="cmdb-kpi"><div class="cmdb-kpi-num">5</div><div class="cmdb-kpi-lbl">Nodes added</div></div>
+            <div class="cmdb-kpi"><div class="cmdb-kpi-num">2</div><div class="cmdb-kpi-lbl">Linux</div></div>
+            <div class="cmdb-kpi"><div class="cmdb-kpi-num">3</div><div class="cmdb-kpi-lbl">Windows</div></div>
           </div>
-          <button class="btn-primary" onclick="closeCmdbImport();showView(&#39;all-devices&#39;);setNodesTab(&#39;detected&#39;);setDetectedSource(&#39;cmdb&#39;);" style="width:100%;padding:12px;">Review in Detected →</button>
         </div>
       </div>
       </div><!-- /cmdbm-panel complete -->
 
       </div><!-- /gm-body -->
+      <!-- Canonical modal footer (DS §14.5) — populated per panel by cmdbRenderFoot() -->
+      <div class="gm-foot">
+        <div class="gm-foot-left" id="cmdb-foot-left"></div>
+        <div class="gm-foot-right" id="cmdb-foot-right"></div>
+      </div>
      </div><!-- /gm-card -->
     </div><!-- /gm-overlay #cmdb-modal -->
 
@@ -24755,6 +24788,33 @@ var CMDB_META = {
   'cmdb-complete':       ['Import complete','Nodes successfully added to Guardian']
 };
 var CMDB_STEP = { 'cmdb-connect':0,'cmdb-connecting':0,'cmdb-connect-failed':0,'cmdb-browse':1,'cmdb-credentials':2,'cmdb-importing':2,'cmdb-complete':2 };
+// Canonical footer (DS §14.5): Back left, Primary right — one footer for the whole flow.
+var CMDB_FOOT = {
+  'cmdb-connect':        { back:'choice',       primary:{ label:'Test connection',   go:'cmdb-connecting' } },
+  'cmdb-connecting':     { back:'cmdb-connect', primary:{ label:'Continue',          go:'cmdb-browse' } },
+  'cmdb-connect-failed': { back:'cmdb-connect', primary:{ label:'Try again',         go:'cmdb-connect' } },
+  'cmdb-browse':         { back:'cmdb-connect', note:1, primary:{ id:'cmdb-import-btn', label:'Add to Guardian (0)', go:'cmdb-credentials', disabled:1 } },
+  'cmdb-credentials':    { back:'cmdb-browse',  primary:{ label:'Import to Detected', go:'cmdb-importing' } },
+  'cmdb-importing':      {                      primary:{ label:'Continue',          go:'cmdb-complete' } },
+  'cmdb-complete':       {                      primary:{ label:'Review in Detected', fn:'cmdbFinishImport' } }
+};
+function cmdbFinishImport(){ closeCmdbImport(); showView('all-devices'); setNodesTab('detected'); setDetectedSource('cmdb'); }
+function cmdbRenderFoot(key) {
+  var L = document.getElementById('cmdb-foot-left'), R = document.getElementById('cmdb-foot-right');
+  if (!L || !R) return;
+  var cfg = CMDB_FOOT[key] || {}, left = '';
+  if (cfg.back) {
+    var act = cfg.back === 'choice' ? 'closeCmdbImport();openAddDeviceModal()' : "go('" + cfg.back + "')";
+    left += '<button type="button" class="btn-third" onclick="' + act + '">'
+      + '<span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back</button>';
+  }
+  if (cfg.note) left += '<span class="cmdb-foot-note" id="cmdb-total-selected-label">0 nodes selected across all classes</span>';
+  L.innerHTML = left;
+  var p = cfg.primary;
+  R.innerHTML = p ? '<button type="button" class="gm-btn gm-btn-primary"' + (p.id ? ' id="' + p.id + '"' : '')
+    + (p.disabled ? ' disabled' : '') + ' onclick="' + (p.fn ? p.fn + '()' : "go('" + p.go + "')") + '">' + p.label + '</button>' : '';
+  if (cfg.note && typeof updateCMDBTotalSelected === 'function') updateCMDBTotalSelected();
+}
 function openCmdbImport(){ cmdbShowPanel('cmdb-connect'); }
 function closeCmdbImport(){ var ov = document.getElementById('cmdb-modal'); if (ov) ov.style.display = 'none'; }
 function cmdbShowPanel(key) {
@@ -24775,6 +24835,7 @@ function cmdbShowPanel(key) {
     if (allDone || i < cur) st.classList.add('is-done');
     else if (i === cur) { st.classList.add('is-active'); st.setAttribute('aria-current', 'step'); }
   });
+  cmdbRenderFoot(key);
   if (key === 'cmdb-credentials' && typeof renderCmdbCM === 'function') renderCmdbCM();
   var b = ov.querySelector('.gm-body'); if (b) b.scrollTo(0, 0);
   if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
@@ -24979,9 +25040,8 @@ function updateCMDBTotalSelected() {
   if (lbl) lbl.textContent = total > 0 ? total.toLocaleString() + ' nodes selected across ' + classCount + ' class' + (classCount > 1 ? 'es' : '') : '0 nodes selected across all classes';
   const importBtn = document.getElementById('cmdb-import-btn');
   if (importBtn) {
-    importBtn.textContent = total > 0 ? 'Add to Guardian (' + total.toLocaleString() + ') →' : 'Add to Guardian (0) →';
-    if (total > 0) { importBtn.style.opacity='1'; importBtn.style.pointerEvents='auto'; }
-    else { importBtn.style.opacity='0.4'; importBtn.style.pointerEvents='none'; }
+    importBtn.textContent = 'Add to Guardian (' + (total > 0 ? total.toLocaleString() : '0') + ')';
+    importBtn.disabled = total === 0;
   }
 }
 
@@ -25725,37 +25785,71 @@ function openAwsSyncingModal() {
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',1); }
   });
 }
+// Єдине джерело даних кроку: із нього рахуються і лічильники тегів, і «N of M nodes selected».
+var AWS_INV_NODES = [
+  { name:'web-prod-01',      os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'web-prod-02',      os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'api-server-01',    os:'Ubuntu 22.04',   type:'EC2',    region:'eu-west-1' },
+  { name:'api-server-02',    os:'Ubuntu 22.04',   type:'EC2',    region:'eu-west-1' },
+  { name:'worker-01',        os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'worker-02',        os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'bastion-01',       os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'build-agent-01',   os:'Ubuntu 22.04',   type:'EC2',    region:'eu-west-1' },
+  { name:'ecs-cluster-prod', os:'—',              type:'ECS',    region:'us-east-1' },
+  { name:'ecs-cluster-stage',os:'—',              type:'ECS',    region:'eu-west-1' },
+  { name:'eks-prod',         os:'—',              type:'EKS',    region:'us-east-1' },
+  { name:'lambda-ingest',    os:'—',              type:'Lambda', region:'us-east-1' },
+  { name:'db-replica-01',    os:'—',              type:'RDS',    region:'eu-west-1', excluded:true },
+  { name:'db-replica-02',    os:'—',              type:'RDS',    region:'eu-west-1', excluded:true }
+];
+var AWS_INV_BADGE = { EC2:'bdg--green', ECS:'bdg--blue', EKS:'bdg--purple', Lambda:'bdg--gray', RDS:'bdg--orange' };
+function awsInvFilter(el, type) {
+  el.parentNode.querySelectorAll('.gm-aws-inv-tag').forEach(function(t){ t.classList.remove('is-active'); });
+  el.classList.add('is-active');
+  document.querySelectorAll('.gm-aws-inv-row--body').forEach(function(r){
+    r.classList.toggle('gm-aws-inv-row--hidden', type !== 'all' && r.getAttribute('data-type') !== type);
+  });
+}
+function awsInvCount() {
+  var boxes = document.querySelectorAll('.gm-aws-inv-row--body input[type="checkbox"]');
+  var sel = 0;
+  boxes.forEach(function(b){ if (b.checked) sel++; });
+  var el = document.getElementById('aws-inv-count');
+  if (el) el.textContent = sel + ' of ' + boxes.length + ' nodes selected';
+}
 function openAwsInventoryModal() {
-  var pill = function(label, active){ return '<div class="pill' + (active?' active':'') + '">' + label + '</div>'; };
-  var row = function(name, bcls, btxt, region, os, status, statusColor, checked, dim){
-    return '<tr' + (dim?' style="opacity:0.55;"':'') + '>'
-      + '<td><span style="font-family:\'DM Sans\',sans-serif;font-size:12px;font-weight:600;">' + name + '</span></td>'
-      + '<td><span class="badge ' + bcls + '">' + btxt + '</span></td>'
-      + '<td style="font-family:\'DM Sans\',sans-serif;font-size:11px;">' + region + '</td>'
-      + '<td style="font-size:11px;color:var(--text-sec);">' + os + '</td>'
-      + '<td><span style="font-size:11px;color:' + statusColor + ';font-weight:600;">' + status + '</span></td>'
-      + '<td><input type="checkbox"' + (checked?' checked':'') + ' style="width:15px;height:15px;accent-color:var(--green2);"></td>'
-      + '</tr>';
+  var types = ['EC2','ECS','EKS','Lambda','RDS'];
+  var count = function(t){ return AWS_INV_NODES.filter(function(n){ return n.type === t; }).length; };
+  var tag = function(label, key, active){
+    return '<div class="gm-aws-inv-tag' + (active?' is-active':'') + '" onclick="awsInvFilter(this,\'' + key + '\')">' + label + '</div>';
   };
-  var body = '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:10px 12px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">'
-    +   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
-    +   '<span style="font-size:12px;color:var(--text-sec);line-height:1.5;">Selected nodes will be added to Guardian as monitored nodes. Unselected nodes will be ignored and not added.</span>'
-    + '</div>'
-    + '<div class="filter-pills" style="margin-bottom:16px;">' + pill('All (14)', true) + pill('EC2 (12)') + pill('ECS (3)') + pill('EKS (1)') + pill('Lambda (2)') + '</div>'
-    + '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">'
-    +   '<table class="data-table"><thead><tr><th>RESOURCE</th><th>TYPE</th><th>REGION</th><th>OS</th><th>STATUS</th><th>SELECT</th></tr></thead><tbody>'
-    +     row('web-prod-01','badge-pass','EC2','us-east-1','Amazon Linux 2','Ready','#15803d',true)
-    +     row('web-prod-02','badge-pass','EC2','us-east-1','Amazon Linux 2','Ready','#15803d',true)
-    +     row('api-server-01','badge-pass','EC2','eu-west-1','Ubuntu 22.04','Ready','#15803d',true)
-    +     row('ecs-cluster-prod','badge-low','ECS','us-east-1','—','Ready','#15803d',true)
-    +     row('eks-prod','bdg--purple','EKS','us-east-1','—','Ready','#15803d',true)
-    +     row('db-replica-01','badge-medium','RDS','eu-west-1','—','Excluded','var(--muted)',false,true)
-    +   '</tbody></table>'
-    + '</div>'
-    + '<div style="margin-top:14px;font-size:13px;color:var(--text-sec);font-weight:500;">12 of 14 nodes selected</div>';
+  // Ім'я + ОС живуть в одній комірці разом із чекбоксом — окремої колонки SELECT немає (Figma 3274:16576).
+  var row = function(n){
+    return '<div class="gm-aws-inv-row gm-aws-inv-row--body' + (n.excluded?' gm-aws-inv-row--dim':'') + '" data-type="' + n.type + '">'
+      + '<div class="gm-aws-inv-name"><input type="checkbox"' + (n.excluded?' disabled':' checked') + ' onchange="awsInvCount()"><span><b>' + n.name + '</b><small>' + n.os + '</small></span></div>'
+      + '<div class="gm-aws-inv-type"><span class="bdg bdg--quiet ' + AWS_INV_BADGE[n.type] + '">' + n.type + '</span></div>'
+      + '<div class="gm-aws-inv-region">' + n.region + '</div>'
+      + '<div class="gm-aws-inv-status"><span class="bdg bdg--dot ' + (n.excluded ? 'bdg--gray' : 'bdg--green') + '">' + (n.excluded ? 'Excluded' : 'Ready') + '</span></div>'
+      + '</div>';
+  };
+  var tags = tag('All (' + AWS_INV_NODES.length + ')', 'all', true)
+    + types.map(function(t){ return tag(t + ' (' + count(t) + ')', t); }).join('');
+  var selected = AWS_INV_NODES.filter(function(n){ return !n.excluded; }).length;
+  var body = '<div class="gm-aws-inv-block"><div class="gm-aws-inv-note">'
+    +   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
+    +   '<span>Selected nodes will be added to Guardian as monitored nodes. Unselected nodes will be ignored and not added.</span>'
+    + '</div></div>'
+    + '<div class="gm-aws-inv-block">'
+    +   '<div class="gm-aws-inv-tags">' + tags + '</div>'
+    +   '<div class="gm-aws-inv-table">'
+    +     '<div class="gm-aws-inv-row gm-aws-inv-row--head"><div>Resource</div><div>Type</div><div>Region</div><div>Status</div></div>'
+    +     AWS_INV_NODES.map(row).join('')
+    +   '</div>'
+    +   '<div class="gm-aws-inv-count" id="aws-inv-count">' + selected + ' of ' + AWS_INV_NODES.length + ' nodes selected</div>'
+    + '</div>';
   openModal({
     id:'aws-connect-overlay', size:'lg', title:'Node Inventory',
-    subtitle:'14 resources discovered across 2 regions.',
+    subtitle:'14 resources discovered across 2 regions',
     steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
     bodyHtml:body,
     backButton:{label:'Back',onClick:function(){ go('j3-syncing'); }},
