@@ -101,6 +101,7 @@
   --text-disabled: #CBD5E1;   /* disabled labels */
   --search-text: #475569;
   --search-placeholder: #475569;
+  --progress-track: #E2E8F0;   /* незаповнена частина смуги прогресу (dark — #335255) */
 
   /* Background */
   --bg-canvas:   #F8FAFC;   /* main page background */
@@ -4149,6 +4150,39 @@ body.dark .gm-aws-inv-row--dim .gm-aws-inv-name b { color:rgba(248,250,252,0.4);
   font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-default); }
 .gm-scan-type input { width:14px; height:14px; flex:0 0 14px; margin:0; }
 .gm-scan-type span { font-size:10px; color:var(--text-sec); }
+
+/* ── AWS step 5 «CIS Scan — In Progress» — Figma 3286:23996 (light) / 3286:24156 (dark) ── */
+.gm-scan-run { display:flex; flex-direction:column; gap:20px; }
+.gm-scan-run-grp { display:flex; flex-direction:column; gap:10px; }
+.gm-scan-run-sec { padding:0 24px; }
+.gm-scan-prog { padding:20px 24px; border:1px solid var(--border); border-radius:14px; background:#F8FAFC; }
+body.dark .gm-scan-prog { background:#123033; }
+.gm-scan-prog-head { display:flex; align-items:center; justify-content:space-between; }
+.gm-scan-prog-head b { font:600 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+.gm-scan-prog-head span,
+.gm-scan-prog-pct { font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-sec); }
+.gm-scan-prog-pct { margin-top:6px; font-size:11px; }
+/* Незаповнена частина = токен --progress-track (light #E2E8F0 / dark #335255) — той самий,
+   що в смузі Node Discovery та Remediation. Рішення user 18.08. */
+.gm-scan-track { margin-top:10px; height:8px; border-radius:4px; background:var(--progress-track); overflow:hidden; }
+.gm-scan-track i { display:block; height:100%; border-radius:4px;
+  background:linear-gradient(180deg,#10B981 8.37%,#059669 91.63%);
+  box-shadow:0 0 8px rgba(63,200,120,0.4); }
+.gm-scan-run-title { font:700 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+.gm-scan-nodes { border:1px solid var(--border); border-radius:14px; background:var(--bg-surface); overflow:hidden; }
+.gm-scan-node { display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid var(--border); }
+.gm-scan-node:last-child { border-bottom:0; }
+.gm-scan-node b { font:600 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+/* Статус несе сама іконка — правого тексту в макеті немає. */
+.gm-scan-node-ico { flex:0 0 22px; width:22px; height:22px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center; }
+.gm-scan-node--done .gm-scan-node-ico { background:rgba(16,185,129,0.14); color:var(--green1); }
+.gm-scan-node--run .gm-scan-node-ico { border:2px solid var(--border); border-top-color:var(--green1);
+  animation:spin 0.9s linear infinite; }
+.gm-scan-node--wait .gm-scan-node-ico { border:2px solid var(--border); }
+.gm-scan-node--wait b { opacity:0.4; }
+.gm-scan-fail { align-self:flex-start; display:inline-flex; align-items:center; gap:6px; border:0;
+  background:none; padding:0; cursor:pointer; font:600 12px/normal 'DM Sans',sans-serif; color:var(--bdg-red-txt); }
 
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
@@ -25931,7 +25965,49 @@ function openAwsScanConfigModal() {
     steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
     bodyHtml:body,
     backButton:{label:'Back',onClick:function(){ go('j3-inventory'); }},
-    buttons:[{label:'Start Scan',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); go('j3-scanning'); }}],
+    buttons:[{label:'Start Scan',kind:'primary',onClick:function(){ openAwsScanningModal(); }}],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
+  });
+}
+var AWS_SCAN_NODES = [
+  { name:'web-prod-01', state:'done' },
+  { name:'web-prod-02', state:'done' },
+  { name:'api-server-01', state:'done' },
+  { name:'ecs-cluster-prod', state:'run' },
+  { name:'eks-prod', state:'wait' },
+  { name:'db-replica-01', state:'wait' }
+];
+function openAwsScanningModal() {
+  var check = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var arrow = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg>';
+  // Стан несе виключно іконка — правої колонки зі словами Complete/Scanning/Pending у макеті немає.
+  var node = function(n){
+    return '<div class="gm-scan-node gm-scan-node--' + n.state + '">'
+      + '<span class="gm-scan-node-ico">' + (n.state === 'done' ? check : '') + '</span>'
+      + '<b>' + n.name + '</b></div>';
+  };
+  var body = '<div class="gm-scan-run">'
+    + '<div class="gm-scan-run-grp">'
+    +   '<div class="gm-scan-run-sec"><span class="bdg bdg--dot bdg--purple">Scan in Progress</span></div>'
+    +   '<div class="gm-scan-run-sec"><div class="gm-scan-prog">'
+    +     '<div class="gm-scan-prog-head"><b>Overall Progress</b><span>7 of 12 nodes complete · Est. 3 min remaining</span></div>'
+    +     '<div class="gm-scan-track"><i style="width:60%;"></i></div>'
+    +     '<div class="gm-scan-prog-pct">~60% complete</div>'
+    +   '</div></div>'
+    + '</div>'
+    + '<div class="gm-scan-run-grp gm-scan-run-sec">'
+    +   '<div class="gm-scan-run-title">Node-by-node Status</div>'
+    +   '<div class="gm-scan-nodes">' + AWS_SCAN_NODES.map(node).join('') + '</div>'
+    +   '<button type="button" class="gm-scan-fail" onclick="closeModal(\'aws-connect-overlay\');showView(\'j3-scan-failed\');">Scan failed state ' + arrow + '</button>'
+    + '</div>'
+    + '</div>';
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'CIS Scan — In Progress',
+    subtitle:'Scanning 12 AWS nodes against CIS Level 1 benchmark',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ openAwsScanConfigModal(); }},
+    buttons:[{label:'Continue in background',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); go('j3-scan-complete'); }}],
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
   });
 }
