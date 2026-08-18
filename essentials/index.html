@@ -4289,6 +4289,7 @@ body.dark .awsc-info { background:rgba(255,255,255,.05); }
   border:1px solid var(--gm-input-border); border-radius:8px; background:var(--gm-input-bg);
   font-family:'DM Sans',sans-serif; font-size:11px; line-height:16.5px; color:var(--gm-input-text);
 }
+.awsc-ddwrap { position:relative; }
 .awsc-drop {
   box-sizing:border-box; width:100%; height:38px; display:flex; align-items:center;
   justify-content:space-between; gap:10px; padding:0 12px;
@@ -4296,9 +4297,24 @@ body.dark .awsc-info { background:rgba(255,255,255,.05); }
   color:#334155; font:600 12px/normal 'DM Sans',sans-serif; text-align:left; cursor:pointer;
 }
 .awsc-drop svg { flex:0 0 12px; color:var(--text-muted); transition:transform .15s; }
+.awsc-drop.is-open { border-color:var(--gm-input-focus-border); }
 .awsc-drop.is-open svg { transform:rotate(180deg); }
 body.dark .awsc-drop { color:#F8FAFC; }
-.awsc-drop-body { padding:10px 2px 0; }
+/* Список — випадне меню поверх вмісту, як канонічний .agentless-credential-menu */
+.awsc-drop-body {
+  position:absolute; z-index:80; top:calc(100% + 6px); left:0; width:100%;
+  box-sizing:border-box; max-height:220px; overflow:auto; padding:6px 0;
+  border:1px solid #E2E8F0; border-radius:8px; background:#FFF;
+  box-shadow:0 12px 28px rgba(15,23,42,.16);
+}
+.awsc-drop-body[hidden] { display:none; }
+.awsc-drop-opt {
+  display:flex; align-items:center; gap:8px; padding:7px 14px;
+  font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-default);
+}
+.awsc-drop-opt svg { flex:0 0 12px; }
+body.dark .awsc-drop-body { background:#133033; border-color:#42595C; }
+body.dark .awsc-drop-opt { color:#F8FAFC; }
 
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
@@ -25857,13 +25873,26 @@ function awsModalSwitchAuth(method) {
   if (fi) fi.style.display = method === 'iam' ? '' : 'none';
   if (fk) fk.style.display = method === 'keys' ? '' : 'none';
 }
-function awsModalTogglePerms() {
+function awsModalTogglePerms(e) {
+  if (e) e.stopPropagation();
   var body = document.getElementById('aws-modal-permBody');
   var btn = document.getElementById('aws-modal-permToggle');
   if (!body) return;
-  var open = body.style.display !== 'none';
-  body.style.display = open ? 'none' : 'block';
-  if (btn) btn.classList.toggle('is-open', !open);
+  var open = body.hidden;
+  body.hidden = !open;
+  if (btn) { btn.classList.toggle('is-open', open); btn.setAttribute('aria-expanded', String(open)); }
+  if (open) {
+    body.scrollIntoView({ block: 'nearest' });
+    document.addEventListener('click', awsModalClosePerms);
+  }
+}
+function awsModalClosePerms(e) {
+  var wrap = document.getElementById('aws-modal-permBody');
+  if (wrap && e && wrap.contains(e.target)) return;
+  document.removeEventListener('click', awsModalClosePerms);
+  if (wrap) wrap.hidden = true;
+  var btn = document.getElementById('aws-modal-permToggle');
+  if (btn) { btn.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); }
 }
 function awsModalRegion(el) { el.classList.toggle('is-on'); }
 function awsModalContinue() { go('j3-connecting'); }
@@ -26228,10 +26257,10 @@ function openAwsConnectModal() {
   var keysTrust = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Principal": { "AWS": "arn:aws:iam::123456789012:user/Guardian" },\n      "Action": "sts:AssumeRole"\n    }\n  ]\n}';
   var keysAssume = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Action": "sts:AssumeRole",\n      "Resource": "arn:aws:iam::123456789012:role/GuardianRole"\n    }\n  ]\n}';
 
-  var perms = '<div>'
-    + '<button type="button" id="aws-modal-permToggle" class="awsc-drop" onclick="awsModalTogglePerms()">IAM Permissions required' + icoChev + '</button>'
-    + '<div id="aws-modal-permBody" class="awsc-drop-body" style="display:none;">'
-    + ['ec2:Describe*','ecs:List*','eks:Describe*','lambda:List*','rds:Describe*'].map(function(p){ return '<div class="perm-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>' + p + '</div>'; }).join('')
+  var perms = '<div class="awsc-ddwrap">'
+    + '<button type="button" id="aws-modal-permToggle" class="awsc-drop" aria-expanded="false" onclick="awsModalTogglePerms(event)">IAM Permissions required' + icoChev + '</button>'
+    + '<div id="aws-modal-permBody" class="awsc-drop-body" hidden>'
+    + ['ec2:Describe*','ecs:List*','eks:Describe*','lambda:List*','rds:Describe*'].map(function(p){ return '<div class="awsc-drop-opt"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>' + p + '</div>'; }).join('')
     + '</div></div>';
 
   var iam = '<div id="aws-modal-iam" class="awsc-col" style="gap:20px;">'
