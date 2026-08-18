@@ -4207,6 +4207,26 @@ body.dark .gm-scan-sum-row { border-bottom-color:#053E43; }
 .gm-scan-sum-row--blue  i { background:#8ABFF8; } .gm-scan-sum-row--blue  b { color:#8ABFF8; }
 .gm-scan-sum-row--red   i { background:#E92D38; } .gm-scan-sum-row--red   b { color:#E92D38; }
 .gm-scan-sum-row--green i { background:#25A760; } .gm-scan-sum-row--green b { color:#25A760; }
+/* Частковий бал незавершеного скану — не зелений «успіх», а бурштиновий «неповно».
+   Колонка ширша за базові 52px, бо підпис «partial score» довший за «/ 100 score». */
+.gm-scan-sum--warn .gm-scan-sum-score { flex-basis:70px; width:70px; }
+.gm-scan-sum--warn .gm-scan-sum-score b { color:#D97706; }
+
+/* ── AWS «Scan Failed» — та сама канонічна оболонка, що й Scan Complete ── */
+.gm-sf-banner { display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:10px;
+  background:var(--bdg-red-bg); border:1px solid var(--bdg-red-bd); }
+.gm-sf-banner svg { flex:0 0 16px; }
+.gm-sf-banner span { font:600 12px/16px 'DM Sans',sans-serif; color:var(--bdg-red-txt); }
+.gm-sf-h { font:700 13px/normal 'DM Sans',sans-serif; color:var(--text-default); padding-bottom:10px; }
+.gm-sf-list { border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.gm-sf-row { display:flex; align-items:center; gap:12px; padding:12px 16px; }
+.gm-sf-row + .gm-sf-row { border-top:1px solid var(--border); }
+/* Бокс іконки — нейтральний, як у Node Discovery: колір несе гліф, не підкладка. */
+.gm-sf-ico { flex:0 0 32px; width:32px; height:32px; border-radius:6px; background:var(--bg-subtle);
+  display:flex; align-items:center; justify-content:center; color:var(--bdg-red-txt); }
+.gm-sf-txt { flex:1 1 auto; min-width:0; }
+.gm-sf-txt b { display:block; font:600 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+.gm-sf-txt span { display:block; padding-top:2px; font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-muted); }
 
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
@@ -25860,7 +25880,7 @@ function openAwsSyncingModal() {
     +     row(resIco('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.6"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>'),'RDS Instances','eu-west-1','<span style="font-size:12px;color:var(--muted);font-weight:500;">Pending…</span>',true)
     +   '</div>'
     + '</div>'
-    + '<div style="padding:12px 24px 0;"><button style="background:none;border:none;padding:0;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--bdg-red-txt);cursor:pointer;font-family:inherit;" onclick="closeModal(\'aws-connect-overlay\');showView(\'j3-scan-failed\');">Scan failed state <span style="font-size:11px;">&#8594;</span></button></div>';
+    + '<div style="padding:12px 24px 0;"><button style="background:none;border:none;padding:0;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--bdg-red-txt);cursor:pointer;font-family:inherit;" onclick="openAwsScanFailedModal()">Scan failed state <span style="font-size:11px;">&#8594;</span></button></div>';
   openModal({
     id:'aws-connect-overlay', size:'lg', title:'Node Discovery',
     subtitle:'Auto-discovering AWS resources across selected regions.',
@@ -26022,7 +26042,7 @@ function openAwsScanningModal() {
     + '<div class="gm-scan-run-grp gm-scan-run-sec">'
     +   '<div class="gm-scan-run-title">Node-by-node Status</div>'
     +   '<div class="gm-scan-nodes">' + AWS_SCAN_NODES.map(node).join('') + '</div>'
-    +   '<button type="button" class="gm-scan-fail" onclick="closeModal(\'aws-connect-overlay\');showView(\'j3-scan-failed\');">Scan failed state ' + arrow + '</button>'
+    +   '<button type="button" class="gm-scan-fail" onclick="openAwsScanFailedModal()">Scan failed state ' + arrow + '</button>'
     + '</div>'
     + '</div>';
   openModal({
@@ -26066,6 +26086,52 @@ function openAwsScanCompleteModal() {
     buttons:[{label:'View All Nodes',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); goToAllDevicesFromJ3(); }}],
     // Крок 3 із 3 завершений → жоден крок не активний, усі три «done» (як у макеті).
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',3); }
+  });
+}
+// Стан помилки того ж кроку — та сама канонічна оболонка, що Scan Complete (DS §14),
+// замість повносторінкового v-j3-scan-failed.
+function openAwsScanFailedModal() {
+  var failRow = function(name, meta){
+    return '<div class="gm-sf-row">'
+      + '<div class="gm-sf-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></div>'
+      + '<div class="gm-sf-txt"><b>' + name + '</b><span>' + meta + '</span></div>'
+      + '<button type="button" class="btn-secondary" onclick="openAwsScanningModal()">Retry</button>'
+      + '</div>';
+  };
+  var sumRow = function(mod, label, val){
+    return '<div class="gm-scan-sum-row gm-scan-sum-row--' + mod + '"><span><i></i>' + label + '</span><b>' + val + '</b></div>';
+  };
+  // padding-bottom:8px + .gm-body 10px = 18px до лінії футера
+  var body = '<div style="display:flex;flex-direction:column;gap:20px;padding-bottom:8px;">'
+    + '<div class="gm-scan-run-sec"><div class="gm-sf-banner">'
+    +   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bdg-red-txt)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
+    +   '<span>Scan incomplete — 2 nodes unreachable. Partial results available for 10 of 12 nodes.</span>'
+    + '</div></div>'
+    + '<div class="gm-scan-run-sec"><div class="gm-scan-sum gm-scan-sum--warn">'
+    +   '<div class="gm-scan-sum-score"><b>74</b><span>partial score</span></div>'
+    +   '<div class="gm-scan-sum-div"></div>'
+    +   '<div class="gm-scan-sum-rows">'
+    +     sumRow('blue','Nodes scanned','10')
+    +     sumRow('red','Unreachable','2')
+    +   '</div>'
+    + '</div></div>'
+    + '<div class="gm-scan-run-sec"><div class="gm-sf-h">Unreachable Nodes</div><div class="gm-sf-list">'
+    +   failRow('db-replica-01','RDS · eu-west-1 · Connection timeout')
+    +   failRow('lambda-processor-01','Lambda · us-east-1 · IAM permission denied')
+    + '</div></div>'
+    + '</div>';
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Scan Failed',
+    subtitle:'Some nodes could not be reached during the CIS scan',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ openAwsScanningModal(); }},
+    footerLeftHtml:'<button type="button" class="link-cta" onclick="showToast(\'Contacting support…\')"><span class="lc-txt">Contact support</span> <span class="arr">&#8594;</span></button>',
+    buttons:[
+      {label:'Retry failed nodes',kind:'secondary',onClick:function(){ openAwsScanningModal(); }},
+      {label:'View partial results',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); goToAllDevicesFromJ3(); }}
+    ],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
   });
 }
 function openAwsConnectModal() {
