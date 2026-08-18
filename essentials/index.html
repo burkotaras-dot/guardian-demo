@@ -2862,6 +2862,20 @@ body.dark .gm-overlay .gm-radio-card:has(.gm-radio-dropdown):has(input[type="rad
 body.dark .gm-overlay .gm-radio-card.is-selected:has(.gm-radio-dropdown) {
   border-color:rgba(16,185,129,.60);
 }
+/* Радіо в dark бере ті самі значення, що глобальний чекбокс (~L3089) — вони стоять поруч
+   в одному вікні. Без цього правила спрацьовував світлий background:#FFFFFF. */
+body.dark .gm-overlay .gm-radio-card > input[type="radio"],
+body.dark .gm-overlay .gm-radio-card .gm-radio-control,
+body.dark .gm-overlay .radio-item .radio-dot {
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.25);
+}
+body.dark .gm-overlay .gm-radio-card > input[type="radio"]:checked,
+body.dark .gm-overlay .gm-radio-card.is-selected .gm-radio-control,
+body.dark .gm-overlay .radio-item.selected .radio-dot { border-color:var(--green1); }
+body.dark .gm-overlay .gm-radio-card > input[type="radio"]:checked::after,
+body.dark .gm-overlay .gm-radio-card.is-selected .gm-radio-control::after,
+body.dark .gm-overlay .radio-item.selected .radio-dot::after { background:var(--green1); }
 body.dark .gm-overlay .gm-radio-title,
 body.dark .gm-overlay .radio-item [style*="color:var(--text-default)"] { color:#FFFFFF !important; }
 body.dark .gm-overlay .gm-radio-description,
@@ -4066,17 +4080,19 @@ body.dark .aws-sync-banner { background:rgba(255,255,255,0.05); }
 .aws-scan-card { background:#F8FAFC; }
 body.dark .aws-scan-card { background:#123033; }
 .gm-agentless-setup .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
-/* ── AWS step 3 «Node Inventory» — Figma 3274:16576 (light) / 3274:16875 (dark) ── */
-.gm-aws-inv-block { padding:0 24px; }
-.gm-aws-inv-note {
+/* ── Info block — Figma 3230:22393. Спільний для Node Inventory та Scan Configuration ── */
+.gm-info-note {
   display:flex; align-items:center; gap:10px;
   padding:12px 16px; border:1px solid var(--border); border-radius:10px;
   background:#F8FAFC;
 }
-body.dark .gm-aws-inv-note { background:rgba(255,255,255,0.05); }
-.gm-aws-inv-note svg { flex:0 0 14px; }
-.gm-aws-inv-note span { font:400 12px/normal 'DM Sans',sans-serif; color:rgba(15,23,42,0.6); }
-body.dark .gm-aws-inv-note span { color:#CBD5E1; }
+body.dark .gm-info-note { background:rgba(255,255,255,0.05); }
+.gm-info-note svg { flex:0 0 14px; }
+.gm-info-note span { font:400 12px/normal 'DM Sans',sans-serif; color:rgba(15,23,42,0.6); }
+body.dark .gm-info-note span { color:#CBD5E1; }
+
+/* ── AWS step 3 «Node Inventory» — Figma 3274:16576 (light) / 3274:16875 (dark) ── */
+.gm-aws-inv-block { padding:0 24px; }
 .gm-aws-inv-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:20px; }
 .gm-aws-inv-tag {
   padding:4px 12px; border:1px solid var(--border); border-radius:20px;
@@ -4120,6 +4136,20 @@ body.dark .gm-aws-inv-row--head > div { background:#063135; }
 .gm-aws-inv-row--dim .gm-aws-inv-name b { color:rgba(15,23,42,0.4); }
 body.dark .gm-aws-inv-row--dim .gm-aws-inv-name b { color:rgba(248,250,252,0.4); }
 .gm-aws-inv-count { padding:10px 0; font:400 11px/normal 'DM Sans',sans-serif; color:var(--text-sec); }
+
+/* ── AWS step 4 «Scan Configuration» — Figma 3276:21664 (light) / 3276:21854 (dark) ── */
+.gm-scan-cfg { display:flex; flex-direction:column; gap:20px; }
+.gm-scan-sec { padding:0 24px; }
+.gm-scan-sec .form-label { margin-bottom:6px; }
+.gm-scan-sec .gm-info-note { margin-top:10px; }
+/* Однорядковий варіант канонічної картки: у макеті 39px проти 63px у дворядкової. */
+.gm-overlay .gm-radio-card--slim { min-height:39px; padding:10px 14px; }
+.gm-scan-types { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:10px; }
+.gm-scan-type { display:flex; align-items:center; gap:6px; cursor:pointer;
+  font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+.gm-scan-type input { width:14px; height:14px; flex:0 0 14px; margin:0; }
+.gm-scan-type span { font-size:10px; color:var(--text-sec); }
+
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
 .agentless-modal-section--target { padding-bottom:16px; border-bottom:1px solid #E2E8F0; }
@@ -25835,7 +25865,7 @@ function openAwsInventoryModal() {
   var tags = tag('All (' + AWS_INV_NODES.length + ')', 'all', true)
     + types.map(function(t){ return tag(t + ' (' + count(t) + ')', t); }).join('');
   var selected = AWS_INV_NODES.filter(function(n){ return !n.excluded; }).length;
-  var body = '<div class="gm-aws-inv-block"><div class="gm-aws-inv-note">'
+  var body = '<div class="gm-aws-inv-block"><div class="gm-info-note">'
     +   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
     +   '<span>Selected nodes will be added to Guardian as monitored nodes. Unselected nodes will be ignored and not added.</span>'
     + '</div></div>'
@@ -25857,40 +25887,47 @@ function openAwsInventoryModal() {
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
   });
 }
-function awsScanRadio(el){
-  var group = el.closest('.radio-group'); if(!group) return;
-  group.querySelectorAll('.radio-item').forEach(function(r){ r.classList.remove('selected'); });
-  el.classList.add('selected');
-  group.querySelectorAll('[data-node-type-opts]').forEach(function(o){ o.style.display='none'; });
-  var opts = el.querySelector('[data-node-type-opts]');
-  if(opts) opts.style.display='block';
-}
 function openAwsScanConfigModal() {
-  var ri = function(selected, inner){ return '<div class="radio-item' + (selected?' selected':'') + '" onclick="awsScanRadio(this)"><div class="radio-dot"></div>' + inner + '</div>'; };
-  var lbl = function(checked, name, count){ return '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-default);cursor:pointer;"><input type="checkbox"' + (checked?' checked':'') + '> ' + name + ' <span style="font-size:10px;color:var(--text-sec);">(' + count + ')</span></label>'; };
-  var level = '<div class="form-group"><div class="form-label">Compliance Policy Level</div><div class="radio-group">'
-    + ri(true, '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Level 1 <span style="font-size:10px;font-weight:500;color:#15803d;background:rgba(37,167,96,0.1);border-radius:10px;padding:2px 8px;">recommended</span></div><div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Basic security hygiene, minimal operational impact</div></div>')
-    + ri(false, '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Level 2</div><div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Defense-in-depth, may impact functionality</div></div>')
+  var iconBulb = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.1 14c.2-1 .7-1.8 1.4-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.2 1.5 1.4 2.5"></path></svg>';
+  var iconClock = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
+  var note = function(icon, text){ return '<div class="gm-info-note">' + icon + '<span>' + text + '</span></div>'; };
+  // Однорядкова картка (без опису) — slim-варіант: 39px замість 63px, як у макеті.
+  var radio = function(name, checked, title, desc, right, extra){
+    return '<label class="gm-radio-card' + (desc ? '' : ' gm-radio-card--slim') + '">'
+      + '<input type="radio" name="' + name + '"' + (checked ? ' checked' : '') + '>'
+      + '<div class="gm-radio-copy"><div class="gm-radio-title">' + title + '</div>'
+      +   (desc ? '<div class="gm-radio-description">' + desc + '</div>' : '')
+      +   (extra || '')
+      + '</div>' + (right || '') + '</label>';
+  };
+  var typeOpt = function(checked, name, count){
+    return '<label class="gm-scan-type"><input type="checkbox"' + (checked ? ' checked' : '') + '>' + name + ' <span>(' + count + ')</span></label>';
+  };
+  // Розкривається самим CSS через :has(input:checked) — окремий JS-обробник не потрібен.
+  var byType = '<div class="gm-radio-dropdown"><div class="gm-scan-types">'
+    + typeOpt(true,'EC2 instances',8) + typeOpt(false,'RDS databases',2)
+    + typeOpt(false,'EKS clusters',1) + typeOpt(false,'ECS services',1)
     + '</div></div>';
-  var scope = '<div class="form-group"><div class="form-label">Scope</div><div class="radio-group">'
-    + ri(true, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">All selected nodes (12)</div>')
-    + ri(false, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Select subset</div>')
-    + '<div class="radio-item" onclick="awsScanRadio(this)"><div class="radio-dot"></div><div style="width:100%;"><div style="font-size:13px;font-weight:600;color:var(--text-default);">By node type</div><div data-node-type-opts style="display:none;margin-top:10px;"><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">'
-    +   lbl(true,'EC2 instances','8') + lbl(false,'RDS databases','2') + lbl(false,'EKS clusters','1') + lbl(false,'ECS services','1')
-    + '</div></div></div></div>'
-    + '</div>'
-    + '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px;display:flex;align-items:flex-start;gap:8px;"><span style="font-size:13px;">💡</span><span style="font-size:11px;color:var(--text-sec);line-height:1.5;">For best performance, we recommend scanning by node type. Start with EC2 instances.</span></div>'
+  var body = '<div class="gm-scan-cfg">'
+    + '<div class="gm-scan-sec"><div class="form-label">Compliance Policy Level</div><div class="gm-radio-group">'
+    +   radio('aws-scan-level', true, 'Level 1', 'Basic security hygiene, minimal operational impact', '<span class="bdg bdg--green">recommended</span>')
+    +   radio('aws-scan-level', false, 'Level 2', 'Defense-in-depth, may impact functionality')
+    + '</div></div>'
+    + '<div class="gm-scan-sec"><div class="form-label">Scope</div><div class="gm-radio-group">'
+    +   radio('aws-scan-scope', true, 'All selected nodes (12)')
+    +   radio('aws-scan-scope', false, 'Select subset')
+    +   radio('aws-scan-scope', false, 'By node type', '', '', byType)
+    + '</div>' + note(iconBulb, 'For best performance, we recommend scanning by node type. Start with EC2 instances.') + '</div>'
+    + '<div class="gm-scan-sec"><div class="form-label">Schedule</div><div class="gm-radio-group">'
+    +   radio('aws-scan-when', true, 'Now')
+    +   radio('aws-scan-when', false, 'Daily')
+    +   radio('aws-scan-when', false, 'Weekly')
+    + '</div></div>'
+    + '<div class="gm-scan-sec">' + note(iconClock, 'Estimated time: ~8 minutes for 12 nodes') + '</div>'
     + '</div>';
-  var schedule = '<div class="form-group" style="margin-bottom:0;"><div class="form-label">Schedule</div><div class="radio-group">'
-    + ri(true, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Now</div>')
-    + ri(false, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Daily</div>')
-    + ri(false, '<div style="font-size:13px;font-weight:600;color:var(--text-default);">Weekly</div>')
-    + '</div></div>';
-  var estimate = '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--radius-md);padding:12px 16px;margin-top:16px;display:flex;align-items:center;gap:10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span style="font-size:12px;color:var(--text-sec);font-weight:500;">Estimated time: ~8 minutes for 12 nodes</span></div>';
-  var body = level + scope + schedule + estimate;
   openModal({
     id:'aws-connect-overlay', size:'lg', title:'Scan Configuration',
-    subtitle:'Configure Compliance Policy scan for 12 AWS nodes.',
+    subtitle:'Configure Compliance Policy scan for 12 AWS nodes',
     steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
     bodyHtml:body,
     backButton:{label:'Back',onClick:function(){ go('j3-inventory'); }},
