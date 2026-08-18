@@ -4066,6 +4066,58 @@ body.dark .aws-sync-banner { background:rgba(255,255,255,0.05); }
 .aws-scan-card { background:#F8FAFC; }
 body.dark .aws-scan-card { background:#123033; }
 .gm-agentless-setup .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
+/* ── AWS step 3 «Node Inventory» — Figma 3274:16576 (light) / 3274:16875 (dark) ── */
+.gm-aws-inv-block { padding:0 24px; }
+.gm-aws-inv-note {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; border:1px solid var(--border); border-radius:10px;
+  background:#F8FAFC;
+}
+body.dark .gm-aws-inv-note { background:rgba(255,255,255,0.05); }
+.gm-aws-inv-note svg { flex:0 0 14px; }
+.gm-aws-inv-note span { font:400 12px/normal 'DM Sans',sans-serif; color:rgba(15,23,42,0.6); }
+body.dark .gm-aws-inv-note span { color:#CBD5E1; }
+.gm-aws-inv-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:20px; }
+.gm-aws-inv-tag {
+  padding:4px 12px; border:1px solid var(--border); border-radius:20px;
+  font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-sec);
+  background:#F1F5F9; cursor:pointer;
+  transition:background .12s, border-color .12s, color .12s;
+}
+body.dark .gm-aws-inv-tag { background:rgba(255,255,255,0.05); }
+.gm-aws-inv-tag:hover { border-color:var(--text-muted); }
+.gm-aws-inv-tag.is-active {
+  background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.45);
+  color:#059669; font-weight:600;
+}
+body.dark .gm-aws-inv-tag.is-active { background:rgba(16,185,129,0.15); color:#34D399; }
+.gm-aws-inv-row.gm-aws-inv-row--hidden { display:none; }
+/* 34 (шапка) + 6×49 (рядки) = висота слота з Figma; решта рядків скролиться, оболонка не росте. */
+.gm-aws-inv-table { margin-top:16px; border-top:1px solid var(--border); max-height:328px; overflow-y:auto; }
+.gm-aws-inv-row--head { position:sticky; top:0; z-index:1; }
+.gm-aws-inv-row { display:grid; grid-template-columns:250px 100px 100px minmax(0,1fr); }
+.gm-aws-inv-row > div {
+  display:flex; align-items:center; box-sizing:border-box;
+  padding:10px 8px; border-bottom:1px solid var(--border);
+}
+.gm-aws-inv-row--head > div {
+  height:34px; background:#F8FAFC;
+  font:700 10px/normal 'DM Sans',sans-serif; letter-spacing:0.5px;
+  text-transform:uppercase; color:var(--text-muted);
+}
+body.dark .gm-aws-inv-row--head > div { background:#063135; }
+.gm-aws-inv-row--head > div:first-child { padding-left:39px; }
+.gm-aws-inv-row--body > div { height:49px; }
+.gm-aws-inv-name { gap:16px; }
+/* 15px замість канонічних 16 — так у Figma; специфічність через body, бо глобальне правило нижче. */
+.gm-aws-inv-row .gm-aws-inv-name input[type="checkbox"] { width:15px; height:15px; flex:0 0 15px; margin:0; }
+.gm-aws-inv-name b { display:block; font:700 12px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+.gm-aws-inv-name small { display:block; padding-top:2px; font:400 10px/16.1px 'DM Sans',sans-serif; color:var(--text-sec); }
+.gm-aws-inv-region { font:400 11px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+/* Форма в рядку рівно одна й вона на Status (він веде до дії); Type — тихий маркер. DS §12. */
+.gm-aws-inv-row--dim .gm-aws-inv-name b { color:rgba(15,23,42,0.4); }
+body.dark .gm-aws-inv-row--dim .gm-aws-inv-name b { color:rgba(248,250,252,0.4); }
+.gm-aws-inv-count { padding:10px 0; font:400 11px/normal 'DM Sans',sans-serif; color:var(--text-sec); }
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
 .agentless-modal-section--target { padding-bottom:16px; border-bottom:1px solid #E2E8F0; }
@@ -25731,37 +25783,71 @@ function openAwsSyncingModal() {
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',1); }
   });
 }
+// Єдине джерело даних кроку: із нього рахуються і лічильники тегів, і «N of M nodes selected».
+var AWS_INV_NODES = [
+  { name:'web-prod-01',      os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'web-prod-02',      os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'api-server-01',    os:'Ubuntu 22.04',   type:'EC2',    region:'eu-west-1' },
+  { name:'api-server-02',    os:'Ubuntu 22.04',   type:'EC2',    region:'eu-west-1' },
+  { name:'worker-01',        os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'worker-02',        os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'bastion-01',       os:'Amazon Linux 2', type:'EC2',    region:'us-east-1' },
+  { name:'build-agent-01',   os:'Ubuntu 22.04',   type:'EC2',    region:'eu-west-1' },
+  { name:'ecs-cluster-prod', os:'—',              type:'ECS',    region:'us-east-1' },
+  { name:'ecs-cluster-stage',os:'—',              type:'ECS',    region:'eu-west-1' },
+  { name:'eks-prod',         os:'—',              type:'EKS',    region:'us-east-1' },
+  { name:'lambda-ingest',    os:'—',              type:'Lambda', region:'us-east-1' },
+  { name:'db-replica-01',    os:'—',              type:'RDS',    region:'eu-west-1', excluded:true },
+  { name:'db-replica-02',    os:'—',              type:'RDS',    region:'eu-west-1', excluded:true }
+];
+var AWS_INV_BADGE = { EC2:'bdg--green', ECS:'bdg--blue', EKS:'bdg--purple', Lambda:'bdg--gray', RDS:'bdg--orange' };
+function awsInvFilter(el, type) {
+  el.parentNode.querySelectorAll('.gm-aws-inv-tag').forEach(function(t){ t.classList.remove('is-active'); });
+  el.classList.add('is-active');
+  document.querySelectorAll('.gm-aws-inv-row--body').forEach(function(r){
+    r.classList.toggle('gm-aws-inv-row--hidden', type !== 'all' && r.getAttribute('data-type') !== type);
+  });
+}
+function awsInvCount() {
+  var boxes = document.querySelectorAll('.gm-aws-inv-row--body input[type="checkbox"]');
+  var sel = 0;
+  boxes.forEach(function(b){ if (b.checked) sel++; });
+  var el = document.getElementById('aws-inv-count');
+  if (el) el.textContent = sel + ' of ' + boxes.length + ' nodes selected';
+}
 function openAwsInventoryModal() {
-  var pill = function(label, active){ return '<div class="pill' + (active?' active':'') + '">' + label + '</div>'; };
-  var row = function(name, bcls, btxt, region, os, status, statusColor, checked, dim){
-    return '<tr' + (dim?' style="opacity:0.55;"':'') + '>'
-      + '<td><span style="font-family:\'DM Sans\',sans-serif;font-size:12px;font-weight:600;">' + name + '</span></td>'
-      + '<td><span class="badge ' + bcls + '">' + btxt + '</span></td>'
-      + '<td style="font-family:\'DM Sans\',sans-serif;font-size:11px;">' + region + '</td>'
-      + '<td style="font-size:11px;color:var(--text-sec);">' + os + '</td>'
-      + '<td><span style="font-size:11px;color:' + statusColor + ';font-weight:600;">' + status + '</span></td>'
-      + '<td><input type="checkbox"' + (checked?' checked':'') + ' style="width:15px;height:15px;accent-color:var(--green2);"></td>'
-      + '</tr>';
+  var types = ['EC2','ECS','EKS','Lambda','RDS'];
+  var count = function(t){ return AWS_INV_NODES.filter(function(n){ return n.type === t; }).length; };
+  var tag = function(label, key, active){
+    return '<div class="gm-aws-inv-tag' + (active?' is-active':'') + '" onclick="awsInvFilter(this,\'' + key + '\')">' + label + '</div>';
   };
-  var body = '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:10px 12px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">'
-    +   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
-    +   '<span style="font-size:12px;color:var(--text-sec);line-height:1.5;">Selected nodes will be added to Guardian as monitored nodes. Unselected nodes will be ignored and not added.</span>'
-    + '</div>'
-    + '<div class="filter-pills" style="margin-bottom:16px;">' + pill('All (14)', true) + pill('EC2 (12)') + pill('ECS (3)') + pill('EKS (1)') + pill('Lambda (2)') + '</div>'
-    + '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">'
-    +   '<table class="data-table"><thead><tr><th>RESOURCE</th><th>TYPE</th><th>REGION</th><th>OS</th><th>STATUS</th><th>SELECT</th></tr></thead><tbody>'
-    +     row('web-prod-01','badge-pass','EC2','us-east-1','Amazon Linux 2','Ready','#15803d',true)
-    +     row('web-prod-02','badge-pass','EC2','us-east-1','Amazon Linux 2','Ready','#15803d',true)
-    +     row('api-server-01','badge-pass','EC2','eu-west-1','Ubuntu 22.04','Ready','#15803d',true)
-    +     row('ecs-cluster-prod','badge-low','ECS','us-east-1','—','Ready','#15803d',true)
-    +     row('eks-prod','bdg--purple','EKS','us-east-1','—','Ready','#15803d',true)
-    +     row('db-replica-01','badge-medium','RDS','eu-west-1','—','Excluded','var(--muted)',false,true)
-    +   '</tbody></table>'
-    + '</div>'
-    + '<div style="margin-top:14px;font-size:13px;color:var(--text-sec);font-weight:500;">12 of 14 nodes selected</div>';
+  // Ім'я + ОС живуть в одній комірці разом із чекбоксом — окремої колонки SELECT немає (Figma 3274:16576).
+  var row = function(n){
+    return '<div class="gm-aws-inv-row gm-aws-inv-row--body' + (n.excluded?' gm-aws-inv-row--dim':'') + '" data-type="' + n.type + '">'
+      + '<div class="gm-aws-inv-name"><input type="checkbox"' + (n.excluded?' disabled':' checked') + ' onchange="awsInvCount()"><span><b>' + n.name + '</b><small>' + n.os + '</small></span></div>'
+      + '<div class="gm-aws-inv-type"><span class="bdg bdg--quiet ' + AWS_INV_BADGE[n.type] + '">' + n.type + '</span></div>'
+      + '<div class="gm-aws-inv-region">' + n.region + '</div>'
+      + '<div class="gm-aws-inv-status"><span class="bdg bdg--dot ' + (n.excluded ? 'bdg--gray' : 'bdg--green') + '">' + (n.excluded ? 'Excluded' : 'Ready') + '</span></div>'
+      + '</div>';
+  };
+  var tags = tag('All (' + AWS_INV_NODES.length + ')', 'all', true)
+    + types.map(function(t){ return tag(t + ' (' + count(t) + ')', t); }).join('');
+  var selected = AWS_INV_NODES.filter(function(n){ return !n.excluded; }).length;
+  var body = '<div class="gm-aws-inv-block"><div class="gm-aws-inv-note">'
+    +   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
+    +   '<span>Selected nodes will be added to Guardian as monitored nodes. Unselected nodes will be ignored and not added.</span>'
+    + '</div></div>'
+    + '<div class="gm-aws-inv-block">'
+    +   '<div class="gm-aws-inv-tags">' + tags + '</div>'
+    +   '<div class="gm-aws-inv-table">'
+    +     '<div class="gm-aws-inv-row gm-aws-inv-row--head"><div>Resource</div><div>Type</div><div>Region</div><div>Status</div></div>'
+    +     AWS_INV_NODES.map(row).join('')
+    +   '</div>'
+    +   '<div class="gm-aws-inv-count" id="aws-inv-count">' + selected + ' of ' + AWS_INV_NODES.length + ' nodes selected</div>'
+    + '</div>';
   openModal({
     id:'aws-connect-overlay', size:'lg', title:'Node Inventory',
-    subtitle:'14 resources discovered across 2 regions.',
+    subtitle:'14 resources discovered across 2 regions',
     steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
     bodyHtml:body,
     backButton:{label:'Back',onClick:function(){ go('j3-syncing'); }},
