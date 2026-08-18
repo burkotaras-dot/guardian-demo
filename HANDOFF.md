@@ -173,9 +173,14 @@ err**O**r · **S**uccess.
 
 ## 4. Reusable patterns
 
-Будь-який новий екран звіряється з цими патернами, а не з десятком попередніх. Детальні
-навігаційні правила (з Reference + Exceptions) — у `GUARDIAN-DESIGN-SYSTEM.md`; тут — зведення
-для handoff.
+> ⚠️ **Цей розділ більше не є джерелом правил (17.08.2026).** Він фіксував стан на кінець
+> попереднього пакета і з того часу не оновлювався, тоді як код і стандарти рухались.
+> Зведення 17.08 виявило **чотири** застарілі записи: §4.4 (кроків J3 = «of 4» — насправді 3),
+> §4.5 (дія no-match), §4.8 (старі значення green-outlined кнопки), §4.9 (текст баджа в dark = `#fff`
+> — прямо суперечить канону баджів). Деталі — `GUARDIAN-INTERACTION-STANDARDS.md` §15.
+>
+> **За правилами звертатись до `GUARDIAN-INTERACTION-STANDARDS.md` (поведінка) і
+> `GUARDIAN-DESIGN-SYSTEM.md` (вигляд).** Розділ лишено як історичний зріз пакета Essentials.
 
 ### 4.1 Navigation (див. `GUARDIAN-DESIGN-SYSTEM.md` §1)
 - **Add / Create / Connect / Import → overlay modal** через `openModal(opts)`. Виняток — agentless (full-page).
