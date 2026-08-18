@@ -4290,6 +4290,16 @@ body.dark .awsc-info { background:rgba(255,255,255,.05); }
   font-family:'DM Sans',sans-serif; font-size:11px; line-height:16.5px; color:var(--gm-input-text);
 }
 .awsc-ddwrap { position:relative; }
+/* Access Keys — кроки 1…5 (Figma 3303:21890). Без коробок: заголовок + опис + код-блок. */
+.awsc-ksteps { display:flex; flex-direction:column; gap:16px; }
+.awsc-kstep { display:flex; flex-direction:column; }
+.awsc-kstep-hd {
+  display:flex; align-items:flex-start; justify-content:space-between; gap:10px; min-height:16px;
+}
+.awsc-kstep-t { font:600 12px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+.awsc-kstep-t span { font-weight:400; color:var(--text-sec); }
+.awsc-kstep .awsc-hint { padding-top:6px; }
+.awsc-code--fix { height:160px; max-height:160px; margin-top:10px; padding:8px 14px; }
 .awsc-drop {
   box-sizing:border-box; width:100%; height:38px; display:flex; align-items:center;
   justify-content:space-between; gap:10px; padding:0 12px;
@@ -26250,7 +26260,6 @@ function openAwsConnectModal() {
   var regionTag = function(name, on) {
     return '<button type="button" class="awsc-tag' + (on ? ' is-on' : '') + '" onclick="awsModalRegion(this)">' + icoCheck + name + '</button>';
   };
-  var stepBox = 'border:1px solid var(--border);border-radius:8px;padding:10px 12px;';
 
   var trustPolicy = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Principal": { "Federated": "arn:aws:iam::123456789012:oidc-provider/static.cloudhouse.com" },\n      "Action": "sts:AssumeRoleWithWebIdentity",\n      "Condition": {\n        "StringEquals": {\n          "static.cloudhouse.com:aud": "sts.amazonaws.com",\n          "static.cloudhouse.com:sub": "guardian-service/acme-corp"\n        }\n      }\n    }\n  ]\n}';
   var policyJson = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Sid": "GuardianReadOnly",\n      "Effect": "Allow",\n      "Action": [\n        "ec2:Describe*", "ec2:GetConsoleOutput",\n        "ecs:ListClusters", "ecs:DescribeClusters",\n        "eks:ListClusters", "eks:DescribeCluster",\n        "rds:DescribeDBInstances", "rds:DescribeDBClusters",\n        "lambda:ListFunctions", "lambda:GetFunction",\n        "s3:ListAllMyBuckets", "s3:GetBucketPolicy",\n        "iam:GetUser", "iam:GetRole",\n        "sts:GetCallerIdentity", "sts:GetAccessKeyInfo"\n      ],\n      "Resource": "*"\n    }\n  ]\n}';
@@ -26289,14 +26298,14 @@ function openAwsConnectModal() {
     + '</div>'
     + '</div>';
 
-  var keyBox = function(n, title, meta, copyId, desc, code) {
-    return '<div style="' + stepBox + '">'
-      + '<div class="awsc-lblrow" style="align-items:flex-start;">'
-      +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);">' + n + ' · ' + title + (meta ? ' <span style="font-weight:400;color:var(--text-sec);">' + meta + '</span>' : '') + '</div>'
+  var keyStep = function(n, title, meta, copyId, desc, code) {
+    return '<div class="awsc-kstep">'
+      + '<div class="awsc-kstep-hd">'
+      +   '<div class="awsc-kstep-t">' + n + ' · ' + title + (meta ? ' <span>' + meta + '</span>' : '') + '</div>'
       +   (copyId ? copyBtn(copyId, 'Copy JSON') : '')
       + '</div>'
-      + (desc ? '<div class="awsc-hint" style="padding-top:4px;">' + desc + '</div>' : '')
-      + (code ? '<pre class="awsc-code" id="' + copyId + '" style="max-height:160px;">' + code + '</pre>' : '')
+      + (desc ? '<div class="awsc-hint">' + desc + '</div>' : '')
+      + (code ? '<pre class="awsc-code awsc-code--fix" id="' + copyId + '">' + code + '</pre>' : '')
       + '</div>';
   };
   var keys = '<div id="aws-modal-keys" class="awsc-col" style="gap:20px;display:none;">'
@@ -26305,12 +26314,12 @@ function openAwsConnectModal() {
     + '</div></div></div>'
     + '<div class="awsc-sec awsc-col" style="gap:14px;">'
     +   '<div><div class="awsc-step-h">Set up in AWS</div><div class="awsc-step-sub">IAM Console — create the user, policy and role Guardian will assume</div></div>'
-    +   '<div class="awsc-col" style="gap:10px;">'
-    +     keyBox(1, 'Create an IAM user', '', '', 'Programmatic access only — no console access. Name it <code>Guardian</code>. Permissions are attached in step 4.', '')
-    +     keyBox(2, 'Create a read-only IAM policy', 'GuardianReadOnlyAccess', 'aws-modal-keys-policy', '', policyJson)
-    +     keyBox(3, 'Create an IAM role', 'GuardianRole', 'aws-modal-keys-trust', 'Custom trust policy, so the Guardian user can assume the role. On the permissions step, attach <code>GuardianReadOnlyAccess</code>.', keysTrust)
-    +     keyBox(4, 'Let the user assume the role', 'inline policy: GuardianAssumeRole', 'aws-modal-keys-assume', '', keysAssume)
-    +     keyBox(5, 'Create access keys', '', '', 'Use case "Application running outside AWS". Copy the key ID and secret — the secret is only shown once.', '')
+    +   '<div class="awsc-ksteps">'
+    +     keyStep(1, 'Create an IAM user', '', '', 'Programmatic access only — no console access. Name it Guardian. Permissions are attached in step 4.', '')
+    +     keyStep(2, 'Create a read-only IAM policy', 'GuardianReadOnlyAccess', 'aws-modal-keys-policy', '', policyJson)
+    +     keyStep(3, 'Create an IAM role', 'GuardianRole', 'aws-modal-keys-trust', 'Custom trust policy, so the Guardian user can assume the role. On the permissions step, attach GuardianReadOnlyAccess.', keysTrust)
+    +     keyStep(4, 'Let the user assume the role', 'inline policy: GuardianAssumeRole', 'aws-modal-keys-assume', '', keysAssume)
+    +     keyStep(5, 'Create access keys', '', '', 'Use case "Application running outside AWS". Copy the key ID and secret — the secret is only shown once.', '')
     +   '</div>'
     + '</div>'
     + '<div class="awsc-rule"></div>'
