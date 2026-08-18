@@ -4228,6 +4228,78 @@ body.dark .gm-scan-sum-row { border-bottom-color:#053E43; }
 .gm-sf-txt b { display:block; font:600 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
 .gm-sf-txt span { display:block; padding-top:2px; font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-muted); }
 
+/* ── AWS «Configure AWS Integration» — Figma 3302:19312 (light) / 3302:19549 (dark).
+   Крок 1 ланцюга AWS у канонічній 600px оболонці. .gm-body тут без горизонтального
+   паддінгу, тому кожен блок бере власний padding:0 24px через .awsc-sec. */
+.awsc { display:flex; flex-direction:column; gap:20px; padding-bottom:8px; }
+.awsc-sec { padding:0 24px; }
+.awsc-col { display:flex; flex-direction:column; }
+.awsc-h { font:700 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+.awsc-step-h { font:600 15px/19.5px 'DM Sans',sans-serif; color:var(--text-default); }
+.awsc-step-sub { padding-top:4px; font:400 12px/18px 'DM Sans',sans-serif; color:var(--text-sec); }
+.awsc-hint { font:400 11px/16px 'DM Sans',sans-serif; color:var(--text-sec); }
+.awsc-rule { height:1px; margin:0 24px; background:var(--border); }
+.awsc-rule-b { padding-bottom:20px; border-bottom:1px solid var(--border); }
+/* Канонічний .gm-tab-block — width:fit-content; тут таби ділять рядок навпіл. */
+.awsc-tabs { width:100% !important; margin-top:8px; }
+.awsc-tabs .gm-tab { flex:1 1 50% !important; }
+/* Регіони — пігулки-перемикачі. Окрема родина від легасі .region-pill,
+   яку ще використовує повносторінковий v-j3-connect. */
+.awsc-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.awsc-tag {
+  display:inline-flex; align-items:center; gap:6px; padding:4px 12px;
+  border:1px solid var(--gm-input-border); border-radius:20px; background:var(--gm-input-bg);
+  color:var(--text-sec); font:400 12px/normal 'DM Sans',sans-serif; cursor:pointer;
+  transition:background-color .15s,border-color .15s,color .15s;
+}
+.awsc-tag svg { display:none; flex:0 0 12px; }
+.awsc-tag.is-on {
+  padding:5px 12px; border-color:#10B981; background:rgba(16,185,129,.12);
+  color:var(--text-default); font-weight:600;
+}
+.awsc-tag.is-on svg { display:block; }
+.awsc-info {
+  display:flex; align-items:flex-start; gap:10px; padding:12px 16px;
+  border:1px solid var(--border); border-radius:10px; background:#F8FAFC;
+  font:400 12px/18px 'DM Sans',sans-serif; color:var(--text-sec);
+}
+.awsc-info b { font-weight:700; color:var(--text-default); }
+.awsc-info > svg { flex:0 0 14px; margin-top:2px; color:var(--text-muted); }
+body.dark .awsc-info { background:rgba(255,255,255,.05); }
+/* Copy живе всередині поля, як у макеті, а не окремою кнопкою поруч. */
+.awsc-field {
+  box-sizing:border-box; width:100%; height:38px; display:flex; align-items:center; gap:8px;
+  padding:0 14px; border:1px solid var(--gm-input-border); border-radius:10px;
+  background:var(--gm-input-bg);
+}
+.awsc-field code {
+  flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font:400 13px/normal 'DM Sans',sans-serif; color:var(--gm-input-text);
+}
+.awsc-copy {
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:2px; padding:0;
+  border:0; background:none; cursor:pointer;
+  font:600 12px/normal 'DM Sans',sans-serif; color:var(--bdg-green-txt);
+}
+.awsc-copy svg { flex:0 0 12px; }
+.awsc-lblrow { display:flex; align-items:center; justify-content:space-between; }
+.gm-overlay .awsc-lblrow .form-label { margin-bottom:0 !important; }
+.awsc-code {
+  box-sizing:border-box; margin:6px 0 0; max-height:220px; overflow:auto; padding:12px 14px;
+  border:1px solid var(--gm-input-border); border-radius:8px; background:var(--gm-input-bg);
+  font-family:'DM Sans',sans-serif; font-size:11px; line-height:16.5px; color:var(--gm-input-text);
+}
+.awsc-drop {
+  box-sizing:border-box; width:100%; height:38px; display:flex; align-items:center;
+  justify-content:space-between; gap:10px; padding:0 12px;
+  border:1px solid var(--gm-input-border); border-radius:8px; background:var(--gm-input-bg);
+  color:#334155; font:600 12px/normal 'DM Sans',sans-serif; text-align:left; cursor:pointer;
+}
+.awsc-drop svg { flex:0 0 12px; color:var(--text-muted); transition:transform .15s; }
+.awsc-drop.is-open svg { transform:rotate(180deg); }
+body.dark .awsc-drop { color:#F8FAFC; }
+.awsc-drop-body { padding:10px 2px 0; }
+
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
 .agentless-modal-section--target { padding-bottom:16px; border-bottom:1px solid #E2E8F0; }
@@ -25787,13 +25859,13 @@ function awsModalSwitchAuth(method) {
 }
 function awsModalTogglePerms() {
   var body = document.getElementById('aws-modal-permBody');
-  var chev = document.getElementById('aws-modal-permChevron');
+  var btn = document.getElementById('aws-modal-permToggle');
   if (!body) return;
   var open = body.style.display !== 'none';
   body.style.display = open ? 'none' : 'block';
-  if (chev) chev.style.transform = open ? '' : 'rotate(180deg)';
+  if (btn) btn.classList.toggle('is-open', !open);
 }
-function awsModalRegion(el) { el.classList.toggle('selected'); }
+function awsModalRegion(el) { el.classList.toggle('is-on'); }
 function awsModalContinue() { go('j3-connecting'); }
 function openAwsTestingModal() {
   var body = '<div style="text-align:center;padding-top:20px;padding-bottom:32px;">'
@@ -26134,59 +26206,104 @@ function openAwsScanFailedModal() {
   });
 }
 function openAwsConnectModal() {
-  var copyBtn = 'border:none;border-left:1px solid var(--border);background:var(--bg-surface);padding:0 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-sec);font-family:inherit;';
-  var copyJsonBtn = 'border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text-sec);font-family:inherit;';
-  var copyJsonBtnSm = 'border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text-sec);font-family:inherit;';
-  var codeRow = 'display:flex;align-items:stretch;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg-subtle);';
-  var preStyle = 'margin:0;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:8px;max-height:220px;overflow:auto;font-size:11px;line-height:1.5;color:var(--text-default);';
-  var preStyleSm = 'margin:0;padding:10px 12px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:6px;max-height:160px;overflow:auto;font-size:11px;line-height:1.45;color:var(--text-default);';
-  var stepBox = 'border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;';
+  var icoCopy = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+  var icoInfo = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><circle cx="12" cy="7.6" r="0.9" fill="currentColor" stroke="none"></circle></svg>';
+  var icoCheck = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var icoChev = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+  var copyBtn = function(id, label) { return '<button type="button" class="awsc-copy" onclick="copyTextFrom(\'' + id + '\')">' + icoCopy + label + '</button>'; };
+  var copyField = function(label, id, val) {
+    return '<div><label class="form-label">' + label + '</label>'
+      + '<div class="awsc-field"><code id="' + id + '">' + val + '</code>' + copyBtn(id, 'Copy') + '</div></div>';
+  };
+  var stepHead = function(n, sub) {
+    return '<div><div class="awsc-step-h">STEP ' + n + '</div>' + (sub ? '<div class="awsc-step-sub">' + sub + '</div>' : '') + '</div>';
+  };
+  var regionTag = function(name, on) {
+    return '<button type="button" class="awsc-tag' + (on ? ' is-on' : '') + '" onclick="awsModalRegion(this)">' + icoCheck + name + '</button>';
+  };
+  var stepBox = 'border:1px solid var(--border);border-radius:8px;padding:10px 12px;';
 
   var trustPolicy = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Principal": { "Federated": "arn:aws:iam::123456789012:oidc-provider/static.cloudhouse.com" },\n      "Action": "sts:AssumeRoleWithWebIdentity",\n      "Condition": {\n        "StringEquals": {\n          "static.cloudhouse.com:aud": "sts.amazonaws.com",\n          "static.cloudhouse.com:sub": "guardian-service/acme-corp"\n        }\n      }\n    }\n  ]\n}';
   var policyJson = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Sid": "GuardianReadOnly",\n      "Effect": "Allow",\n      "Action": [\n        "ec2:Describe*", "ec2:GetConsoleOutput",\n        "ecs:ListClusters", "ecs:DescribeClusters",\n        "eks:ListClusters", "eks:DescribeCluster",\n        "rds:DescribeDBInstances", "rds:DescribeDBClusters",\n        "lambda:ListFunctions", "lambda:GetFunction",\n        "s3:ListAllMyBuckets", "s3:GetBucketPolicy",\n        "iam:GetUser", "iam:GetRole",\n        "sts:GetCallerIdentity", "sts:GetAccessKeyInfo"\n      ],\n      "Resource": "*"\n    }\n  ]\n}';
   var keysTrust = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Principal": { "AWS": "arn:aws:iam::123456789012:user/Guardian" },\n      "Action": "sts:AssumeRole"\n    }\n  ]\n}';
   var keysAssume = '{\n  "Version": "2012-10-17",\n  "Statement": [\n    {\n      "Effect": "Allow",\n      "Action": "sts:AssumeRole",\n      "Resource": "arn:aws:iam::123456789012:role/GuardianRole"\n    }\n  ]\n}';
 
-  var iam = '<div id="aws-modal-iam">'
-    + '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:10px 12px;margin-top:20px;margin-bottom:16px;font-size:12px;color:var(--text-sec);line-height:1.55;"><strong style="color:var(--text-default);">One-time setup in your AWS account.</strong> Enter your account ID above, then create an OIDC identity provider and an IAM role from the values below and paste the role ARN back here. Guardian exchanges a short-lived OIDC token for STS credentials — no long-lived keys are stored.</div>'
-    + '<div class="form-label" style="margin-bottom:8px;">Step 1 — Add an OIDC identity provider <span style="font-weight:400;color:var(--text-sec);">(IAM → Identity providers → Add provider → OpenID Connect)</span></div>'
-    + '<div class="agentless-modal-field"><label class="form-label">Provider URL</label><div style="' + codeRow + '"><code id="aws-modal-oidc-url" style="flex:1;padding:9px 12px;font-size:12px;color:var(--text-default);overflow:auto;white-space:nowrap;">https://static.cloudhouse.com</code><button type="button" onclick="copyTextFrom(\'aws-modal-oidc-url\')" style="' + copyBtn + '">Copy</button></div></div>'
-    + '<div class="agentless-modal-field"><label class="form-label">Audience</label><div style="' + codeRow + '"><code id="aws-modal-oidc-aud" style="flex:1;padding:9px 12px;font-size:12px;color:var(--text-default);overflow:auto;white-space:nowrap;">sts.amazonaws.com</code><button type="button" onclick="copyTextFrom(\'aws-modal-oidc-aud\')" style="' + copyBtn + '">Copy</button></div></div>'
-    + '<div class="form-label" style="margin-top:6px;margin-bottom:8px;">Step 2 — Create an IAM role with this trust policy <span style="font-weight:400;color:var(--text-sec);">(IAM → Roles → Create role → Custom trust policy)</span></div>'
-    + '<div class="agentless-modal-field"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label class="form-label" style="margin:0;">Trust policy JSON</label><button type="button" onclick="copyTextFrom(\'aws-modal-oidc-trust\')" style="' + copyJsonBtn + '">Copy JSON</button></div><pre id="aws-modal-oidc-trust" style="' + preStyle + '">' + trustPolicy + '</pre><div class="agentless-modal-hint">The trust policy only controls who may assume the role. Also attach a permission policy (e.g. SecurityAudit or ReadOnlyAccess) granting the AWS actions Guardian scans with.</div></div>'
-    + '<div class="agentless-modal-field"><label class="form-label">Step 3 — Trust role ARN</label><input class="form-input" type="text" placeholder="arn:aws:iam::123456789012:role/guardian-oidc"><div class="agentless-modal-hint">ARN of the role you created above. Guardian assumes it via web-identity to run discovery and scans.</div></div>'
-    + '</div>';
-
-  var keys = '<div id="aws-modal-keys" style="display:none;">'
-    + '<div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:10px 12px;margin-top:20px;margin-bottom:16px;font-size:12px;color:var(--text-sec);line-height:1.55;"><strong style="color:var(--text-default);">One-time setup in your AWS account.</strong> Create an IAM user with a read-only policy and a role Guardian can assume, then paste the access key and role ARN below.</div>'
-    + '<div class="form-label" style="margin-bottom:8px;">Set up in AWS <span style="font-weight:400;color:var(--text-sec);">(IAM Console)</span></div>'
-    + '<div style="' + stepBox + '"><div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:2px;">1 · Create an IAM user</div><div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Programmatic access only — no console access. Name it <code>Guardian</code>. Permissions are attached in step 4.</div></div>'
-    + '<div style="' + stepBox + '"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="font-size:12px;font-weight:600;color:var(--text-default);">2 · Create a read-only IAM policy <span style="font-weight:400;color:var(--text-sec);">GuardianReadOnlyAccess</span></div><button type="button" onclick="copyTextFrom(\'aws-modal-keys-policy\')" style="' + copyJsonBtnSm + '">Copy JSON</button></div><pre id="aws-modal-keys-policy" style="' + preStyleSm + '">' + policyJson + '</pre></div>'
-    + '<div style="' + stepBox + '"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="font-size:12px;font-weight:600;color:var(--text-default);">3 · Create an IAM role <span style="font-weight:400;color:var(--text-sec);">GuardianRole</span> with this trust policy</div><button type="button" onclick="copyTextFrom(\'aws-modal-keys-trust\')" style="' + copyJsonBtnSm + '">Copy JSON</button></div><div style="font-size:11px;color:var(--text-sec);line-height:1.5;margin-bottom:6px;">Custom trust policy, so the Guardian user can assume the role. On the permissions step, attach <code>GuardianReadOnlyAccess</code>.</div><pre id="aws-modal-keys-trust" style="' + preStyleSm + '">' + keysTrust + '</pre></div>'
-    + '<div style="' + stepBox + '"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="font-size:12px;font-weight:600;color:var(--text-default);">4 · Let the user assume the role <span style="font-weight:400;color:var(--text-sec);">inline policy: GuardianAssumeRole</span></div><button type="button" onclick="copyTextFrom(\'aws-modal-keys-assume\')" style="' + copyJsonBtnSm + '">Copy JSON</button></div><pre id="aws-modal-keys-assume" style="' + preStyleSm + '">' + keysAssume + '</pre></div>'
-    + '<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:16px;"><div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:2px;">5 · Create access keys</div><div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Use case "Application running outside AWS". Copy the key ID and secret — the secret is only shown once.</div></div>'
-    + '<div class="agentless-modal-field"><label class="form-label">Access Key ID</label><input class="form-input" type="text" placeholder="AKIAIOSFODNN7EXAMPLE"></div>'
-    + '<div class="agentless-modal-field"><label class="form-label">Secret Access Key</label><input class="form-input" type="password" placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"></div>'
-    + '<div class="agentless-modal-field"><label class="form-label">Assume-role ARN</label><input class="form-input" type="text" placeholder="arn:aws:iam::123456789012:role/GuardianRole"><div class="agentless-modal-hint">Guardian uses the access key to assume this role for discovery and scanning.</div></div>'
-    + '</div>';
-
-  var perms = '<div style="border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">'
-    + '<div id="aws-modal-permToggle" onclick="awsModalTogglePerms()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;">'
-    +   '<span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(59,130,246,0.12);color:#3B82F6;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><circle cx="12" cy="7.5" r="0.8" fill="currentColor" stroke="none"></circle></svg></span>'
-    +   '<span style="flex:1;min-width:0;"><span style="display:block;font-size:12px;font-weight:600;color:var(--text-default);">IAM Permissions required</span><span style="display:block;font-size:11px;color:var(--text-sec);margin-top:1px;">Reference — no action needed</span></span>'
-    +   '<svg id="aws-modal-permChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>'
-    + '</div>'
-    + '<div id="aws-modal-permBody" style="display:none;padding:8px 14px 12px;border-top:1px solid var(--border);">'
+  var perms = '<div>'
+    + '<button type="button" id="aws-modal-permToggle" class="awsc-drop" onclick="awsModalTogglePerms()">IAM Permissions required' + icoChev + '</button>'
+    + '<div id="aws-modal-permBody" class="awsc-drop-body" style="display:none;">'
     + ['ec2:Describe*','ecs:List*','eks:Describe*','lambda:List*','rds:Describe*'].map(function(p){ return '<div class="perm-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>' + p + '</div>'; }).join('')
+    + '</div></div>';
+
+  var iam = '<div id="aws-modal-iam" class="awsc-col" style="gap:20px;">'
+    + '<div class="awsc-sec"><div class="awsc-rule-b"><div class="awsc-info">' + icoInfo
+    +   '<div><b>One-time setup in your AWS account.</b> Enter your account ID above, then create an OIDC identity provider and an IAM role from the values below and paste the role ARN back here. Guardian exchanges a short-lived OIDC token for STS credentials — no long-lived keys are stored.</div>'
+    + '</div></div></div>'
+    + '<div class="awsc-sec awsc-col" style="gap:14px;">'
+    +   stepHead(1, 'Add an OIDC identity provider (IAM → Identity providers → Add provider → OpenID Connect)')
+    +   copyField('Provider URL', 'aws-modal-oidc-url', 'https://static.cloudhouse.com')
+    +   copyField('Audience', 'aws-modal-oidc-aud', 'sts.amazonaws.com')
+    + '</div>'
+    + '<div class="awsc-rule"></div>'
+    + '<div class="awsc-sec awsc-col" style="gap:14px;">'
+    +   stepHead(2, 'Create an IAM role with this trust policy (IAM → Roles → Create role → Custom trust policy)')
+    +   '<div>'
+    +     '<div class="awsc-lblrow"><label class="form-label">Trust policy JSON</label>' + copyBtn('aws-modal-oidc-trust', 'Copy JSON') + '</div>'
+    +     '<pre class="awsc-code" id="aws-modal-oidc-trust">' + trustPolicy + '</pre>'
+    +     '<div class="awsc-rule-b" style="padding-top:10px;"><div class="awsc-hint">The trust policy only controls who may assume the role. Also attach a permission policy (e.g. SecurityAudit or ReadOnlyAccess) granting the AWS actions Guardian scans with.</div></div>'
+    +   '</div>'
+    +   stepHead(3, '')
+    +   '<div class="awsc-col" style="gap:20px;">'
+    +     '<div><label class="form-label">Trust role ARN</label><input class="form-input" type="text" placeholder="arn:aws:iam::123456789012:role/guardian-oidc" value="arn:aws:iam::123456789012:role/guardian-oidc">'
+    +       '<div class="awsc-hint" style="padding-top:10px;">ARN of the role you created above. Guardian assumes it via web-identity to run discovery and scans.</div></div>'
+    +     perms
+    +   '</div>'
+    + '</div>'
     + '</div>';
 
-  var body = '<section class="agentless-modal-section">'
-    + '<h3 class="agentless-modal-heading">Authentication method</h3>'
-    + '<div class="gm-tab-block agentless-modal-tabs" role="tablist" aria-label="Authentication method"><button type="button" class="gm-tab is-active" data-aws-auth-tab="iam" aria-selected="true" onclick="awsModalSwitchAuth(\'iam\')">OIDC (recommended)</button><button type="button" class="gm-tab" data-aws-auth-tab="keys" aria-selected="false" onclick="awsModalSwitchAuth(\'keys\')">Access Keys</button></div>'
-    + '<div class="agentless-modal-field"><label class="form-label">AWS Account ID</label><input class="form-input" type="text" placeholder="123456789012" value="123456789012"></div>'
-    + '<div class="agentless-modal-field"><label class="form-label">Region(s)</label><div class="region-pills"><div class="region-pill selected" onclick="awsModalRegion(this)">us-east-1 ✓</div><div class="region-pill" onclick="awsModalRegion(this)">eu-west-1</div><div class="region-pill" onclick="awsModalRegion(this)">ap-southeast-1</div></div></div>'
-    + iam + keys + '</section>'
-    + '<section class="agentless-modal-section">' + perms + '</section>';
+  var keyBox = function(n, title, meta, copyId, desc, code) {
+    return '<div style="' + stepBox + '">'
+      + '<div class="awsc-lblrow" style="align-items:flex-start;">'
+      +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);">' + n + ' · ' + title + (meta ? ' <span style="font-weight:400;color:var(--text-sec);">' + meta + '</span>' : '') + '</div>'
+      +   (copyId ? copyBtn(copyId, 'Copy JSON') : '')
+      + '</div>'
+      + (desc ? '<div class="awsc-hint" style="padding-top:4px;">' + desc + '</div>' : '')
+      + (code ? '<pre class="awsc-code" id="' + copyId + '" style="max-height:160px;">' + code + '</pre>' : '')
+      + '</div>';
+  };
+  var keys = '<div id="aws-modal-keys" class="awsc-col" style="gap:20px;display:none;">'
+    + '<div class="awsc-sec"><div class="awsc-rule-b"><div class="awsc-info">' + icoInfo
+    +   '<div><b>One-time setup in your AWS account.</b> Create an IAM user with a read-only policy and a role Guardian can assume, then paste the access key and role ARN below.</div>'
+    + '</div></div></div>'
+    + '<div class="awsc-sec awsc-col" style="gap:14px;">'
+    +   '<div><div class="awsc-step-h">Set up in AWS</div><div class="awsc-step-sub">IAM Console — create the user, policy and role Guardian will assume</div></div>'
+    +   '<div class="awsc-col" style="gap:10px;">'
+    +     keyBox(1, 'Create an IAM user', '', '', 'Programmatic access only — no console access. Name it <code>Guardian</code>. Permissions are attached in step 4.', '')
+    +     keyBox(2, 'Create a read-only IAM policy', 'GuardianReadOnlyAccess', 'aws-modal-keys-policy', '', policyJson)
+    +     keyBox(3, 'Create an IAM role', 'GuardianRole', 'aws-modal-keys-trust', 'Custom trust policy, so the Guardian user can assume the role. On the permissions step, attach <code>GuardianReadOnlyAccess</code>.', keysTrust)
+    +     keyBox(4, 'Let the user assume the role', 'inline policy: GuardianAssumeRole', 'aws-modal-keys-assume', '', keysAssume)
+    +     keyBox(5, 'Create access keys', '', '', 'Use case "Application running outside AWS". Copy the key ID and secret — the secret is only shown once.', '')
+    +   '</div>'
+    + '</div>'
+    + '<div class="awsc-rule"></div>'
+    + '<div class="awsc-sec awsc-col" style="gap:14px;">'
+    +   '<div><label class="form-label">Access Key ID</label><input class="form-input" type="text" placeholder="AKIAIOSFODNN7EXAMPLE"></div>'
+    +   '<div><label class="form-label">Secret Access Key</label><input class="form-input" type="password" placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"></div>'
+    +   '<div><label class="form-label">Assume-role ARN</label><input class="form-input" type="text" placeholder="arn:aws:iam::123456789012:role/GuardianRole">'
+    +     '<div class="awsc-hint" style="padding-top:10px;">Guardian uses the access key to assume this role for discovery and scanning.</div></div>'
+    + '</div>'
+    + '</div>';
+
+  var body = '<div class="awsc">'
+    + '<div class="awsc-sec awsc-col" style="gap:20px;">'
+    +   '<div><div class="awsc-h">Configure AWS Integration</div>'
+    +     '<div class="gm-tab-block awsc-tabs" role="tablist" aria-label="Authentication method"><button type="button" class="gm-tab is-active" data-aws-auth-tab="iam" aria-selected="true" onclick="awsModalSwitchAuth(\'iam\')">OIDC (recommended)</button><button type="button" class="gm-tab" data-aws-auth-tab="keys" aria-selected="false" onclick="awsModalSwitchAuth(\'keys\')">Access Keys</button></div></div>'
+    +   '<div><label class="form-label">AWS Account ID</label><input class="form-input" type="text" placeholder="123456789012" value="123456789012"></div>'
+    +   '<div><label class="form-label">Region(s)</label><div class="awsc-tags">'
+    +     regionTag('us-east-1', true) + regionTag('eu-west-1', false) + regionTag('ap-southeast-1', false)
+    +   '</div></div>'
+    + '</div>'
+    + iam + keys
+    + '</div>';
 
   openModal({
     id:'aws-connect-overlay', size:'lg', title:'Configure AWS Integration',
