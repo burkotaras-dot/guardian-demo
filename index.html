@@ -4184,6 +4184,30 @@ body.dark .gm-scan-prog { background:#123033; }
 .gm-scan-fail { align-self:flex-start; display:inline-flex; align-items:center; gap:6px; border:0;
   background:none; padding:0; cursor:pointer; font:600 12px/normal 'DM Sans',sans-serif; color:var(--bdg-red-txt); }
 
+/* ── AWS step 6 «Scan Complete» — Figma 3300:19193 (light) / 3300:18931 (dark) ── */
+.gm-scan-sum { display:flex; align-items:center; gap:20px; padding:18px 20px; border-radius:14px; background:#F8FAFC; }
+body.dark .gm-scan-sum { background:#123033; }
+.gm-scan-sum-score { flex:0 0 52px; width:52px; text-align:center; }
+.gm-scan-sum-score b { display:block; font:800 30px/30px 'DM Sans',sans-serif; color:var(--green1); }
+.gm-scan-sum-score span { display:block; padding-top:2px; font:400 10px/normal 'DM Sans',sans-serif; color:var(--text-muted); }
+body.dark .gm-scan-sum-score span { color:#64748B; }
+.gm-scan-sum-div { flex:0 0 1px; align-self:stretch; background:var(--border); }
+body.dark .gm-scan-sum-div { background:#053E43; }
+.gm-scan-sum-rows { flex:1 1 auto; min-width:0; }
+.gm-scan-sum-row { display:flex; align-items:center; justify-content:space-between; padding:6px 0;
+  border-bottom:1px solid var(--border); }
+body.dark .gm-scan-sum-row { border-bottom-color:#053E43; }
+.gm-scan-sum-row:last-child { border-bottom:0; }
+.gm-scan-sum-row span { display:inline-flex; align-items:center; gap:8px;
+  font:400 12.5px/normal 'DM Sans',sans-serif; color:var(--text-sec); }
+.gm-scan-sum-row i { flex:0 0 7px; width:7px; height:7px; border-radius:3.5px; }
+.gm-scan-sum-row b { font:700 14px/normal 'DM Sans',sans-serif; }
+/* Колір рядка — класом, не інлайном: _syncInlineTheme переписує інлайнові background. */
+.gm-scan-sum-row--amber i { background:#D97706; } .gm-scan-sum-row--amber b { color:#D97706; }
+.gm-scan-sum-row--blue  i { background:#8ABFF8; } .gm-scan-sum-row--blue  b { color:#8ABFF8; }
+.gm-scan-sum-row--red   i { background:#E92D38; } .gm-scan-sum-row--red   b { color:#E92D38; }
+.gm-scan-sum-row--green i { background:#25A760; } .gm-scan-sum-row--green b { color:#25A760; }
+
 .agentless-modal-section { padding:0 24px; }
 .agentless-modal-section + .agentless-modal-section { margin-top:20px; }
 .agentless-modal-section--target { padding-bottom:16px; border-bottom:1px solid #E2E8F0; }
@@ -26007,8 +26031,41 @@ function openAwsScanningModal() {
     steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
     bodyHtml:body,
     backButton:{label:'Back',onClick:function(){ openAwsScanConfigModal(); }},
-    buttons:[{label:'Continue in background',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); go('j3-scan-complete'); }}],
+    buttons:[{label:'Continue in background',kind:'primary',onClick:function(){ openAwsScanCompleteModal(); }}],
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
+  });
+}
+function openAwsScanCompleteModal() {
+  var sumRow = function(mod, label, val){
+    return '<div class="gm-scan-sum-row gm-scan-sum-row--' + mod + '"><span><i></i>' + label + '</span><b>' + val + '</b></div>';
+  };
+  // padding-bottom:8px + .gm-body 10px = 18px до лінії футера (той самий відступ, що в Add Node)
+  var body = '<div style="display:flex;flex-direction:column;gap:20px;padding-bottom:8px;">'
+    + '<div style="padding-top:20px;display:flex;flex-direction:column;align-items:center;text-align:center;">'
+    +   '<div style="width:56px;height:56px;border-radius:28px;background:rgba(37,167,96,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--bdg-green-txt)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
+    +   '<div style="margin-top:20px;font-size:20px;font-weight:800;color:var(--text-default);">Scan Complete</div>'
+    +   '<div style="margin-top:8px;font-size:14px;line-height:21px;color:var(--text-sec);width:410px;max-width:100%;">Compliance Policy Level 1 · 12 nodes scanned</div>'
+    + '</div>'
+    + '<div class="gm-scan-run-sec"><div class="gm-scan-sum">'
+    +   '<div class="gm-scan-sum-score"><b>71</b><span>/ 100 score</span></div>'
+    +   '<div class="gm-scan-sum-div"></div>'
+    +   '<div class="gm-scan-sum-rows">'
+    +     sumRow('amber','industry avg','-7')
+    +     sumRow('blue','Nodes scanned','12')
+    +     sumRow('red','Critical issues','18')
+    +     sumRow('green','Total findings','85')
+    +   '</div>'
+    + '</div></div>'
+    + '</div>';
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Scan Complete',
+    subtitle:'CIS Level 1 scan finished successfully',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){ openAwsScanningModal(); }},
+    buttons:[{label:'View All Nodes',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); goToAllDevicesFromJ3(); }}],
+    // Крок 3 із 3 завершений → жоден крок не активний, усі три «done» (як у макеті).
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',3); }
   });
 }
 function openAwsConnectModal() {
