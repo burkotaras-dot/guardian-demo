@@ -305,6 +305,16 @@ body.dark .rpt-soon { background:rgba(255,255,255,0.04); border-color:rgba(255,2
 body.dark .rpt-preview-btn { background:rgba(0,175,115,0.15); color:var(--p-neutral-50); border-color:rgba(0,175,115,0.35); }
 body.dark .rpt-preview-btn .action-arrow { color:#00AF73; }
 body.dark .rpt-preview-btn:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); }
+/* Selection mode — картка стає обираною, її власна дія на цей час недоступна */
+.rpt-card-sel { display:none; flex-shrink:0; margin-right:2px; }
+.rpt-grid.is-selecting .rpt-card-sel { display:block; }
+.rpt-grid.is-selecting .rpt-card { cursor:pointer; }
+.rpt-grid.is-selecting .rpt-card.is-picked { border-color:var(--green1); box-shadow:0 0 0 3px var(--green-dim); }
+.rpt-grid.is-selecting .rpt-card .btn-primary,
+.rpt-grid.is-selecting .rpt-card .rpt-preview-btn { pointer-events:none; opacity:.45; }
+.rpt-bulk-bar { display:flex; align-items:center; gap:10px; }
+.rpt-bulk-count { font-size:12px; font-weight:600; color:var(--text-sec); }
+.rpt-selall { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; color:var(--text-default); cursor:pointer; user-select:none; }
 .rpt-card .rpt-params { list-style:none; padding:0; margin:10px 0 0; display:flex; flex-direction:column; gap:6px; }
 .rpt-card .rpt-params li { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--text-sec); line-height:1.4; }
 .rpt-card .rpt-params li::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--text-muted); margin-top:6px; flex-shrink:0; }
@@ -9987,9 +9997,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;align-items:center;">
               <button class="link-cta" style="padding:6px 4px;" onclick="showView(&#39;reports&#39;)"><span class="lc-txt">View reports</span> <span class="arr">→</span></button>
-              <button class="btn-outline" style="font-size:12px;padding:6px 12px;white-space:nowrap;" onclick="showView(&#39;policy-assign&#39;);">Manage assignment</button>
-              <button id="pd-edit-btn" class="btn-outline" style="font-size:12px;padding:6px 12px;white-space:nowrap;" onclick="document.getElementById(&#39;pe-name&#39;).textContent=document.getElementById(&#39;pd-card-name&#39;).textContent;showView(&#39;policy-edit&#39;);">Edit policy</button>
-              <button class="btn-primary" style="font-size:12px;padding:6px 12px;white-space:nowrap;" onclick="pdRunSimulation();">▶ Run simulation</button>
+              <button class="btn-secondary" onclick="showView(&#39;policy-assign&#39;);">Manage assignment</button>
+              <button id="pd-edit-btn" class="btn-secondary" onclick="document.getElementById(&#39;pe-name&#39;).textContent=document.getElementById(&#39;pd-card-name&#39;).textContent;showView(&#39;policy-edit&#39;);">Edit policy</button>
+              <button class="btn-secondary" onclick="pdRunSimulation();">▶ Run simulation</button>
+              <div style="position:relative;">
+                <button class="btn-primary btn-primary--s" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('pd-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+                <div id="pd-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
+                  <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
+                  <button onclick="pdExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
+                  <button onclick="pdExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+                </div>
+              </div>
             </div>
           </div>
           <!-- Row 2: metadata -->
@@ -10058,7 +10076,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <span id="pd-sim-time" style="font-size:11px;color:var(--text-muted);"></span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
-              <button onclick="pdRunSimulation();" class="btn-outline" style="font-size:12px;padding:5px 12px;">Run again</button>
+              <button onclick="pdRunSimulation();" class="btn-secondary">Run again</button>
               <button onclick="document.getElementById(&#39;pd-simulation&#39;).style.display=&#39;none&#39;;" style="font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;">Close</button>
             </div>
           </div>
@@ -10111,7 +10129,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             Delete policy
           </button>
           <div style="width:1px;height:22px;background:var(--border);margin:0 4px;flex-shrink:0;"></div>
-          <button class="btn-primary" style="font-size:13px;padding:10px 18px;" onclick="showView(&#39;policy-detail&#39;);showToast(&#39;Policy saved&#39;)">Save changes</button>
+          <button class="btn-secondary" onclick="showView(&#39;policy-detail&#39;);showToast(&#39;Policy saved&#39;)">Save changes</button>
+          <button class="btn-primary btn-primary--s" style="white-space:nowrap;" onclick="peRunSimulation(this)">▶ Run simulation</button>
         </div>
       </div>
       <!-- Policy-level tags row -->
@@ -14685,6 +14704,61 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }, 1200);
     }
 
+    function pdExport(kind) {
+      document.getElementById('pd-export-drop').style.display = 'none';
+      var name = document.getElementById('pd-card-name').textContent;
+      openExport(kind, undefined, {
+        scope: 'Compiling policy results for the current scope',
+        meta: name + ' · 4 nodes · latest scan',
+        file: 'guardian-policy-results-2026-07-15'
+      });
+    }
+
+    // Policy Simulation Preview — what this policy would do against the current estate,
+    // shown before the edits are committed. Stays in a modal so editing context is kept.
+    var _PE_SIM = [
+      { node:'MACBOOK-TARAS',  res:'2 failed checks · Antivirus, Screen lock timeout', pass:false },
+      { node:'DEV-MACPRO-03',  res:'1 failed check · Minimum password length',         pass:false },
+      { node:'PROD-SERVER-01', res:'No failed checks',                                  pass:true  },
+      { node:'STAGING-WIN-02', res:'No failed checks',                                  pass:true  }
+    ];
+    function peRunSimulation(btn) {
+      var orig = btn.innerHTML;
+      btn.innerHTML = '⏳ Running…';
+      btn.disabled = true;
+      setTimeout(function() {
+        btn.innerHTML = orig;
+        btn.disabled = false;
+        _peOpenSimModal();
+      }, 1200);
+    }
+    function _peOpenSimModal() {
+      var failed = _PE_SIM.filter(function(r) { return !r.pass; }).length;
+      var rows = _PE_SIM.map(function(r) {
+        return '<div style="display:flex;align-items:center;gap:12px;padding:10px 24px;border-top:1px solid var(--border);">'
+          + '<div style="flex:0 0 150px;font-size:12px;font-weight:600;color:var(--text-default);">' + r.node + '</div>'
+          + '<div style="flex:1;font-size:12px;color:var(--text-sec);">' + r.res + '</div>'
+          + '<span class="bdg bdg--dot ' + (r.pass ? 'bdg--green' : 'bdg--red') + '">' + (r.pass ? 'Pass' : 'Fail') + '</span>'
+          + '</div>';
+      }).join('');
+      openModal({
+        id: 'pe-sim-modal',
+        size: 'lg',
+        title: 'Simulation preview',
+        subtitle: 'What this policy would do against the current estate. Nothing is saved yet.',
+        bodyHtml: '<div style="padding:0 24px;display:flex;align-items:center;gap:8px;">'
+          + '<span class="bdg bdg--gray">' + _PE_SIM.length + ' evaluated</span>'
+          + '<span class="bdg bdg--green">' + (_PE_SIM.length - failed) + ' passed</span>'
+          + '<span class="bdg bdg--red">' + failed + ' failed</span>'
+          + '</div>'
+          + '<div style="margin-top:14px;">' + rows + '</div>',
+        buttons: [
+          { label: 'Keep editing', kind: 'secondary', onClick: function(e, close) { close(); } },
+          { label: 'Save changes', kind: 'primary', onClick: function(e, close) { close(); showView('policy-detail'); showToast('Policy saved'); } }
+        ]
+      });
+    }
+
     var _pdTagMap = {
       'Antivirus real-time protection':        [{n:'Security',bg:'#f1f5f9',c:'#64748b'},{n:'Critical',bg:'#f1f5f9',c:'#64748b'}],
       'Screen lock timeout ≤ 15 min':          [{n:'Config',bg:'#f1f5f9',c:'#64748b'},{n:'Compliance',bg:'#f1f5f9',c:'#64748b'}],
@@ -16270,6 +16344,76 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         ctx = { scope: 'Compiling attention items for the current scope', meta: _rowsVisible('ri-table') + ' items · as of 15 Jul 14:22 · sample data', file: 'guardian-needs-investigation-2026-07-15' };
       }
       openExport(kind, undefined, ctx);
+    }
+
+    // Reports — bulk selection mode
+    var _rptPicked = [];
+    var RPT_TITLES = { compliance:'Compliance', changed:'What changed', baseline:'Baseline deviation', investigation:'Needs investigation' };
+    function reportsBulkStart() {
+      _rptPicked = [];
+      document.getElementById('rpt-grid').classList.add('is-selecting');
+      document.getElementById('rpt-bulk-start').style.display = 'none';
+      document.getElementById('rpt-selall-wrap').style.display = 'flex';
+      document.getElementById('rpt-sel-count').style.display = 'block';
+      document.getElementById('rpt-bulk-cancel').style.display = 'flex';
+      document.getElementById('rpt-bulk-exp-wrap').style.display = 'block';
+      _rptSyncSelection();
+    }
+    function reportsBulkCancel() {
+      _rptPicked = [];
+      document.getElementById('rpt-grid').classList.remove('is-selecting');
+      document.getElementById('rpt-bulk-start').style.display = 'flex';
+      document.getElementById('rpt-selall-wrap').style.display = 'none';
+      document.getElementById('rpt-sel-count').style.display = 'none';
+      document.getElementById('rpt-bulk-cancel').style.display = 'none';
+      document.getElementById('rpt-bulk-exp-wrap').style.display = 'none';
+      document.getElementById('rpt-bulk-drop').style.display = 'none';
+      _rptSyncSelection();
+    }
+    function reportsCardClick(e, key) {
+      if (!document.getElementById('rpt-grid').classList.contains('is-selecting')) return;
+      e.preventDefault();
+      reportsPick(key, _rptPicked.indexOf(key) === -1);
+    }
+    function reportsPick(key, on) {
+      var i = _rptPicked.indexOf(key);
+      if (on && i === -1) _rptPicked.push(key);
+      if (!on && i !== -1) _rptPicked.splice(i, 1);
+      _rptSyncSelection();
+    }
+    function reportsSelectAll(on) {
+      _rptPicked = on ? Object.keys(RPT_TITLES) : [];
+      _rptSyncSelection();
+    }
+    function _rptSyncSelection() {
+      var n = _rptPicked.length;
+      Array.prototype.forEach.call(document.querySelectorAll('#rpt-grid .rpt-card'), function(card) {
+        var on = _rptPicked.indexOf(card.dataset.report) !== -1;
+        card.classList.toggle('is-picked', on);
+        var box = card.querySelector('.rpt-card-sel');
+        if (box && box.checked !== on) box.checked = on;
+      });
+      var all = document.getElementById('rpt-selall');
+      if (all) { all.checked = n === 4; all.indeterminate = n > 0 && n < 4; }
+      document.getElementById('rpt-sel-count').textContent = n + ' selected';
+      document.getElementById('rpt-bulk-n').textContent = n;
+      document.getElementById('rpt-bulk-export').disabled = n === 0;
+      if (n === 0) document.getElementById('rpt-bulk-drop').style.display = 'none';
+    }
+    function reportsBulkMenu() {
+      var d = document.getElementById('rpt-bulk-drop');
+      d.style.display = d.style.display === 'block' ? 'none' : 'block';
+    }
+    function reportsBulkExport(kind) {
+      document.getElementById('rpt-bulk-drop').style.display = 'none';
+      var names = _rptPicked.map(function(k) { return RPT_TITLES[k]; }).join(' · ');
+      var n = _rptPicked.length;
+      openExport(kind, undefined, {
+        scope: 'Compiling ' + n + ' report' + (n === 1 ? '' : 's') + ' for the current scope',
+        meta: names,
+        file: 'guardian-reports-' + n + '-2026-07-15'
+      });
+      reportsBulkCancel();
     }
 
     function pcFinishCreate() {
@@ -19008,19 +19152,38 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     <!-- REPORTS — on-demand compliance report (item 9): benchmark → policies → checks → score -->
     <!-- ═══ REPORTS LIST — report-type catalogue ═══ -->
     <div class="view" id="v-reports-list" style="display: none;">
-      <div class="dash-main" style="max-width:100%;display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 140px);">
-        <div style="max-width:820px;width:100%;margin:0 auto;transform:translateY(-200px);">
-        <div style="margin-bottom:16px;">
-          <div class="page-title">Reports</div>
-          <div class="page-sub" style="color:var(--text-muted);margin-top:4px;">Generate and export compliance &amp; drift reports for your estate</div>
+      <div class="dash-main" style="max-width:100%;display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 140px);padding-bottom:200px;">
+        <div style="max-width:820px;width:100%;margin:0 auto;">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px;">
+          <div>
+            <div class="page-title">Reports</div>
+            <div class="page-sub" style="color:var(--text-muted);margin-top:4px;">Generate and export compliance &amp; drift reports for your estate</div>
+          </div>
+          <div class="rpt-bulk-bar">
+            <button id="rpt-bulk-start" class="btn-secondary" onclick="reportsBulkStart()">Bulk export</button>
+            <label id="rpt-selall-wrap" class="rpt-selall" style="display:none;"><input type="checkbox" id="rpt-selall" onchange="reportsSelectAll(this.checked)">Select all</label>
+            <span id="rpt-sel-count" class="rpt-bulk-count" style="display:none;">0 selected</span>
+            <button id="rpt-bulk-cancel" class="btn-secondary" style="display:none;" onclick="reportsBulkCancel()">Cancel</button>
+            <div id="rpt-bulk-exp-wrap" style="display:none;position:relative;">
+              <button id="rpt-bulk-export" class="btn-primary btn-primary--s" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;user-select:none;" disabled onclick="reportsBulkMenu()"><span>↓ Export Selected (<span id="rpt-bulk-n">0</span>)</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+              <div id="rpt-bulk-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
+                <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
+                <button onclick="reportsBulkExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
+                <button onclick="reportsBulkExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="rpt-grid">
+        <div class="rpt-grid" id="rpt-grid">
           <!-- Compliance -->
-          <div class="rpt-card">
+          <div class="rpt-card" data-report="compliance" onclick="reportsCardClick(event,'compliance')">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" class="rpt-card-sel" onclick="event.stopPropagation()" onchange="reportsPick('compliance',this.checked)">
               <div style="width:42px;height:42px;border-radius:11px;background:rgba(0,175,115,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+              </div>
               </div>
               <span class="rpt-badge avail">Available</span>
             </div>
@@ -19037,10 +19200,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- What changed -->
-          <div class="rpt-card">
+          <div class="rpt-card" data-report="changed" onclick="reportsCardClick(event,'changed')">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" class="rpt-card-sel" onclick="event.stopPropagation()" onchange="reportsPick('changed',this.checked)">
               <div style="width:42px;height:42px;border-radius:11px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+              </div>
               </div>
               <span class="rpt-badge preview">Preview</span>
             </div>
@@ -19057,10 +19223,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- Baseline deviation -->
-          <div class="rpt-card">
+          <div class="rpt-card" data-report="baseline" onclick="reportsCardClick(event,'baseline')">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" class="rpt-card-sel" onclick="event.stopPropagation()" onchange="reportsPick('baseline',this.checked)">
               <div style="width:42px;height:42px;border-radius:11px;background:rgba(217,119,6,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              </div>
               </div>
               <span class="rpt-badge preview">Preview</span>
             </div>
@@ -19077,10 +19246,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- Needs investigation -->
-          <div class="rpt-card">
+          <div class="rpt-card" data-report="investigation" onclick="reportsCardClick(event,'investigation')">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" class="rpt-card-sel" onclick="event.stopPropagation()" onchange="reportsPick('investigation',this.checked)">
               <div style="width:42px;height:42px;border-radius:11px;background:rgba(251,60,68,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
               </div>
               <span class="rpt-badge preview">Preview</span>
             </div>
