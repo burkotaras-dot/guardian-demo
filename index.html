@@ -4095,7 +4095,9 @@ body.dark .gm-aws-inv-tag.is-active { background:rgba(16,185,129,0.15); color:#3
 /* 34 (шапка) + 6×49 (рядки) = висота слота з Figma; решта рядків скролиться, оболонка не росте. */
 .gm-aws-inv-table { margin-top:16px; border-top:1px solid var(--border); max-height:328px; overflow-y:auto; }
 .gm-aws-inv-row--head { position:sticky; top:0; z-index:1; }
-.gm-aws-inv-row { display:grid; grid-template-columns:250px 100px 100px minmax(0,1fr); }
+/* Гнучка — Resource; решта фіксовані, інакше шапка й тіло (окремі гріди) порахують
+   max-content по-різному й розʼїдуться. Status 96px = найширший бейдж EXCLUDED (87) + запас. */
+.gm-aws-inv-row { display:grid; grid-template-columns:minmax(0,1fr) 100px 100px 96px; }
 .gm-aws-inv-row > div {
   display:flex; align-items:center; box-sizing:border-box;
   padding:10px 8px; border-bottom:1px solid var(--border);
