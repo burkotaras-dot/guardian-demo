@@ -5415,9 +5415,19 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
 #cmdb-modal .cmdb-foot-note { font-size:12px; color:var(--text-sec); white-space:nowrap; }
 /* Canonical body slot: no horizontal padding — each content block takes its own 0 24px. */
 #cmdb-modal .gm-body { padding:20px 0 10px; }
-#cmdb-modal .cmdb-section-title { font-size:13px; font-weight:700; color:var(--text-default); margin-bottom:16px; }
+#cmdb-modal .cmdb-section-title { font-size:14px; font-weight:700; letter-spacing:-0.2px; color:var(--text-default); }
+/* Крок 1 «Connect» — Figma 3330:27851 (light) / 3330:27970 (dark). Блоки на всю ширину слота,
+   вертикальний ритм 20px, горизонтальний паддінг бере кожен блок сам (gm-body його не має). */
+#cmdb-modal .cmdb-form { display:flex; flex-direction:column; gap:20px; }
+#cmdb-modal .cmdb-sec { padding:0 24px; }
+#cmdb-modal .cmdb-sec .form-label { margin-bottom:6px; }
+#cmdb-modal .cmdb-hint { padding-top:6px; font:400 11px/normal 'DM Sans',sans-serif; color:var(--text-muted); }
+/* У темній --text-muted = #64748B, а макет тримає підказку на #94A3B8 — беремо значення макета. */
+body.dark #cmdb-modal .cmdb-hint { color:#94A3B8; }
+#cmdb-modal .cmdb-auth-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 /* Neutral info strip — same surface as the AWS-connect node-sync banner, never a colour tint. */
-#cmdb-modal .cmdb-note { background:var(--bg-subtle); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 14px; }
+#cmdb-modal .cmdb-note { background:#F8FAFC; border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 14px; }
+body.dark #cmdb-modal .cmdb-note { background:#123033; }
 #cmdb-modal .cmdb-note-title { font-size:11px; font-weight:700; color:var(--text-default); margin-bottom:6px; }
 #cmdb-modal .cmdb-note-tags { display:flex; flex-wrap:wrap; gap:6px; }
 /* Credential pickers are custom selects, never a native <select> popup (DS §6.1). */
@@ -21283,7 +21293,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
          CMDB IMPORT — overlay modal (canonical gm-* shell)
     ═══════════════════════════════════════════════════ -->
     <div class="gm-overlay" id="cmdb-modal" style="display:none;">
-     <div class="gm-card gm-xl" role="dialog" aria-modal="true" style="display:flex;flex-direction:column;max-height:88vh;">
+     <div class="gm-card gm-lg" role="dialog" aria-modal="true" style="display:flex;flex-direction:column;max-height:88vh;">
       <div class="gm-head">
         <div class="gm-titles">
           <div class="gm-title" id="cmdb-modal-title">Connect to ServiceNow CMDB</div>
@@ -21300,36 +21310,38 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
       <!-- STEP 1 · Connect -->
       <div class="cmdbm-panel" id="v-cmdb-connect">
-      <div style="padding:0 24px;display:flex;flex-direction:column;align-items:center;">
-        <div style="max-width:520px;width:100%;">
-          <div>
-            <div class="cmdb-section-title">ServiceNow Instance</div>
-            <div class="form-group" style="margin-bottom:14px;">
-              <label class="form-label">Instance URL</label>
-              <input class="form-input" type="text" value="https://company.service-now.com" style="font-size:12px;">
-            </div>
-            <div class="gm-radio-group" style="display:grid;grid-template-columns:1fr 1fr;margin-bottom:16px;">
-              <label class="gm-radio-card">
-                <input type="radio" name="cmdb-auth" checked="">
-                <span class="gm-radio-title">OAuth 2.0</span>
-              </label>
-              <label class="gm-radio-card">
-                <input type="radio" name="cmdb-auth">
-                <span class="gm-radio-title">Basic Auth</span>
-              </label>
-            </div>
-            <div class="form-group" style="margin-bottom:14px;">
-              <label class="form-label">Client ID</label>
-              <input class="form-input" type="text" placeholder="Enter client ID" style="font-size:12px;">
-            </div>
-            <div class="form-group" style="margin-bottom:16px;">
-              <label class="form-label">Client Secret</label>
-              <input class="form-input" type="password" placeholder="Enter client secret" style="font-size:12px;">
-            </div>
-            <div class="cmdb-note">
-              <div class="cmdb-note-title">Required permissions</div>
-              <div class="cmdb-note-tags"><span class="code-tag">cmdb_ci.read</span><span class="code-tag">sys_user.read</span></div>
-            </div>
+      <div class="cmdb-form">
+        <div class="cmdb-sec"><div class="cmdb-section-title">ServiceNow Instance</div></div>
+        <div class="cmdb-sec">
+          <label class="form-label">Instance URL</label>
+          <input class="form-input" type="text" value="https://company.service-now.com">
+        </div>
+        <div class="cmdb-sec">
+          <div class="gm-radio-group cmdb-auth-row">
+            <label class="gm-radio-card gm-radio-card--slim">
+              <input type="radio" name="cmdb-auth" checked="">
+              <span class="gm-radio-title">OAuth 2.0</span>
+            </label>
+            <label class="gm-radio-card gm-radio-card--slim">
+              <input type="radio" name="cmdb-auth">
+              <span class="gm-radio-title">Basic Auth</span>
+            </label>
+          </div>
+        </div>
+        <div class="cmdb-sec">
+          <label class="form-label">Client ID</label>
+          <input class="form-input" type="text" placeholder="Enter client ID">
+          <div class="cmdb-hint">Credentials are stored in the Guardian Credential Vault and reused by any capability on this integration.</div>
+        </div>
+        <div class="cmdb-sec">
+          <label class="form-label">Client Secret</label>
+          <input class="form-input" type="password" placeholder="Enter client secret">
+          <div class="cmdb-hint">Credentials are stored in the Guardian Credential Vault and reused by any capability on this integration.</div>
+        </div>
+        <div class="cmdb-sec">
+          <div class="cmdb-note">
+            <div class="cmdb-note-title">Required permissions</div>
+            <div class="cmdb-note-tags"><span class="code-tag">cmdb_ci.read</span><span class="code-tag">sys_user.read</span></div>
           </div>
         </div>
       </div>
