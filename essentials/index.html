@@ -4245,6 +4245,28 @@ body.dark .gm-sf-banner { background:rgba(255,255,255,.05); }
 .gm-sf-txt b { display:block; font:600 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
 .gm-sf-txt span { display:block; padding-top:2px; font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-muted); }
 
+/* ── AWS «Compliance Policy Results» — модальна версія повносторінкового v-j3-results ── */
+/* Банер злиття: нейтральна поверхня, кольоровий лише гліф, що називає стан (як .gm-sf-banner). */
+.gm-res-note { display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:10px;
+  background:#F8FAFC; border:1px solid var(--border); }
+body.dark .gm-res-note { background:rgba(255,255,255,.05); }
+.gm-res-note > svg { flex:0 0 16px; }
+.gm-res-note > b { flex:1 1 auto; min-width:0; font:600 12px/16px 'DM Sans',sans-serif; color:var(--text-default); }
+.gm-res-brk { padding:18px 20px; border-radius:14px; border:1px solid var(--border); background:#F8FAFC; }
+body.dark .gm-res-brk { background:#123033; }
+.gm-res-bar { display:flex; height:8px; border-radius:4px; overflow:hidden; gap:2px; }
+.gm-res-bar i { display:block; }
+.gm-res-legend { display:flex; flex-wrap:wrap; gap:10px 22px; padding-top:14px; }
+.gm-res-leg { display:inline-flex; align-items:center; gap:8px;
+  font:400 12.5px/normal 'DM Sans',sans-serif; color:var(--text-sec); }
+.gm-res-leg i { flex:0 0 7px; width:7px; height:7px; border-radius:3.5px; }
+.gm-res-leg b { font:700 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
+/* Кольори severity — канонічний набір крапок (.pe-sev-dot), однаковий у обох темах. */
+.gm-res-bar i.is-crit, .gm-res-leg.is-crit i { background:#FB3C44; }
+.gm-res-bar i.is-high, .gm-res-leg.is-high i { background:#F97316; }
+.gm-res-bar i.is-med,  .gm-res-leg.is-med  i { background:#F59E0B; }
+.gm-res-bar i.is-low,  .gm-res-leg.is-low  i { background:#3B82F6; }
+
 /* ── AWS «Configure AWS Integration» — Figma 3302:19312 (light) / 3302:19549 (dark).
    Крок 1 ланцюга AWS у канонічній 600px оболонці. .gm-body тут без горизонтального
    паддінгу, тому кожен блок бере власний padding:0 24px через .awsc-sec. */
@@ -7181,7 +7203,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div><span style="font-size:12px;font-weight:600;color:#FB3C44;">4 Critical</span><div style="font-size:11px;color:var(--text-sec);">13 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
-              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EC2: web-prod-02 -->
             <div class="node-row" data-name="web-prod-02 EC2 Amazon Linux us-east-1" data-type="aws" data-group="AWS Web Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
@@ -7199,7 +7221,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">7 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
-              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EC2: api-server-01 -->
             <div class="node-row" data-name="api-server-01 EC2 Ubuntu eu-west-1" data-type="aws" data-group="AWS API Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
@@ -7217,7 +7239,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div><span style="font-size:12px;font-weight:600;color:#FB3C44;">6 Critical</span><div style="font-size:11px;color:var(--text-sec);">20 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
-              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Fix now</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Fix now</button></div>
             </div>
             <!-- ECS -->
             <div class="node-row" data-name="ecs-cluster-prod ECS us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
@@ -7235,7 +7257,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">11 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
-              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EKS -->
             <div class="node-row" data-name="eks-prod-cluster EKS Kubernetes us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
@@ -7253,12 +7275,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">4 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
               <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
-              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();go(&#39;j3-results&#39;)">Results →</button></div>
+              <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- collapsed note for remaining 7 nodes -->
             <div style="padding:12px 20px;border-top:1px solid var(--border);background:var(--bg-canvas);text-align:center;">
               <span style="font-size:11px;color:var(--text-sec);">+ 7 more AWS nodes scanned — </span>
-              <span style="font-size:11px;color:var(--green2);font-weight:600;cursor:pointer;" onclick="go(&#39;j3-results&#39;)">View full results →</span>
+              <span style="font-size:11px;color:var(--green2);font-weight:600;cursor:pointer;" onclick="openAwsResultsModal()">View full results →</span>
             </div>
           </div>
 
@@ -7876,7 +7898,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:11px;color:var(--text-sec);">CIS compliance: 71/100 · 18 critical issues · Account 123456789012</div>
             </div>
           </div>
-          <button class="link-cta" style="flex-shrink:0;" onclick="go(&#39;j3-results&#39;)"><span class="lc-txt">View results</span> <span class="arr">→</span></button>
+          <button class="link-cta" style="flex-shrink:0;" onclick="openAwsResultsModal(true)"><span class="lc-txt">View results</span> <span class="arr">→</span></button>
         </div>
         <!-- ServiceNow Integration card — Connect state (hidden; entry point is Changes tab) -->
         <div id="sn-connect-card" style="display:none;background:var(--intg-sn-bg);border:1px solid var(--intg-sn-bd);border-radius:12px;padding:18px 22px;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;">
@@ -19054,7 +19076,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
           <button class="link-cta" onclick="showToast(&#39;Contacting support…&#39;)"><span class="lc-txt">Contact support</span> <span class="arr">→</span></button>
           <button class="btn-outline" onclick="go(&#39;j3-scanning&#39;)">Retry failed nodes →</button>
-          <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="go(&#39;j3-results&#39;)">View partial results →</button>
+          <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="openAwsResultsModal()">View partial results →</button>
         </div>
       </div>
     </div>
@@ -22550,21 +22572,15 @@ function nodesResetFilters() {
   setNodeFilter('all');
 }
 
-// AWS "View Details" (Integrations) reuses the j3-results view as a READ-ONLY
-// detail page — no wizard chrome, Back returns to Integrations (not the onboarding steps).
-var _awsDetailMode = false;
-function viewAwsDetails() { _awsDetailMode = true; go('j3-results'); }
-function j3ResultsBack() {
-  if (_awsDetailMode) { _awsDetailMode = false; showView('settings-integrations'); }
-  else { go('j3-scan-complete'); }
-}
+// AWS "View Details" (Integrations) відкриває канонічну модалку результатів поверх сторінки —
+// Back просто закриває оверлей, тож користувач лишається в Integrations.
+function viewAwsDetails() { openAwsResultsModal(true); }
+function j3ResultsBack() { go('j3-scan-complete'); }
 function go(key) {
   if (key && key.indexOf('cmdb-') === 0) { cmdbShowPanel(key); return; }
   if (key && key.indexOf('csv-') === 0) { csvShowPanel(key); return; }
   hideAuth();
-  if (key !== 'j3-results') _awsDetailMode = false;
-  const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key)
-    && !(key === 'j3-results' && _awsDetailMode);
+  const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key);
   const isJ4Onboarding = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(key);
   const isJ1Onboarding = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added'].includes(key);
   const isCmSetup = key === 's-cm-setup';
@@ -22741,7 +22757,7 @@ function showView(name) {
   if (!_navigatingBack && name !== _currentView) {
     if (_viewHistory[_viewHistory.length - 1] !== _currentView) _viewHistory.push(_currentView);
   }
-  if (typeof _naSyncReturnBar === 'function') _naSyncReturnBar(name);
+  if (typeof _returnBarSync === 'function') _returnBarSync(name);
   _currentView = name;
 }
 
@@ -25850,39 +25866,45 @@ function agentlessModalAddNode() {
   _buildAddedNode();
   openNodeAddedModal();
 }
-var _naReturnActive = false;
-function naOpenAside(view) {
-  _naReturnActive = true;
-  closeModal('agentless-setup-overlay');
-  showView(view);
-}
-function _naReturnBar() {
-  var bar = document.getElementById('na-return-bar');
-  if (bar) return bar;
-  bar = document.createElement('div');
-  bar.id = 'na-return-bar';
-  bar.className = 'na-return-bar';
-  bar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
-    + '<span class="na-return-txt">Node added — finish setting it up</span>'
-    + '<button type="button" class="na-return-btn" onclick="naResumeWizard()">Back to setup</button>'
-    + '<button type="button" class="na-return-x" aria-label="Dismiss" onclick="naDismissReturn()">×</button>';
-  document.body.appendChild(bar);
-  return bar;
-}
-function naResumeWizard() { openNodeAddedModal(); }
-function naDismissReturn() {
-  _naReturnActive = false;
+// ── Нижня смуга повернення до вікна, з якого пішли вбік ──────────────────────────
+// Один компонент на застосунок (CSS .na-return-bar, index.html:3614). Спочатку жив лише
+// в Add Manually; тепер його конфігурує будь-який флоу: текст, підпис кнопки, чим відновити
+// і на яких сторінках смуга тримається. На інших сторінках вона знімається сама.
+var _returnBarCfg = null;
+function returnBarShow(cfg) { _returnBarCfg = cfg; }
+function returnBarResume() { if (_returnBarCfg) _returnBarCfg.resume(); }
+function returnBarDismiss() {
+  _returnBarCfg = null;
   var bar = document.getElementById('na-return-bar');
   if (bar) bar.classList.remove('is-visible');
 }
-function _naSyncReturnBar(name) {
-  if (_naReturnActive && (name === 'scan-schedule' || name === 'node-detail')) {
-    _naReturnBar().classList.add('is-visible');
-  } else {
-    _naReturnActive = false;
-    var bar = document.getElementById('na-return-bar');
-    if (bar) bar.classList.remove('is-visible');
+function _returnBarSync(name) {
+  if (!_returnBarCfg || _returnBarCfg.views.indexOf(name) < 0) { returnBarDismiss(); return; }
+  var bar = document.getElementById('na-return-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'na-return-bar';
+    bar.className = 'na-return-bar';
+    document.body.appendChild(bar);
   }
+  bar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+    + '<span class="na-return-txt">' + _returnBarCfg.text + '</span>'
+    + '<button type="button" class="na-return-btn" onclick="returnBarResume()">' + _returnBarCfg.label + '</button>'
+    + '<button type="button" class="na-return-x" aria-label="Dismiss" onclick="returnBarDismiss()">×</button>';
+  bar.classList.add('is-visible');
+}
+function naOpenAside(view) {
+  closeModal('agentless-setup-overlay');
+  returnBarShow({ text:'Node added — finish setting it up', label:'Back to setup',
+    resume:openNodeAddedModal, views:['scan-schedule','node-detail'] });
+  showView(view);
+}
+// Вихід убік із результатів AWS-скану: Scans і Changes не мають власного Back до модалки.
+function awsResultsAside(view) {
+  closeModal('aws-connect-overlay');
+  returnBarShow({ text:'AWS scan results still open', label:'Back to results',
+    resume:function(){ openAwsResultsModal(true); }, views:['results','changes'] });
+  showView(view);
 }
 function openNodeAddedModal() {
   var n = _addedNode || { name:'This node', host:'—', port:'—', proto:'—', os:'—', cm:'—', cred:'—' };
@@ -26438,6 +26460,71 @@ function openAwsScanFailedModal() {
       {label:'View partial results',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); goToAllDevicesFromJ3(); }}
     ],
     afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',2); }
+  });
+}
+// Результати скану — та сама канонічна оболонка, що Scan Complete / Scan Failed,
+// замість повносторінкового v-j3-results. readOnly = вхід поза майстром («View Details»,
+// картка AWS Connected): Back просто закриває оверлей і повертає сторінку, з якої відкрили.
+function openAwsResultsModal(readOnly) {
+  var sumRow = function(mod, label, val){
+    return '<div class="gm-scan-sum-row gm-scan-sum-row--' + mod + '"><span><i></i>' + label + '</span><b>' + val + '</b></div>';
+  };
+  var leg = function(mod, n, label){
+    return '<div class="gm-res-leg is-' + mod + '"><i></i><b>' + n + '</b>' + label + '</div>';
+  };
+  // Правило рядка: форму має рівно один обʼєкт — пігулка severity. Кількість вузлів
+  // лишається тихою метаданою, без кольорового акценту (на повній сторінці була червона/бурштинова).
+  var chk = function(name, nodes, sev, color){
+    return '<div class="gm-sf-row">'
+      + '<div class="gm-sf-txt"><b>' + name + '</b><span>' + nodes + ' nodes affected</span></div>'
+      + '<span class="bdg bdg--dot bdg--' + color + '">' + sev + '</span>'
+      + '</div>';
+  };
+  // padding-bottom:8px + .gm-body 10px = 18px до лінії футера
+  var body = '<div style="display:flex;flex-direction:column;gap:16px;padding-bottom:8px;">'
+    + '<div class="gm-scan-run-sec"><div class="gm-res-note">'
+    +   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bdg-green-txt)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+    +   '<b>These results have been merged into your main Scans.</b>'
+    +   '<button type="button" class="link-cta" style="flex-shrink:0;" onclick="awsResultsAside(\'results\')"><span class="lc-txt">View in Scans</span> <span class="arr">→</span></button>'
+    + '</div></div>'
+    + '<div class="gm-scan-run-sec"><div class="gm-scan-sum gm-scan-sum--warn">'
+    +   '<div class="gm-scan-sum-score"><b>71</b><span>/ 100 score</span></div>'
+    +   '<div class="gm-scan-sum-div"></div>'
+    +   '<div class="gm-scan-sum-rows">'
+    +     sumRow('amber','vs industry avg','-7%')
+    +     sumRow('blue','Nodes affected','8 of 12')
+    +     sumRow('green','Total findings','85')
+    +   '</div>'
+    + '</div></div>'
+    + '<div class="gm-scan-run-sec"><div class="gm-sf-h">Findings Breakdown</div><div class="gm-res-brk">'
+    +   '<div class="gm-res-bar"><i class="is-crit" style="flex:18;"></i><i class="is-high" style="flex:24;"></i><i class="is-med" style="flex:31;"></i><i class="is-low" style="flex:12;"></i></div>'
+    +   '<div class="gm-res-legend">'
+    +     leg('crit','18','Critical') + leg('high','24','High') + leg('med','31','Medium') + leg('low','12','Low')
+    +   '</div>'
+    + '</div></div>'
+    + '<div class="gm-scan-run-sec"><div class="gm-sf-h">Top Failing Checks</div><div class="gm-sf-list">'
+    +   chk('Ensure root account MFA is enabled','8','Critical','red')
+    +   chk('Disable public S3 bucket access','5','Critical','red')
+    +   chk('Encrypt EBS volumes at rest','11','High','orange')
+    +   chk('Restrict SSH access to known IPs','7','High','orange')
+    + '</div>'
+    + '<button type="button" class="link-cta" style="margin-top:14px;" onclick="awsResultsAside(\'changes\')"><span class="lc-txt">Change Reconciliation (J2)</span> <span class="arr">→</span></button>'
+    + '</div>'
+    + '</div>';
+  openModal({
+    id:'aws-connect-overlay', size:'lg', title:'Compliance Policy Results — AWS',
+    subtitle:'12 nodes · Level 1 · Scanned just now',
+    steps:[{label:'Connect AWS'},{label:'Node Discovery'},{label:'Node Inventory'}],
+    bodyHtml:body,
+    backButton:{label:'Back',onClick:function(){
+      if (readOnly) { closeModal('aws-connect-overlay'); return; }
+      openAwsScanCompleteModal();
+    }},
+    buttons:[
+      {label:'Export report (PDF)',kind:'secondary',onClick:function(){ showToast('Export coming soon…'); }},
+      {label:'View All Nodes',kind:'primary',onClick:function(){ closeModal('aws-connect-overlay'); goToAllDevicesFromJ3(); }}
+    ],
+    afterMount:function(ov){ ov.querySelector('.gm-card').classList.add('gm-agentless-setup','gm-aws-connect'); gmGoStep('aws-connect-overlay',3); }
   });
 }
 function openAwsConnectModal() {
