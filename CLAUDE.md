@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **single-file HTML prototype** for Guardian — a security compliance/drift-detection product. All CSS, HTML, and JavaScript live in `index.html` (~12 000 lines). There are no build steps, no package managers, and no dependencies beyond Google Fonts.
+This is a **single-file HTML prototype** for Guardian — a security compliance/drift-detection product. All CSS, HTML, and JavaScript live in `index.html` (~27 000 lines). There are no build steps, no package managers, and no dependencies beyond Google Fonts.
+
+The canonical icon set lives in the repository at **`Assets/icons/`** (`Property 1={Name}.svg` —
+Right/Left/Up/Down/Plus/Loading, plus `new/` and `then/` action icons). Use these for any arrow,
+plus or spinner; inline them with `stroke="currentColor"` so they follow the theme.
 
 ## Preview & Deploy
 
@@ -33,7 +37,9 @@ has leaked into it.
 curl -s https://burkotaras-dot.github.io/guardian-demo/ | grep -oE 'id="sb-[a-z-]+"'
 ```
 
-Clean-root reference blob = **`4e5a9cf3`** (14 211 lines), commit `15ed43d`.
+Clean-root reference blob = **`4e5a9cf3`** (14 211 lines). Verify the blob, not a commit —
+`git rev-parse main:index.html` must print `4e5a9cf3…`. It was last restored by `15ed43d`, which
+took its content from `1985c3b`; both hashes float around in notes, the blob is the only stable check.
 
 **Deploy an `essentials` change — always through a worktree**, because the `essentials` working tree
 usually holds uncommitted WIP that `git checkout main` would drag onto prod:
@@ -47,8 +53,11 @@ git checkout public && git reset --hard main && git push --force-with-lease orig
 cd - && git worktree remove /tmp/gd-deploy --force
 ```
 
-- `main` push triggers the GitHub Actions (`deploy.yml`) Pages deploy; **`public` is the served branch**.
-- `public` diverged from history, so it needs `--force-with-lease`; `main` fast-forwards normally.
+- **There is no CI.** `.github/workflows/deploy.yml` exists on `essentials` only, is not on `main`,
+  and never runs. GitHub Pages serves the **`public` branch directly** — the `push origin public`
+  line above *is* the deploy. Do not wait for an Actions run and do not go looking for a workflow.
+- `main` is a staging mirror, not a deploy source; it fast-forwards normally. `public` diverged from
+  history, so it needs `--force-with-lease`.
 - **Verify against the live URL, not the branch** — `curl -s <url> | wc -l` plus a marker `grep`.
   A correct git blob does not prove the page is serving it.
 - **Before reverting the root, inspect the target's contents.** "The state before my mistake" is not
@@ -202,28 +211,42 @@ Native `<select>` elements are replaced with `.pe-sev-btn` divs. Popup: `#pe-sev
 Triggered from Managed Nodes when 3+ nodes are selected (toolbar button `#node-action-consensus`). Calls `applySelectionConsensus(selectedNames)` after navigating to `setNodesTab('peer')`. Outlier rows are identified by structure: exactly 3 div children, badges in the 3rd cell — do NOT filter by `parentElement === card`.
 
 
-## Команди перевірки (запускати після змін)
-- `npm run typecheck` — TypeScript перевірка
-- `npm run test` — всі тести
-- `npm run lint` — ESLint
-## Правило
-Перед будь-яким комітом всі три команди мають пройти успішно.
-Якщо є помилки — виправ їх перш ніж комітити.
-Після цього CC сам запускає перевірки — без твого нагадування.
-Коміти
-Базовий сценарій
-> Закомітуй зміни. Використовуй Conventional Commits.
-CC робить: git status → git diff → формує повідомлення → git add → git commit.
-Результат: feat(auth): add JWT refresh token rotation — не "fix stuff".
-Атомарні коміти
-> Зроби два окремих коміти:
-  1. Зміни в хуку useProductFilters
-  2. Зміни в компоненті ProductList
-  Кожен коміт має проходити typecheck самостійно.
-CC стейджить по частинах і перевіряє після кожного. Кожен коміт компілюється — не все разом в кінці.
-Швидкий коміт без сесії
-git diff --staged | claude -p "Write a Conventional Commits message for these changes"
-CLAUDE.md — конвенція
+## Перевірка змін
+
+**Тестів, лінтера і typecheck у проєкті НЕМАЄ** — немає `package.json`, немає збірки.
+Не пропонуй `npm run typecheck / test / lint`: ці команди не існують і ніколи не існували.
+
+Замість них єдина перевірка — **виміряти результат у прев'ю**:
+1. `preview_list` → знайти сервер `guardian-demo`, `preview_eval` → `window.location.reload()`.
+2. Застосунок стартує на екрані логіну — спершу клікнути посилання `Skip to prototype`,
+   інакше `showView()` і модалки не працюють.
+3. Дійти до зміненого екрана **тим самим шляхом, що й користувач** (клікаючи), а не лише
+   викликом функції.
+4. Зняти реальні значення через `getComputedStyle` / `getBoundingClientRect` — у **світлій і
+   темній** темі (`document.body.classList.add('dark'); _syncInlineTheme(true)`).
+5. `preview_console_logs` — має бути порожньо.
+6. Показати користувачу **виміряні числа й скріншоти**, а не «має працювати».
+
+⚠️ `getComputedStyle` у тому ж `preview_eval`, де перемикається тема, віддає **застарілі**
+значення — читати наступним викликом.
+
 ## Git
+
 Commit messages — Conventional Commits: feat/fix/chore/refactor/test/docs.
 Без крапки в кінці заголовку. Тіло коміту — якщо зміна не очевидна.
+
+**Ніколи не комітити й не деплоїти без прямого прохання користувача.**
+
+## Працюємо вдвох — один файл на двох
+
+У проєкті двоє людей, обидва через Claude Code, обидва мають право запису.
+Весь прототип — **один файл на 27 000 рядків**, тому git не зможе автоматично злити паралельні
+правки.
+
+- **Перед стартом роботи завжди `git pull`.** Якщо `git status` показує, що гілка позаду
+  `origin/essentials` — спершу підтягнути, тільки потім правити.
+- **Після коміту одразу `git push origin essentials`.** Незапушена робота невидима для другого
+  і майже гарантує конфлікт.
+- Робоча гілка одна — **`essentials`**. Нових гілок не створювати без прохання.
+- Якщо все ж виник конфлікт у `index.html` — **не вирішувати його самостійно й не робити
+  `--force`**. Показати користувачу, які саме блоки розійшлись, і спитати, чию версію лишити.
