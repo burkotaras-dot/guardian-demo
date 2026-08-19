@@ -5434,7 +5434,7 @@ body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E1
 body.dark #cmdb-modal .cmdb-hint { color:#94A3B8; }
 #cmdb-modal .cmdb-auth-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 /* Neutral info strip — same surface as the AWS-connect node-sync banner, never a colour tint. */
-#cmdb-modal .cmdb-note { background:#F8FAFC; border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 14px; }
+#cmdb-modal .cmdb-note { background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:12px 16px; }
 body.dark #cmdb-modal .cmdb-note { background:#123033; }
 #cmdb-modal .cmdb-note-title { font-size:11px; font-weight:700; color:var(--text-default); margin-bottom:6px; }
 #cmdb-modal .cmdb-note-tags { display:flex; flex-wrap:wrap; gap:6px; }
@@ -5471,6 +5471,19 @@ body.dark #cmdb-modal .cmdb-cls-head > div { background:#063135; }
 #cmdb-modal .csel-wrap, #cmdb-modal .csel-btn { display:flex; width:100%; box-sizing:border-box; }
 #cmdb-modal .csel-btn { padding:10px 28px 10px 14px; font-size:13px; font-weight:400; border-radius:var(--radius-md); background:var(--bg-subtle); }
 body.dark #cmdb-modal .csel-btn { background:rgba(255,255,255,0.05) !important; border-color:rgba(255,255,255,0.2) !important; color:var(--p-neutral-50); }
+/* Крок 3 «Connection & credentials» — Figma 3332:36414 (light 3332:36415 / dark 3332:36676).
+   Слот без гор. падингу: контент бере .cmdb-sec, а розділювачі груп ідуть на всю ширину вікна. */
+#v-cmdb-credentials { display:flex; flex-direction:column; gap:20px; }
+#v-cmdb-credentials .cmdbc-grp { display:flex; flex-direction:column; gap:8px; }
+#v-cmdb-credentials .cmdbc-grp-head { border-top:1px solid var(--border); padding:18px 24px 0; }
+#v-cmdb-credentials .cmdbc-ico { width:30px; height:30px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+#v-cmdb-credentials .cmdbc-help { padding-top:7px; font-size:11px; color:var(--text-sec); }
+/* Таби на всю ширину слота — канон .gm-tab-block має width:fit-content (пор. .awsc-tabs). */
+#v-cmdb-credentials .cmdbc-tabs { width:100%; }
+#v-cmdb-credentials .cmdbc-tabs .gm-tab { flex:1 1 0 !important; }
+/* Dropdown White з макета: h40 / r8 / 12px SemiBold. Dark #133033 світліший за картку #062528. */
+#v-cmdb-credentials .csel-btn { height:40px; padding:7px 30px 7px 12px; border-radius:8px; font-size:12px; font-weight:600; color:#334155; }
+body.dark #v-cmdb-credentials .csel-btn { background:#133033 !important; border-color:#04363A !important; color:#FFFFFF; }
 #cmdb-modal .cmdb-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
 #cmdb-modal .cmdb-kpi { background:var(--bg-subtle); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; text-align:center; }
 #cmdb-modal .cmdb-kpi-num { font-size:22px; font-weight:800; color:var(--text-default); line-height:1.1; }
@@ -13025,7 +13038,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       list.innerHTML = CONNECTION_MANAGERS.map(function (c) {
         var isSel = c.id === selectedCmdbCM;
         var osList = c.os.map(function (o) { return OS_LABEL[o] || o; }).join(', ');
-        return '<div class="radio-item gm-radio-card' + (isSel ? ' selected is-selected' : '') + '" onclick="selectCmdbCM(\'' + c.id + '\')" style="margin-bottom:8px;">'
+        return '<div class="radio-item gm-radio-card' + (isSel ? ' selected is-selected' : '') + '" onclick="selectCmdbCM(\'' + c.id + '\')" style="margin-bottom:6px;">'
           + '<div class="radio-dot"></div>'
           + '<div style="flex:1;">'
           + '<div style="font-size:13px;font-weight:600;color:var(--text-default);">' + c.name + '</div>'
@@ -21688,34 +21701,33 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
     </div>
 
-      <!-- STEP 3 · Credentials -->
+      <!-- STEP 3 · Connection & credentials — Figma 3332:36414 -->
       <div class="cmdbm-panel" id="v-cmdb-credentials" style="display:none;">
-      <div style="padding:0 24px;">
-        <div style="max-width:720px;margin:0 auto;">
 
-          <!-- Why this differs from cloud -->
-          <div class="cmdb-note" style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            <div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Unlike cloud discovery, ServiceNow nodes are scanned over WinRM/SSH through a <strong style="color:var(--text-default);">Connection Manager</strong>. Pick one below and set the credentials those scans should use — you can change them per node later.</div>
+        <!-- Why this differs from cloud -->
+        <div class="cmdb-sec">
+          <div class="cmdb-note" style="display:flex;align-items:center;gap:10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <div style="font-size:12px;color:var(--text-default);line-height:1.5;">Unlike cloud discovery, ServiceNow nodes are scanned over WinRM/SSH through a Connection Manager. Pick one below and set the credentials those scans should use — you can change them per node later.</div>
           </div>
+        </div>
 
-          <!-- Connection Manager (required) -->
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:13px;font-weight:700;color:var(--text-default);">Connection Manager</span>
-            <span class="bdg bdg--red">Required</span>
+        <!-- Connection Manager (required) -->
+        <div class="cmdb-sec">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:14px;font-weight:700;color:var(--text-default);">Connection Manager</span>
+            <span class="bdg bdg--red">Security</span>
           </div>
-          <div style="font-size:11px;color:var(--text-sec);margin-bottom:12px;line-height:1.5;">The relay that reaches these nodes on your network.</div>
-          <div id="cmdb-cm-list"></div>
-          <button onclick="openCmSetup(&#39;agentless&#39;)" style="background:none;border:none;color:var(--green1);font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;font-family:inherit;">Don't see a suitable one? Set up a new Connection Manager →</button>
+          <div style="padding-top:6px;font-size:12px;color:var(--text-sec);">The relay that reaches these nodes on your network.</div>
+          <div id="cmdb-cm-list" style="margin-top:10px;"></div>
+          <button class="link-cta" style="margin-top:10px;" onclick="openCmSetup(&#39;agentless&#39;)"><span class="lc-txt">Don't see a suitable one? Set up a new Connection Manager</span> <span class="arr">→</span></button>
+        </div>
 
-          <!-- Bulk credentials -->
-          <div style="font-size:13px;font-weight:700;color:var(--text-default);margin:20px 0 4px;">Default credentials</div>
-          <div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;line-height:1.5;">Recommended. Applied to every imported node of each type, so scans work as soon as you promote them. Credentials usually come from Secret Server, or enter them directly.</div>
-
-          <!-- Windows -->
-          <div style="border-top:1px solid var(--border);padding-top:18px;margin-bottom:14px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-              <div style="width:30px;height:30px;border-radius:7px;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <!-- Windows -->
+        <div class="cmdbc-grp">
+          <div class="cmdbc-grp-head">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="cmdbc-ico" style="background:rgba(59,130,246,0.1);">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
               </div>
               <div style="flex:1;">
@@ -21723,34 +21735,36 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="font-size:11px;color:var(--text-sec);" id="cmdb-win-count">credentials for all detected Windows nodes</div>
               </div>
             </div>
-            <div class="toggle-group gm-tab-block" role="tablist" aria-label="Windows credential source" style="margin-bottom:14px;">
+          </div>
+          <div class="cmdb-sec">
+            <div class="toggle-group gm-tab-block cmdbc-tabs" role="tablist" aria-label="Windows credential source">
               <button class="toggle-btn gm-tab active" id="cmdb-win-tab-secret" role="tab" aria-selected="true" onclick="setCmdbCred('win','secret')">From Secret Server</button>
               <button class="toggle-btn gm-tab" id="cmdb-win-tab-direct" role="tab" aria-selected="false" onclick="setCmdbCred('win','direct')">Enter directly</button>
               <button class="toggle-btn gm-tab" id="cmdb-win-tab-skip" role="tab" aria-selected="false" onclick="setCmdbCred('win','skip')">No credential</button>
             </div>
-            <div id="cmdb-win-panel-secret">
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">Secret (Secret Server)</label>
-                <select class="form-input csel">
-                  <option>\Windows\Prod\domain-scan-account</option>
-                  <option>\Windows\svc-guardian-winrm</option>
-                </select>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:7px;">Fetched at scan time. Manage connections in <button onclick="showView('settings-integrations')" style="background:none;border:none;color:var(--green1);font-weight:600;cursor:pointer;padding:0;font-family:inherit;font-size:11px;">Settings → Integrations</button>.</div>
-              </div>
-            </div>
-            <div id="cmdb-win-panel-direct" style="display:none;">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label">Username</label><input class="form-input" type="text" placeholder="CORP\\Administrator"></div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="••••••••••••"></div>
-              </div>
-            </div>
-            <div id="cmdb-win-panel-skip" style="display:none;font-size:12px;color:var(--text-sec);line-height:1.5;">No default set. You can add Windows credentials later — per node, or in bulk from the Detected tab.</div>
           </div>
+          <div class="cmdb-sec" id="cmdb-win-panel-secret">
+            <label class="gm-tab-label">Secret (Secret Server)</label>
+            <select class="csel">
+              <option>\Windows\Prod\domain-scan-account</option>
+              <option>\Windows\svc-guardian-winrm</option>
+            </select>
+            <div class="cmdbc-help">Fetched at scan time. Manage connections in <button class="link-cta" onclick="showView('settings-integrations')"><span class="lc-txt">Settings → Integrations</span></button></div>
+          </div>
+          <div class="cmdb-sec" id="cmdb-win-panel-direct" style="display:none;">
+            <div class="cmdb-auth-row">
+              <div class="form-group" style="margin-bottom:0;"><label class="gm-tab-label">Username</label><input class="form-input" type="text" placeholder="CORP\Administrator"></div>
+              <div class="form-group" style="margin-bottom:0;"><label class="gm-tab-label">Password</label><input class="form-input" type="password" placeholder="••••••••••••"></div>
+            </div>
+          </div>
+          <div class="cmdb-sec" id="cmdb-win-panel-skip" style="display:none;font-size:12px;color:var(--text-sec);line-height:1.5;">No default set. You can add Windows credentials later — per node, or in bulk from the Detected tab.</div>
+        </div>
 
-          <!-- Linux / macOS -->
-          <div style="border-top:1px solid var(--border);padding-top:18px;margin-bottom:14px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-              <div style="width:30px;height:30px;border-radius:7px;background:rgba(63,200,120,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <!-- Linux / macOS -->
+        <div class="cmdbc-grp">
+          <div class="cmdbc-grp-head">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="cmdbc-ico" style="background:rgba(63,200,120,0.1);">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
               </div>
               <div style="flex:1;">
@@ -21758,42 +21772,39 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="font-size:11px;color:var(--text-sec);" id="cmdb-nix-count">credentials for all detected Linux &amp; macOS nodes</div>
               </div>
             </div>
-            <div class="toggle-group gm-tab-block" role="tablist" aria-label="Linux and macOS credential source" style="margin-bottom:14px;">
+          </div>
+          <div class="cmdb-sec">
+            <div class="toggle-group gm-tab-block cmdbc-tabs" role="tablist" aria-label="Linux and macOS credential source">
               <button class="toggle-btn gm-tab active" id="cmdb-nix-tab-secret" role="tab" aria-selected="true" onclick="setCmdbCred('nix','secret')">From Secret Server</button>
               <button class="toggle-btn gm-tab" id="cmdb-nix-tab-direct" role="tab" aria-selected="false" onclick="setCmdbCred('nix','direct')">Enter directly</button>
               <button class="toggle-btn gm-tab" id="cmdb-nix-tab-skip" role="tab" aria-selected="false" onclick="setCmdbCred('nix','skip')">No credential</button>
             </div>
-            <div id="cmdb-nix-panel-secret">
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">Secret (Secret Server)</label>
-                <select class="form-input csel">
-                  <option>\Linux\Prod\ssh-scan-key</option>
-                  <option>\Linux\svc-guardian-ssh</option>
-                </select>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:7px;">Fetched at scan time. Manage connections in <button onclick="showView('settings-integrations')" style="background:none;border:none;color:var(--green1);font-weight:600;cursor:pointer;padding:0;font-family:inherit;font-size:11px;">Settings → Integrations</button>.</div>
-              </div>
-            </div>
-            <div id="cmdb-nix-panel-direct" style="display:none;">
-              <div class="form-group">
-                <label class="form-label">Authentication</label>
-                <div class="toggle-group gm-tab-block" role="tablist" aria-label="Linux and macOS authentication method">
-                  <button class="toggle-btn gm-tab active" role="tab" aria-selected="true" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});this.classList.add('active');this.setAttribute('aria-selected','true');">Username &amp; password</button>
-                  <button class="toggle-btn gm-tab" role="tab" aria-selected="false" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});this.classList.add('active');this.setAttribute('aria-selected','true');">SSH key</button>
-                </div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label">Username</label><input class="form-input" type="text" placeholder="root"></div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label">Password / key passphrase</label><input class="form-input" type="password" placeholder="••••••••••••"></div>
-              </div>
-            </div>
-            <div id="cmdb-nix-panel-skip" style="display:none;font-size:12px;color:var(--text-sec);line-height:1.5;">No default set. You can add Linux/macOS credentials later — per node, or in bulk from the Detected tab.</div>
           </div>
-
-          <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;margin-top:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Credentials are fetched at scan time, never stored in plain text</div>
-
+          <div class="cmdb-sec" id="cmdb-nix-panel-secret">
+            <label class="gm-tab-label">Secret (Secret Server)</label>
+            <select class="csel">
+              <option>\Linux\Prod\ssh-scan-key</option>
+              <option>\Linux\svc-guardian-ssh</option>
+            </select>
+            <div class="cmdbc-help">Fetched at scan time. Manage connections in <button class="link-cta" onclick="showView('settings-integrations')"><span class="lc-txt">Settings → Integrations</span></button></div>
+          </div>
+          <div class="cmdb-sec" id="cmdb-nix-panel-direct" style="display:none;">
+            <div class="form-group">
+              <label class="gm-tab-label">Authentication</label>
+              <div class="toggle-group gm-tab-block cmdbc-tabs" role="tablist" aria-label="Linux and macOS authentication method">
+                <button class="toggle-btn gm-tab active" role="tab" aria-selected="true" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});this.classList.add('active');this.setAttribute('aria-selected','true');">Username &amp; password</button>
+                <button class="toggle-btn gm-tab" role="tab" aria-selected="false" onclick="this.parentNode.querySelectorAll('.toggle-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});this.classList.add('active');this.setAttribute('aria-selected','true');">SSH key</button>
+              </div>
+            </div>
+            <div class="cmdb-auth-row">
+              <div class="form-group" style="margin-bottom:0;"><label class="gm-tab-label">Username</label><input class="form-input" type="text" placeholder="root"></div>
+              <div class="form-group" style="margin-bottom:0;"><label class="gm-tab-label">Password / key passphrase</label><input class="form-input" type="password" placeholder="••••••••••••"></div>
+            </div>
+          </div>
+          <div class="cmdb-sec" id="cmdb-nix-panel-skip" style="display:none;font-size:12px;color:var(--text-sec);line-height:1.5;">No default set. You can add Linux/macOS credentials later — per node, or in bulk from the Detected tab.</div>
         </div>
+
       </div>
-    </div>
 
       <!-- STEP · Importing (transient) -->
       <div class="cmdbm-panel" id="v-cmdb-importing" style="display:none;">
