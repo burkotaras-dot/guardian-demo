@@ -5181,7 +5181,7 @@ body.dark .gm-overlay :is(.gm-tag-check,.tagpick-check) {
   padding:32px 20px;
   border:2px dashed rgba(100,116,139,0.45);
   border-radius:14px;
-  background:transparent;
+  background:#F8FAFC;
   color:#0F172A;
   text-align:center;
   cursor:pointer;
@@ -5281,6 +5281,7 @@ body.dark .gm-overlay .gm-upload-title,
 body.dark .gm-overlay .gm-upload-primary { color:#F8FAFC; }
 body.dark .gm-overlay .gm-upload-meta { color:#CBD5E1; }
 body.dark .gm-overlay .gm-upload-helper { color:#94A3B8; }
+body.dark .gm-overlay .gm-upload-dropzone { background:#123033; }
 body.dark .gm-overlay .gm-upload-dropzone:hover,
 body.dark .gm-overlay .gm-upload-dropzone.is-dragover { background:rgba(16,185,129,0.10); }
 body.dark .gm-overlay .gm-upload-file { background:rgba(16,185,129,0.10); }
@@ -5490,6 +5491,20 @@ body.dark #v-cmdb-credentials .csel-btn { background:#133033 !important; border-
 #cmdb-modal .cmdb-kpi-num--blue { color:#2563EB; }
 #cmdb-modal .cmdb-kpi-lbl { font-size:10px; color:var(--text-sec); font-weight:600; text-transform:uppercase; padding-top:2px; }
 body.dark #cmdb-modal .cmdb-kpi { background:#133033; border-color:transparent; }
+/* ── CSV import modal — крок 1 «Upload», Figma 3334:43082 (light 3334:43083 / dark 3334:43197) ──
+   Канонічний слот (DS §14): вертикальний ритм 20px, горизонтальний паддінг бере кожен блок сам. */
+#csv-modal .csv-up { display:flex; flex-direction:column; gap:20px; padding:20px 0 6px; }
+#csv-modal .csv-sec { padding:0 24px; }
+#csv-modal .csv-tpl-row { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+#csv-modal .csv-sec-title { font-size:14px; font-weight:700; color:var(--text-default); }
+#csv-modal .csv-sec-sub { padding-top:2px; font-size:11px; color:var(--text-sec); }
+#csv-modal .csv-cols { border-top:1px solid var(--border); padding-top:14px; }
+#csv-modal .csv-cols-lbl { font-size:11px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--text-sec); padding-bottom:8px; }
+#csv-modal .csv-cols-list { display:flex; flex-wrap:wrap; gap:6px; }
+#csv-modal .csv-cols-note { padding-top:8px; font-size:11px; line-height:16.5px; color:var(--text-sec); }
+/* У слоті ритм тримає gap:20px — власний нижній відступ блоку зайвий. */
+#csv-modal .gm-upload-block { margin-bottom:0; }
+body.dark #csv-modal .csv-cols { border-top-color:rgba(255,255,255,0.06); }
 /* Scan-failed remediation checklist status pills */
 /* .sf-st — статус кроку налаштування; геометрія й палітра з канону .bdg */
 
@@ -13064,7 +13079,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var dz = document.getElementById('csv-dropzone');
       if (dz) dz.style.display = 'none';
       var btn = document.getElementById('csv-continue-btn');
-      if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+      if (btn) btn.disabled = false;
     }
     function csvClearFile() {
       var row = document.getElementById('csv-file-row');
@@ -13072,7 +13087,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var dz = document.getElementById('csv-dropzone');
       if (dz) dz.style.removeProperty('display');
       var btn = document.getElementById('csv-continue-btn');
-      if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
+      if (btn) btn.disabled = true;
     }
     function simulateCMInstalled() {
       var newId = 'grp-new';
@@ -21869,27 +21884,26 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
       <div class="gm-body" style="padding:0;">
 
-      <!-- STEP 1 · Upload -->
-      <div class="csvm-panel" id="v-csv-import">
-      <div style="padding:24px;">
-        <div style="max-width:680px;margin:0 auto;">
+      <!-- STEP 1 · Upload — Figma 3334:43082 (light 3334:43083 / dark 3334:43197) -->
+      <div class="csvm-panel csv-up" id="v-csv-import">
 
-          <!-- Step 1: template -->
-          <div style="margin-bottom:16px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-              <div>
-                <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:3px;">1 · Start from the template</div>
-                <div style="font-size:11px;color:var(--text-sec);line-height:1.5;">Download the CSV template, fill in one row per node, and keep the header row.</div>
-              </div>
-              <button class="btn-outline" style="width:auto;padding:9px 16px;font-size:12px;white-space:nowrap;display:flex;align-items:center;gap:7px;" onclick="if(typeof scToast==='function')scToast('Downloading nodes-import-template.csv')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Download template
-              </button>
+          <!-- 1 · Template -->
+          <div class="csv-sec csv-tpl-row">
+            <div>
+              <div class="csv-sec-title">1 · Start from the template</div>
+              <div class="csv-sec-sub">Download the CSV template, fill in one row per node, and keep the header row.</div>
             </div>
-            <!-- Column reference -->
-            <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px;">
-              <div style="font-size:11px;font-weight:600;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Columns</div>
-              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <button class="btn-secondary" style="padding:0 20px;" onclick="if(typeof scToast==='function')scToast('Downloading nodes-import-template.csv')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Download template
+            </button>
+          </div>
+
+          <!-- Column reference -->
+          <div class="csv-sec">
+            <div class="csv-cols">
+              <div class="csv-cols-lbl">Columns</div>
+              <div class="csv-cols-list">
                 <span class="code-tag code-tag--req">name *</span>
                 <span class="code-tag code-tag--req">hostname *</span>
                 <span class="code-tag">os</span>
@@ -21900,11 +21914,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <span class="code-tag">description</span>
                 <span class="code-tag">external_id</span>
               </div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:8px;line-height:1.5;"><span style="color:var(--bdg-red-txt);font-weight:700;">*</span> required. <code>protocol</code> is WinRM or SSH (inferred from <code>os</code> if blank); <code>port</code> defaults per protocol. <code>external_id</code> (e.g. a CMDB ref) is used to match existing nodes.</div>
+              <div class="csv-cols-note"><span style="color:var(--bdg-red-txt);font-weight:700;">*</span> required. <code>protocol</code> is WinRM or SSH (inferred from <code>os</code> if blank); <code>port</code> defaults per protocol. <code>external_id</code> (e.g. a CMDB ref) is used to match existing nodes.</div>
             </div>
           </div>
 
-          <!-- Step 2: upload -->
+          <!-- 2 · Upload -->
+          <div class="csv-sec">
           <div class="gm-upload-block">
             <div class="gm-upload-title">2 · Upload your file</div>
             <div id="csv-dropzone" class="gm-upload-dropzone" role="button" tabindex="0" aria-label="Upload CSV file" onclick="csvPickFile()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();csvPickFile()}" ondragover="event.preventDefault();this.classList.add('is-dragover')" ondragleave="this.classList.remove('is-dragover')" ondrop="event.preventDefault();this.classList.remove('is-dragover');csvPickFile()">
@@ -21919,13 +21934,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             <div class="gm-upload-helper">Credentials aren't read from the file. Set them after import — per node, or in bulk from Detected.</div>
           </div>
-
-          <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap;">
-            <button id="csv-continue-btn" class="btn-primary" style="width:auto;padding:12px 24px;opacity:0.4;pointer-events:none;" onclick="go(&#39;csv-preview&#39;)">Validate &amp; preview →</button>
           </div>
 
-        </div>
-      </div>
       </div><!-- /csvm-panel csv-import -->
 
     <!-- STEP 2 · Review -->
@@ -21973,11 +21983,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-sec);">Showing 7 of 24 rows</div>
           </div>
 
-          <!-- Footer -->
-          <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap;">
-            <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="go(&#39;csv-importing&#39;)">Import 22 nodes →</button>
-          </div>
-
         </div>
       </div>
       </div><!-- /csvm-panel csv-preview -->
@@ -21994,7 +21999,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div style="background:var(--bg-page);border-radius:99px;height:6px;overflow:hidden;margin-bottom:20px;">
             <div style="height:100%;width:65%;background:var(--green2);border-radius:99px;"></div>
           </div>
-          <button class="btn-primary" onclick="go(&#39;csv-complete&#39;)" style="width:100%;padding:12px;">Continue →</button>
         </div>
       </div>
       </div><!-- /csvm-panel csv-importing -->
@@ -22022,11 +22026,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:10px;color:var(--text-sec);font-weight:600;margin-top:2px;">SKIPPED</div>
             </div>
           </div>
-          <button class="btn-primary" onclick="closeCsvImport();showView(&#39;all-devices&#39;);setNodesTab(&#39;managed&#39;);" style="width:100%;padding:12px;">View in All Nodes →</button>
         </div>
       </div>
       </div><!-- /csvm-panel csv-complete -->
       </div><!-- /gm-body -->
+      <!-- Canonical modal footer (DS §14.5) — populated per panel by csvRenderFoot() -->
+      <div class="gm-foot">
+        <div class="gm-foot-left" id="csv-foot-left"></div>
+        <div class="gm-foot-right" id="csv-foot-right"></div>
+      </div>
      </div><!-- /gm-card -->
     </div><!-- /gm-overlay #csv-modal -->
 
@@ -25307,6 +25315,25 @@ var CSV_META = {
   'csv-complete':  ['Import Complete','Nodes added to Guardian']
 };
 var CSV_STEP = { 'csv-import':0,'csv-preview':1,'csv-importing':2,'csv-complete':2 };
+var CSV_FOOT = {
+  'csv-import':    { primary:{ id:'csv-continue-btn', label:'Validate &amp; preview', go:'csv-preview', disabled:1 } },
+  'csv-preview':   { back:'csv-import', primary:{ label:'Import 22 nodes',  go:'csv-importing' } },
+  'csv-importing': {                    primary:{ label:'Continue',         go:'csv-complete' } },
+  'csv-complete':  {                    primary:{ label:'View in All Nodes', fn:'csvFinishImport' } }
+};
+function csvFinishImport(){ closeCsvImport(); showView('all-devices'); setNodesTab('managed'); }
+function csvRenderFoot(key) {
+  var L = document.getElementById('csv-foot-left'), R = document.getElementById('csv-foot-right');
+  if (!L || !R) return;
+  var cfg = CSV_FOOT[key] || {};
+  L.innerHTML = cfg.back
+    ? '<button type="button" class="btn-third" onclick="go(\'' + cfg.back + '\')">'
+      + '<span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back</button>'
+    : '';
+  var p = cfg.primary;
+  R.innerHTML = p ? '<button type="button" class="gm-btn gm-btn-primary"' + (p.id ? ' id="' + p.id + '"' : '')
+    + (p.disabled ? ' disabled' : '') + ' onclick="' + (p.fn ? p.fn + '()' : "go('" + p.go + "')") + '">' + p.label + '</button>' : '';
+}
 function openCsvImport(){ csvShowPanel('csv-import'); }
 function closeCsvImport(){ var ov = document.getElementById('csv-modal'); if (ov) ov.style.display = 'none'; }
 function csvShowPanel(key) {
@@ -25327,6 +25354,7 @@ function csvShowPanel(key) {
     if (allDone || i < cur) st.classList.add('is-done');
     else if (i === cur) { st.classList.add('is-active'); st.setAttribute('aria-current', 'step'); }
   });
+  csvRenderFoot(key);
   if (key === 'csv-import' && typeof csvClearFile === 'function') csvClearFile();
   var b = ov.querySelector('.gm-body'); if (b) b.scrollTo(0, 0);
   if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
