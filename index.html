@@ -5412,7 +5412,6 @@ body.dark #cm-warn-overlay .gm-btn-warning { color:#FBBF24; border-color:#D97706
 body.dark #cm-warn-overlay .gm-btn-destructive { color:#FB7185; border-color:#E11D48; }
 .gm-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
 /* ── CMDB import modal — canonical gm-* shell (DS §14) ── */
-#cmdb-modal .cmdb-foot-note { font-size:12px; color:var(--text-sec); white-space:nowrap; }
 /* Canonical body slot: no horizontal padding — each content block takes its own 0 24px. */
 #cmdb-modal .gm-body { padding:20px 0 10px; }
 #cmdb-modal .cmdb-section-title { font-size:14px; font-weight:700; letter-spacing:-0.2px; color:var(--text-default); }
@@ -5430,6 +5429,35 @@ body.dark #cmdb-modal .cmdb-hint { color:#94A3B8; }
 body.dark #cmdb-modal .cmdb-note { background:#123033; }
 #cmdb-modal .cmdb-note-title { font-size:11px; font-weight:700; color:var(--text-default); margin-bottom:6px; }
 #cmdb-modal .cmdb-note-tags { display:flex; flex-wrap:wrap; gap:6px; }
+/* Крок 2 «Select nodes to import» — Figma 3332:31047. Колонки 228/118/134/70 у слоті 550px;
+   NAME тягнеться, решта фіксовані. Стани рядка — класами (інлайн-bg ламає _syncInlineTheme). */
+#cmdb-modal .cmdb-cls-tbl { border-top:1px solid var(--border); }
+#cmdb-modal .cmdb-cls-row { display:grid; grid-template-columns:minmax(0,1fr) 118px 134px 70px; align-items:stretch; }
+#cmdb-modal .cmdb-cls-row > div { border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 8px; box-sizing:border-box; }
+#cmdb-modal .cmdb-cls-head > div { height:34px; padding:0 8px; background:#F8FAFC; font:700 10px/normal 'DM Sans',sans-serif; letter-spacing:0.5px; text-transform:uppercase; color:#94A3B8; }
+#cmdb-modal .cmdb-cls-head > div:first-child { padding-left:14px; }
+/* Хедер колонок у dark — загальноприкладне правило: фон #063135, текст #94A3B8. */
+body.dark #cmdb-modal .cmdb-cls-head > div { background:#063135; }
+#cmdb-modal .cmdb-cls-row:not(.cmdb-cls-head) > div { height:49px; }
+#cmdb-modal .cmdb-cls-row.is-open > div { background:rgba(16,185,129,0.06); }
+#cmdb-modal .cmdb-cls-name { display:flex; align-items:center; gap:16px; }
+#cmdb-modal .cmdb-cls-id { display:flex; align-items:center; gap:10px; min-width:0; }
+#cmdb-modal .cmdb-cls-ico { width:32px; height:32px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+#cmdb-modal .cmdb-cls-t { font-size:12px; font-weight:700; color:var(--text-default); }
+#cmdb-modal .cmdb-cls-s { font:400 10px/16px 'DM Sans',sans-serif; color:var(--text-sec); }
+#cmdb-modal .cmdb-cls-rec { display:flex; align-items:baseline; gap:3px; }
+#cmdb-modal .cmdb-cls-rec b { font-size:14px; font-weight:700; color:var(--text-default); }
+#cmdb-modal .cmdb-cls-rec span { font-size:10px; color:var(--text-sec); }
+#cmdb-modal .cmdb-cls-sel { font-size:9px; color:var(--text-sec); }
+#cmdb-modal .cmdb-cls-sel.is-on { color:var(--bdg-green-txt); font-weight:700; }
+/* Клікабельний чип «Select all» — геометрія баджа з макета, але це КОНТРОЛ, не .bdg (DS §13). */
+#cmdb-modal .cmdb-selall { font:700 9px/normal 'DM Sans',sans-serif; letter-spacing:1px; text-transform:uppercase; color:var(--bdg-green-txt); background:var(--bdg-green-bg); border:1px solid var(--bdg-green-bd); border-radius:999px; padding:2px 7px; cursor:pointer; white-space:nowrap; transition:background .15s; }
+#cmdb-modal .cmdb-selall:hover { background:rgba(16,185,129,0.14); }
+/* Expand/Collapse — канонічний Text button (DS §6.5). */
+#cmdb-modal .cmdb-expand { display:flex; align-items:center; gap:6px; background:none; border:0; padding:0; font:600 12px/normal 'DM Sans',sans-serif; color:var(--bdg-green-txt); cursor:pointer; }
+#cmdb-modal .cmdb-expand svg { transition:transform .2s; }
+#cmdb-modal .cmdb-cls-row.is-open .cmdb-expand svg { transform:rotate(180deg); }
+#cmdb-modal .cmdb-cls-total { padding:10px 24px 0; text-align:center; font-size:12px; color:var(--text-sec); }
 /* Credential pickers are custom selects, never a native <select> popup (DS §6.1). */
 #cmdb-modal .csel-wrap, #cmdb-modal .csel-btn { display:flex; width:100%; box-sizing:border-box; }
 #cmdb-modal .csel-btn { padding:10px 28px 10px 14px; font-size:13px; font-weight:400; border-radius:var(--radius-md); background:var(--bg-subtle); }
@@ -21375,101 +21403,105 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- CLASS SELECTION VIEW -->
           <div id="cmdb-class-view">
-            <!-- Column headers -->
-            <div class="col-thead" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;gap:0;padding:8px 18px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
-              <div></div><div>Class</div><div style="text-align:right;">Records</div><div style="text-align:center;">Selection</div><div></div><div style="text-align:right;">Action</div>
-            </div>
+            <div class="cmdb-cls-tbl">
 
-            <div style="border-top:1px solid var(--border);margin-bottom:20px;">
+              <!-- Column headers -->
+              <div class="cmdb-cls-row cmdb-cls-head"><div>Name</div><div>Records</div><div>Selection</div><div></div></div>
 
               <!-- Linux Servers -->
-              <div id="cls-linux" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
-                <input type="checkbox" id="cb-linux" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Linux Servers&#39;,this)">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:32px;height:32px;border-radius:7px;background:rgba(63,200,120,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+              <div class="cmdb-cls-row" id="cls-linux">
+                <div class="cmdb-cls-name">
+                  <input type="checkbox" id="cb-linux" style="width:15px;height:15px;flex-shrink:0;cursor:pointer;" onchange="cmdbToggleClass(&#39;Linux Servers&#39;,this)">
+                  <div class="cmdb-cls-id">
+                    <div class="cmdb-cls-ico" style="background:rgba(63,200,120,0.08);">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+                    </div>
+                    <div style="min-width:0;"><div class="cmdb-cls-t">Linux Servers</div><div class="cmdb-cls-s">cmdb_ci_linux_server</div></div>
                   </div>
-                  <div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Linux Servers</div><div style="font-size:10px;color:var(--text-sec);font-family:'DM Sans',sans-serif;">cmdb_ci_linux_server</div></div>
                 </div>
-                <div style="text-align:right;font-size:14px;font-weight:700;color:var(--text-default);">2,341<div style="font-size:10px;font-weight:400;color:var(--text-sec);">records</div></div>
-                <div style="text-align:center;"><span id="sel-linux" style="font-size:12px;color:var(--text-sec);">0 selected</span></div>
-                <div><button onclick="cmdbSelectAllClass(&#39;Linux Servers&#39;,2341)" style="font-size:11px;color:var(--green1);background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.25);border-radius:5px;padding:4px 10px;cursor:pointer;font-weight:500;white-space:nowrap;">Select all 2,341</button></div>
-                <div style="text-align:right;"><button id="browse-btn-linux" onclick="toggleCMDBAccordion(&#39;Linux Servers&#39;,&#39;linux&#39;,2341,&#39;cmdb_ci_linux_server&#39;,&#39;#3FC878&#39;)" style="font-size:11px;color:var(--text-default);background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-left:auto;transition:all 0.15s;">Expand <svg id="browse-chev-linux" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;transform:rotate(90deg);"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div>
+                <div><div><div class="cmdb-cls-rec"><b>2,341</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-linux">0 selected</div></div></div>
+                <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Linux Servers&#39;,2341)">Select all 2,341</button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-linux" onclick="toggleCMDBAccordion(&#39;Linux Servers&#39;,&#39;linux&#39;,2341,&#39;cmdb_ci_linux_server&#39;,&#39;#3FC878&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Windows Servers -->
-              <div id="cls-windows" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
-                <input type="checkbox" id="cb-windows" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Windows Servers&#39;,this)">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:32px;height:32px;border-radius:7px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="8"></rect><rect x="3" y="13" width="8" height="8"></rect><rect x="13" y="13" width="8" height="8"></rect></svg>
+              <div class="cmdb-cls-row" id="cls-windows">
+                <div class="cmdb-cls-name">
+                  <input type="checkbox" id="cb-windows" style="width:15px;height:15px;flex-shrink:0;cursor:pointer;" onchange="cmdbToggleClass(&#39;Windows Servers&#39;,this)">
+                  <div class="cmdb-cls-id">
+                    <div class="cmdb-cls-ico" style="background:rgba(59,130,246,0.08);">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="8"></rect><rect x="3" y="13" width="8" height="8"></rect><rect x="13" y="13" width="8" height="8"></rect></svg>
+                    </div>
+                    <div style="min-width:0;"><div class="cmdb-cls-t">Windows Servers</div><div class="cmdb-cls-s">cmdb_ci_win_server</div></div>
                   </div>
-                  <div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Windows Servers</div><div style="font-size:10px;color:var(--text-sec);font-family:'DM Sans',sans-serif;">cmdb_ci_win_server</div></div>
                 </div>
-                <div style="text-align:right;font-size:14px;font-weight:700;color:var(--text-default);">1,120<div style="font-size:10px;font-weight:400;color:var(--text-sec);">records</div></div>
-                <div style="text-align:center;"><span id="sel-windows" style="font-size:12px;color:var(--text-sec);">0 selected</span></div>
-                <div><button onclick="cmdbSelectAllClass(&#39;Windows Servers&#39;,1120)" style="font-size:11px;color:var(--green1);background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.25);border-radius:5px;padding:4px 10px;cursor:pointer;font-weight:500;white-space:nowrap;">Select all 1,120</button></div>
-                <div style="text-align:right;"><button id="browse-btn-windows" onclick="toggleCMDBAccordion(&#39;Windows Servers&#39;,&#39;windows&#39;,1120,&#39;cmdb_ci_win_server&#39;,&#39;#3B82F6&#39;)" style="font-size:11px;color:var(--text-default);background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-left:auto;transition:all 0.15s;">Expand <svg id="browse-chev-windows" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;transform:rotate(90deg);"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div>
+                <div><div><div class="cmdb-cls-rec"><b>1,120</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-windows">0 selected</div></div></div>
+                <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Windows Servers&#39;,1120)">Select all 1,120</button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-windows" onclick="toggleCMDBAccordion(&#39;Windows Servers&#39;,&#39;windows&#39;,1120,&#39;cmdb_ci_win_server&#39;,&#39;#3B82F6&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Network Devices -->
-              <div id="cls-network" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
-                <input type="checkbox" id="cb-network" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Network Devices&#39;,this)">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:32px;height:32px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><circle cx="12" cy="12" r="2"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+              <div class="cmdb-cls-row" id="cls-network">
+                <div class="cmdb-cls-name">
+                  <input type="checkbox" id="cb-network" style="width:15px;height:15px;flex-shrink:0;cursor:pointer;" onchange="cmdbToggleClass(&#39;Network Devices&#39;,this)">
+                  <div class="cmdb-cls-id">
+                    <div class="cmdb-cls-ico" style="background:rgba(245,158,11,0.08);">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><circle cx="12" cy="12" r="2"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+                    </div>
+                    <div style="min-width:0;"><div class="cmdb-cls-t">Network Devices</div><div class="cmdb-cls-s">cmdb_ci_netgear</div></div>
                   </div>
-                  <div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Network Devices</div><div style="font-size:10px;color:var(--text-sec);font-family:'DM Sans',sans-serif;">cmdb_ci_netgear</div></div>
                 </div>
-                <div style="text-align:right;font-size:14px;font-weight:700;color:var(--text-default);">847<div style="font-size:10px;font-weight:400;color:var(--text-sec);">records</div></div>
-                <div style="text-align:center;"><span id="sel-network" style="font-size:12px;color:var(--text-sec);">0 selected</span></div>
-                <div><button onclick="cmdbSelectAllClass(&#39;Network Devices&#39;,847)" style="font-size:11px;color:var(--green1);background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.25);border-radius:5px;padding:4px 10px;cursor:pointer;font-weight:500;white-space:nowrap;">Select all 847</button></div>
-                <div style="text-align:right;"><button id="browse-btn-network" onclick="toggleCMDBAccordion(&#39;Network Devices&#39;,&#39;network&#39;,847,&#39;cmdb_ci_netgear&#39;,&#39;#F59E0B&#39;)" style="font-size:11px;color:var(--text-default);background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-left:auto;transition:all 0.15s;">Expand <svg id="browse-chev-network" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;transform:rotate(90deg);"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div>
+                <div><div><div class="cmdb-cls-rec"><b>847</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-network">0 selected</div></div></div>
+                <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Network Devices&#39;,847)">Select all 847</button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-network" onclick="toggleCMDBAccordion(&#39;Network Devices&#39;,&#39;network&#39;,847,&#39;cmdb_ci_netgear&#39;,&#39;#F59E0B&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Virtual Machines -->
-              <div id="cls-vm" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
-                <input type="checkbox" id="cb-vm" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Virtual Machines&#39;,this)">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:32px;height:32px;border-radius:7px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M12 12h.01"></path><path d="M17 12h.01"></path><path d="M7 12h.01"></path></svg>
+              <div class="cmdb-cls-row" id="cls-vm">
+                <div class="cmdb-cls-name">
+                  <input type="checkbox" id="cb-vm" style="width:15px;height:15px;flex-shrink:0;cursor:pointer;" onchange="cmdbToggleClass(&#39;Virtual Machines&#39;,this)">
+                  <div class="cmdb-cls-id">
+                    <div class="cmdb-cls-ico" style="background:rgba(139,92,246,0.08);">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M12 12h.01"></path><path d="M17 12h.01"></path><path d="M7 12h.01"></path></svg>
+                    </div>
+                    <div style="min-width:0;"><div class="cmdb-cls-t">Virtual Machines</div><div class="cmdb-cls-s">cmdb_ci_vmware_instance</div></div>
                   </div>
-                  <div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Virtual Machines</div><div style="font-size:10px;color:var(--text-sec);font-family:'DM Sans',sans-serif;">cmdb_ci_vmware_instance</div></div>
                 </div>
-                <div style="text-align:right;font-size:14px;font-weight:700;color:var(--text-default);">523<div style="font-size:10px;font-weight:400;color:var(--text-sec);">records</div></div>
-                <div style="text-align:center;"><span id="sel-vm" style="font-size:12px;color:var(--text-sec);">0 selected</span></div>
-                <div><button onclick="cmdbSelectAllClass(&#39;Virtual Machines&#39;,523)" style="font-size:11px;color:var(--green1);background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.25);border-radius:5px;padding:4px 10px;cursor:pointer;font-weight:500;white-space:nowrap;">Select all 523</button></div>
-                <div style="text-align:right;"><button id="browse-btn-vm" onclick="toggleCMDBAccordion(&#39;Virtual Machines&#39;,&#39;vm&#39;,523,&#39;cmdb_ci_vmware_instance&#39;,&#39;#8B5CF6&#39;)" style="font-size:11px;color:var(--text-default);background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-left:auto;transition:all 0.15s;">Expand <svg id="browse-chev-vm" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;transform:rotate(90deg);"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div>
+                <div><div><div class="cmdb-cls-rec"><b>523</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-vm">0 selected</div></div></div>
+                <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Virtual Machines&#39;,523)">Select all 523</button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-vm" onclick="toggleCMDBAccordion(&#39;Virtual Machines&#39;,&#39;vm&#39;,523,&#39;cmdb_ci_vmware_instance&#39;,&#39;#8B5CF6&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Storage Devices -->
-              <div id="cls-storage" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border);gap:0;transition:background 0.15s;">
-                <input type="checkbox" id="cb-storage" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Storage Devices&#39;,this)">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:32px;height:32px;border-radius:7px;background:rgba(236,72,153,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EC4899" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+              <div class="cmdb-cls-row" id="cls-storage">
+                <div class="cmdb-cls-name">
+                  <input type="checkbox" id="cb-storage" style="width:15px;height:15px;flex-shrink:0;cursor:pointer;" onchange="cmdbToggleClass(&#39;Storage Devices&#39;,this)">
+                  <div class="cmdb-cls-id">
+                    <div class="cmdb-cls-ico" style="background:rgba(236,72,153,0.08);">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EC4899" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                    </div>
+                    <div style="min-width:0;"><div class="cmdb-cls-t">Storage Devices</div><div class="cmdb-cls-s">cmdb_ci_storage_server</div></div>
                   </div>
-                  <div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Storage Devices</div><div style="font-size:10px;color:var(--text-sec);font-family:'DM Sans',sans-serif;">cmdb_ci_storage_server</div></div>
                 </div>
-                <div style="text-align:right;font-size:14px;font-weight:700;color:var(--text-default);">201<div style="font-size:10px;font-weight:400;color:var(--text-sec);">records</div></div>
-                <div style="text-align:center;"><span id="sel-storage" style="font-size:12px;color:var(--text-sec);">0 selected</span></div>
-                <div><button onclick="cmdbSelectAllClass(&#39;Storage Devices&#39;,201)" style="font-size:11px;color:var(--green1);background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.25);border-radius:5px;padding:4px 10px;cursor:pointer;font-weight:500;white-space:nowrap;">Select all 201</button></div>
-                <div style="text-align:right;"><button id="browse-btn-storage" onclick="toggleCMDBAccordion(&#39;Storage Devices&#39;,&#39;storage&#39;,201,&#39;cmdb_ci_storage_server&#39;,&#39;#EC4899&#39;)" style="font-size:11px;color:var(--text-default);background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-left:auto;transition:all 0.15s;">Expand <svg id="browse-chev-storage" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;transform:rotate(90deg);"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div>
+                <div><div><div class="cmdb-cls-rec"><b>201</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-storage">0 selected</div></div></div>
+                <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Storage Devices&#39;,201)">Select all 201</button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-storage" onclick="toggleCMDBAccordion(&#39;Storage Devices&#39;,&#39;storage&#39;,201,&#39;cmdb_ci_storage_server&#39;,&#39;#EC4899&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Databases -->
-              <div id="cls-db" style="display:grid;grid-template-columns:32px minmax(0,1fr) 100px 140px 130px 90px;align-items:center;padding:13px 18px;gap:0;transition:background 0.15s;">
-                <input type="checkbox" id="cb-db" style="accent-color:var(--green2);cursor:pointer;" onchange="cmdbToggleClass(&#39;Databases&#39;,this)">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:32px;height:32px;border-radius:7px;background:rgba(20,184,166,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.8"><ellipse cx="12" cy="7" rx="9" ry="4"></ellipse><path d="M3 7v5c0 2.21 4.03 4 9 4s9-1.79 9-4V7"></path><path d="M3 12v5c0 2.21 4.03 4 9 4s9-1.79 9-4v-5"></path></svg>
+              <div class="cmdb-cls-row" id="cls-db">
+                <div class="cmdb-cls-name">
+                  <input type="checkbox" id="cb-db" style="width:15px;height:15px;flex-shrink:0;cursor:pointer;" onchange="cmdbToggleClass(&#39;Databases&#39;,this)">
+                  <div class="cmdb-cls-id">
+                    <div class="cmdb-cls-ico" style="background:rgba(20,184,166,0.08);">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.8"><ellipse cx="12" cy="7" rx="9" ry="4"></ellipse><path d="M3 7v5c0 2.21 4.03 4 9 4s9-1.79 9-4V7"></path><path d="M3 12v5c0 2.21 4.03 4 9 4s9-1.79 9-4v-5"></path></svg>
+                    </div>
+                    <div style="min-width:0;"><div class="cmdb-cls-t">Databases</div><div class="cmdb-cls-s">cmdb_ci_database</div></div>
                   </div>
-                  <div><div style="font-size:13px;font-weight:600;color:var(--text-default);">Databases</div><div style="font-size:10px;color:var(--text-sec);font-family:'DM Sans',sans-serif;">cmdb_ci_database</div></div>
                 </div>
-                <div style="text-align:right;font-size:14px;font-weight:700;color:var(--text-default);">89<div style="font-size:10px;font-weight:400;color:var(--text-sec);">records</div></div>
-                <div style="text-align:center;"><span id="sel-db" style="font-size:12px;color:var(--text-sec);">0 selected</span></div>
-                <div><button onclick="cmdbSelectAllClass(&#39;Databases&#39;,89)" style="font-size:11px;color:var(--green1);background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.25);border-radius:5px;padding:4px 10px;cursor:pointer;font-weight:500;white-space:nowrap;">Select all 89</button></div>
-                <div style="text-align:right;"><button id="browse-btn-db" onclick="toggleCMDBAccordion(&#39;Databases&#39;,&#39;db&#39;,89,&#39;cmdb_ci_database&#39;,&#39;#14B8A6&#39;)" style="font-size:11px;color:var(--text-default);background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-left:auto;transition:all 0.15s;">Expand <svg id="browse-chev-db" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;transform:rotate(90deg);"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div>
+                <div><div><div class="cmdb-cls-rec"><b>89</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-db">0 selected</div></div></div>
+                <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Databases&#39;,89)">Select all 89</button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-db" onclick="toggleCMDBAccordion(&#39;Databases&#39;,&#39;db&#39;,89,&#39;cmdb_ci_database&#39;,&#39;#14B8A6&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- SHARED ACCORDION PANEL — JS moves this after the active row -->
@@ -21534,6 +21566,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
 
             </div>
+
+            <div class="cmdb-cls-total" id="cmdb-total-selected-label">0 nodes selected across all classes</div>
 
           </div>
 
@@ -25203,7 +25237,7 @@ var CMDB_FOOT = {
   'cmdb-connect':        { back:'choice',       primary:{ label:'Test connection',   go:'cmdb-connecting' } },
   'cmdb-connecting':     { back:'cmdb-connect', primary:{ label:'Continue',          go:'cmdb-browse' } },
   'cmdb-connect-failed': { back:'cmdb-connect', primary:{ label:'Try again',         go:'cmdb-connect' } },
-  'cmdb-browse':         { back:'cmdb-connect', note:1, primary:{ id:'cmdb-import-btn', label:'Add to Guardian (0)', go:'cmdb-credentials', disabled:1 } },
+  'cmdb-browse':         { back:'cmdb-connect', primary:{ id:'cmdb-import-btn', label:'Add to Guardian (0)', go:'cmdb-credentials', disabled:1 } },
   'cmdb-credentials':    { back:'cmdb-browse',  primary:{ label:'Import to Detected', go:'cmdb-importing' } },
   'cmdb-importing':      {                      primary:{ label:'Continue',          go:'cmdb-complete' } },
   'cmdb-complete':       {                      primary:{ label:'Review in Detected', fn:'cmdbFinishImport' } }
@@ -25218,12 +25252,11 @@ function cmdbRenderFoot(key) {
     left += '<button type="button" class="btn-third" onclick="' + act + '">'
       + '<span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back</button>';
   }
-  if (cfg.note) left += '<span class="cmdb-foot-note" id="cmdb-total-selected-label">0 nodes selected across all classes</span>';
   L.innerHTML = left;
   var p = cfg.primary;
   R.innerHTML = p ? '<button type="button" class="gm-btn gm-btn-primary"' + (p.id ? ' id="' + p.id + '"' : '')
     + (p.disabled ? ' disabled' : '') + ' onclick="' + (p.fn ? p.fn + '()' : "go('" + p.go + "')") + '">' + p.label + '</button>' : '';
-  if (cfg.note && typeof updateCMDBTotalSelected === 'function') updateCMDBTotalSelected();
+  if (key === 'cmdb-browse' && typeof updateCMDBTotalSelected === 'function') updateCMDBTotalSelected();
 }
 function openCmdbImport(){ cmdbShowPanel('cmdb-connect'); }
 function closeCmdbImport(){ var ov = document.getElementById('cmdb-modal'); if (ov) ov.style.display = 'none'; }
@@ -25344,9 +25377,10 @@ function updateCMDBClassLabel(cls) {
   const el = document.getElementById(cmdbClassSelIds[cls]);
   const n = cmdbSelectedByClass[cls] || 0;
   if (!el) return;
-  if (n === 0) { el.textContent = '—'; el.style.color = 'var(--text-sec)'; }
-  else if (n === cmdbClassTotals[cls]) { el.textContent = 'All ' + n.toLocaleString(); el.style.color = 'var(--green1)'; el.style.fontWeight = '600'; }
-  else { el.textContent = n.toLocaleString() + ' selected'; el.style.color = 'var(--green1)'; el.style.fontWeight = '600'; }
+  if (n === 0) el.textContent = '0 selected';
+  else if (n === cmdbClassTotals[cls]) el.textContent = 'All ' + n.toLocaleString() + ' selected';
+  else el.textContent = n.toLocaleString() + ' selected';
+  el.classList.toggle('is-on', n > 0);
 }
 
 // ── Accordion (inline Browse) ──────────────────────────────────────
@@ -25376,33 +25410,19 @@ function toggleCMDBAccordion(cls, key, total, table, color) {
   const panel = document.getElementById('cmdb-accordion-panel');
   row.parentNode.insertBefore(panel, row.nextSibling);
   panel.style.display = 'block';
-  // Highlight active row
-  row.style.background = 'rgba(63,200,120,0.06)';
-  row.style.borderLeft = '3px solid var(--green1)';
-  row.style.borderBottom = '';
-  // Update button → "Collapse ↑"
-  const chev = document.getElementById('browse-chev-' + key);
-  const btn  = document.getElementById('browse-btn-' + key);
-  if (chev) chev.style.transform = 'rotate(-90deg)';
-  if (btn)  {
-    btn.querySelector('span') ? btn.querySelector('span').textContent = 'Collapse' : (btn.firstChild.textContent = 'Collapse ');
-    btn.childNodes[0].textContent = 'Collapse ';
-    btn.style.color = 'var(--green2)'; btn.style.borderColor = 'rgba(63,200,120,0.5)'; btn.style.background = 'rgba(63,200,120,0.08)'; btn.style.fontWeight = '600';
-  }
+  // Стан рядка — класом (.is-open підсвічує рядок і обертає шеврон); інлайн-bg ламає _syncInlineTheme.
+  row.classList.add('is-open');
+  const lbl = document.querySelector('#browse-btn-' + key + ' span');
+  if (lbl) lbl.textContent = 'Collapse';
   // Scroll panel into view
   setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
 }
 
 function _cmdbResetBtn(key) {
-  const row  = document.getElementById('cls-' + key);
-  const chev = document.getElementById('browse-chev-' + key);
-  const btn  = document.getElementById('browse-btn-' + key);
-  if (row)  { row.style.background = ''; row.style.borderLeft = ''; row.style.borderBottom = ''; }
-  if (chev) chev.style.transform = 'rotate(90deg)';
-  if (btn)  {
-    btn.childNodes[0].textContent = 'Expand ';
-    btn.style.color = '#0F172A'; btn.style.borderColor = ''; btn.style.background = 'white'; btn.style.fontWeight = '';
-  }
+  const row = document.getElementById('cls-' + key);
+  if (row) row.classList.remove('is-open');
+  const lbl = document.querySelector('#browse-btn-' + key + ' span');
+  if (lbl) lbl.textContent = 'Expand';
 }
 
 function closeCMDBAccordion() {
