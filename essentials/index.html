@@ -101,7 +101,9 @@
   --text-disabled: #CBD5E1;   /* disabled labels */
   --search-text: #475569;
   --search-placeholder: #475569;
-  --progress-track: #E2E8F0;   /* незаповнена частина смуги прогресу (dark — #335255) */
+  /* Смуга прогресу — DS §15, Figma 3332:32980. Обидві частини змінюють колір між темами. */
+  --progress-track: #E2E8F0;   /* незаповнена частина (dark — #335256) */
+  --progress-fill:  #07986B;   /* заливка, ПЛОСКИЙ колір, не градієнт (dark — #09996C) */
 
   /* Background */
   --bg-canvas:   #F8FAFC;   /* main page background */
@@ -354,7 +356,8 @@ body.dark .ms-menu { background:#00262A !important; border-color:#1A3D40 !import
 body.dark .ms-opt { color:#C0C0C0 !important; }
 @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.5} }
 @keyframes remedScan { 0%{width:0%} 85%{width:90%} 100%{width:95%} }
-.remed-progress-bar { height:6px; background:var(--brand-primary); border-radius:3px; animation:remedScan 3s ease-out forwards; }
+/* Заливка канонічної .pbar — тут лише анімація (кольори з DS §15). */
+.remed-progress-bar { animation:remedScan 3s ease-out forwards; }
 .spin-icon { border-style:solid; border-radius:50%; animation:spin 0.9s linear infinite; box-sizing:border-box; }
 .pol-tab:hover:not(.pol-tab-active) { color:var(--text-default) !important; }
 body.dark .pol-tab:hover:not(.pol-tab-active) { color:var(--p-neutral-50) !important; }
@@ -1317,10 +1320,19 @@ body.dark .btn-third { color:#FFFFFF; }
 .os-card h4 { font-size:13px; font-weight:600; color:var(--text-default); margin-top:8px; }
 .os-card p  { font-size:10px; color:var(--text-sec); margin-top:2px; }
 
-.progress-wrap { margin-top:auto; padding-top:20px; }
-.progress-row  { display:flex; justify-content:space-between; font-size:11px; color:var(--text-sec); margin-bottom:8px; }
-.progress-track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
-.progress-fill  { height:100%; border-radius:2px; background:var(--btn-grad); transition:width 0.4s ease; }
+/* ── PROGRESS BAR — КАНОН (DS §15, Figma 3332:32980) ──────────────────
+   Одна геометрія: h6 / r3 / overflow hidden. Два кольори з токенів, обидва
+   змінюються між темами. Заливка — ПЛОСКИЙ колір, не градієнт кнопок.
+   Легасі-імена лишились СЕЛЕКТОРАМИ тут, розмітку не чіпали. */
+.pbar,
+.gm-scan-track,
+.cmdb-progress-track,
+.scan-bar-wrap { height:6px; border-radius:3px; overflow:hidden; background:var(--progress-track); }
+.pbar > i,
+.gm-scan-track i,
+.cmdb-progress-fill,
+.scan-bar-fill { display:block; height:100%; border-radius:3px;
+  background:var(--progress-fill); box-shadow:0 0 8px rgba(63,200,120,0.4); }
 
 /* .badge — severity, див. канонічний блок BADGE нижче */
 
@@ -1471,8 +1483,9 @@ code { font-family:'DM Sans',sans-serif; }
 }
 .scan-title { font-size:20px; font-weight:700; color:var(--text-default); margin-bottom:6px; letter-spacing:-0.4px; }
 .scan-sub   { font-size:13px; color:var(--text-sec); margin-bottom:28px; }
-.scan-bar-wrap { height:6px; background:var(--bg-page); border-radius:3px; margin-bottom:10px; overflow:hidden; }
-.scan-bar-fill { height:100%; background:var(--btn-grad); border-radius:3px; animation:scanBar 3.5s ease forwards; box-shadow:0 0 8px rgba(63,200,120,0.4); }
+/* Геометрія й кольори — канонічний блок PROGRESS BAR (DS §15). */
+.scan-bar-wrap { margin-bottom:10px; }
+.scan-bar-fill { animation:scanBar 3.5s ease forwards; }
 .scan-eta   { font-size:11px; color:var(--text-sec); margin-bottom:28px; }
 .scan-items { text-align:left; }
 .scan-row   {
@@ -2911,7 +2924,8 @@ body.dark .cmw-req { background:var(--bg-subtle); }
    DARK THEME
    ═══════════════════════════════════════════ */
 body.dark {
-  --progress-track: #335255;
+  --progress-track: #335256;
+  --progress-fill:  #09996C;
   --search-text: #96A6BD;
   --search-placeholder: rgba(150,166,189,0.60);
   /* ── Semantic / Text (dark) ── */
@@ -3161,7 +3175,6 @@ body.dark .download-card      { background: var(--bg-card); border-color: var(--
 body.dark .scan-card          { background: var(--bg-card); border-color: var(--border); }
 body.dark .scan-title         { color: var(--p-neutral-50); }
 body.dark .scan-ring          { border-color: rgba(255,255,255,0.1); border-top-color: var(--green1); }
-body.dark .scan-bar-wrap      { background: rgba(255,255,255,0.08); }
 body.dark .scan-row           { color: var(--p-neutral-300); }
 body.dark .scan-row.done      { color: var(--p-green-200); }
 body.dark .scan-row.doing     { color: var(--p-neutral-50); font-weight: 500; }
@@ -4176,12 +4189,8 @@ body.dark .gm-scan-prog { background:#123033; }
 .gm-scan-prog-head span,
 .gm-scan-prog-pct { font:400 12px/normal 'DM Sans',sans-serif; color:var(--text-sec); }
 .gm-scan-prog-pct { margin-top:6px; font-size:11px; }
-/* Незаповнена частина = токен --progress-track (light #E2E8F0 / dark #335255) — той самий,
-   що в смузі Node Discovery та Remediation. Рішення user 18.08. */
-.gm-scan-track { margin-top:10px; height:8px; border-radius:4px; background:var(--progress-track); overflow:hidden; }
-.gm-scan-track i { display:block; height:100%; border-radius:4px;
-  background:linear-gradient(180deg,#10B981 8.37%,#059669 91.63%);
-  box-shadow:0 0 8px rgba(63,200,120,0.4); }
+/* Кольори й геометрія — канонічний блок PROGRESS BAR (DS §15); тут лише відступ. */
+.gm-scan-track { margin-top:10px; }
 .gm-scan-run-title { font:700 13px/normal 'DM Sans',sans-serif; color:var(--text-default); }
 .gm-scan-nodes { border:1px solid var(--border); border-radius:14px; background:var(--bg-surface); overflow:hidden; }
 .gm-scan-node { display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid var(--border); }
@@ -5466,9 +5475,8 @@ body.dark #cmdb-modal .csel-btn { background:rgba(255,255,255,0.05) !important; 
 #cmdb-modal .cmdb-kpi { background:var(--bg-subtle); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; text-align:center; }
 #cmdb-modal .cmdb-kpi-num { font-size:22px; font-weight:800; color:var(--text-default); line-height:1.1; }
 #cmdb-modal .cmdb-kpi-lbl { font-size:11px; color:var(--text-sec); font-weight:600; margin-top:3px; }
-.cmdb-progress-track { height:6px; border-radius:99px; overflow:hidden; background:var(--bg-subtle); }
-.cmdb-progress-fill { height:100%; border-radius:99px; background:var(--btn-grad); transition:width .3s; }
-body.dark .cmdb-progress-track { background:rgba(255,255,255,0.08); }
+/* Геометрія й кольори — канонічний блок PROGRESS BAR (DS §15). */
+.cmdb-progress-fill { transition:width .3s; }
 /* Scan-failed remediation checklist status pills */
 /* .sf-st — статус кроку налаштування; геометрія й палітра з канону .bdg */
 
@@ -18092,9 +18100,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <span style="font-weight:600;color:var(--text-default);">Scanning regions…</span>
             <span>us-east-1 · eu-west-1</span>
           </div>
-          <div style="height:6px;background:var(--bg-page);border-radius:3px;overflow:hidden;margin-bottom:6px;">
-            <div style="height:100%;background:var(--btn-grad);border-radius:3px;animation:scanBar 4s ease forwards;box-shadow:0 0 8px rgba(63,200,120,0.4);"></div>
-          </div>
+          <div class="pbar" style="margin-bottom:6px;"><i style="animation:scanBar 4s ease forwards;"></i></div>
           <div style="font-size:11px;color:var(--text-sec);">Discovering resources…</div>
         </div>
 
@@ -18606,9 +18612,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <span style="font-size:13px;font-weight:600;color:var(--text-default);">Overall Progress</span>
             <span style="font-size:12px;color:var(--text-sec);">7 of 12 nodes complete · Est. 3 min remaining</span>
           </div>
-          <div style="height:8px;background:var(--bg-page);border-radius:4px;overflow:hidden;margin-bottom:6px;">
-            <div style="height:100%;background:var(--btn-grad);border-radius:4px;animation:scanBar60 5s ease forwards;box-shadow:0 0 8px rgba(63,200,120,0.4);"></div>
-          </div>
+          <div class="pbar" style="margin-bottom:6px;"><i style="width:60%;"></i></div>
           <div style="font-size:11px;color:var(--text-sec);">~60% complete</div>
         </div>
 
@@ -23063,7 +23067,7 @@ function startRescan() {
   document.getElementById('remed-action-area').innerHTML =
     '<div style="width:100%;">' +
       '<div style="font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.8px;margin-bottom:8px;">RESCANNING MACBOOK-TARAS...</div>' +
-      '<div style="background:var(--progress-track,#e2e8f0);border-radius:4px;overflow:hidden;height:6px;margin-bottom:8px;"><div class="remed-progress-bar"></div></div>' +
+      '<div class="pbar" style="margin-bottom:8px;"><i class="remed-progress-bar"></i></div>' +
       '<div style="font-size:11px;color:var(--text-sec);">Waiting for backend \u2014 completing on its own.</div>' +
     '</div>';
   setTimeout(function() {
@@ -26224,7 +26228,7 @@ function openAwsSyncingModal() {
     + '<div style="padding:0 24px;margin-bottom:20px;">'
     +   '<div class="aws-scan-card" style="border:1px solid var(--border);border-radius:14px;padding:20px 16px;">'
     +     '<div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;color:var(--text-default);">Scanning regions…</span><span style="font-size:12px;color:var(--text-sec);">us-east-1 · eu-west-1</span></div>'
-    +     '<div style="height:8px;background:var(--progress-track,#e2e8f0);border-radius:4px;overflow:hidden;margin-top:10px;"><div style="height:100%;background:var(--btn-grad);border-radius:4px;animation:scanBar 4s ease forwards;box-shadow:0 0 8px rgba(63,200,120,0.4);"></div></div>'
+    +     '<div class="pbar" style="margin-top:10px;"><i style="animation:scanBar 4s ease forwards;"></i></div>'
     +     '<div style="font-size:11px;color:var(--text-sec);margin-top:6px;">Discovering resources…</div>'
     +   '</div>'
     + '</div>'
