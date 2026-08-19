@@ -47,10 +47,14 @@
 
 Повний перелік Essentials-flows, що входять у concept pack. Статус і нотатки — у розділі 3.
 
+> Стан коду на **19.08.2026**. Проти першої редакції пакета два флоу змінили патерн: **A1 (Add node)**
+> і **B5 (AWS)** переїхали з повносторінкових екранів у канонічну оверлей-модалку (`openModal`).
+> Повносторінковим лишився тільки **B3 (J4 ServiceNow)** — наступний кандидат на конверсію.
+
 ### A. Onboarding / підключення вузлів
 | # | Flow | Ключові екрани | Патерн |
 |---|---|---|---|
-| A1 | Add single node (agentless) | `v-s-agentless` → connect-test → node-added | Full-page (виняток) |
+| A1 | Add single node (agentless) | `openAddNodeWizard` → OS → method → `agentless-setup-overlay` (testing) → node added | Overlay modal |
 | A2 | Import from ServiceNow CMDB | `#cmdb-modal` (connect → browse → credentials → importing → complete) | Overlay modal |
 | A3 | Import from CSV | `#csv-modal` (upload → review → importing → complete) | Overlay modal |
 | A4 | Connection Manager setup | `cm-wizard` (create group → install & connect → active) | Overlay modal |
@@ -62,7 +66,7 @@
 | B2 | Integrations | list → connect wizard (icx) | Overlay modal |
 | B3 | ITSM capabilities (J4 ServiceNow) | `j4-connect` → match → recon active → summary | Full-page flow |
 | B4 | Data / field mapping | `fm-mapping-wizard` | Overlay modal |
-| B5 | Cloud connect (J3 AWS) | `j3-connect` → inventory → scan → results | Full-page flow |
+| B5 | Cloud connect (AWS) | `#aws-connect-overlay`: connect → discovery → inventory → scan → results | Overlay modal |
 
 ### C. Сканування, baseline, drift
 | # | Flow | Ключові екрани | Патерн |
@@ -87,11 +91,18 @@ err**O**r · **S**uccess.
 ### A. Onboarding / підключення вузлів
 
 **A1 · Add single node (agentless)** — 🟡 *Needs technical confirmation*
-- Full-page onboarding (виняток із modal-правила): три секції — Target (host/OS) · Connection Manager · Credentials.
+- **Переведено з повносторінкового флоу в оверлей-модалку** — винятку з modal-правила більше немає.
+  Кроки: detected OS / вибір OS → метод (`Agentless scan`) → Connect (`#agentless-setup-overlay`:
+  три секції Target (host/OS) · Connection Manager · Credentials) → Testing connection → Node added.
+  Це **еталонний майстер** (Guardian Wizard Pattern v1, `GUARDIAN-INTERACTION-STANDARDS.md`).
 - CM-picker фільтрується за сумісністю протоколів (WinRM/SSH); одноопційний credential-toggle прихований.
 - Валідація: submit заблокований, поки не заповнені обовʼязкові поля + inline req-hint («Add a node name, a hostname…»).
 - Connect-test engine: сценарії success / auth-fail / unreachable з відповідними станами.
-- Стани: **L** connect-test spinner · **O** три типи помилки конекшену · **S** «node added» екран.
+- Стани: **L** connect-test spinner · **O** три типи помилки конекшену (з recovery-дією) · **S** «node added» екран.
+- Вихід убік із «node added» (Scan schedule / node-detail) тримає нижню смугу повернення
+  `.na-return-bar` («Node added — finish setting it up / Back to setup») — це джерело патерну,
+  який тепер спільний і переюзаний AWS-флоу (B5).
+- Вихід із майстра посеред флоу — підтвердження скидання (discard).
 - *Confirm:* реальні коди помилок конекшену від бекенду; чи всі три сценарії відповідають продукту.
 
 **A2 · Import from ServiceNow CMDB** — 🟡 *Needs technical confirmation*
@@ -136,9 +147,20 @@ err**O**r · **S**uccess.
 - Overlay modal (`fm-mapping-wizard`): маппінг зовнішніх полів на поля Guardian.
 - *Confirm:* які transformations реально підтримуються (напр. rename / split / default).
 
-**B5 · Cloud connect (AWS / J3)** — 🔵 *Concept only*
-- Full-page flow: Connect AWS → Sync Nodes → Run Scan → Results (nav 4 кроки, лічильники уніфіковано «of 4»).
-- Стани: **L** connecting/scanning · **O** «Connection Failed» (IAM/permission errors, «Try again →») / no-resources · **S** results.
+**B5 · Cloud connect (AWS)** — 🔵 *Concept only*
+- **Переведено з повносторінкового флоу в ланцюг модалок (18–19.08).** Усі кроки живуть в одному
+  оверлеї `#aws-connect-overlay` у канонічній 600px оболонці зі спільним 3-кроковим степером
+  **Connect AWS → Node Discovery → Node Inventory**: `openAwsConnectModal` → `…TestingModal` →
+  `…ConnectedModal` → `…SyncingModal` (Node Discovery) → `…InventoryModal` → `…ScanConfigModal` →
+  `…ScanningModal` → `…ScanCompleteModal` / `…ScanFailedModal` → `…ResultsModal`.
+- Стани: **L** testing / discovery / scanning · **O** «Connection Failed» (IAM/permission), scan failed,
+  no-resources · **S** connected, scan complete, results.
+- `openAwsResultsModal(readOnly)`: `readOnly` = вхід поза майстром («View results» на картці AWS) —
+  Back закриває оверлей і повертає сторінку під ним; у майстрі Back веде на Scan Complete.
+- Вихід убік (`View in Scans`, `Change Reconciliation`) не тупиковий: знизу зʼявляється спільна
+  смуга повернення `.na-return-bar` («AWS scan results still open / Back to results»), та сама,
+  що в Add Manually. Смуга живе лише на цільових сторінках і знімається сама.
+- Повносторінкові `v-j3-*` лишились у файлі без входів — свідомо, як і при попередніх конверсіях.
 - *Note:* OIDC для AWS — deferred (за межі 4-го тижня).
 
 ### C. Сканування, baseline, drift
