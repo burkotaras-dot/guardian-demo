@@ -5505,6 +5505,35 @@ body.dark #cmdb-modal .cmdb-kpi { background:#133033; border-color:transparent; 
 /* У слоті ритм тримає gap:20px — власний нижній відступ блоку зайвий. */
 #csv-modal .gm-upload-block { margin-bottom:0; }
 body.dark #csv-modal .csv-cols { border-top-color:rgba(255,255,255,0.06); }
+/* ── CSV import modal — крок 2 «Review Import», Figma 3338:45532 (light 3338:45760 / dark 3338:46048) ── */
+#csv-modal .csv-rev { display:flex; flex-direction:column; gap:20px; padding:20px 0 10px; }
+#csv-modal .csv-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+#csv-modal .csv-kpi { height:70px; background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+body.dark #csv-modal .csv-kpi { background:#133033; }
+#csv-modal .csv-kpi-num { font-size:22px; font-weight:800; line-height:29px; }
+#csv-modal .csv-kpi-num--green { color:#10B981; }
+#csv-modal .csv-kpi-num--blue  { color:#2563EB; }
+#csv-modal .csv-kpi-num--red   { color:#FB3C44; }
+#csv-modal .csv-kpi-lbl { padding-top:2px; font-size:10px; font-weight:600; text-transform:uppercase; color:var(--text-sec); }
+/* Таблиця виїжджає до правого краю картки — тільки лівий паддінг, ширина 550. */
+#csv-modal .csv-rev-tbl { padding-left:24px; }
+#csv-modal .csv-rev-tbl-in { width:550px; border-top:1px solid var(--border); }
+body.dark #csv-modal .csv-rev-tbl-in { border-top-color:rgba(255,255,255,0.06); }
+#csv-modal .csv-rev-tbl table { width:100%; border-collapse:collapse; table-layout:fixed; }
+/* Фон/нижню лінію хедера дає канонічне `table thead th` (--table-header-bg, !important) —
+   свідомо тримаємось канону замість F8FAFC/133033 з макета. */
+#csv-modal .csv-rev-tbl th {
+  height:34px; padding:10px 8px; text-align:left; border-top:1px solid var(--border);
+  font:700 10px/normal 'DM Sans',sans-serif; letter-spacing:.5px; text-transform:uppercase; color:#94A3B8;
+}
+#csv-modal .csv-rev-tbl td { height:49px; padding:10px 8px; border-bottom:1px solid var(--border); font:400 11px/13px 'DM Sans',sans-serif; color:var(--text-default); }
+body.dark #csv-modal .csv-rev-tbl td { border-bottom-color:rgba(255,255,255,0.06); }
+#csv-modal .csv-rev-name { font-weight:600; }
+#csv-modal .csv-rev-env { padding-top:2px; font-weight:400; color:var(--text-sec); }
+#csv-modal .csv-rev-os { color:var(--text-sec); }
+#csv-modal .csv-rev-st { padding:10px 9px; }
+#csv-modal .csv-rev-foot { padding:10px 0; border-top:1px solid var(--border); font-size:11px; color:var(--text-sec); }
+body.dark #csv-modal .csv-rev-foot { border-top-color:rgba(255,255,255,0.06); }
 /* Scan-failed remediation checklist status pills */
 /* .sf-st — статус кроку налаштування; геометрія й палітра з канону .bdg */
 
@@ -21938,53 +21967,46 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
       </div><!-- /csvm-panel csv-import -->
 
-    <!-- STEP 2 · Review -->
-    <div class="csvm-panel" id="v-csv-preview" style="display:none;">
-      <div style="padding:24px;">
-        <div style="max-width:1000px;margin:0 auto;">
+    <!-- STEP 2 · Review — Figma 3338:45532 (light 3338:45760 / dark 3338:46048) -->
+    <div class="csvm-panel csv-rev" id="v-csv-preview" style="display:none;">
 
-          <!-- Summary chips -->
-          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-            <div style="flex:1;min-width:130px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;">
-              <div style="font-size:22px;font-weight:800;color:#00AF73;">22</div>
-              <div style="font-size:11px;color:var(--text-sec);font-weight:600;margin-top:2px;">READY</div>
-            </div>
-            <div style="flex:1;min-width:130px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;">
-              <div style="font-size:22px;font-weight:800;color:#2563eb;">3</div>
-              <div style="font-size:11px;color:var(--text-sec);font-weight:600;margin-top:2px;">UPDATES EXISTING</div>
-            </div>
-            <div style="flex:1;min-width:130px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;">
-              <div style="font-size:22px;font-weight:800;color:#FB3C44;">2</div>
-              <div style="font-size:11px;color:var(--text-sec);font-weight:600;margin-top:2px;">SKIPPED (ERRORS)</div>
-            </div>
-          </div>
-
-          <!-- Error callout -->
-          <div style="display:flex;align-items:flex-start;gap:10px;background:var(--bg-warning);border:1px solid var(--bg-warning-border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:16px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <div style="font-size:12px;color:#78350f;line-height:1.5;">2 rows have errors and will be skipped. Fix them in the file and re-upload to include them, or import the 22 valid rows now.</div>
-          </div>
-
-          <!-- Preview table -->
-          <div style="border-top:1px solid var(--border);margin-bottom:16px;">
-            <table class="data-table" style="width:100%;">
-              <thead><tr><th>NAME</th><th>HOSTNAME</th><th>OS</th><th>PROTOCOL</th><th>ENVIRONMENT</th><th>ROW STATUS</th></tr></thead>
-              <tbody>
-                <tr><td style="font-size:12px;font-weight:600;">web-prod-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;">10.0.1.11</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td style="font-size:11px;color:var(--text-sec);">SSH · 22</td><td style="font-size:11px;color:var(--text-sec);">Production</td><td><span class="csv-badge csv-badge-new">New</span></td></tr>
-                <tr><td style="font-size:12px;font-weight:600;">web-prod-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;">10.0.1.12</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td style="font-size:11px;color:var(--text-sec);">SSH · 22</td><td style="font-size:11px;color:var(--text-sec);">Production</td><td><span class="csv-badge csv-badge-new">New</span></td></tr>
-                <tr><td style="font-size:12px;font-weight:600;">win-app-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;">10.0.3.20</td><td style="font-size:11px;color:var(--text-sec);">Windows Server 2022</td><td style="font-size:11px;color:var(--text-sec);">WinRM · 5985</td><td style="font-size:11px;color:var(--text-sec);">Production</td><td><span class="csv-badge csv-badge-update">Updates existing</span></td></tr>
-                <tr><td style="font-size:12px;font-weight:600;">db-core-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;">10.0.2.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td style="font-size:11px;color:var(--text-sec);">SSH · 22</td><td style="font-size:11px;color:var(--text-sec);">Production</td><td><span class="csv-badge csv-badge-new">New</span></td></tr>
-                <tr><td style="font-size:12px;font-weight:600;">staging-app-04</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;">10.1.0.40</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 20.04</td><td style="font-size:11px;color:var(--text-sec);">SSH · 22</td><td style="font-size:11px;color:var(--text-sec);">Staging</td><td><span class="csv-badge csv-badge-new">New</span></td></tr>
-                <!-- Error rows -->
-                <tr style="background:rgba(251,60,68,0.04);"><td style="font-size:12px;font-weight:600;">(blank)</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;">10.0.5.9</td><td style="font-size:11px;color:var(--text-sec);">CentOS 7</td><td style="font-size:11px;color:var(--text-sec);">SSH · 22</td><td style="font-size:11px;color:var(--text-sec);">—</td><td><span class="csv-badge csv-badge-error">Error</span><div style="font-size:10px;color:#991b1b;margin-top:2px;">Row 14 — name is required</div></td></tr>
-                <tr style="background:rgba(251,60,68,0.04);"><td style="font-size:12px;font-weight:600;">edge-router-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;">not-an-ip</td><td style="font-size:11px;color:var(--text-sec);">—</td><td style="font-size:11px;color:var(--text-sec);">—</td><td style="font-size:11px;color:var(--text-sec);">—</td><td><span class="csv-badge csv-badge-error">Error</span><div style="font-size:10px;color:#991b1b;margin-top:2px;">Row 19 — hostname is not a valid IP or DNS name</div></td></tr>
-              </tbody>
-            </table>
-            <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-sec);">Showing 7 of 24 rows</div>
-          </div>
-
+      <!-- KPI -->
+      <div class="csv-sec">
+        <div class="csv-kpi-row">
+          <div class="csv-kpi"><div class="csv-kpi-num csv-kpi-num--green">22</div><div class="csv-kpi-lbl">Ready</div></div>
+          <div class="csv-kpi"><div class="csv-kpi-num csv-kpi-num--blue">3</div><div class="csv-kpi-lbl">Updates existing</div></div>
+          <div class="csv-kpi"><div class="csv-kpi-num csv-kpi-num--red">2</div><div class="csv-kpi-lbl">Skipped (errors)</div></div>
         </div>
       </div>
+
+      <!-- Info block — пояснення помилок живе тут, не в рядках таблиці -->
+      <div class="csv-sec">
+        <div class="gm-info-note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span>2 rows have errors and will be skipped. Fix them in the file and re-upload to include them, or import the 22 valid rows now.</span>
+        </div>
+      </div>
+
+      <!-- Preview table -->
+      <div class="csv-rev-tbl">
+        <div class="csv-rev-tbl-in">
+          <table>
+            <colgroup><col style="width:130px;"><col style="width:150px;"><col style="width:136px;"><col style="width:134px;"></colgroup>
+            <thead><tr><th style="padding-left:14px;">Name</th><th>Connection</th><th>OS</th><th>Row status</th></tr></thead>
+            <tbody>
+              <tr><td><div class="csv-rev-name">web-prod-01</div><div class="csv-rev-env">Production</div></td><td>10.0.1.11 / SSH · 22</td><td class="csv-rev-os">Ubuntu 22.04</td><td class="csv-rev-st"><span class="bdg bdg--dot bdg--green">New</span></td></tr>
+              <tr><td><div class="csv-rev-name">web-prod-02</div><div class="csv-rev-env">Production</div></td><td>10.0.1.12 / SSH · 22</td><td class="csv-rev-os">Ubuntu 22.04</td><td class="csv-rev-st"><span class="bdg bdg--dot bdg--green">New</span></td></tr>
+              <tr><td><div class="csv-rev-name">win-app-01</div><div class="csv-rev-env">Production</div></td><td>10.0.3.20 / WinRM · 5985</td><td class="csv-rev-os">Windows Server 2022</td><td class="csv-rev-st"><span class="bdg bdg--dot bdg--purple">Updates existing</span></td></tr>
+              <tr><td><div class="csv-rev-name">db-core-01</div><div class="csv-rev-env">Production</div></td><td>10.0.2.10 / SSH · 22</td><td class="csv-rev-os">RHEL 8</td><td class="csv-rev-st"><span class="bdg bdg--dot bdg--green">New</span></td></tr>
+              <tr><td><div class="csv-rev-name">staging-app-04</div><div class="csv-rev-env">Staging</div></td><td>10.0.5.9 / SSH · 22</td><td class="csv-rev-os">Ubuntu 20.04</td><td class="csv-rev-st"><span class="bdg bdg--dot bdg--green">New</span></td></tr>
+              <tr><td><div class="csv-rev-name">(blank)</div></td><td>10.1.0.40 / SSH · 22</td><td class="csv-rev-os">CentOS 7</td><td class="csv-rev-st"><span class="bdg bdg--dot bdg--red">Error</span></td></tr>
+              <tr><td><div class="csv-rev-name">edge-router-02</div></td><td>not-an-ip</td><td class="csv-rev-os">—</td><td class="csv-rev-st"><span class="bdg bdg--dot bdg--red">Error</span></td></tr>
+            </tbody>
+          </table>
+          <div class="csv-rev-foot">Showing 7 of 24 rows</div>
+        </div>
+      </div>
+
       </div><!-- /csvm-panel csv-preview -->
 
     <!-- STEP 3 · Importing -->
