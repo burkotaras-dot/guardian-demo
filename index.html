@@ -3109,7 +3109,9 @@ body.dark .stat-sub           { color: var(--p-neutral-0); }
 body.dark .stat-value         { color: var(--p-neutral-50); }
 body.dark .issues-card        { background: transparent; border-color: transparent; }
 body.dark .issues-card-title  { color: var(--p-neutral-50); }
-body.dark .node-row > div:nth-child(6) { color: var(--p-neutral-50) !important; }
+/* Комірка Last Scan у dark світліша за --text-sec. Виняток — .node-scan: там колір несе
+   СТАН скану, тому власні значення компонента мають вигравати (див. блок .node-scan). */
+body.dark .node-row > div:nth-child(6):not(.node-scan) { color: var(--p-neutral-50) !important; }
 body.dark .score-svg circle:first-child { stroke: #335255; }
 body.dark .score-track { stroke: #335255 !important; }
 body.dark .sev-num-critical { color:#FF4646; }
@@ -3431,6 +3433,21 @@ body.dark .stat-mini[data-accent="blue"]::before  { background:radial-gradient(c
 body.dark .cm-ico { background:rgba(255,255,255,0.05); }
 .node-ico { width:32px; height:32px; border-radius:8px; background:var(--bg-subtle); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 body.dark .node-ico { background:rgba(255,255,255,0.05); }
+/* ── Комірка «Last Scan» — стани скану вузла (Stephen + Gareth, Slack 20.08.2026) ──
+   Статуси живуть У НАЯВНІЙ колонці Last Scan, нової колонки не додаємо.
+   Пігулки тут свідомо НЕМАЄ: у рядку вже є Score/Issues, а це ЗНАЧЕННЯ колонки,
+   а не статус-бейдж — правило «один об'єкт із формою в рядку» (DS §12). */
+.node-scan { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-sec); }
+.node-scan > svg { width:12px; height:12px; flex-shrink:0; }
+.node-scan[data-state="idle"] > svg    { opacity:.6; }
+.node-scan[data-state="pending"]       { color:var(--text-muted); }
+.node-scan[data-state="running"]       { color:var(--status-info); font-weight:500; }
+.node-scan[data-state="running"] > svg { animation:spin 1.2s linear infinite; }
+.node-scan[data-state="failed"]        { color:var(--status-danger); font-weight:500; }
+/* Dark: idle тримає ту саму світлість, що й решта комірки Last Scan; червоний беремо
+   яскравіший — так само, як .sev-num-critical у темній темі. */
+body.dark .node-scan[data-state="idle"]   { color:var(--p-neutral-50); }
+body.dark .node-scan[data-state="failed"] { color:#FF4646; }
 .cm-row-dim .cm-ico svg { stroke:var(--text-muted); }
 .cm-row-dim { opacity:0.55; }
 .cm-row-dim:hover { opacity:0.8; }
@@ -6596,7 +6613,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div class="scan-row doing"><div class="active-circle"></div>In progress</div>
             <div class="scan-row"><div class="pending-circle"></div>Complete</div>
           </div>
-          <button class="btn-primary" style="margin-top:28px;" onclick="go(&#39;s-scan-complete&#39;)">Continue in background →</button>
+          <button class="btn-primary" style="margin-top:28px;" onclick="scanContinueInBackground()">Continue in background →</button>
         </div>
       </div>
     </div>
@@ -7264,7 +7281,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </button>
             </span>
             <span class="tip-wrap" data-tip="Scan Selected — runs a compliance scan on the selected nodes now, outside their schedule. Needs 1 or more nodes.">
-            <button id="node-action-scan" class="btn-icon" onclick="go(&#39;s07&#39;)" disabled="" aria-label="Scan Selected">
+            <button id="node-action-scan" class="btn-icon" onclick="scanSelectedNodes()" disabled="" aria-label="Scan Selected">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z" stroke="currentColor"></path></svg>
             </button>
             </span>
@@ -7313,7 +7330,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:11px;color:var(--text-sec);">27 total</div>
             </div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">3 changes</span></div>
-            <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>2 min ago</div>
+            <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>2 min ago</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Fix now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
@@ -7338,7 +7355,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:11px;color:var(--text-sec);">36 total</div>
             </div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 change</span></div>
-            <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>1 hour ago</div>
+            <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>1 hour ago</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Fix now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
@@ -7363,7 +7380,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:11px;color:var(--text-sec);">6 total</div>
             </div>
             <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
-            <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>2 hours ago</div>
+            <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>2 hours ago</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Details <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
@@ -7388,7 +7405,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 change</span></div>
-            <div style="font-size:12px;color:var(--status-info);font-weight:500;display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" style="flex-shrink:0;animation:spin 1.2s linear infinite;"><path d="M21 12a9 9 0 1 1-6.22-8.56"></path></svg>Running now</div>
+            <div class="node-scan" data-state="running"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.22-8.56"></path></svg>Scanning…</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Scanning…</button></div>
           </div>
 
@@ -7416,7 +7433,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#d97706;">71</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:71%;height:100%;background:#d97706;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:#FB3C44;">4 Critical</span><div style="font-size:11px;color:var(--text-sec);">13 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
-              <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
+              <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EC2: web-prod-02 -->
@@ -7434,7 +7451,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#00AF73;">82</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:82%;height:100%;background:#00AF73;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">7 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
-              <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
+              <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EC2: api-server-01 -->
@@ -7452,7 +7469,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#FB3C44;">63</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:63%;height:100%;background:#FB3C44;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:#FB3C44;">6 Critical</span><div style="font-size:11px;color:var(--text-sec);">20 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
-              <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
+              <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Fix now</button></div>
             </div>
             <!-- ECS -->
@@ -7470,7 +7487,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#00AF73;">78</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:78%;height:100%;background:#00AF73;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">11 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
-              <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
+              <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EKS -->
@@ -7488,7 +7505,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#00AF73;">85</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:85%;height:100%;background:#00AF73;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">4 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
-              <div style="font-size:12px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;opacity:.6;"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
+              <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- collapsed note for remaining 7 nodes -->
@@ -22899,6 +22916,7 @@ function showView(name) {
   if (_nav) _nav.style.background = isWizardChrome ? '#062A2E' : 'linear-gradient(to right, #062A2E 220px, transparent 220px)';
   showOnly(name);
   if (name === 'settings-integrations' && typeof renderIntegrations === 'function') renderIntegrations();
+  if (name === 'all-devices' && typeof resumeNodeScans === 'function') resumeNodeScans();
   _updateBC(name);
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
@@ -23300,6 +23318,91 @@ function undoAcceptRisk() {
 }
 
 // ── All Nodes — checkbox + Scan Selected ──
+/* ── Стани скану в рядку вузла (All Nodes → колонка «Last Scan») ────────────────────
+   Підтверджено клієнтом (Stephen Earl + Gareth Brown, Slack 20.08.2026): user-facing
+   статуси розширюють НАЯВНУ колонку Last Scan — нової колонки не додаємо. Це ж місце є
+   точкою повернення після «Continue in background», бо скан живе на сервері.
+   Життєвий цикл: idle → pending → running → idle (свіжий таймстемп) | failed → Retry. */
+var NODE_SCAN_STATES = {
+  idle:    { label:'Just now',     action:null,
+             glyph:'<polyline points="20 6 9 17 4 12"></polyline>' },
+  pending: { label:'Pending scan', action:'Queued',
+             glyph:'<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>' },
+  running: { label:'Scanning…',    action:'Scanning…',
+             glyph:'<path d="M21 12a9 9 0 1 1-6.22-8.56"></path>' },
+  failed:  { label:'Scan failed',  action:'Retry',
+             glyph:'<circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16.2v.01"></path>' }
+};
+
+function NODE_SCAN_CELL(state, label) {
+  var s = NODE_SCAN_STATES[state];
+  return '<div class="node-scan" data-state="' + state + '">'
+       + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' + s.glyph + '</svg>'
+       + (label || s.label) + '</div>';
+}
+
+// 6-та комірка .node-row = Last Scan, 7-ма = Action. Оригінальну кнопку зберігаємо,
+// щоб повернути її, коли скан завершиться.
+function setNodeScanState(row, state, label) {
+  if (!row || row.children.length < 7) return;
+  row.children[5].outerHTML = NODE_SCAN_CELL(state, label);
+  var act = row.children[6];
+  if (row.dataset.scanAction === undefined) row.dataset.scanAction = act.innerHTML;
+  var s = NODE_SCAN_STATES[state];
+  if (!s.action) { act.innerHTML = row.dataset.scanAction; return; }
+  var live = (state === 'failed');
+  act.innerHTML = '<button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;'
+    + 'justify-content:center;text-align:center;font-weight:600;'
+    + (live ? '' : 'opacity:0.5;cursor:default;') + '" onclick="event.stopPropagation();'
+    + (live ? 'retryNodeScan(this)' : '') + '">' + s.action + '</button>';
+}
+
+/* v-s07 має два входи: онбординг (s05 → s07 → s-scan-complete, крок 4 степера) і
+   «Scan Selected» зі списку вузлів. Для другого «Continue in background» мусить вести
+   НАЗАД у All Nodes — інакше кнопка обіцяє фон, а показує готовий результат. */
+var _scanFromNodes = false;
+
+function scanSelectedNodes() {
+  document.querySelectorAll('.node-checkbox:checked').forEach(function (cb) {
+    var row = cb.closest('.node-row');
+    if (!row) return;
+    setNodeScanState(row, 'pending');
+    row.dataset.scanQueued = '1';
+  });
+  _scanFromNodes = true;
+  go('s07');
+}
+
+function scanContinueInBackground() {
+  if (_scanFromNodes) { _scanFromNodes = false; showView('all-devices'); return; }
+  go('s-scan-complete');
+}
+
+/* Прогрес відлічуємо від моменту, коли користувач ДИВИТЬСЯ на список: інакше «Scanning…»
+   відпрацювало б у фоні і повернення показувало б лише готовий результат. */
+function resumeNodeScans() {
+  var queued = document.querySelectorAll('.node-row[data-scan-queued]');
+  if (!queued.length) return;
+  queued.forEach(function (row) {
+    row.removeAttribute('data-scan-queued');
+    setNodeScanState(row, 'running');
+  });
+  setTimeout(function () {
+    queued.forEach(function (row) {
+      // SARAH-LAPTOP-01 — проблемний вузол демо; на ньому показуємо стан падіння + Retry,
+      // якого Gareth просив окремо («including failing»).
+      var failed = (row.dataset.name || '').indexOf('SARAH-LAPTOP-01') === 0;
+      setNodeScanState(row, failed ? 'failed' : 'idle');
+    });
+  }, 5200);
+}
+
+function retryNodeScan(btn) {
+  var row = btn.closest('.node-row');
+  setNodeScanState(row, 'running');
+  setTimeout(function () { setNodeScanState(row, 'idle'); }, 4000);
+}
+
 function updateScanSelected() {
   const checked = document.querySelectorAll('.node-checkbox:checked').length;
   const total = document.querySelectorAll('.node-checkbox').length;
@@ -23344,7 +23447,7 @@ function updateScanSelected() {
       btn.style.border = '1px solid #cbd5e1';
       btn.style.color = '#64748b';
     }
-    if (checked > 0) btn.onclick = function() { go('s07'); };
+    if (checked > 0) btn.onclick = function() { scanSelectedNodes(); };
   }
   if (all) {
     all.indeterminate = checked > 0 && checked < total;
@@ -23723,11 +23826,11 @@ function promoteNode(btn) {
       '<div style="display:flex;align-items:center;gap:10px;">' + iconHTML +
         '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">' + nm + '</div>' +
         '<div style="font-size:11px;color:var(--text-sec);">' + subtitle + '</div></div></div>' +
-      '<div style="font-size:12px;font-style:italic;color:var(--text-sec);">Pending scan</div>' +
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
-      '<div style="font-size:12px;color:var(--text-sec);">Never</div>' +
-      '<div><button class="btn-primary" style="font-size:11px;padding:5px 12px;width:auto;" onclick="event.stopPropagation();showToast(\'Scan started\')">Scan now</button></div>';
+      '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
+      NODE_SCAN_CELL('pending') +
+      '<div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Queued</button></div>';
 
     // Insert before AWS rows section (or at end of table)
     var managedTable = document.querySelector('#nodes-managed-view [style*="box-shadow"]');
@@ -23798,11 +23901,11 @@ function bulkPromote() {
       '<div style="display:flex;align-items:center;gap:10px;">' + iconHTML +
         '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">' + nm + '</div>' +
         '<div style="font-size:11px;color:var(--text-sec);">' + subtitle + '</div></div></div>' +
-      '<div style="font-size:12px;font-style:italic;color:var(--text-sec);">Pending scan</div>' +
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
-      '<div style="font-size:12px;color:var(--text-sec);">Never</div>' +
-      '<div><button class="btn-primary" style="font-size:11px;padding:5px 12px;width:auto;" onclick="event.stopPropagation();showToast(\'Scan started\')">Scan now</button></div>';
+      '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
+      NODE_SCAN_CELL('pending') +
+      '<div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Queued</button></div>';
     if (managedTable) {
       if (awsRows) { managedTable.insertBefore(newRow, awsRows); }
       else { managedTable.appendChild(newRow); }
