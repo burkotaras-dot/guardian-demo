@@ -2850,6 +2850,10 @@ body.dark .radio-item.cm-item.selected { background:#0C2123;border-color:rgba(16
 .gm-overlay .gm-radio-card > input[type="radio"]:checked,
 .gm-overlay .gm-radio-card.is-selected .gm-radio-control,
 .gm-overlay .radio-item.selected .radio-dot { border-color:#059669; }
+/* Figma 2926:1413 — the dot itself gets a green ring on hover, even unselected. */
+.gm-overlay .gm-radio-card:hover > input[type="radio"],
+.gm-overlay .gm-radio-card:hover .gm-radio-control,
+.gm-overlay .radio-item:hover .radio-dot { border-color:#059669; }
 .gm-overlay .gm-radio-card > input[type="radio"]:checked::after,
 .gm-overlay .gm-radio-card.is-selected .gm-radio-control::after,
 .gm-overlay .radio-item.selected .radio-dot::after {
@@ -2903,20 +2907,29 @@ body.dark .gm-overlay .gm-radio-card:has(.gm-radio-dropdown):has(input[type="rad
 body.dark .gm-overlay .gm-radio-card.is-selected:has(.gm-radio-dropdown) {
   border-color:rgba(16,185,129,.60);
 }
-/* Радіо в dark бере ті самі значення, що глобальний чекбокс (~L3089) — вони стоять поруч
-   в одному вікні. Без цього правила спрацьовував світлий background:#FFFFFF. */
+/* Figma 3018:4457 (Dark/Default) — the dot component itself never themes: it's
+   the same white circle with a #94A3B8 ring in dark as in light. Only the
+   surrounding card/text adapts to the theme. */
 body.dark .gm-overlay .gm-radio-card > input[type="radio"],
 body.dark .gm-overlay .gm-radio-card .gm-radio-control,
 body.dark .gm-overlay .radio-item .radio-dot {
-  background:rgba(255,255,255,.06);
-  border-color:rgba(255,255,255,.25);
+  background:#FFFFFF;
+  border-color:#94A3B8;
 }
+body.dark .gm-overlay .gm-radio-card:hover > input[type="radio"],
+body.dark .gm-overlay .gm-radio-card:hover .gm-radio-control,
+body.dark .gm-overlay .radio-item:hover .radio-dot { border-color:var(--green1); }
+/* Figma 3018:4481 (Dark/Active) — the dot component itself never themes: white
+   fill, #059669 ring and dot in both light and dark. Only the card around it does. */
 body.dark .gm-overlay .gm-radio-card > input[type="radio"]:checked,
 body.dark .gm-overlay .gm-radio-card.is-selected .gm-radio-control,
-body.dark .gm-overlay .radio-item.selected .radio-dot { border-color:var(--green1); }
+body.dark .gm-overlay .radio-item.selected .radio-dot {
+  background:#FFFFFF;
+  border-color:#059669;
+}
 body.dark .gm-overlay .gm-radio-card > input[type="radio"]:checked::after,
 body.dark .gm-overlay .gm-radio-card.is-selected .gm-radio-control::after,
-body.dark .gm-overlay .radio-item.selected .radio-dot::after { background:var(--green1); }
+body.dark .gm-overlay .radio-item.selected .radio-dot::after { background:#059669; }
 body.dark .gm-overlay .gm-radio-title,
 body.dark .gm-overlay .radio-item [style*="color:var(--text-default)"] { color:#FFFFFF !important; }
 body.dark .gm-overlay .gm-radio-description,
@@ -10126,34 +10139,34 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div style="padding:0;">
             <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:6px;">Assign to Node Groups</div>
             <div style="font-size:12px;color:var(--text-sec);margin-bottom:20px;">Select which groups this policy should apply to</div>
-            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+            <div class="gm-radio-group" style="margin-bottom:20px;">
               <!-- Group 1 -->
-              <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--green1);border-radius:var(--radius-md);cursor:pointer;background:var(--green-dim);">
-                <input type="checkbox" checked="" style="width:16px;height:16px;accent-color:var(--green2);cursor:pointer;">
-                <div style="flex:1;">
-                  <div style="font-size:13px;font-weight:600;color:var(--text-default);">All Windows Devices</div>
-                  <div style="font-size:11px;color:var(--text-sec);margin-top:1px;">12 nodes</div>
+              <label class="gm-radio-card">
+                <input type="radio" name="pc-assign-group" value="all-windows" checked="">
+                <div class="gm-radio-copy">
+                  <div class="gm-radio-title">All Windows Devices</div>
+                  <div class="gm-radio-description">12 nodes</div>
                 </div>
-                <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(63,200,120,0.12);color:var(--green2);border:1px solid rgba(63,200,120,0.2);">Selected</span>
+                <span class="bdg bdg--green" style="flex-shrink:0;">Selected</span>
               </label>
               <!-- Group 2 -->
-              <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;background:var(--bg-surface);transition:border-color 0.12s;" onmouseover="this.style.borderColor=&#39;#94a3b8&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;">
-                <input type="checkbox" style="width:16px;height:16px;accent-color:var(--green2);cursor:pointer;">
-                <div style="flex:1;">
-                  <div style="font-size:13px;font-weight:600;color:var(--text-default);">Production Servers</div>
-                  <div style="font-size:11px;color:var(--text-sec);margin-top:1px;">4 nodes</div>
+              <label class="gm-radio-card">
+                <input type="radio" name="pc-assign-group" value="prod-servers">
+                <div class="gm-radio-copy">
+                  <div class="gm-radio-title">Production Servers</div>
+                  <div class="gm-radio-description">4 nodes</div>
                 </div>
               </label>
               <!-- Group 3 -->
-              <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;background:var(--bg-surface);transition:border-color 0.12s;" onmouseover="this.style.borderColor=&#39;#94a3b8&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;">
-                <input type="checkbox" style="width:16px;height:16px;accent-color:var(--green2);cursor:pointer;">
-                <div style="flex:1;">
-                  <div style="font-size:13px;font-weight:600;color:var(--text-default);">Staging Environment</div>
-                  <div style="font-size:11px;color:var(--text-sec);margin-top:1px;">3 nodes</div>
+              <label class="gm-radio-card">
+                <input type="radio" name="pc-assign-group" value="staging">
+                <div class="gm-radio-copy">
+                  <div class="gm-radio-title">Staging Environment</div>
+                  <div class="gm-radio-description">3 nodes</div>
                 </div>
               </label>
             </div>
-            <div style="padding:12px 16px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:var(--radius-md);display:flex;align-items:center;gap:10px;">
+            <div style="padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius-md);display:flex;align-items:center;gap:10px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <span style="font-size:12px;color:var(--text-sec);">Or assign to specific nodes later from the Nodes view</span>
             </div>
@@ -16628,31 +16641,49 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var peName = document.getElementById('pe-name');
       if (peName) peName.value = name;
 
-      // Close wizard modal, show success on policy-detail
-      closeModal(_PC_MODAL);
-      showView('policy-detail');
-      var body = ''
-        + '<div style="text-align:center;">'
-        +   '<div style="width:56px;height:56px;border-radius:50%;background:rgba(37,167,96,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">'
-        +     '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
-        +   '</div>'
-        +   '<div style="font-size:20px;font-weight:800;color:var(--text-default);margin-bottom:8px;">Policy created</div>'
-        +   '<div style="font-size:14px;color:var(--text-sec);margin-bottom:28px;line-height:1.5;">"' + name + '" is ready. You can view it now or go back to the policies list.</div>'
-        +   '<div style="display:flex;flex-direction:column;gap:10px;">'
-        +     '<button onclick="pcSuccessView()" style="width:100%;padding:13px;background:linear-gradient(135deg,#3FC878,#26A257);border:none;border-radius:10px;color:white;font-size:14px;font-weight:700;cursor:pointer;" onmouseover="this.style.opacity=\'.88\'" onmouseout="this.style.opacity=\'1\'">View Policy</button>'
-        +     '<button onclick="pcSuccessList()" style="width:100%;padding:13px;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:10px;color:var(--p-neutral-800);font-size:14px;font-weight:600;cursor:pointer;" onmouseover="this.style.borderColor=\'var(--green1)\';this.style.color=\'var(--green2)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--p-neutral-800)\'">Back to Policies List</button>'
-        +   '</div>'
-        + '</div>';
-      openModal({ id: 'pc-success-modal', size: 'sm', bodyHtml: body });
+      // Swap the wizard's own body/footer to the success state (Figma 3390:54585) —
+      // same modal shell and stepper (all 3 steps stay green/numbered), never a
+      // separate small modal.
+      var ov = document.getElementById(_PC_MODAL);
+      if (!ov) return;
+      var gmBody = ov.querySelector('.gm-body');
+      if (gmBody) {
+        // Hide (don't destroy) the transplanted pc-step-1/2/3 panels — they're
+        // live DOM nodes moved from #v-policy-create, and onClose() moves them
+        // back home by id when the modal closes. Wiping .gm-body would delete them.
+        Array.prototype.forEach.call(gmBody.querySelectorAll('.gm-panel'), function(p) { p.style.display = 'none'; });
+        var successPanel = document.createElement('div');
+        successPanel.innerHTML = ''
+          + '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0;text-align:center;">'
+          +   '<div style="width:56px;height:56px;border-radius:50%;background:rgba(37,167,96,0.1);display:flex;align-items:center;justify-content:center;">'
+          +     '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+          +   '</div>'
+          +   '<div style="font-size:20px;font-weight:800;color:var(--text-default);padding-top:20px;">Policy created</div>'
+          +   '<div style="font-size:14px;color:var(--text-sec);line-height:1.5;padding-top:8px;max-width:410px;">&ldquo;' + name + '&rdquo; is ready. You can view it now or go back to the policies list.</div>'
+          + '</div>';
+        gmBody.appendChild(successPanel);
+      }
+      var gmFoot = ov.querySelector('.gm-foot');
+      if (gmFoot) {
+        var arrowSvg = '<svg class="gm-btn-arrow" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg>';
+        gmFoot.innerHTML = '<div class="gm-foot-left">'
+          +   '<button type="button" class="btn-third" onclick="pcSuccessList()">'
+          +     '<span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>'
+          +     'Back to Policies List</button>'
+          + '</div>'
+          + '<div class="gm-foot-right">'
+          +   '<button type="button" class="gm-btn gm-btn-primary" onclick="pcSuccessView()">View Policy' + arrowSvg + '</button>'
+          + '</div>';
+      }
     }
 
     function pcSuccessView() {
-      closeModal('pc-success-modal');
-      // already on policy-detail
+      closeModal(_PC_MODAL);
+      showView('policy-detail');
     }
 
     function pcSuccessList() {
-      closeModal('pc-success-modal');
+      closeModal(_PC_MODAL);
       showView('policies');
     }
 
