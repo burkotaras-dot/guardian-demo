@@ -1834,6 +1834,40 @@ body.dark .code-row > .code-value { color:var(--p-neutral-50); }
 }
 .code-copy:hover { color:var(--green1); }
 
+/* CM Group wizard — Windows/Linux installer choice, Figma 3397:60254: one
+   joined segmented control, not two floating buttons. */
+.cmw-os-seg {
+  flex:1; border:none; background:#F9FAFC; color:var(--text-sec);
+  font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600;
+  cursor:pointer; transition:background .15s, color .15s;
+}
+.cmw-os-seg.is-active { background:rgba(0,175,115,.1); color:#15803D; font-weight:700; }
+body.dark .cmw-os-seg { background:rgba(255,255,255,.03); color:var(--text-sec); }
+body.dark .cmw-os-seg.is-active { background:rgba(0,175,115,.15); color:#6EE7B7; }
+/* CM Group wizard — Copy buttons match the outline-tertiary recipe (Figma
+   3397:60254), not the saturated pill used by the shared .code-btn/.oneliner-copy. */
+.cmw-copy-btn {
+  width:32px !important; height:32px !important; flex-shrink:0;
+  display:inline-flex !important; align-items:center; justify-content:center;
+  border-radius:8px !important;
+  background:#FFFFFF !important;
+  border:1px solid var(--border) !important;
+  color:var(--text-muted) !important;
+  padding:0 !important; gap:0 !important;
+}
+.cmw-copy-btn svg { width:14px; height:14px; }
+.cmw-copy-btn:hover { background:var(--bg-subtle) !important; border-color:var(--green1) !important; color:var(--green2) !important; }
+body.dark .cmw-copy-btn:hover { background:rgba(0,175,115,.15) !important; border-color:rgba(0,175,115,.35) !important; color:#FFFFFF !important; }
+body.dark .cmw-copy-btn { color:#FFFFFF !important; background:#062528 !important; }
+/* CM Group wizard — "Group created" status row keeps a green tint in dark
+   (matches the reference screenshot); light stays neutral per Figma 3397:60254. */
+body.dark #cmw-created-summary { background:rgba(255,255,255,.02) !important; border-color:#04363A !important; }
+body.dark #cmw-created-summary .cmw-created-title { color:#10B981 !important; }
+/* CM Group wizard — code rows (API key / Guardian URL / powershell) dark fill. */
+body.dark #cmw-install-block .code-row { background:rgba(255,255,255,.05) !important; border-color:#04363A !important; }
+/* Windows/Linux segmented control — unselected segment dark fill. */
+body.dark .cmw-os-seg { background:#133033; }
+
 /* Icon pill buttons inside .code-row */
 .code-btn {
   flex-shrink:0; display:inline-flex; align-items:center; gap:5px;
@@ -4920,6 +4954,10 @@ body.dark .gm-step.is-done .gm-step-label { color:#F8FAFC; font-weight:600; }
 /* Create New Policy wizard (Figma 3379:51361) — completed steps keep their number, no checkmark swap. */
 #pc-wizard .gm-step.is-done .gm-step-num::after { content:none; }
 #pc-wizard .gm-step.is-done .gm-step-numval { display:inline; }
+/* Create Connection Manager Group wizard (Figma 3397:60254) — same rule:
+   completed steps keep their number, no checkmark swap. */
+#cm-wizard .gm-step.is-done .gm-step-num::after { content:none; }
+#cm-wizard .gm-step.is-done .gm-step-numval { display:inline; }
 .gm-panel { display: none; }
 .gm-panel.is-visible { display: block; }
 .gm-overlay .pc-inline-nav { display: none !important; }
@@ -6365,10 +6403,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- ── Created confirmation (compact status row) ── -->
-          <div id="cmw-created-summary" style="display:none;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--radius-md);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);margin-bottom:14px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <div id="cmw-created-summary" style="display:none;display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--radius-md);background:var(--bg-canvas);border:1px solid var(--border);margin-bottom:14px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
             <div style="flex:1;min-width:0;font-size:12px;line-height:1.4;">
-              <strong style="color:var(--text-default);">Group created</strong>
+              <strong class="cmw-created-title" style="color:var(--text-default);">Group created</strong>
               <span style="color:var(--text-sec);margin-left:4px;">Install a Connection Manager to activate it.</span>
               <span style="color:var(--text-muted);margin-left:4px;" id="cmw-created-name"></span>
             </div>
@@ -6378,17 +6416,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="cmw-install-block" style="display:none;">
             <!-- Installation details: API key + URL in one block -->
             <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Installation details</div>
-            <div class="code-row" style="margin:0 0 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border-bottom:none;"><span class="code-label">API key:</span><span class="code-value" id="cmw-api-key">grd_k8x…generated</span><button class="code-btn" onclick="cmwCopy(this,document.getElementById('cmw-api-key').textContent)">Copy</button></div>
-            <div class="code-row" style="margin:0 0 16px;border-radius:0 0 var(--radius-md) var(--radius-md);border-top:1px solid var(--border);"><span class="code-label">Guardian URL:</span><span class="code-value">https://guardian.cloudhouse.com</span><button class="code-btn" onclick="cmwCopy(this,'https://guardian.cloudhouse.com')">Copy</button></div>
+            <div class="code-row" style="margin:0 0 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border-bottom:none;"><span class="code-label">API key:</span><span class="code-value" id="cmw-api-key">grd_k8x…generated</span><button class="code-btn cmw-copy-btn" onclick="cmwCopy(this,document.getElementById('cmw-api-key').textContent)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
+            <div class="code-row" style="margin:0 0 16px;border-radius:0 0 var(--radius-md) var(--radius-md);border-top:1px solid var(--border);"><span class="code-label">Guardian URL:</span><span class="code-value">https://guardian.cloudhouse.com</span><button class="code-btn cmw-copy-btn" onclick="cmwCopy(this,'https://guardian.cloudhouse.com')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
 
             <!-- Installer choice + command (one block) -->
             <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Choose installer</div>
-            <div style="display:flex;gap:8px;margin-bottom:12px;">
-              <button id="cmw-os-win" class="btn-outline cmw-os-btn" onclick="cmwPickOS('windows')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Windows</button>
-              <button id="cmw-os-linux" class="btn-outline cmw-os-btn" onclick="cmwPickOS('linux')" style="width:auto;padding:7px 16px;font-size:12px;font-weight:600;">Linux</button>
+            <div style="display:flex;height:32px;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px;">
+              <button id="cmw-os-win" class="cmw-os-seg" onclick="cmwPickOS('windows')" style="border-right:1px solid var(--border);">Windows</button>
+              <button id="cmw-os-linux" class="cmw-os-seg" onclick="cmwPickOS('linux')">Linux</button>
             </div>
             <div id="cmw-install-cmd">
-              <div class="oneliner-box"><div class="oneliner-header"><span class="oneliner-lang" id="cmw-cmd-lang">powershell</span><button class="oneliner-copy" onclick="cmwCopy(this,document.getElementById('cmw-cmd-code').textContent)">Copy</button></div><code class="oneliner-code" id="cmw-cmd-code">irm https://guardian.cloudhouse.com/cm/install.ps1 | iex</code></div>
+              <div class="code-row" style="margin-top:8px;"><span class="code-label"><span id="cmw-cmd-lang">powershell</span> API key:</span><span class="code-value" id="cmw-cmd-code">grd_k8x…generated</span><button class="code-btn cmw-copy-btn" onclick="cmwCopy(this,document.getElementById('cmw-cmd-code').textContent)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
             </div>
 
             <!-- Requirements (collapsible) -->
@@ -13323,17 +13361,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       cmSetup.installerOS = os;
       var winBtn = document.getElementById('cmw-os-win');
       var linBtn = document.getElementById('cmw-os-linux');
-      if (winBtn) { winBtn.style.background = os === 'windows' ? 'var(--green1)' : ''; winBtn.style.color = os === 'windows' ? '#fff' : ''; winBtn.style.borderColor = os === 'windows' ? 'var(--green1)' : ''; }
-      if (linBtn) { linBtn.style.background = os === 'linux' ? 'var(--green1)' : ''; linBtn.style.color = os === 'linux' ? '#fff' : ''; linBtn.style.borderColor = os === 'linux' ? 'var(--green1)' : ''; }
+      if (winBtn) winBtn.classList.toggle('is-active', os === 'windows');
+      if (linBtn) linBtn.classList.toggle('is-active', os === 'linux');
       var lang = document.getElementById('cmw-cmd-lang');
       var code = document.getElementById('cmw-cmd-code');
-      if (os === 'windows') {
-        if (lang) lang.textContent = 'powershell';
-        if (code) code.textContent = 'irm https://guardian.cloudhouse.com/cm/install.ps1 | iex';
-      } else {
-        if (lang) lang.textContent = 'bash';
-        if (code) code.textContent = 'curl -fsSL https://guardian.cloudhouse.com/cm/install.sh | sudo bash';
-      }
+      if (lang) lang.textContent = os === 'windows' ? 'powershell' : 'bash';
+      if (code) code.textContent = cmSetup.apiKey || 'grd_k8x…generated';
     }
     function cmConnResult(state) {
       if (cmSetup._t) { clearTimeout(cmSetup._t); cmSetup._t = null; }
@@ -13358,7 +13391,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         if (ov) {
           var foot = ov.querySelector('.gm-foot');
           if (foot) {
-            foot.innerHTML = '<div class="gm-foot-left"><button class="btn-third gm-foot-back" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')"><span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back to groups</button></div>';
+            foot.innerHTML = '<div class="gm-foot-left"><button class="btn-third gm-foot-back" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')"><span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back to groups</button></div>'
+              + '<div class="gm-foot-right"><button class="gm-btn gm-btn-primary" onclick="closeModal(\'' + _CM_MODAL + '\');showView(\'cm-list\')">Done<svg class="gm-btn-arrow" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></button></div>';
           }
         }
         return;
@@ -13413,9 +13447,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
     function cmwCopy(btn, text) {
       navigator.clipboard.writeText(text);
-      var orig = btn.textContent;
-      btn.textContent = 'Copied ✓';
-      setTimeout(function() { btn.textContent = orig; }, 1500);
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      setTimeout(function() { btn.innerHTML = orig; }, 1200);
     }
     /* Shift+D toggles demo controls inside the CM wizard */
     document.addEventListener('keydown', function(e) {
