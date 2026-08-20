@@ -13890,17 +13890,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + '<div class="form-group"><label class="form-label" for="cred-f-scope">Scope / intended use <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>'
         +   '<input id="cred-f-scope" type="text" class="form-input" placeholder="e.g. Production Windows servers" value="'+_esc(c?c.scope:'')+'"></div>'
         + '<div id="cred-test-result" style="display:none;font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:4px;"></div>';
-      var testBtn = '<button id="cred-test-btn" onclick="credTest()" class="btn-outline" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test credentials</button>';
       openModal({
         id: 'cred-edit-overlay',
         size: 'md',
         title: c ? 'Edit credential' : 'New credential',
         subtitle: 'Stored encrypted in the Guardian Credential Vault and used by Connection Managers at scan time.',
         bodyHtml: body,
-        footerLeftHtml: testBtn,
         confirmDirty: true,
+        backButton: { label: 'Back', onClick: function(e, close){ close(); } },
         buttons: [
-          { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
+          { label: 'Test credentials', kind: 'secondary', id: 'cred-test-btn', onClick: function(){ credTest(); } },
           { label: c ? 'Save changes' : 'Save credential', kind: 'primary', onClick: function(){ credSave(); } }
         ],
         afterMount: function() {
@@ -13987,7 +13986,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       setTimeout(function() {
         _credTested = true;
         if (res) { res.style.background = 'rgba(16,185,129,0.12)'; res.style.color = '#059669'; res.innerHTML = '✓ Validated against ' + node + ' — connection successful'; }
-        if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test credentials'; }
+        if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = 'Test credentials'; }
       }, 1100);
     }
     function credSave() {
