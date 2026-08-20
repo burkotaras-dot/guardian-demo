@@ -3317,6 +3317,14 @@ body.dark #pe-sev-pick { background: var(--bg-card) !important; box-shadow: 0 8p
 .pe-sev-btn[data-val="low"]      .pe-sev-dot, .pe-sev-opt[data-val="low"]      .pe-sev-dot { background:#3B82F6; }
 #pe-sev-pick .pe-sev-opt { display:flex; align-items:center; gap:8px; color:var(--text-default); }
 body.dark .pe-sev-btn { border-color: var(--border) !important; color: var(--text-default) !important; }
+/* Check-row severity pill + remove button share one fill — Figma 3023:16673/3018:4171. */
+.pc-check-field-bg { background:#F8FAFC; }
+body.dark .pc-check-field-bg { background:rgba(255,255,255,.05) !important; }
+/* Check-row status icon fill — Figma 3023:16799 literal tints. */
+.pc-check-icon-error { background:#FDF5F5; }
+body.dark .pc-check-icon-error { background:rgba(251,60,68,.14) !important; }
+.pc-check-icon-success { background:rgba(16,185,129,0.14); }
+body.dark .pc-check-icon-success { background:rgba(16,185,129,.16) !important; }
 /* Add Check — section dropdown options */
 .ac-sec-opt { padding:8px 12px;font-size:13px;color:var(--text-default);cursor:pointer;transition:background 0.1s; }
 .ac-sec-opt:hover { background:var(--bg-canvas); }
@@ -4891,6 +4899,9 @@ body.dark .gm-step.is-active .gm-step-label,
 body.dark .gm-step.is-done .gm-step-label { color:#F8FAFC; font-weight:600; }
 .gm-step.is-done .gm-step-num::after { content: '\2713'; }
 .gm-step.is-done .gm-step-numval { display: none; }
+/* Create New Policy wizard (Figma 3379:51361) — completed steps keep their number, no checkmark swap. */
+#pc-wizard .gm-step.is-done .gm-step-num::after { content:none; }
+#pc-wizard .gm-step.is-done .gm-step-numval { display:inline; }
 .gm-panel { display: none; }
 .gm-panel.is-visible { display: block; }
 .gm-overlay .pc-inline-nav { display: none !important; }
@@ -5398,7 +5409,7 @@ body.dark #export-modal .export-file-card { background:#133033 !important; borde
   border-top:1px solid #E2E8F0;
 }
 .gm-foot-left { display:flex; align-items:center; gap:8px; min-width:0; }
-.gm-foot-right { display:flex; align-items:center; gap:10px; margin-left:auto; }
+.gm-foot-right { display:flex; align-items:center; gap:8px; margin-left:auto; }
 .gm-btn {
   height:32px; box-sizing:border-box; padding:0 14px;
   display:inline-flex; align-items:center; justify-content:center; gap:4px;
@@ -5684,7 +5695,6 @@ body.dark #csv-modal .csv-imp-bar { background:rgba(255,255,255,0.08); }
   .cred-row,
   .rc-row,
   .rep-row-link,
-  .pc-check-row,
   .schedule-table-row,
   .drift-row
 ):not(.cm-row-dim):not([aria-disabled="true"]):hover {
@@ -5706,7 +5716,6 @@ body.dark :is(
   .cred-row,
   .rc-row,
   .rep-row-link,
-  .pc-check-row,
   .schedule-table-row,
   .drift-row
 ):not(.cm-row-dim):not([aria-disabled="true"]):hover {
@@ -10032,58 +10041,71 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Step 2: Add Checks -->
         <div id="pc-step-2" style="display:none;">
           <div style="overflow:hidden;">
-            <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div style="padding:16px 0;display:flex;align-items:center;justify-content:space-between;">
               <div>
                 <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:2px;">Checks <span id="pc-check-count" style="font-size:13px;font-weight:400;color:var(--text-sec);">(3)</span></div>
                 <div style="font-size:11px;color:var(--text-sec);">Add and configure checks for this policy</div>
               </div>
-              <button onclick="openCheck(&#39;add&#39;,&#39;policy-create&#39;)" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:var(--radius-md);border:1px solid var(--green1);background:var(--green-dim);color:var(--green2);cursor:pointer;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <button onclick="openCheck(&#39;add&#39;,&#39;policy-create&#39;)" class="gm-btn-tertiary" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:var(--radius-md);cursor:pointer;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>
                 Add Check
               </button>
             </div>
             <!-- Column header -->
-            <div class="col-thead" style="display:grid;grid-template-columns:20px 1fr 130px 46px;gap:16px;padding:8px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);align-items:center;">
-              <div></div>
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Severity</div>
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Action</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid var(--border);">
+              <div style="font-size:11px;font-weight:700;color:var(--p-neutral-400);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <div style="width:130px;font-size:11px;font-weight:700;color:var(--p-neutral-400);text-transform:uppercase;letter-spacing:0.05em;">Severity</div>
+                <div style="width:32px;flex-shrink:0;"></div>
+              </div>
             </div>
             <!-- Check row A -->
-            <div class="pc-check-row" style="display:grid;grid-template-columns:20px 1fr 130px 46px;gap:16px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;align-items:center;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-error);border:1.5px solid #fca5a5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <div class="pc-check-row" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
+                <div class="pc-check-icon-error" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </div>
+                <div style="min-width:0;">
+                  <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus active and up to date</div>
+                  <div style="display:flex;gap:4px;margin-top:4px;"><span class="bdg bdg--red">Security</span></div>
+                </div>
               </div>
-              <div>
-                <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus active and up to date</div>
-                <div style="display:flex;gap:4px;margin-top:4px;"><span class="bdg bdg--gray">Security</span></div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <div class="pe-sev-btn pc-check-field-bg" data-val="critical" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;height:32px;padding:0 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:130px;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+                <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" class="pc-check-field-bg" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;&#39;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
               </div>
-              <div class="pe-sev-btn" data-val="critical" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
-              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
             <!-- Check row B -->
-            <div class="pc-check-row" style="display:grid;grid-template-columns:20px 1fr 130px 46px;gap:16px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <div class="pc-check-row" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
+                <div class="pc-check-icon-success" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div style="min-width:0;">
+                  <div style="font-size:13px;font-weight:600;color:var(--text-default);">Host firewall enabled</div>
+                  <div style="display:flex;gap:4px;margin-top:4px;"><span class="bdg bdg--blue">Network</span></div>
+                </div>
               </div>
-              <div>
-                <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Host firewall enabled</div>
-                <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border);">Network</span></div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <div class="pe-sev-btn pc-check-field-bg" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;height:32px;padding:0 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:130px;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+                <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" class="pc-check-field-bg" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;&#39;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
               </div>
-              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
-              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
             <!-- Check row C -->
-            <div class="pc-check-row" style="display:grid;grid-template-columns:20px 1fr 130px 46px;gap:16px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <div class="pc-check-row" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
+                <div class="pc-check-icon-success" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div style="min-width:0;">
+                  <div style="font-size:13px;font-weight:600;color:var(--text-default);">Endpoint encryption enabled</div>
+                  <div style="display:flex;gap:4px;margin-top:4px;"><span class="bdg bdg--green">Data</span></div>
+                </div>
               </div>
-              <div>
-                <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Endpoint encryption enabled</div>
-                <div style="display:flex;gap:4px;margin-top:4px;"><span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border);">Data</span></div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <div class="pe-sev-btn pc-check-field-bg" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;height:32px;padding:0 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:130px;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+                <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" class="pc-check-field-bg" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;&#39;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
               </div>
-              <div class="pe-sev-btn" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
-              <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;var(--bg-surface)&#39;">×</button>
             </div>
           </div>
           <!-- Navigation (hidden when inside modal wizard) -->
@@ -15293,6 +15315,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         ],
         bodyHtml: '<div class="gm-panel" id="pc-wrap-1"></div><div class="gm-panel" id="pc-wrap-2"></div><div class="gm-panel" id="pc-wrap-3"></div>',
         confirmDirty: true,
+        backButton: { id: 'pc-back-btn', hidden: true, onClick: function() { pcGoStep(_pcCurrentStep - 1); } },
         buttons: [
           { label: 'Next: Add Checks', kind: 'primary', id: 'pc-next-btn', onClick: function() { pcNextModal(); } }
         ],
@@ -15334,6 +15357,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         else if (n === 2) btn.innerHTML = 'Next: Assign' + arrowSvg;
         else if (n === 3) btn.innerHTML = 'Create Policy' + arrowSvg;
       }
+      /* Back button — hidden on step 1, matches Figma 3379:51361 */
+      var backBtn = document.getElementById('pc-back-btn');
+      if (backBtn) backBtn.style.display = n === 1 ? 'none' : '';
       /* Scroll modal body to top */
       var ov = document.getElementById(_PC_MODAL);
       if (ov) { var b = ov.querySelector('.gm-body'); if (b) b.scrollTo(0,0); }
