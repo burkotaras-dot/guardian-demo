@@ -1371,6 +1371,11 @@ body.dark .btn-third { color:#FFFFFF; }
 .bdg--gray   { color:var(--bdg-gray-txt);   background:var(--bdg-gray-bg);   border-color:var(--bdg-gray-bd); }
 .bdg--blue   { color:var(--bdg-blue-txt);   background:var(--bdg-blue-bg);   border-color:var(--bdg-blue-bd); }
 
+/* Add/Edit Check severity picker — canonical .bdg pills, single-select via
+   hidden radios (Figma 3393:55578). Figma shows all four pills with the
+   identical uniform badge treatment — no highlighted/selected variant — so
+   .is-selected carries no visual styling here, only JS bookkeeping. */
+
 /* ── Легасі-родини на каноні. Імена класів і розмітка не змінюються,
       геометрія й палітра беруться звідси, тож dark-override не потрібен. ── */
 
@@ -9773,6 +9778,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             <div class="tag-filter" id="tag-filter-wrap">
               <button type="button" class="tag-filter-btn" id="tag-filter-btn" onclick="toggleTagFilter(event)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
                 <span id="tag-filter-label">Filter by tag</span>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </button>
@@ -10745,12 +10751,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <label class="form-label">Check name</label>
               <input type="text" class="form-input" placeholder="e.g. Antivirus active and up to date">
             </div>
-            <!-- Section -->
+            <!-- Demo state -->
             <div class="form-group" style="position:relative;">
-              <label class="form-label">Section</label>
-              <div id="ac-sec-btn" class="dk-form" onclick="acToggleSec(event)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--p-neutral-500);font-size:13px;cursor:pointer;gap:8px;user-select:none;">
-                <span id="ac-sec-label">Select a section…</span>
-                <svg id="ac-sec-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <label class="form-label">Demo state</label>
+              <div id="ac-sec-btn" class="icx-input" onclick="acToggleSec(event)" style="display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 12px;border-radius:8px;cursor:pointer;gap:8px;user-select:none;">
+                <span id="ac-sec-label" style="font-size:12px;font-weight:600;">Select a section…</span>
+                <svg id="ac-sec-chev" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </div>
               <div id="ac-sec-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;">
                 <div onclick="acPickSec(&#39;general&#39;,&#39;General&#39;)" class="ac-sec-opt">General</div>
@@ -10767,27 +10773,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <label style="cursor:pointer;">
                   <input type="radio" name="ac-severity" value="critical" style="display:none;" onchange="acSetSev(this)">
-                  <span class="ac-sev-pill" data-val="critical" style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #fca5a5;background:var(--bg-error);color:#FB3C44;cursor:pointer;transition:all 0.12s;">
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>Critical
-                  </span>
+                  <span class="bdg bdg--dot bdg--red ac-sev-pill is-selected" data-val="critical" style="cursor:pointer;">Critical</span>
                 </label>
                 <label style="cursor:pointer;">
                   <input type="radio" name="ac-severity" value="high" style="display:none;" onchange="acSetSev(this)">
-                  <span class="ac-sev-pill" data-val="high" style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #fcd34d;background:var(--bg-warning);color:#92400e;cursor:pointer;transition:all 0.12s;">
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>High
-                  </span>
+                  <span class="bdg bdg--dot bdg--orange ac-sev-pill" data-val="high" style="cursor:pointer;">High</span>
                 </label>
                 <label style="cursor:pointer;">
                   <input type="radio" name="ac-severity" value="medium" style="display:none;" onchange="acSetSev(this)">
-                  <span class="ac-sev-pill" data-val="medium" style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #d1d5db;background:var(--bg-canvas);color:var(--p-neutral-800);cursor:pointer;transition:all 0.12s;">
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>Medium
-                  </span>
+                  <span class="bdg bdg--dot bdg--gray ac-sev-pill" data-val="medium" style="cursor:pointer;">Medium</span>
                 </label>
                 <label style="cursor:pointer;">
                   <input type="radio" name="ac-severity" value="low" style="display:none;" onchange="acSetSev(this)">
-                  <span class="ac-sev-pill" data-val="low" style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #86efac;background:var(--bg-success);color:#00AF73;cursor:pointer;transition:all 0.12s;">
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>Low
-                  </span>
+                  <span class="bdg bdg--dot bdg--green ac-sev-pill" data-val="low" style="cursor:pointer;">Low</span>
                 </label>
               </div>
             </div>
@@ -10807,9 +10805,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <textarea class="form-input" rows="3" placeholder="How should this issue be fixed?" style="resize:vertical;"></textarea>
             </div>
           </div>
-          <!-- Check definition -->
+          <!-- Connection Manager -->
           <div style="margin-top:24px;padding:0;">
-            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">Check definition</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:16px;">Connection Manager</div>
             <!-- Attribute -->
             <div class="form-group">
               <label class="form-label">Attribute</label>
@@ -10818,9 +10816,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Type of check -->
             <div class="form-group" style="position:relative;">
               <label class="form-label">Type of check</label>
-              <div id="ac-type-btn" class="dk-form" onclick="acToggleType(event)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--text-default);font-size:13px;cursor:pointer;gap:8px;user-select:none;">
-                <span id="ac-type-label">Exact Match</span>
-                <svg id="ac-type-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <div id="ac-type-btn" class="icx-input" onclick="acToggleType(event)" style="display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 12px;border-radius:8px;cursor:pointer;gap:8px;user-select:none;">
+                <span id="ac-type-label" style="font-size:12px;font-weight:600;">Exact Match</span>
+                <svg id="ac-type-chev" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </div>
               <div id="ac-type-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;max-height:240px;overflow-y:auto;">
                 <div onclick="acPickType('Exact Match')" class="ac-sec-opt">Exact Match</div>
@@ -10846,7 +10844,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             <!-- Pass if absent -->
             <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-sec);cursor:pointer;">
-              <input type="checkbox" style="width:14px;height:14px;accent-color:#00AF73;">
+              <input type="checkbox">
               Check should pass if attribute is absent
             </label>
           </div>
@@ -15398,8 +15396,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         title: isEdit ? 'Edit Check' : 'Add New Check',
         subtitle: isEdit ? 'Modify the compliance check definition' : 'Define a new compliance check for this policy',
         bodyHtml: '<div id="ac-modal-body"></div>',
+        backButton: { label: 'Back', onClick: function(e, close) { _acReturnContent(viewId); close(); } },
         buttons: [
-          { label: 'Cancel', kind: 'secondary', onClick: function(e, close) { _acReturnContent(viewId); close(); } },
           isEdit
             ? { label: 'Save changes', kind: 'primary', onClick: function() { checkDone(); } }
             : { label: 'Add Check', kind: 'primary', onClick: function() { checkDone(); } }
@@ -16917,25 +16915,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
     function acSetSev(radio) {
       document.querySelectorAll('.ac-sev-pill').forEach(function(p) {
-        var val = p.getAttribute('data-val');
-        var styles = {
-          critical: {bg:'#fef2f2',color:'#FB3C44',border:'1.5px solid #fca5a5',shadow:'none'},
-          high:     {bg:'#fffbeb',color:'#92400e',border:'1.5px solid #fcd34d',shadow:'none'},
-          medium:   {bg:'#f9fafb',color:'#374151',border:'1.5px solid #d1d5db',shadow:'none'},
-          low:      {bg:'#f0fdf4',color:'#00AF73',border:'1.5px solid #86efac',shadow:'none'}
-        };
-        var shadows = {
-          critical:'0 0 0 3px rgba(251,60,68,0.15)',
-          high:'0 0 0 3px rgba(245,158,11,0.15)',
-          medium:'0 0 0 3px rgba(100,116,139,0.15)',
-          low:'0 0 0 3px rgba(22,163,74,0.15)'
-        };
-        var isSelected = (val === radio.value);
-        var s = styles[val];
-        p.style.background = s.bg;
-        p.style.color = s.color;
-        p.style.border = isSelected ? '2px solid '+s.color : s.border;
-        p.style.boxShadow = isSelected ? shadows[val] : 'none';
+        p.classList.toggle('is-selected', p.getAttribute('data-val') === radio.value);
       });
     }
 
