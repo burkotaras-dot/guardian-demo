@@ -2867,6 +2867,24 @@ body.dark .radio-item.cm-item.selected { background:#0C2123;border-color:rgba(16
 .gm-overlay .gm-radio-card.is-selected .gm-radio-dropdown { display:block; }
 .gm-overlay .gm-radio-card:has(.gm-radio-dropdown) { align-items:flex-start; }
 .gm-overlay .gm-radio-card:has(.gm-radio-dropdown) > input[type="radio"] { margin-top:2px; }
+/* Figma 3344:23268 — "Dropdown White" control inside a selected radio card.
+   select.csel is enhanced into .csel-wrap>.csel-btn by enhanceSelect(), so the
+   visible control to style is .csel-btn, not the (hidden) native select. */
+.gm-overlay .gm-radio-dropdown .csel-wrap { display:block; width:100%; }
+.gm-overlay .gm-radio-dropdown .csel-btn {
+  box-sizing:border-box;
+  display:flex;
+  width:100%;
+  height:32px;
+  padding:0 28px 0 12px;
+  border:1px solid #E2E8F0;
+  background:#FFFFFF;
+  color:#334155;
+  font-weight:600;
+}
+/* Dark: leave background to the app-wide "every dropdown trigger = var(--bg-subtle)"
+   rule at L2611 — don't fork a one-off dark treatment for this control. */
+body.dark .gm-overlay .gm-radio-dropdown .csel-btn { color:#F8FAFC; }
 body.dark .gm-overlay .gm-radio-card,
 body.dark .gm-overlay .radio-item {
   background:rgba(255,255,255,.05);
@@ -4880,7 +4898,7 @@ body.dark .gm-step.is-done .gm-step-label { color:#F8FAFC; font-weight:600; }
 .gm-head { display: flex; align-items: flex-start; gap: 12px; padding: 22px 24px 10px; }
 .gm-titles { flex: 1; min-width: 0; }
 .gm-title { font-size: 15px; font-weight: 600; color: var(--text-default); line-height: 1.3; }
-.gm-sub { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 4px; }
+.gm-sub { font-size: 12px; color: var(--text-sec); line-height: 1.5; margin-top: 4px; }
 /* ── Canonical modal Close button ─────────────────────────────────────────
    Figma 3147:10053 — 28×28 control, 18×18 icon, radius 6. The shared
    geometry and theme states cover both the gm shell and Add Node modal. */
@@ -5402,7 +5420,7 @@ body.dark .gm-btn-tertiary:hover { background:rgba(0,175,115,.20); border-color:
   border:none; padding-inline:20px; color:#fff; background:var(--btn-grad);
   box-shadow:0 4px 7px rgba(16,185,129,.30);
 }
-.gm-btn-primary::after { content:'\2192'; font-size:14px; line-height:1; }
+.gm-btn-arrow { width:8px; height:8px; flex-shrink:0; }
 .gm-btn-primary:hover { background:var(--btn-grad-h); transform:translateY(-1px); }
 .gm-btn-primary:active { transform:translateY(0); }
 .gm-foot-back:focus-visible,
@@ -5533,7 +5551,10 @@ body.dark #csv-modal .csv-rev-tbl td { border-bottom-color:rgba(255,255,255,0.06
 #csv-modal .csv-rev-foot { padding:10px 0; border-top:1px solid var(--border); font-size:11px; color:var(--text-sec); }
 body.dark #csv-modal .csv-rev-foot { border-top-color:rgba(255,255,255,0.06); }
 
-/* ── CSV import modal — крок 3 «Importing Nodes», Figma 3344:23268 (light 3342:23022 / dark 3342:23023) ── */
+/* ── CSV import modal — крок 3 «Importing Nodes», Figma 3344:23268 (light 3342:23022 / dark 3342:23023) ──
+   Степер лишає цифри навіть на завершених кроках — чекмарк тут не з макета. */
+#csv-modal .gm-step.is-done .gm-step-num::after { content:none; }
+#csv-modal .gm-step.is-done .gm-step-numval { display:inline; }
 #csv-modal .csv-imp { display:flex; flex-direction:column; align-items:center; padding:40px 24px 20px; }
 /* Кільце-спінер 56px. Товщина 1.556px і трек — літерально з макета; зелений сектор дає border-top,
    бо статичне однотонне кільце в макеті — це сплющений кадр анімації. */
@@ -9957,8 +9978,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
             <!-- Description -->
             <div class="form-group">
-              <label class="form-label">Description</label>
-              <textarea class="form-input" rows="3" placeholder="Describe what this policy enforces and why..." style="resize:vertical;"></textarea>
+              <label class="form-label">Description <span style="color:#FB3C44;">*</span></label>
+              <textarea id="pc-desc" class="form-input" rows="3" placeholder="Describe what this policy enforces and why..." style="resize:vertical;" required></textarea>
             </div>
 
             <!-- Type -->
@@ -9978,7 +9999,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                     <div class="gm-radio-title">Based on Compliance Policy</div>
                     <div class="gm-radio-description">Start from an industry-standard Compliance Policy template</div>
                     <div class="gm-radio-dropdown" id="pc-cis-dropdown">
-                      <select class="csel" style="cursor:pointer;font-size:12px;padding:8px 12px;">
+                      <select class="csel" style="cursor:pointer;">
                         <option value="">Select a benchmark…</option>
                         <option>Compliance Policy · Windows 11 v1.0.0</option>
                         <option>CIS macOS Ventura Benchmark</option>
@@ -13669,9 +13690,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             + (opts.backButton.label || 'Back') + '</button>'
           : '';
         var right = (opts.buttons || []).map(function(b, i) {
+          var arrow = (b.kind || 'secondary') === 'primary'
+            ? '<svg class="gm-btn-arrow" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg>'
+            : '';
           return '<button type="button" class="gm-btn gm-btn-' + (b.kind || 'secondary') + '"'
             + (b.id ? ' id="' + b.id + '"' : '') + ' data-gm-btn="' + i + '"'
-            + (b.disabled ? ' disabled' : '') + '>' + b.label + '</button>';
+            + (b.disabled ? ' disabled' : '') + '>' + b.label + arrow + '</button>';
         }).join('');
         footHtml = '<div class="gm-foot"><div class="gm-foot-left">' + back + (opts.footerLeftHtml || '') + '</div>'
           + (right ? '<div class="gm-foot-right">' + right + '</div>' : '') + '</div>';
@@ -15270,7 +15294,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         bodyHtml: '<div class="gm-panel" id="pc-wrap-1"></div><div class="gm-panel" id="pc-wrap-2"></div><div class="gm-panel" id="pc-wrap-3"></div>',
         confirmDirty: true,
         buttons: [
-          { label: 'Cancel', kind: 'secondary', onClick: function(e, close) { close(); } },
           { label: 'Next: Add Checks', kind: 'primary', id: 'pc-next-btn', onClick: function() { pcNextModal(); } }
         ],
         afterMount: function(ov) {
@@ -15306,9 +15329,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       /* Update the primary button label */
       var btn = document.getElementById('pc-next-btn');
       if (btn) {
-        if (n === 1) btn.textContent = 'Next: Add Checks';
-        else if (n === 2) btn.textContent = 'Next: Assign';
-        else if (n === 3) btn.textContent = 'Create Policy';
+        var arrowSvg = '<svg class="gm-btn-arrow" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg>';
+        if (n === 1) btn.innerHTML = 'Next: Add Checks' + arrowSvg;
+        else if (n === 2) btn.innerHTML = 'Next: Assign' + arrowSvg;
+        else if (n === 3) btn.innerHTML = 'Create Policy' + arrowSvg;
       }
       /* Scroll modal body to top */
       var ov = document.getElementById(_PC_MODAL);
