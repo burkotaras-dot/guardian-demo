@@ -845,6 +845,16 @@ body.dark .icx-p2-badge { color:#34D399; }
 /* Quiet text-link (e.g. Simulate failure / Edit credentials) */
 .icx-linkbtn { background:none; border:none; padding:0; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-muted); cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
 .icx-linkbtn:hover { color:var(--text-default); }
+/* Demo state — prototype-only scenario switch, Figma 3431:56479 */
+.icx-demo { margin-bottom:16px; }
+.icx-demo-label { margin:0 0 8px; color:#94A3B8; font-size:9px; font-weight:700; line-height:12px; letter-spacing:.6px; text-transform:uppercase; }
+.icx-demo-tabs { display:flex; height:32px; border:1px solid #E2E8F0; border-radius:8px; overflow:hidden; }
+.icx-demo-tab { flex:1; border:0; border-right:1px solid #E2E8F0; background:#F9FAFC; color:#475569; font:600 11px/1 'DM Sans',sans-serif; cursor:pointer; }
+.icx-demo-tab:last-child { border-right:0; }
+.icx-demo-tab.is-active { background:rgba(0,175,115,.1); color:#15803D; }
+body.dark .icx-demo-tabs { border-color:#04363A; }
+body.dark .icx-demo-tab { border-right-color:#04363A; background:rgba(255,255,255,.05); color:#FFF; }
+body.dark .icx-demo-tab.is-active { background:rgba(0,175,115,.15); color:#FFF; }
 
 /* Change-detail — state-change block (two neutral cards, colour on label + CIS status) */
 .cd-sec-label { font-size:10px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
@@ -3695,6 +3705,12 @@ body.dark .ct-chip.active { background:#10B981; border-color:#10B981; color:#042
 .ct-result[data-kind="warn"] .ct-result-title { color:#92400e; }
 .ct-result[data-kind="fail"] .ct-result-title { color:var(--status-danger-txt); }
 .ct-result-desc { font-size:12px; color:var(--text-default); margin-top:3px; line-height:1.55; }
+/* Result-box icon — filled badge + colour-matched ring, Figma 3431:58574 */
+.ct-result-icon { display:flex; align-items:center; justify-content:center; flex:0 0 22px; width:22px; height:22px; border-radius:11px; box-sizing:border-box; }
+.ct-result-icon svg { width:12px; height:12px; }
+.ct-result-icon.is-ok { background:rgba(16,185,129,.14); border:1px solid #10B981; color:#059669; }
+.ct-result-icon.is-fail { background:rgba(251,60,68,.12); border:1px solid #FB3C44; color:#FB3C44; }
+.ct-result-icon.is-warn { background:rgba(245,158,11,.14); border:1px solid #F59E0B; color:#D97706; }
 body.dark .ct-ico.ok { background:rgba(16,185,129,0.2); }
 body.dark .ct-ico.fail { background:rgba(251,60,68,0.2); }
 body.dark .ct-ico.warn { background:rgba(245,158,11,0.22); }
@@ -4605,16 +4621,6 @@ body.dark .agentless-credential-option.is-selected { background:var(--dropdown-o
 .gm-agentless-testing .gm-stepper { flex:0 0 54px; height:54px; box-sizing:border-box; }
 .gm-agentless-testing .gm-body { flex:1 1 auto; padding:20px 0 10px; overflow-y:auto; }
 .gm-agentless-testing .gm-foot { flex:0 0 63px; min-height:63px; margin-top:0; }
-.gm-agentless-setup .gm-step.is-done .gm-step-num::after,
-.gm-agentless-testing .gm-step.is-done .gm-step-num::after,
-.gm-node-added .gm-step.is-done .gm-step-num::after,
-.gm-scanning .gm-step.is-done .gm-step-num::after,
-.gm-results .gm-step.is-done .gm-step-num::after { content:none; }
-.gm-agentless-setup .gm-step.is-done .gm-step-numval,
-.gm-agentless-testing .gm-step.is-done .gm-step-numval,
-.gm-node-added .gm-step.is-done .gm-step-numval,
-.gm-scanning .gm-step.is-done .gm-step-numval,
-.gm-results .gm-step.is-done .gm-step-numval { display:inline; }
 .agentless-test-demo,
 .agentless-test-content { padding:0 24px; }
 .agentless-test-demo-label {
@@ -5020,15 +5026,7 @@ body.dark .gm-step.is-active .gm-step-num,
 body.dark .gm-step.is-done .gm-step-num { border-color:#10B981 !important; background:#10B981 !important; color:#FFFFFF !important; }
 body.dark .gm-step.is-active .gm-step-label,
 body.dark .gm-step.is-done .gm-step-label { color:#F8FAFC; font-weight:600; }
-.gm-step.is-done .gm-step-num::after { content: '\2713'; }
-.gm-step.is-done .gm-step-numval { display: none; }
-/* Create New Policy wizard (Figma 3379:51361) — completed steps keep their number, no checkmark swap. */
-#pc-wizard .gm-step.is-done .gm-step-num::after { content:none; }
-#pc-wizard .gm-step.is-done .gm-step-numval { display:inline; }
-/* Create Connection Manager Group wizard (Figma 3397:60254) — same rule:
-   completed steps keep their number, no checkmark swap. */
-#cm-wizard .gm-step.is-done .gm-step-num::after { content:none; }
-#cm-wizard .gm-step.is-done .gm-step-numval { display:inline; }
+/* DS §canonical: completed stepper steps keep their number, never swap to a checkmark. */
 .gm-panel { display: none; }
 .gm-panel.is-visible { display: block; }
 .gm-overlay .pc-inline-nav { display: none !important; }
@@ -5689,10 +5687,6 @@ body.dark #csv-modal .csv-rev-tbl td { border-bottom-color:rgba(255,255,255,0.06
 #csv-modal .csv-rev-foot { padding:10px 0; border-top:1px solid var(--border); font-size:11px; color:var(--text-sec); }
 body.dark #csv-modal .csv-rev-foot { border-top-color:rgba(255,255,255,0.06); }
 
-/* ── CSV import modal — крок 3 «Importing Nodes», Figma 3344:23268 (light 3342:23022 / dark 3342:23023) ──
-   Степер лишає цифри навіть на завершених кроках — чекмарк тут не з макета. */
-#csv-modal .gm-step.is-done .gm-step-num::after { content:none; }
-#csv-modal .gm-step.is-done .gm-step-numval { display:inline; }
 #csv-modal .csv-imp { display:flex; flex-direction:column; align-items:center; padding:40px 24px 20px; }
 /* Кільце-спінер 56px. Товщина 1.556px і трек — літерально з макета; зелений сектор дає border-top,
    бо статичне однотонне кільце в макеті — це сплющений кадр анімації. */
@@ -11862,12 +11856,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }
       _ctTimers.push(setTimeout(function () { ctShowResult(sc); }, t + 300));
     }
+    /* Result-summary icon (bordered ring), distinct from the plain row icon — Figma 3431:58574 */
+    function ctResultIcon(kind) {
+      var cls = kind === 'ok' ? 'is-ok' : kind === 'warn' ? 'is-warn' : 'is-fail';
+      var glyph = kind === 'ok'
+        ? '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 6 2 2 4-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        : kind === 'warn'
+          ? '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 3.2v3.3M6 8.8h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+          : '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3.5 3.5 5 5m0-5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+      return '<span class="ct-result-icon ' + cls + '">' + glyph + '</span>';
+    }
     function ctShowResult(sc) {
-      var icon = sc.kind === 'ok'
-        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'
-        : sc.kind === 'warn'
-          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
-          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+      var icon = ctResultIcon(sc.kind);
       var res = document.getElementById('ct-result');
       if (res) {
         res.innerHTML =
@@ -13085,24 +13085,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + '</div>'
         /* Panel 3: credentials */
         + '<div class="gm-panel" data-icx="3">'
-        +   '<div class="icx-field gm-tab-field"><label class="icx-label gm-tab-label">Authentication</label>'
-        +     '<div class="gm-tab-block" role="tablist" aria-label="Authentication method">'
-        +       '<button class="gm-tab active" id="icx-auth-oauth" role="tab" aria-selected="true" onclick="icxSetAuth(\'oauth\')">OAuth 2.0</button>'
-        +       '<button class="gm-tab" id="icx-auth-basic" role="tab" aria-selected="false" onclick="icxSetAuth(\'basic\')">Basic auth</button>'
-        +     '</div></div>'
-        +   '<div id="icx-auth-oauth-fields">'
-        +     '<div class="icx-field"><label class="icx-label">Client ID</label>'
-        +       '<input class="icx-input" id="icx-cid" placeholder="guardian-client"></div>'
-        +     '<div class="icx-field"><label class="icx-label">Client secret</label>'
-        +       '<input class="icx-input" id="icx-csecret" type="password" placeholder="••••••••••••"></div>'
+        +   '<div class="icx-demo">'
+        +     '<div class="icx-demo-label">Demo state</div>'
+        +     '<div class="icx-demo-tabs" role="tablist" aria-label="Connection test demo state">'
+        +       '<button type="button" class="icx-demo-tab is-active" id="icx-demo-ready" role="tab" aria-selected="true" onclick="icxSetDemoScenario(\'ready\')">Ready</button>'
+        +       '<button type="button" class="icx-demo-tab" id="icx-demo-unreachable" role="tab" aria-selected="false" onclick="icxSetDemoScenario(\'unreachable\')">Unreachable</button>'
+        +     '</div>'
         +   '</div>'
-        +   '<div id="icx-auth-basic-fields" style="display:none;">'
-        +     '<div class="icx-field"><label class="icx-label">Username</label>'
-        +       '<input class="icx-input" id="icx-user" placeholder="svc-guardian"></div>'
-        +     '<div class="icx-field"><label class="icx-label">Password</label>'
-        +       '<input class="icx-input" id="icx-pass" type="password" placeholder="••••••••••••"></div>'
-        +   '</div>'
-        +   '<div class="icx-hint" style="margin-top:4px;">Credentials are stored in the Guardian Credential Vault and reused by any capability on this integration.</div>'
+        +   '<div class="icx-field"><label class="icx-label">Client ID</label>'
+        +     '<input class="icx-input" id="icx-cid" placeholder="guardian-client">'
+        +     '<div class="icx-hint">Credentials are stored in the Guardian Credential Vault and reused by any capability on this integration.</div></div>'
+        +   '<div class="icx-field"><label class="icx-label">Client secret</label>'
+        +     '<input class="icx-input" id="icx-csecret" type="password" placeholder="••••••••••••">'
+        +     '<div class="icx-hint">Credentials are stored in the Guardian Credential Vault and reused by any capability on this integration.</div></div>'
         + '</div>'
         /* Panel 4: test connection */
         + '<div class="gm-panel" data-icx="4">'
@@ -13118,7 +13113,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
 
     function openIntegrationSetup(pid) {
-      ICX = { step:1, provider:pid||null, auth:'oauth' };
+      ICX = { step:1, provider:pid||null, demoFail:false };
       openModal({
         id: _ICX_MODAL,
         size: 'lg',
@@ -13132,14 +13127,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         ],
         bodyHtml: _icxBodyHtml(),
         confirmDirty: true,
-        footerLeftHtml: '<button type="button" class="icx-linkbtn" id="icx-sim-link" style="display:none;" onclick="icxRunTest(true)">Simulate a failure</button>',
+        backButton: { label: 'Back', id: 'icx-back', hidden: true, onClick: function(e, close) { icxBack(); } },
         buttons: [
-          { label: 'Cancel', kind: 'secondary', onClick: function(e, close) { _icxClearTimers(); close(); } },
+          { label: 'Simulate a failure', kind: 'secondary', id: 'icx-sim-btn', onClick: function() { icxRunTest(true); } },
           { label: 'Continue', kind: 'primary', id: 'icx-next', onClick: function() { icxNext(); } }
         ],
         afterMount: function(ov) {
           icxRenderProviders();
-          icxSetAuth('oauth');
           if (pid) { icxSelectProvider(pid); icxGoStep(2); } else { icxGoStep(1); }
         },
         onClose: function() { _icxClearTimers(); }
@@ -13170,14 +13164,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var p = intgProvider(id);
       var nm = document.getElementById('icx-name'); if (nm && !nm.value) nm.value = p ? p.name : '';
     }
-    function icxSetAuth(m) {
-      ICX.auth = m;
-      var o = document.getElementById('icx-auth-oauth'), b = document.getElementById('icx-auth-basic');
-      if (o) { o.classList.toggle('active', m==='oauth'); o.setAttribute('aria-selected', m==='oauth' ? 'true' : 'false'); }
-      if (b) { b.classList.toggle('active', m==='basic'); b.setAttribute('aria-selected', m==='basic' ? 'true' : 'false'); }
-      var of = document.getElementById('icx-auth-oauth-fields'), bf = document.getElementById('icx-auth-basic-fields');
-      if (of) of.style.display = m==='oauth' ? '' : 'none';
-      if (bf) bf.style.display = m==='basic' ? '' : 'none';
+    function icxSetDemoScenario(kind) {
+      ICX.demoFail = (kind === 'unreachable');
+      var r = document.getElementById('icx-demo-ready'), u = document.getElementById('icx-demo-unreachable');
+      if (r) { r.classList.toggle('is-active', kind==='ready'); r.setAttribute('aria-selected', kind==='ready' ? 'true' : 'false'); }
+      if (u) { u.classList.toggle('is-active', kind==='unreachable'); u.setAttribute('aria-selected', kind==='unreachable' ? 'true' : 'false'); }
     }
     function icxRenderP2Provider() {
       var el = document.getElementById('icx-p2-provider'); if (!el) return;
@@ -13192,20 +13183,23 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       intgInjectLogos();
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
     }
+    var ICX_BTN_ARROW = '<svg class="gm-btn-arrow" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg>';
     function icxGoStep(n) {
       ICX.step = n;
       gmGoStep(_ICX_MODAL, n - 1);
       if (n === 2) icxRenderP2Provider();
       /* footer primary: "Continue" on steps 1-3; step 4 drives it via icxResetTest/_icxTestResult */
       var next = document.getElementById('icx-next');
-      var sl = document.getElementById('icx-sim-link');
-      if (n < 4) { if (next) { next.textContent = 'Continue'; next.disabled = false; next.style.display = ''; } if (sl) sl.style.display = 'none'; }
+      var sl = document.getElementById('icx-sim-btn');
+      var back = document.getElementById('icx-back');
+      if (back) back.style.display = n > 1 ? '' : 'none';
+      if (n < 4) { if (next) { next.innerHTML = 'Continue' + ICX_BTN_ARROW; next.disabled = false; next.style.display = ''; } if (sl) sl.style.display = 'none'; }
       else { icxResetTest(); }
     }
     function icxSetP4(label, mode, disabled) {
       ICX.p4mode = mode;
       var b = document.getElementById('icx-next');
-      if (b) { b.textContent = label; b.disabled = !!disabled; b.style.display = ''; }
+      if (b) { b.innerHTML = label + (disabled ? '' : ICX_BTN_ARROW); b.disabled = !!disabled; b.style.display = ''; }
     }
     function icxNext() {
       var ovBody = (document.getElementById(_ICX_MODAL) || document).querySelector('.gm-body');
@@ -13221,7 +13215,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (ICX.step===3) { icxGoStep(4); return; }
       if (ICX.step===4) {
         if ((ICX.p4mode||'test')==='save') { icxFinish(); return; }
-        icxRunTest(false); return;
+        icxRunTest(!!ICX.demoFail); return;
       }
     }
     function icxBack() { if (ICX.step>1) icxGoStep(ICX.step-1); }
@@ -13241,12 +13235,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       _icxSet('icx-s-auth',  'pending', 'Sign in with the credential');
       _icxSet('icx-s-api',   'pending', 'Read provider metadata');
       var res = document.getElementById('icx-test-result'); if (res) { res.innerHTML=''; res.style.display='none'; }
-      var sim = document.getElementById('icx-sim-link'); if (sim) sim.style.display = '';
+      var sim = document.getElementById('icx-sim-btn'); if (sim) sim.style.display = '';
       icxSetP4('Test connection', 'test', false);
     }
     function icxRunTest(fail) {
       _icxClearTimers();
-      var sim = document.getElementById('icx-sim-link'); if (sim) sim.style.display = 'none';
+      var sim = document.getElementById('icx-sim-btn'); if (sim) sim.style.display = 'none';
       icxSetP4('Testing…', 'testing', true);
       var res = document.getElementById('icx-test-result'); if (res) { res.innerHTML=''; res.style.display='none'; }
       var order = ['icx-s-reach', 'icx-s-auth', 'icx-s-api'];
@@ -13270,11 +13264,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var res = document.getElementById('icx-test-result');
       if (res) {
         if (fail) {
-          var errIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-          res.innerHTML = '<div class="ct-result" data-kind="fail">' + errIcon + '<div style="flex:1;"><div class="ct-result-title">Authentication failed</div><div class="ct-result-desc">The credential was rejected. Check the client ID / secret and try again.</div><button type="button" class="icx-linkbtn" style="margin-top:8px;" onclick="icxGoStep(3)">Edit credentials</button></div></div>';
+          res.innerHTML = '<div class="ct-result" data-kind="fail">' + ctResultIcon('fail') + '<div style="flex:1;"><div class="ct-result-title">Authentication failed</div><div class="ct-result-desc">The credential was rejected. Check the client ID / secret and try again.</div><button type="button" class="icx-linkbtn" style="margin-top:8px;" onclick="icxGoStep(3)">Edit credentials</button></div></div>';
         } else {
-          var okIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
-          res.innerHTML = '<div class="ct-result" data-kind="ok">' + okIcon + '<div style="flex:1;"><div class="ct-result-title">Connection verified</div><div class="ct-result-desc">Guardian reached the provider, authenticated, and can read its metadata. Save to finish setup.</div></div></div>';
+          res.innerHTML = '<div class="ct-result" data-kind="ok">' + ctResultIcon('ok') + '<div style="flex:1;"><div class="ct-result-title">Connection verified</div><div class="ct-result-desc">Guardian reached the provider, authenticated, and can read its metadata. Save to finish setup.</div></div></div>';
         }
         res.style.display = 'block';
       }
@@ -13289,11 +13281,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var url = (document.getElementById('icx-url')||{}).value||'';
         if (url.trim()) p.meta = url.replace(/^https?:\/\//,'').replace(/\/.*$/,'') + ' · core connected · add a capability';
         // Persist wizard input so the detail page reflects real values (no stale data from a prior provider).
-        var auth = (ICX.auth==='basic') ? 'Basic auth' : 'OAuth 2.0';
-        var credId = (ICX.auth==='basic') ? ((document.getElementById('icx-user')||{}).value||'') : ((document.getElementById('icx-cid')||{}).value||'');
+        var credId = (document.getElementById('icx-cid')||{}).value||'';
         var rows = [];
         if (url.trim()) rows.push({l:'Instance', v:url.replace(/^https?:\/\//,'')});
-        rows.push({l:'Authentication', v:auth + (credId?' · '+credId:'')});
+        rows.push({l:'Authentication', v:'OAuth 2.0' + (credId?' · '+credId:'')});
         rows.push({l:'Credential', v:'Guardian Credential Vault (Guardian-managed)'});
         rows.push({l:'Last verified', v:'just now — passed', green:true});
         p.baseConfig = rows;
