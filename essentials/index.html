@@ -23481,11 +23481,17 @@ function NODE_SCAN_CELL(state, label) {
 // щоб повернути її, коли скан завершиться.
 function setNodeScanState(row, state, label) {
   if (!row || row.children.length < 7) return;
+  /* Кешувати можна ТІЛЬКИ справжню дію рядка. Рядок, який стартував уже в стані скану
+     («Scanning…», «Never scanned»), має в кнопці такий самий звіт про скан — повернути її
+     після завершення не можна, інакше рядок казав би «Just now» і «Scanning…» водночас.
+     Дію такому рядку дає результат скану (див. finishNodeScan). */
+  var prevState = row.children[5].dataset.state;
+  if (row.dataset.scanAction === undefined && (!prevState || prevState === 'idle'))
+    row.dataset.scanAction = row.children[6].innerHTML;
   row.children[5].outerHTML = NODE_SCAN_CELL(state, label);
   var act = row.children[6];
-  if (row.dataset.scanAction === undefined) row.dataset.scanAction = act.innerHTML;
   var s = NODE_SCAN_STATES[state];
-  if (!s.action) { act.innerHTML = row.dataset.scanAction; return; }
+  if (!s.action) { if (row.dataset.scanAction !== undefined) act.innerHTML = row.dataset.scanAction; return; }
   // Активні тільки ті стани, з яких користувач може вийти сам: Retry і Scan now.
   // Queued / Scanning… — це звіт про те, що вже відбувається, натискати нема на що.
   var live = (state === 'failed' || state === 'never');
@@ -23516,6 +23522,16 @@ function scanContinueInBackground() {
   go('s-scan-complete');
 }
 
+/* Чи впаде скан — вирішує СТАН вузла, а не його імʼя: до вузла, який не чекіниться, скан
+   просто не достукається. Тому офлайн-рядок не може відзвітувати про успішний скан, поки
+   в тому ж рядку написано «Offline» — ми не блокуємо вибір, а показуємо чесний результат.
+   SARAH-LAPTOP-01 — другий, ОНЛАЙНОВИЙ приклад падіння (Gareth: «including failing»):
+   скан валиться й з інших причин, не лише через звʼязок. */
+function nodeScanFails(row) {
+  return (row.dataset.net || '').indexOf('offline') === 0
+      || (row.dataset.name || '').indexOf('SARAH-LAPTOP-01') === 0;
+}
+
 /* Прогрес відлічуємо від моменту, коли користувач ДИВИТЬСЯ на список: інакше «Scanning…»
    відпрацювало б у фоні і повернення показувало б лише готовий результат. */
 function resumeNodeScans() {
@@ -23526,12 +23542,7 @@ function resumeNodeScans() {
     setNodeScanState(row, 'running');
   });
   setTimeout(function () {
-    queued.forEach(function (row) {
-      // SARAH-LAPTOP-01 — проблемний вузол демо; на ньому показуємо стан падіння + Retry,
-      // якого Gareth просив окремо («including failing»).
-      var failed = (row.dataset.name || '').indexOf('SARAH-LAPTOP-01') === 0;
-      finishNodeScan(row, failed);
-    });
+    queued.forEach(function (row) { finishNodeScan(row, nodeScanFails(row)); });
   }, 5200);
 }
 
@@ -23539,24 +23550,32 @@ function resumeNodeScans() {
 function scanNodeRow(btn) {
   var row = btn.closest('.node-row');
   setNodeScanState(row, 'running');
-  setTimeout(function () { finishNodeScan(row, false); }, 4000);
+  setTimeout(function () { finishNodeScan(row, nodeScanFails(row)); }, 4000);
 }
 
 // Успішний скан знімає «Never scanned» назавжди — інакше пігулка Unscanned рахувала б
 // вузол, який щойно віддав результат.
 function finishNodeScan(row, failed) {
-  var wasNever = row.dataset.scan === 'never';
+  /* «Результату ще немає» — це і «Never scanned», і рядок, який стартував у стані скану:
+     в обох Score / Issues / Drift порожні. Ознака одна — справжньої дії такий рядок не мав,
+     тому вона й не потрапила в кеш. */
+  var noResult = row.dataset.scan === 'never' || row.dataset.scanAction === undefined;
   if (!failed) row.removeAttribute('data-scan');
   setNodeScanState(row, failed ? 'failed' : 'idle');
   // Перший успішний скан має чим заповнити Score / Issues / Drift — інакше рядок каже
   // «просканований щойно» і водночас «—», тобто скан нібито нічого не знайшов.
-  if (wasNever && !failed) {
+  if (noResult && !failed) {
     row.children[1].querySelector('.node-ico svg').setAttribute('stroke', '#3FC878');
     row.children[2].innerHTML = '<div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#d97706;">64</span>'
       + '<div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:64%;height:100%;background:#d97706;border-radius:99px;"></div></div></div>';
     row.children[3].innerHTML = '<span style="font-size:12px;font-weight:600;color:#FB3C44;">6 Critical</span><div style="font-size:11px;color:var(--text-sec);">19 total</div>';
-    row.children[4].innerHTML = '<span style="font-size:12px;color:var(--text-sec);">None</span>';
-    row.dataset.sortScore = '64'; row.dataset.sortIssues = '19'; row.dataset.sortDrift = '0';
+    // Drift заповнюємо, лише якщо його не було: у рядка, який уже показував зміни, скан їх не
+    // скасовує — ті самі зміни лежать і у вкладці Detected Drift.
+    if (row.children[4].textContent.trim() === '—') {
+      row.children[4].innerHTML = '<span style="font-size:12px;color:var(--text-sec);">None</span>';
+      row.dataset.sortDrift = '0';
+    }
+    row.dataset.sortScore = '64'; row.dataset.sortIssues = '19';
     // Дія теж мусить поїхати за результатом: «Scan now» на рядку з 6 Critical пропонує зробити
     // те, що вже зроблено. Наступний крок тут той самий, що й на решті сканованих рядків.
     // Кеш перезаписуємо, інакше setNodeScanState('idle') колись поверне стару кнопку.
