@@ -2448,6 +2448,13 @@ body.dark .remed-risk-cta.action-cta .remed-risk-check { color:#00AF73; }
 .seg-btn.is-active, .toggle-btn.active { background:rgba(0,175,115,0.15); color:#334155; }
 body.dark .seg-btn:hover:not(.is-active), body.dark .toggle-btn:hover:not(.active) { background:rgba(0,175,115,0.15); color:var(--p-neutral-50); }
 body.dark .seg-btn.is-active, body.dark .toggle-btn.active { background:rgba(0,175,115,0.20); color:var(--p-neutral-50); }
+/* Лічильник усередині сегмента: скільки рядків дасть цей зріз. Приглушений, бо це
+   метадані вибору, а не сам вибір — інакше число конкурувало б із підписом. */
+.seg-count { margin-left:5px; font-weight:700; color:var(--text-muted); }
+.seg-btn.is-active .seg-count { color:inherit; opacity:.6; }
+/* Підпис перед групою. Потрібен, щойно груп стає більше однієї: без нього два сусідні
+   «All» не кажуть, за яким саме атрибутом фільтрують. */
+.seg-label { font-size:12px; font-weight:500; color:var(--text-sec); white-space:nowrap; }
 /* Form variant — fills the form-group width, segments share it equally. */
 .toggle-group { display:flex; }
 .toggle-btn { flex:1; display:flex; align-items:center; justify-content:center; text-align:center; outline:none; }
@@ -3472,12 +3479,6 @@ body.dark .node-scan[data-state="never"]  { color:#64748B; }
 body.dark .node-net[data-net="offline"]      { color:#64748B; }
 body.dark .node-net[data-net="offline-long"] { color:#F59E0B; }
 
-/* Швидкі фільтри над таблицею — наявний компонент .pill (2543). Активний стан беремо
-   з канонічного вибору `.seg-btn.is-active` (2448), а не з severity-варіантів:
-   «offline» — це не критичність, а зріз списку. */
-.pill.is-on { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; }
-body.dark .pill.is-on { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
-.pill-count { opacity:.65; font-weight:700; }
 .cm-row-dim .cm-ico svg { stroke:var(--text-muted); }
 .cm-row-dim { opacity:0.55; }
 .cm-row-dim:hover { opacity:0.8; }
@@ -7221,7 +7222,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div>
             <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">All Nodes</div>
             <div id="all-devices-sub" style="font-size:12px;color:var(--text-muted);margin-top:5px;display:flex;align-items:center;flex-wrap:wrap;gap:3px 9px;line-height:1.2;">
-              <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg><span><b style="font-weight:600;color:var(--text-sec);">4</b> monitored nodes</span></span>
+              <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg><span><b style="font-weight:600;color:var(--text-sec);">5</b> monitored nodes</span></span>
               <span style="opacity:.45;">·</span>
               <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 16 14"></polyline></svg>Last scan 2h ago</span>
               <span style="opacity:.45;">·</span>
@@ -7242,7 +7243,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Managed / Detected tabs — shared Policies tab component -->
         <div id="nodes-tabs" class="policies-tabs" style="margin-bottom:22px;">
-          <button id="nodes-tab-managed" class="pol-tab pol-tab-active" onclick="setNodesTab(&#39;managed&#39;)" style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--green2);background:none;border:none;border-bottom:2px solid var(--green2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Managed <span id="nodes-tab-managed-count" class="pol-tab-count">4</span></button>
+          <button id="nodes-tab-managed" class="pol-tab pol-tab-active" onclick="setNodesTab(&#39;managed&#39;)" style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--green2);background:none;border:none;border-bottom:2px solid var(--green2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Managed <span id="nodes-tab-managed-count" class="pol-tab-count">5</span></button>
           <button id="nodes-tab-detected" class="pol-tab" onclick="setNodesTab(&#39;detected&#39;)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Detected <span id="nodes-tab-detected-count" class="pol-tab-count">3</span></button>
           <button id="nodes-tab-peer" class="pol-tab" onclick="setNodesTab(&#39;peer&#39;);clearSelectionConsensus()" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Consensus Comparison</button>
         </div>
@@ -7268,10 +7269,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <svg class="isearch-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
             <input id="node-search" class="isearch-input" type="text" placeholder="Search nodes…" aria-label="Search nodes" oninput="filterNodes()" onblur="isearchClose(this)" onkeydown="if(event.key==='Escape'){this.value='';filterNodes();this.blur();}">
           </div>
+          <!-- Два зрізи одного списку, тому один і той самий сегментований контрол, а не дві
+               різні мови. Питання різні: «що з вузлом не так» і «звідки він», тому й групи різні.
+               Stephen Earl (Slack 2026-08-21): «default filter pills to easily enable finding
+               those nodes in those states». -->
+          <span class="seg-label">State</span>
+          <div class="seg" id="node-state-seg" role="group" aria-label="Filter nodes by state">
+            <button onclick="setNodeStateFilter(&#39;all&#39;)" id="ns-all" class="seg-btn is-active" aria-pressed="true">All <span class="seg-count" id="nsp-all">0</span></button>
+            <button onclick="setNodeStateFilter(&#39;offline&#39;)" id="ns-offline" class="seg-btn" aria-pressed="false">Offline <span class="seg-count" id="nsp-offline">0</span></button>
+            <button onclick="setNodeStateFilter(&#39;unscanned&#39;)" id="ns-unscanned" class="seg-btn" aria-pressed="false">Unscanned <span class="seg-count" id="nsp-unscanned">0</span></button>
+          </div>
+          <span class="seg-label">Source</span>
           <div class="seg" id="node-filter-btns" role="group" aria-label="Filter nodes by source">
-            <button onclick="setNodeFilter(&#39;all&#39;)" id="nf-all" class="seg-btn is-active" aria-pressed="true">All</button>
-            <button onclick="setNodeFilter(&#39;local&#39;)" id="nf-local" class="seg-btn" aria-pressed="false">Local</button>
-            <button onclick="setNodeFilter(&#39;aws&#39;)" id="nf-aws" class="seg-btn" aria-pressed="false">AWS</button>
+            <button onclick="setNodeFilter(&#39;all&#39;)" id="nf-all" class="seg-btn is-active" aria-pressed="true">All <span class="seg-count" id="nfc-all">0</span></button>
+            <button onclick="setNodeFilter(&#39;local&#39;)" id="nf-local" class="seg-btn" aria-pressed="false">Local <span class="seg-count" id="nfc-local">0</span></button>
+            <button onclick="setNodeFilter(&#39;aws&#39;)" id="nf-aws" class="seg-btn" aria-pressed="false">AWS <span class="seg-count" id="nfc-aws">0</span></button>
           </div>
           <div style="width:1px;height:20px;background:var(--border);margin:0 2px;"></div>
           <!-- Group + environment in one filter menu -->
@@ -7324,15 +7336,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
           </div><!-- end right group -->
         </div><!-- end filter row -->
-
-        <!-- Швидкі зрізи стану. Stephen Earl (Slack 2026-08-21): «default filter pills to easily
-             enable finding those nodes in those states». Offline і Unscanned — окремі пігулки,
-             бо це окремі стани: вузол може бути в одному з них, в обох або в жодному. -->
-        <div class="filter-pills" id="node-state-pills">
-          <div class="pill is-on" data-state="all" onclick="setNodeStateFilter(&#39;all&#39;, this)">All <span class="pill-count" id="nsp-all">0</span></div>
-          <div class="pill" data-state="offline" onclick="setNodeStateFilter(&#39;offline&#39;, this)">Offline <span class="pill-count" id="nsp-offline">0</span></div>
-          <div class="pill" data-state="unscanned" onclick="setNodeStateFilter(&#39;unscanned&#39;, this)">Unscanned <span class="pill-count" id="nsp-unscanned">0</span></div>
-        </div>
 
         <!-- Device list -->
         <div id="nodes-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
@@ -22709,10 +22712,14 @@ function setNodeFilter(f) {
 /* Швидкий зріз за станом. Окремо від _nodeFilter (Local/AWS), бо це різні питання:
    «звідки вузол» і «що з ним не так». Обидва застосовуються разом. */
 let _nodeStateFilter = 'all';
-function setNodeStateFilter(s, el) {
+function setNodeStateFilter(s) {
   _nodeStateFilter = s;
-  document.querySelectorAll('#node-state-pills .pill').forEach(function (p) {
-    p.classList.toggle('is-on', p === el);
+  // Той самий сегментований контрол, що й Source — вигляд у CSS, JS лише позначає активний.
+  ['all','offline','unscanned'].forEach(id => {
+    const btn = document.getElementById('ns-' + id);
+    if (!btn) return;
+    btn.classList.toggle('is-active', id === s);
+    btn.setAttribute('aria-pressed', id === s ? 'true' : 'false');
   });
   filterNodes();
 }
@@ -22724,21 +22731,30 @@ function nodeMatchesState(row, s) {
   return true;
 }
 /* Лічильники рахуємо по всіх рядках, які взагалі присутні в списку, а не по видимих:
-   інакше пігулка показувала б нуль саме тоді, коли інший фільтр сховав те, що вона
-   мала б допомогти знайти. AWS-секція до підключення прихована — її не рахуємо. */
+   інакше сегмент показував би нуль саме тоді, коли інший фільтр сховав те, що він
+   мав би допомогти знайти. AWS-секція до підключення прихована — її не рахуємо.
+   Обидві групи рахуємо разом, щоб «All» у них не розʼїхався: це той самий список. */
 function updateNodeStateCounts() {
   var aws = document.getElementById('aws-device-rows');
   var awsHidden = !aws || aws.style.display === 'none';
   var n = { all:0, offline:0, unscanned:0 };
+  var src = { all:0, local:0, aws:0 };
   document.querySelectorAll('#v-all-devices .node-row').forEach(function (row) {
     if (awsHidden && row.closest('#aws-device-rows')) return;
     n.all++;
     if (nodeMatchesState(row, 'offline'))   n.offline++;
     if (nodeMatchesState(row, 'unscanned')) n.unscanned++;
+    src.all++;
+    var t = row.dataset.type === 'aws' ? 'aws' : 'local';
+    src[t]++;
   });
   Object.keys(n).forEach(function (k) {
     var el = document.getElementById('nsp-' + k);
     if (el) el.textContent = n[k];
+  });
+  Object.keys(src).forEach(function (k) {
+    var el = document.getElementById('nfc-' + k);
+    if (el) el.textContent = src[k];
   });
 }
 var _nodeSort = {col: null, dir: 1};
@@ -22854,7 +22870,7 @@ function nodesResetFilters() {
   document.querySelectorAll('#v-all-devices .ng-opt').forEach(function(o){ var a=o.dataset.val==='all'; o.classList.toggle('ng-opt-active',a); var c=o.querySelector('.ng-check'); if(c)c.style.visibility=a?'visible':'hidden'; o.style.background=a?'rgba(0,175,115,0.08)':''; });
   document.querySelectorAll('#v-all-devices .ne-opt').forEach(function(o){ var a=o.dataset.val==='all'; o.classList.toggle('ne-opt-active',a); var c=o.querySelector('.ne-check'); if(c)c.style.visibility=a?'visible':'hidden'; o.style.background=a?'rgba(0,175,115,0.08)':''; });
   nodeScopeLabel();
-  setNodeStateFilter('all', document.querySelector('#node-state-pills .pill[data-state="all"]'));
+  setNodeStateFilter('all');
   setNodeFilter('all');
 }
 
@@ -23919,7 +23935,7 @@ function _updateDetectedTabCount() {
 function _updateManagedTabCount(delta) {
   var el = document.getElementById('nodes-tab-managed-count');
   if (!el) return;
-  var n = parseInt(el.textContent.trim(), 10) || 4;
+  var n = parseInt(el.textContent.trim(), 10) || 5;
   el.textContent = n + delta;
 }
 function promoteNode(btn) {
