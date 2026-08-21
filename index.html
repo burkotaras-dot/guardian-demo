@@ -3444,10 +3444,40 @@ body.dark .node-ico { background:rgba(255,255,255,0.05); }
 .node-scan[data-state="running"]       { color:var(--status-info); font-weight:500; }
 .node-scan[data-state="running"] > svg { animation:spin 1.2s linear infinite; }
 .node-scan[data-state="failed"]        { color:var(--status-danger); font-weight:500; }
+/* «Never scanned» — це теж ЗНАЧЕННЯ колонки Last Scan (просто відсутнє), тому воно тут,
+   а не окремим індикатором. Stephen Earl, Slack 2026-08-20: unscanned ≠ offline. */
+.node-scan[data-state="never"]         { color:var(--text-muted); }
 /* Dark: idle тримає ту саму світлість, що й решта комірки Last Scan; червоний беремо
    яскравіший — так само, як .sev-num-critical у темній темі. */
 body.dark .node-scan[data-state="idle"]   { color:var(--p-neutral-50); }
 body.dark .node-scan[data-state="failed"] { color:#FF4646; }
+body.dark .node-scan[data-state="never"]  { color:#64748B; }
+
+/* ── Стан звʼязку вузла — маркер біля імені (Adem + Stephen + Gareth, Slack 2026-08-21) ──
+   Це ІНША вісь, ніж стан скану: offline = вузол не чекіниться, unscanned = немає результату.
+   Вузол буває онлайн і ніколи не сканованим, і навпаки — тому колонку Last Scan НЕ чіпаємо.
+
+   Онлайн НЕ рендеримо взагалі. Підпис «Online» на 190 рядках із 200 — це шум, у якому
+   тонуть саме ті 10, заради яких фічу й просили (Gareth: «limiting the info there to only
+   the stuff hitting our core use cases by default»).
+
+   Гучність задає ТРИВАЛІСТЬ, а не сам факт: ноутбук із закритою кришкою відпадає щодня і
+   це норма, а вузол, мертвий тижнями, — проблема. Це і є Stephen'ове «missed check-ins or
+   gone unscanned more than X times», виражене кольором, а не окремою фічею.
+   Пігулки немає: у рядку вже є Score / Issues / Detected Drift (DS §12). */
+.node-net { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; }
+.node-net::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
+.node-net[data-net="offline"]      { color:var(--text-muted); }
+.node-net[data-net="offline-long"] { color:var(--sev-medium-txt); }
+body.dark .node-net[data-net="offline"]      { color:#64748B; }
+body.dark .node-net[data-net="offline-long"] { color:#F59E0B; }
+
+/* Швидкі фільтри над таблицею — наявний компонент .pill (2543). Активний стан беремо
+   з канонічного вибору `.seg-btn.is-active` (2448), а не з severity-варіантів:
+   «offline» — це не критичність, а зріз списку. */
+.pill.is-on { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; }
+body.dark .pill.is-on { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
+.pill-count { opacity:.65; font-weight:700; }
 .cm-row-dim .cm-ico svg { stroke:var(--text-muted); }
 .cm-row-dim { opacity:0.55; }
 .cm-row-dim:hover { opacity:0.8; }
@@ -7295,6 +7325,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div><!-- end right group -->
         </div><!-- end filter row -->
 
+        <!-- Швидкі зрізи стану. Stephen Earl (Slack 2026-08-21): «default filter pills to easily
+             enable finding those nodes in those states». Offline і Unscanned — окремі пігулки,
+             бо це окремі стани: вузол може бути в одному з них, в обох або в жодному. -->
+        <div class="filter-pills" id="node-state-pills">
+          <div class="pill is-on" data-state="all" onclick="setNodeStateFilter(&#39;all&#39;, this)">All <span class="pill-count" id="nsp-all">0</span></div>
+          <div class="pill" data-state="offline" onclick="setNodeStateFilter(&#39;offline&#39;, this)">Offline <span class="pill-count" id="nsp-offline">0</span></div>
+          <div class="pill" data-state="unscanned" onclick="setNodeStateFilter(&#39;unscanned&#39;, this)">Unscanned <span class="pill-count" id="nsp-unscanned">0</span></div>
+        </div>
+
         <!-- Device list -->
         <div id="nodes-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
 
@@ -7360,7 +7399,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- Device row 3 — healthy -->
-          <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" data-group="Developer Macs" data-env="development" data-sort-score="91" data-sort-issues="2" data-sort-drift="0" data-sort-lastscan="120" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+          <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" data-group="Developer Macs" data-env="development" data-net="offline-long" data-sort-score="91" data-sort-issues="2" data-sort-drift="0" data-sort-lastscan="4320" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="node-ico">
@@ -7368,7 +7407,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
               <div>
                 <div style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">DEV-MACPRO-03</div>
-                <div style="font-size:11px;color:var(--text-sec);">macOS Ventura</div>
+                <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:6px;">macOS Ventura <span class="node-net" data-net="offline-long">Offline 3 days</span></div>
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:9px;">
@@ -7380,12 +7419,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:11px;color:var(--text-sec);">6 total</div>
             </div>
             <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
-            <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>2 hours ago</div>
+            <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>3 days ago</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Details <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
           <!-- Device row 4 — scan in progress -->
-          <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" data-group="Windows Desktops" data-env="staging" data-sort-score="999" data-sort-issues="0" data-sort-drift="1" data-sort-lastscan="0" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+          <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" data-group="Windows Desktops" data-env="staging" data-sort-score="999" data-sort-issues="0" data-sort-drift="1" data-sort-lastscan="0" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="node-ico">
@@ -7396,17 +7435,32 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="font-size:11px;color:var(--text-sec);">Windows 10 Enterprise</div>
               </div>
             </div>
-            <div>
-              <div style="font-size:13px;font-weight:600;color:var(--status-info);display:flex;align-items:center;gap:5px;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" style="animation:spin 1.2s linear infinite"><path d="M21 12a9 9 0 1 1-6.22-8.56"></path></svg>
-                Scanning…
-              </div>
-              <div style="font-size:10px;color:var(--text-sec);margin-top:3px;">In progress</div>
-            </div>
+            <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 change</span></div>
             <div class="node-scan" data-state="running"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.22-8.56"></path></svg>Scanning…</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Scanning…</button></div>
+          </div>
+
+          <!-- Device row 5 — online, but never scanned. Показує другу вісь: вузол на звʼязку,
+               а результату скану немає. Саме через це offline і unscanned не можна зводити
+               в один індикатор (Stephen Earl, Slack 2026-08-20). -->
+          <div class="node-row" data-name="BUILD-AGENT-02 Windows Server 2022" data-type="local" data-group="Windows Desktops" data-env="staging" data-scan="never" data-sort-score="1000" data-sort-issues="0" data-sort-drift="0" data-sort-lastscan="999999" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="node-ico">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+              </div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">BUILD-AGENT-02</div>
+                <div style="font-size:11px;color:var(--text-sec);">Windows Server 2022</div>
+              </div>
+            </div>
+            <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
+            <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
+            <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
+            <div class="node-scan" data-state="never"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>Never scanned</div>
+            <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();scanNodeRow(this);">Scan now</button></div>
           </div>
 
           <!-- AWS Nodes section — shown after J3 completion -->
@@ -22651,6 +22705,42 @@ function setNodeFilter(f) {
   });
   filterNodes();
 }
+
+/* Швидкий зріз за станом. Окремо від _nodeFilter (Local/AWS), бо це різні питання:
+   «звідки вузол» і «що з ним не так». Обидва застосовуються разом. */
+let _nodeStateFilter = 'all';
+function setNodeStateFilter(s, el) {
+  _nodeStateFilter = s;
+  document.querySelectorAll('#node-state-pills .pill').forEach(function (p) {
+    p.classList.toggle('is-on', p === el);
+  });
+  filterNodes();
+}
+// Стан читаємо з data-атрибутів рядка, а не з тексту комірки: текст змінюється по ходу скану.
+function nodeMatchesState(row, s) {
+  if (s === 'all') return true;
+  if (s === 'offline')   return (row.dataset.net || '').indexOf('offline') === 0;
+  if (s === 'unscanned') return row.dataset.scan === 'never';
+  return true;
+}
+/* Лічильники рахуємо по всіх рядках, які взагалі присутні в списку, а не по видимих:
+   інакше пігулка показувала б нуль саме тоді, коли інший фільтр сховав те, що вона
+   мала б допомогти знайти. AWS-секція до підключення прихована — її не рахуємо. */
+function updateNodeStateCounts() {
+  var aws = document.getElementById('aws-device-rows');
+  var awsHidden = !aws || aws.style.display === 'none';
+  var n = { all:0, offline:0, unscanned:0 };
+  document.querySelectorAll('#v-all-devices .node-row').forEach(function (row) {
+    if (awsHidden && row.closest('#aws-device-rows')) return;
+    n.all++;
+    if (nodeMatchesState(row, 'offline'))   n.offline++;
+    if (nodeMatchesState(row, 'unscanned')) n.unscanned++;
+  });
+  Object.keys(n).forEach(function (k) {
+    var el = document.getElementById('nsp-' + k);
+    if (el) el.textContent = n[k];
+  });
+}
 var _nodeSort = {col: null, dir: 1};
 function sortNodes(col) {
   if (_nodeSort.col === col) { _nodeSort.dir *= -1; } else { _nodeSort.col = col; _nodeSort.dir = 1; }
@@ -22716,10 +22806,12 @@ function filterNodes() {
     const matchFilter = _nodeFilter === 'all' || _nodeFilter === type;
     const matchGroup = group === 'all' || rowGroup === group;
     const matchEnv = env === 'all' || rowEnv === env;
-    const show = matchSearch && matchFilter && matchGroup && matchEnv;
+    const matchState = nodeMatchesState(row, _nodeStateFilter);
+    const show = matchSearch && matchFilter && matchGroup && matchEnv && matchState;
     row.style.display = show ? 'grid' : 'none';
     if (show) visible++;
   });
+  updateNodeStateCounts();
   // empty state
   let empty = document.getElementById('node-empty-state');
   if (!empty) {
@@ -22762,6 +22854,7 @@ function nodesResetFilters() {
   document.querySelectorAll('#v-all-devices .ng-opt').forEach(function(o){ var a=o.dataset.val==='all'; o.classList.toggle('ng-opt-active',a); var c=o.querySelector('.ng-check'); if(c)c.style.visibility=a?'visible':'hidden'; o.style.background=a?'rgba(0,175,115,0.08)':''; });
   document.querySelectorAll('#v-all-devices .ne-opt').forEach(function(o){ var a=o.dataset.val==='all'; o.classList.toggle('ne-opt-active',a); var c=o.querySelector('.ne-check'); if(c)c.style.visibility=a?'visible':'hidden'; o.style.background=a?'rgba(0,175,115,0.08)':''; });
   nodeScopeLabel();
+  setNodeStateFilter('all', document.querySelector('#node-state-pills .pill[data-state="all"]'));
   setNodeFilter('all');
 }
 
@@ -22917,6 +23010,7 @@ function showView(name) {
   showOnly(name);
   if (name === 'settings-integrations' && typeof renderIntegrations === 'function') renderIntegrations();
   if (name === 'all-devices' && typeof resumeNodeScans === 'function') resumeNodeScans();
+  if (name === 'all-devices' && typeof updateNodeStateCounts === 'function') updateNodeStateCounts();
   _updateBC(name);
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
@@ -23331,7 +23425,10 @@ var NODE_SCAN_STATES = {
   running: { label:'Scanning…',    action:'Scanning…',
              glyph:'<path d="M21 12a9 9 0 1 1-6.22-8.56"></path>' },
   failed:  { label:'Scan failed',  action:'Retry',
-             glyph:'<circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16.2v.01"></path>' }
+             glyph:'<circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16.2v.01"></path>' },
+  // Немає результату взагалі. Дія активна: це єдиний стан, який користувач може зняти сам.
+  never:   { label:'Never scanned', action:'Scan now',
+             glyph:'<circle cx="12" cy="12" r="9"></circle><line x1="8" y1="12" x2="16" y2="12"></line>' }
 };
 
 function NODE_SCAN_CELL(state, label) {
@@ -23350,11 +23447,13 @@ function setNodeScanState(row, state, label) {
   if (row.dataset.scanAction === undefined) row.dataset.scanAction = act.innerHTML;
   var s = NODE_SCAN_STATES[state];
   if (!s.action) { act.innerHTML = row.dataset.scanAction; return; }
-  var live = (state === 'failed');
+  // Активні тільки ті стани, з яких користувач може вийти сам: Retry і Scan now.
+  // Queued / Scanning… — це звіт про те, що вже відбувається, натискати нема на що.
+  var live = (state === 'failed' || state === 'never');
   act.innerHTML = '<button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;'
     + 'justify-content:center;text-align:center;font-weight:600;'
     + (live ? '' : 'opacity:0.5;cursor:default;') + '" onclick="event.stopPropagation();'
-    + (live ? 'retryNodeScan(this)' : '') + '">' + s.action + '</button>';
+    + (live ? 'scanNodeRow(this)' : '') + '">' + s.action + '</button>';
 }
 
 /* v-s07 має два входи: онбординг (s05 → s07 → s-scan-complete, крок 4 степера) і
@@ -23392,15 +23491,45 @@ function resumeNodeScans() {
       // SARAH-LAPTOP-01 — проблемний вузол демо; на ньому показуємо стан падіння + Retry,
       // якого Gareth просив окремо («including failing»).
       var failed = (row.dataset.name || '').indexOf('SARAH-LAPTOP-01') === 0;
-      setNodeScanState(row, failed ? 'failed' : 'idle');
+      finishNodeScan(row, failed);
     });
   }, 5200);
 }
 
-function retryNodeScan(btn) {
+// Обслуговує і «Retry», і «Scan now» — з погляду вузла це одна дія: прогнати скан зараз.
+function scanNodeRow(btn) {
   var row = btn.closest('.node-row');
   setNodeScanState(row, 'running');
-  setTimeout(function () { setNodeScanState(row, 'idle'); }, 4000);
+  setTimeout(function () { finishNodeScan(row, false); }, 4000);
+}
+
+// Успішний скан знімає «Never scanned» назавжди — інакше пігулка Unscanned рахувала б
+// вузол, який щойно віддав результат.
+function finishNodeScan(row, failed) {
+  var wasNever = row.dataset.scan === 'never';
+  if (!failed) row.removeAttribute('data-scan');
+  setNodeScanState(row, failed ? 'failed' : 'idle');
+  // Перший успішний скан має чим заповнити Score / Issues / Drift — інакше рядок каже
+  // «просканований щойно» і водночас «—», тобто скан нібито нічого не знайшов.
+  if (wasNever && !failed) {
+    row.children[1].querySelector('.node-ico svg').setAttribute('stroke', '#3FC878');
+    row.children[2].innerHTML = '<div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#d97706;">64</span>'
+      + '<div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:64%;height:100%;background:#d97706;border-radius:99px;"></div></div></div>';
+    row.children[3].innerHTML = '<span style="font-size:12px;font-weight:600;color:#FB3C44;">6 Critical</span><div style="font-size:11px;color:var(--text-sec);">19 total</div>';
+    row.children[4].innerHTML = '<span style="font-size:12px;color:var(--text-sec);">None</span>';
+    row.dataset.sortScore = '64'; row.dataset.sortIssues = '19'; row.dataset.sortDrift = '0';
+    // Дія теж мусить поїхати за результатом: «Scan now» на рядку з 6 Critical пропонує зробити
+    // те, що вже зроблено. Наступний крок тут той самий, що й на решті сканованих рядків.
+    // Кеш перезаписуємо, інакше setNodeScanState('idle') колись поверне стару кнопку.
+    var fixHtml = '<button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;'
+      + 'justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();'
+      + 'showView(&#39;node-detail&#39;);">Fix now <span class="action-arrow"><svg width="12" height="12" '
+      + 'viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" '
+      + 'stroke="currentColor" stroke-linecap="round"/></svg></span></button>';
+    row.dataset.scanAction = fixHtml;
+    row.children[6].innerHTML = fixHtml;
+  }
+  updateNodeStateCounts();
 }
 
 function updateScanSelected() {
