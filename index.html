@@ -3745,6 +3745,7 @@ body.dark .na-action.na-primary .na-action-ico { background:#10B981; color:#fff;
 .gm-node-added .gm-body { padding-bottom:20px; }
 .na-modal-hero { display:flex; flex-direction:column; align-items:center; text-align:center; margin:6px 0 20px; }
 .na-modal-check { width:44px; height:44px; border-radius:50%; background:rgba(16,185,129,0.13); display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+.na-modal-check--warn { background:rgba(249,115,22,0.13); }
 .na-modal-title { font-size:18px; font-weight:700; color:var(--text-default); }
 .na-modal-sub { font-size:12.5px; color:var(--text-sec); margin-top:5px; line-height:1.5; max-width:360px; }
 .na-modal-summary { display:grid; grid-template-columns:auto 1fr; gap:9px 16px; font-size:12.5px; background:#F8FAFC; border-radius:12px; padding:16px 20px; margin-bottom:18px; }
@@ -23501,24 +23502,93 @@ function setNodeScanState(row, state, label) {
     + (live ? 'scanNodeRow(this)' : '') + '">' + s.action + '</button>';
 }
 
-/* v-s07 має два входи: онбординг (s05 → s07 → s-scan-complete, крок 4 степера) і
-   «Scan Selected» зі списку вузлів. Для другого «Continue in background» мусить вести
-   НАЗАД у All Nodes — інакше кнопка обіцяє фон, а показує готовий результат. */
-var _scanFromNodes = false;
+/* Скан зі списку вузлів — це дія над вибраними рядками, а не окремий екран, тому він живе
+   в канонічній модалці (DS §14) ПОВЕРХ списку: користувач не втрачає контекст, у який
+   повертається. Повносторінковий v-s07 лишається за онбордингом, де він є кроком степера. */
+function openNodeScanModal(count) {
+  var many = count !== 1;
+  var body = ''
+    + '<div class="na-scan">'
+    +   '<div class="scan-ring"></div>'
+    +   '<div class="na-scan-progress">'
+    +     '<div class="scan-bar-wrap"><div class="scan-bar-fill"></div></div>'
+    +     '<div class="scan-eta">~2 minutes remaining</div>'
+    +     '<div class="scan-items">'
+    +       '<div class="scan-row done"><div class="check-circle"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>Pending</div>'
+    +       '<div class="scan-row doing"><div class="active-circle"></div>In progress</div>'
+    +       '<div class="scan-row"><div class="pending-circle"></div>Complete</div>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>';
+  var timer = null;
+  openModal({
+    id:'node-scan-overlay', size:'lg',
+    // Заголовок несе сам об'єкт дії, тому в тілі його не дублюємо — там лише прогрес.
+    title:'Scanning ' + count + (many ? ' nodes' : ' node'),
+    subtitle:'Checking ' + (many ? 'them' : 'it') + ' against your Compliance Policies.',
+    bodyHtml:body,
+    buttons:[{label:'Continue in background',kind:'primary',onClick:function(e, close){ close(); }}],
+    /* Прогрес у рядках стартує, коли модалка зникає — тобто коли користувач знову ДИВИТЬСЯ
+       на список. Вішаємо на onClose, а не на кнопку: ×, Esc і клік по підкладці ведуть туди ж. */
+    onClose:function(){ clearTimeout(timer); resumeNodeScans(); },
+    /* Хто лишився дивитись — той бачить кінець скану тут, а не вічний спінер. Хто пішов —
+       той самий результат доїде в рядках списку (resumeNodeScans). Час однаковий, 5.2 c. */
+    afterMount:function(ov){ timer = setTimeout(function(){ nodeScanModalComplete(ov); }, 5200); }
+  });
+}
+
+// Той самий кінець скану, але у вікні: спінер → позначка, смуга → 100%, «Complete» → done.
+function nodeScanModalComplete(ov) {
+  var queued = Array.prototype.slice.call(document.querySelectorAll('.node-row[data-scan-queued]'));
+  var fails = queued.filter(nodeScanFails).length;
+  var total = queued.length;
+  queued.forEach(function (row) {
+    row.removeAttribute('data-scan-queued');
+    finishNodeScan(row, nodeScanFails(row));
+  });
+
+  var ring = ov.querySelector('.scan-ring');
+  if (ring) ring.outerHTML = fails
+    ? '<div class="na-modal-check na-modal-check--warn" style="margin:0 auto 20px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16.2v.01"></path></svg></div>'
+    : '<div class="na-modal-check" style="margin:0 auto 20px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>';
+
+  var fill = ov.querySelector('.scan-bar-fill');
+  if (fill) { fill.style.animation = 'none'; fill.style.width = '100%'; }
+  var eta = ov.querySelector('.scan-eta');
+  if (eta) eta.textContent = 'Finished just now';
+
+  var check = '<div class="check-circle"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>';
+  ov.querySelectorAll('.scan-row').forEach(function (row) {
+    row.className = 'scan-row done';
+    row.innerHTML = check + row.textContent.trim();
+  });
+
+  var title = ov.querySelector('.gm-title');
+  if (title) title.textContent = 'Scan complete';
+  // Провал не ховаємо за зеленою галочкою: скільки вузлів не відповіли — видно одразу.
+  var sub = ov.querySelector('.gm-sub');
+  if (sub) sub.textContent = fails
+    ? (total - fails) + ' of ' + total + ' scanned · ' + fails + ' failed — see the list for details.'
+    : total + (total === 1 ? ' node' : ' nodes') + ' checked. Results are in the list.';
+
+  // Обіцяти фон уже нема чого: операція завершилась, кнопка веде до результату.
+  var btn = ov.querySelector('[data-gm-btn="0"]');
+  if (btn && btn.firstChild) btn.firstChild.nodeValue = 'View results';
+}
 
 function scanSelectedNodes() {
+  var queued = 0;
   document.querySelectorAll('.node-checkbox:checked').forEach(function (cb) {
     var row = cb.closest('.node-row');
     if (!row) return;
     setNodeScanState(row, 'pending');
     row.dataset.scanQueued = '1';
+    queued++;
   });
-  _scanFromNodes = true;
-  go('s07');
+  if (queued) openNodeScanModal(queued);
 }
 
 function scanContinueInBackground() {
-  if (_scanFromNodes) { _scanFromNodes = false; showView('all-devices'); return; }
   go('s-scan-complete');
 }
 
