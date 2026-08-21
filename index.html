@@ -2620,6 +2620,29 @@ body.dark #search-filter-btn.dropdown-trigger:hover {
 }
 .scan-menu-section { padding:4px 12px 6px; font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:.5px; }
 .scan-menu-section:not(:first-child) { padding-top:10px; }
+/* Filters у All Nodes — три зрізи поруч, а не один довгий стовпчик (Figma 3440:17942).
+   Категорії незалежні: горизонтально користувач бачить усі три одразу й не мусить памʼятати,
+   що лишилось під скролом. Геометрія — літеральні значення макета. */
+/* Ряд — окремий елемент усередині панелі, бо toggleScanDropdown керує самою панеллю через
+   inline display:none/block; інакше довелось би перебивати інлайн через !important. */
+#node-scope-panel { width:auto; padding:10px; border-radius:8px; }
+#node-scope-panel .nsp-row { display:flex; align-items:stretch; gap:12px; }
+#node-scope-panel .nsp-col { display:flex; flex-direction:column; gap:6px; width:139px; flex-shrink:0; }
+#node-scope-panel .nsp-div { width:1px; align-self:stretch; background:rgba(226,232,240,0.3); flex-shrink:0; }
+body.dark #node-scope-panel .nsp-div { background:rgba(255,255,255,0.08); }
+#node-scope-panel .scan-menu-section,
+#node-scope-panel .scan-menu-section:not(:first-child) {
+  height:15px; padding:0 6px; display:flex; align-items:center;
+  font-size:9px; font-weight:600; letter-spacing:0; color:#9BA9BD;
+}
+#node-scope-panel .nsp-list { display:flex; flex-direction:column; gap:4px; }
+/* Уся розкладка пункту живе тут, а не в inline-style кожного рядка: фон вибраного й hover
+   уже задає загальноаплікаційне правило для dropdown-опцій, тож дублювати його не треба. */
+#node-scope-panel .nsp-opt {
+  display:flex; align-items:center; gap:6px; min-height:23px; padding:4px 6px;
+  border-radius:6px; font-size:12px; color:var(--text-default); cursor:pointer;
+}
+#node-scope-panel .nsp-opt svg { flex-shrink:0; }
 .scan-menu-option,
 .scan-filter-choice {
   width:100%; box-sizing:border-box; display:flex; align-items:center; gap:8px;
@@ -5716,6 +5739,7 @@ body.dark #csv-modal .csv-imp-bar { background:rgba(255,255,255,0.08); }
   .recon-time-opt,
   .drift-node-opt,
   .cms-opt,
+  .ns-opt,
   .ng-opt,
   .ne-opt,
   .id-cap-menu-item,
@@ -5733,6 +5757,7 @@ body.dark #csv-modal .csv-imp-bar { background:rgba(255,255,255,0.08); }
   .sort-opt.sort-opt-active,
   .group-opt.group-opt-active,
   .cms-opt.cms-opt-active,
+  .ns-opt.ns-opt-active,
   .ng-opt.ng-opt-active,
   .ne-opt.ne-opt-active,
   .ac-sec-opt.is-selected,
@@ -5968,7 +5993,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="sidebar-item" id="sb-all-devices" onclick="showView(&#39;all-devices&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path><path d="M2 10h20"></path></svg>
         All Nodes
-        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">4</span>
+        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
       </div>
       <div class="sidebar-item" id="sb-results" onclick="showView(&#39;results&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect><path d="m9 12 2 2 4-4"></path></svg>
@@ -7269,24 +7294,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <svg class="isearch-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
             <input id="node-search" class="isearch-input" type="text" placeholder="Search nodes…" aria-label="Search nodes" oninput="filterNodes()" onblur="isearchClose(this)" onkeydown="if(event.key==='Escape'){this.value='';filterNodes();this.blur();}">
           </div>
-          <!-- Два зрізи одного списку, тому один і той самий сегментований контрол, а не дві
-               різні мови. Питання різні: «що з вузлом не так» і «звідки він», тому й групи різні.
-               Stephen Earl (Slack 2026-08-21): «default filter pills to easily enable finding
-               those nodes in those states». -->
+          <!-- Єдиний сегментований контрол у рядку — стан вузла. Він тут, а не в меню «Filters»,
+               бо це те, що змінює наступну дію користувача: Stephen Earl (Slack 2026-08-21)
+               «default filter pills to easily enable finding those nodes in those states».
+               Source переїхав у «Filters» до Group і Environment — це теж атрибут походження. -->
           <span class="seg-label">State</span>
           <div class="seg" id="node-state-seg" role="group" aria-label="Filter nodes by state">
             <button onclick="setNodeStateFilter(&#39;all&#39;)" id="ns-all" class="seg-btn is-active" aria-pressed="true">All <span class="seg-count" id="nsp-all">0</span></button>
             <button onclick="setNodeStateFilter(&#39;offline&#39;)" id="ns-offline" class="seg-btn" aria-pressed="false">Offline <span class="seg-count" id="nsp-offline">0</span></button>
             <button onclick="setNodeStateFilter(&#39;unscanned&#39;)" id="ns-unscanned" class="seg-btn" aria-pressed="false">Unscanned <span class="seg-count" id="nsp-unscanned">0</span></button>
           </div>
-          <span class="seg-label">Source</span>
-          <div class="seg" id="node-filter-btns" role="group" aria-label="Filter nodes by source">
-            <button onclick="setNodeFilter(&#39;all&#39;)" id="nf-all" class="seg-btn is-active" aria-pressed="true">All <span class="seg-count" id="nfc-all">0</span></button>
-            <button onclick="setNodeFilter(&#39;local&#39;)" id="nf-local" class="seg-btn" aria-pressed="false">Local <span class="seg-count" id="nfc-local">0</span></button>
-            <button onclick="setNodeFilter(&#39;aws&#39;)" id="nf-aws" class="seg-btn" aria-pressed="false">AWS <span class="seg-count" id="nfc-aws">0</span></button>
-          </div>
           <div style="width:1px;height:20px;background:var(--border);margin:0 2px;"></div>
-          <!-- Group + environment in one filter menu -->
+          <!-- Group + environment + source in one filter menu: усе це атрибути ПОХОДЖЕННЯ вузла,
+               а не його стану, тому їм місце разом. Три колонки поруч (Figma 3440:17942) —
+               категорії незалежні, тож їх обирають паралельно, а не одну під одною. -->
           <div style="position:relative;flex-shrink:0;">
             <button id="node-scope-btn" class="scan-menu-trigger" onclick="toggleScanDropdown('node-scope-panel', this)">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
@@ -7294,19 +7315,39 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </button>
             <div id="node-scope-panel" class="scan-menu-panel" style="display:none;">
-              <div class="scan-menu-section">Group</div>
-              <div class="ng-opt ng-opt-active" data-val="all" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All groups</div>
-              <div class="ng-opt" data-val="Windows Laptops" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Windows Laptops</div>
-              <div class="ng-opt" data-val="Developer Macs" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Developer Macs</div>
-              <div class="ng-opt" data-val="Windows Desktops" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Windows Desktops</div>
-              <div class="ng-opt" data-val="AWS Web Servers" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS Web Servers</div>
-              <div class="ng-opt" data-val="AWS API Servers" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS API Servers</div>
-              <div class="ng-opt" data-val="AWS Containers" onclick="pickNodeGroup(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ng-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS Containers</div>
-              <div class="scan-menu-section">Environment</div>
-              <div class="ne-opt ne-opt-active" data-val="all" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All environments</div>
-              <div class="ne-opt" data-val="production" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Production</div>
-              <div class="ne-opt" data-val="staging" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Staging</div>
-              <div class="ne-opt" data-val="development" onclick="pickNodeEnv(this)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;ne-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Development</div>
+              <div class="nsp-row">
+              <div class="nsp-col">
+                <div class="scan-menu-section">Group</div>
+                <div class="nsp-list">
+                  <div class="nsp-opt ng-opt ng-opt-active" data-val="all" onclick="pickNodeGroup(this)"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All groups</div>
+                  <div class="nsp-opt ng-opt" data-val="Windows Laptops" onclick="pickNodeGroup(this)"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Windows Laptops</div>
+                  <div class="nsp-opt ng-opt" data-val="Developer Macs" onclick="pickNodeGroup(this)"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Developer Macs</div>
+                  <div class="nsp-opt ng-opt" data-val="Windows Desktops" onclick="pickNodeGroup(this)"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Windows Desktops</div>
+                  <div class="nsp-opt ng-opt" data-val="AWS Web Servers" onclick="pickNodeGroup(this)"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS Web Servers</div>
+                  <div class="nsp-opt ng-opt" data-val="AWS API Servers" onclick="pickNodeGroup(this)"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS API Servers</div>
+                  <div class="nsp-opt ng-opt" data-val="AWS Containers" onclick="pickNodeGroup(this)"><svg class="ng-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS Containers</div>
+                </div>
+              </div>
+              <div class="nsp-div"></div>
+              <div class="nsp-col">
+                <div class="scan-menu-section">Environment</div>
+                <div class="nsp-list">
+                  <div class="nsp-opt ne-opt ne-opt-active" data-val="all" onclick="pickNodeEnv(this)"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All environments</div>
+                  <div class="nsp-opt ne-opt" data-val="production" onclick="pickNodeEnv(this)"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Production</div>
+                  <div class="nsp-opt ne-opt" data-val="staging" onclick="pickNodeEnv(this)"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Staging</div>
+                  <div class="nsp-opt ne-opt" data-val="development" onclick="pickNodeEnv(this)"><svg class="ne-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Development</div>
+                </div>
+              </div>
+              <div class="nsp-div"></div>
+              <div class="nsp-col">
+                <div class="scan-menu-section">Source</div>
+                <div class="nsp-list">
+                  <div class="nsp-opt ns-opt ns-opt-active" data-val="all" onclick="pickNodeSource(this)"><svg class="ns-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>All sources</div>
+                  <div class="nsp-opt ns-opt" data-val="local" onclick="pickNodeSource(this)"><svg class="ns-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Local</div>
+                  <div class="nsp-opt ns-opt" data-val="aws" onclick="pickNodeSource(this)"><svg class="ns-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>AWS</div>
+                </div>
+              </div>
+              </div>
             </div>
           </div>
           <!-- Selection actions — same right group, appears in front of the filters -->
@@ -22697,16 +22738,11 @@ function showOnly(id) {
 let _nodeFilter = 'all';
 function nodeEnvScope()    { return document.getElementById('node-env-scope')?.value    || 'all'; }
 function nodeGroupFilter() { return document.getElementById('node-group-filter')?.value || 'all'; }
+// Source живе в меню «Filters» разом із Group і Environment. Програмний вхід лишається той
+// самий — він просто вибирає відповідний пункт меню, щоб стан і підпис тригера не розійшлись.
 function setNodeFilter(f) {
-  _nodeFilter = f;
-  // Segmented control — appearance lives in the .seg-btn CSS, JS only flags the active segment.
-  ['all','local','aws'].forEach(id => {
-    const btn = document.getElementById('nf-' + id);
-    if (!btn) return;
-    btn.classList.toggle('is-active', id === f);
-    btn.setAttribute('aria-pressed', id === f ? 'true' : 'false');
-  });
-  filterNodes();
+  const opt = document.querySelector('#node-scope-panel .ns-opt[data-val="' + f + '"]');
+  if (opt) pickNodeSource(opt);
 }
 
 /* Швидкий зріз за станом. Окремо від _nodeFilter (Local/AWS), бо це різні питання:
@@ -22733,28 +22769,20 @@ function nodeMatchesState(row, s) {
 /* Лічильники рахуємо по всіх рядках, які взагалі присутні в списку, а не по видимих:
    інакше сегмент показував би нуль саме тоді, коли інший фільтр сховав те, що він
    мав би допомогти знайти. AWS-секція до підключення прихована — її не рахуємо.
-   Обидві групи рахуємо разом, щоб «All» у них не розʼїхався: це той самий список. */
+   Пункти меню «Filters» лічильників не мають — там їх немає ні в Group, ні в Environment. */
 function updateNodeStateCounts() {
   var aws = document.getElementById('aws-device-rows');
   var awsHidden = !aws || aws.style.display === 'none';
   var n = { all:0, offline:0, unscanned:0 };
-  var src = { all:0, local:0, aws:0 };
   document.querySelectorAll('#v-all-devices .node-row').forEach(function (row) {
     if (awsHidden && row.closest('#aws-device-rows')) return;
     n.all++;
     if (nodeMatchesState(row, 'offline'))   n.offline++;
     if (nodeMatchesState(row, 'unscanned')) n.unscanned++;
-    src.all++;
-    var t = row.dataset.type === 'aws' ? 'aws' : 'local';
-    src[t]++;
   });
   Object.keys(n).forEach(function (k) {
     var el = document.getElementById('nsp-' + k);
     if (el) el.textContent = n[k];
-  });
-  Object.keys(src).forEach(function (k) {
-    var el = document.getElementById('nfc-' + k);
-    if (el) el.textContent = src[k];
   });
 }
 var _nodeSort = {col: null, dir: 1};
@@ -22783,13 +22811,14 @@ function sortNodes(col) {
   rows.forEach(function(row) { wrap.insertBefore(row, awsSection || null); });
 }
 
-// Group and environment share one menu, so the trigger has to say what is selected.
+// Source, group and environment share one menu, so the trigger has to say what is selected.
 // Nothing selected → the menu title; otherwise the chosen values joined.
 function nodeScopeLabel() {
   var lbl = document.getElementById('node-scope-label');
   if (!lbl) return;
   var parts = [];
-  ['.ng-opt-active', '.ne-opt-active'].forEach(function(sel) {
+  // Порядок той самий, що й колонок у панелі, щоб підпис читався як зліва направо в меню.
+  ['.ng-opt-active', '.ne-opt-active', '.ns-opt-active'].forEach(function(sel) {
     var o = document.querySelector('#node-scope-panel ' + sel);
     if (o && o.dataset.val !== 'all') parts.push(o.textContent.trim());
   });
@@ -22806,6 +22835,9 @@ function nodeScopePick(el, optClass, checkClass) {
 // The panel stays open: both categories are usually set in the same visit.
 function pickNodeGroup(el) { nodeScopePick(el, 'ng-opt', 'ng-check'); }
 function pickNodeEnv(el) { nodeScopePick(el, 'ne-opt', 'ne-check'); }
+// Source тримає ще й змінну _nodeFilter, бо на неї спираються інші місця (промоушен вузла,
+// перемикання вкладок). Сам вибір і підсвітка — той самий механізм, що в Group і Environment.
+function pickNodeSource(el) { _nodeFilter = el.dataset.val || 'all'; nodeScopePick(el, 'ns-opt', 'ns-check'); }
 
 function filterNodes() {
   const q = (document.getElementById('node-search')?.value || '').toLowerCase();
