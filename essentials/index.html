@@ -1423,6 +1423,14 @@ body.dark .btn-third { color:#FFFFFF; }
 .cred-source-pro                       { color:var(--bdg-purple-txt); background:var(--bdg-purple-bg); border-color:var(--bdg-purple-bd); }
 .usedby-tag.is-upcoming                { background:none; border-style:dashed; }
 
+/* Теги перевірки в Policy detail: той самий .bdg--gray, лише клікабельний. Кнопка «+ tag»
+   бере ту саму геометрію і пунктирну рамку — той же прийом, що й .usedby-tag.is-upcoming. */
+.pd-tag { cursor:pointer; transition:border-color .12s, color .12s; }
+.pd-tag:hover { border-color:var(--bdg-red-bd); color:var(--bdg-red-txt); }
+.pd-tag-add { background:none; border-style:dashed; cursor:pointer; font-family:'DM Sans',sans-serif; }
+.pd-tag-add svg { width:8px; height:8px; display:block; flex-shrink:0; }
+.pd-tag-add:hover { border-color:var(--green1); color:var(--green2); }
+
 .drift-stat--reconciled,
 .drift-stat--approved,
 .intg-status.connected,
@@ -3986,22 +3994,17 @@ body.dark #v-policy-detail [style*="background:var(--bg-warning)"] { background:
 body.dark #v-policy-detail [style*="background:rgba(245,158,11,0.15)"] { background: #261208 !important; }
 body.dark #v-policy-detail select { background: var(--bg-card) !important; color: var(--p-neutral-300) !important; }
 body.dark #pd-tag-picker { background: var(--bg-card) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important; }
-/* pd-checks-list dynamically rendered rows */
-body.dark #pd-checks-list [style*="color:#0F172A"] { color: var(--p-neutral-50) !important; }
-body.dark #pd-checks-list [style*="color:#374151"] { color: var(--p-neutral-200) !important; }
-body.dark #pd-checks-list [style*="background:#fef2f2"] { background: rgba(251,60,68,0.15) !important; border-color: rgba(251,60,68,0.35) !important; }
-body.dark #pd-checks-list [style*="background:#f0fdf4"] { background: rgba(0,175,115,0.15) !important; border-color: rgba(0,175,115,0.35) !important; }
-body.dark #pd-checks-list [style*="background:#f1f5f9"] { background: rgba(255,255,255,0.08) !important; color: var(--p-neutral-300) !important; border-color: rgba(255,255,255,0.12) !important; }
+/* Рядки #pd-checks-list більше не мають літеральних hex: кружечок і бейдж статусу беруть
+   --bdg-*, тексти — --text-default/--text-sec, теги стали .bdg--gray. П'ять правил
+   body.dark [style*="…"] (матч по підрядку інлайн-стилю) стали мертві й видалені. */
 body.dark #pd-tag-picker [style*="background:var(--bg-subtle)"] { background: var(--p-dark-muted) !important; border-color: #143A2F !important; color: var(--p-neutral-300) !important; }
 body.dark #pd-tag-picker div:hover { background: #012F32 !important; border-radius: 5px; }
 /* Policy-detail status badge */
 /* статус політики — канон .bdg, колір із варіанта */
 #pd-status-badge[data-variant="failing"] { color:var(--bdg-red-txt);   background:var(--bdg-red-bg);   border-color:var(--bdg-red-bd); }
 #pd-status-badge[data-variant="passing"] { color:var(--bdg-green-txt); background:var(--bdg-green-bg); border-color:var(--bdg-green-bd); }
-body.dark .sim-chip-pass { background:rgba(16,185,129,0.12) !important; color:#10B981 !important; }
-body.dark .sim-chip-fail { background:rgba(251,60,68,0.12) !important; color:#FB3C44 !important; }
-body.dark #pd-simulation span[style*="background:#f0fdf4"] { background:rgba(16,185,129,0.12) !important; color:#10B981 !important; }
-body.dark #pd-simulation span[style*="background:#fef2f2"] { background:rgba(251,60,68,0.12) !important; color:#FB3C44 !important; }
+/* Чипи панелі Simulation стали .bdg — колір іде з токенів --bdg-*, тож ці чотири
+   body.dark-override з !important були б лише поверх канону. Видалено. */
 
 /* Inactive filter pills — lighter text on dark backgrounds */
 body.dark .pill { color: #94A3B8; }
@@ -10438,87 +10441,89 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
     <div class="view" id="v-policy-detail" style="display: none;">
 
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
-
-        <!-- Back to Policies -->
-        <div style="margin-bottom:12px;">
+      <!-- Канонічний каркас детальної сторінки — той самий .page-header, що в node-detail і
+           change-detail (38 view у файлі). Раніше тут була картка-«плашка» ВСЕРЕДИНІ скролу:
+           заголовок сторінки їхав геть при прокрутці, дублював тайтл у топбарі, а застосунок
+           уже мав для цього компонент. Разом із плашкою пішла смуга з трьох KPI-карток —
+           24/21/3 це один рядок тексту, а не три об'єкти на всю ширину; бейдж «3 failed checks»
+           більше не має з чим дублюватись. -->
+      <div class="page-header">
+        <div style="display:flex;align-items:flex-start;gap:14px;min-width:0;">
           <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
-        </div>
-
-        <!-- Header card -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:12px;">
-          <!-- Row 1: title + status + actions -->
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:6px;flex-wrap:wrap;">
+          <div style="min-width:0;">
             <div style="display:flex;align-items:center;gap:10px;min-width:0;">
-              <div id="pd-card-name" style="font-size:17px;font-weight:700;color:var(--text-default);">Compliance Policy · Windows 11</div>
+              <div id="pd-card-name" class="page-title">Compliance Policy · Windows 11</div>
               <span id="pd-status-badge" class="bdg" data-variant="failing">3 failed checks</span>
             </div>
-            <div style="display:flex;gap:6px;flex-shrink:0;align-items:center;">
-              <button class="link-cta" style="padding:6px 4px;" onclick="showView(&#39;reports&#39;)"><span class="lc-txt">View reports</span> <span class="arr">→</span></button>
-              <button class="btn-secondary" onclick="showView(&#39;policy-assign&#39;);">Manage assignment</button>
-              <button id="pd-edit-btn" class="btn-secondary" onclick="document.getElementById(&#39;pe-name&#39;).textContent=document.getElementById(&#39;pd-card-name&#39;).textContent;showView(&#39;policy-edit&#39;);">Edit policy</button>
-              <button class="btn-secondary" onclick="pdRunSimulation();">▶ Run simulation</button>
-              <div style="position:relative;">
-                <button class="btn-primary btn-primary--s" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('pd-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-                <div id="pd-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-                  <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
-                  <button onclick="pdExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
-                  <button onclick="pdExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
-                </div>
-              </div>
+            <div class="page-sub"><span id="pd-sub">Public benchmark · Version 1.0.0 · Applied to 1 node</span> · <span id="pd-score">21 of 24 checks passed</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <!-- View reports і Run simulation — не рідкісні дії, тому вони НЕ під ⋯, а на видноті:
+               кожна = DS §6.5 `Only icon` (.btn-icon, 32×32, r8, гліф 16×16), поруч із Export,
+               який уже такий самий. Меню ⋯ прибрано цілком — після виносу в ньому не лишилось
+               жодного пункту, а порожній тригер гірший за його відсутність. -->
+          <button class="btn-icon" aria-label="View reports" title="View reports" onclick="showView(&#39;reports&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg></button>
+          <!-- Гліф Play — Assets/icons/new/Property 1=Play.svg, stroke="currentColor". -->
+          <button class="btn-icon" aria-label="Run simulation" title="Run simulation" onclick="pdRunSimulation()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linejoin="round"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z"/></svg></button>
+          <div style="position:relative;">
+            <button class="btn-icon" aria-label="Export" title="Export" onclick="var d=document.getElementById('pd-export-drop');d.style.display=d.style.display==='block'?'none':'block';"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
+            <div id="pd-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
+              <button onclick="pdExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">CSV spreadsheet</button>
+              <button onclick="pdExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">PDF report</button>
             </div>
           </div>
-          <!-- Row 2: metadata -->
-          <div id="pd-sub" style="font-size:11px;color:var(--text-sec);margin-bottom:8px;">Public benchmark · Version 1.0.0 · Applied to 1 node</div>
-          <!-- Row 3: tags (compact) -->
+          <button class="btn-secondary" onclick="showView(&#39;policy-assign&#39;);">Manage assignment</button>
+          <button id="pd-edit-btn" class="btn-primary btn-primary--s" onclick="document.getElementById(&#39;pe-name&#39;).textContent=document.getElementById(&#39;pd-card-name&#39;).textContent;showView(&#39;policy-edit&#39;);">Edit policy</button>
+        </div>
+      </div>
+
+      <div style="flex:1;background:var(--bg-page);padding:16px 24px 24px;overflow-y:auto;">
+
+        <!-- Теги й опис — єдине, що лишилось від плашки, і це справжній вміст, а не шапка.
+             Без картки: обгортка нічого не додавала б, крім ще однієї рамки. -->
+        <div style="margin-bottom:16px;">
           <div id="pd-tags-row" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
               <span id="pd-tag-1" class="bdg bdg--blue">Security</span>
               <span id="pd-tag-2" class="bdg bdg--green">Compliance</span>
-              <button style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:none;border:none;color:var(--text-sec);cursor:pointer;display:inline-flex;align-items:center;gap:3px;transition:color 0.12s;" onmouseover="this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.color=&#39;var(--text-sec)&#39;">+ Add tag</button>
+              <!-- Та сама .pd-tag-add, що й у рядках перевірок: на сторінці має бути ОДИН спосіб
+                   додати тег, а не два різні. Плюс — гліф із Assets/icons/Property 1=Plus.svg
+                   (stroke="currentColor", тож іде за темою і за hover). -->
+              <button class="bdg bdg--gray pd-tag-add"><svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"/><path d="M0.628906 4H7.36965"/></svg>Add tag</button>
           </div>
-          <!-- Row 4: description (2-line clamp) -->
           <div id="pd-desc" style="font-size:12px;color:var(--text-sec);line-height:1.5;max-width:65%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">Industry-standard security configuration baseline for Windows 11, defined by the Center for Internet Security (CIS). Covers password policy, account settings, network security, and system configuration.</div>
         </div>
 
-        <!-- KPI strip (compact) -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 18px;display:flex;align-items:baseline;gap:8px;">
-            <div id="pd-total" style="font-size:20px;font-weight:700;color:var(--text-default);">24</div>
-            <div style="font-size:11px;color:var(--text-sec);">Total checks</div>
+        <!-- Підпис таблиці живе НАД карткою, контролі — праворуч у тому ж рядку. Це той самий
+             патерн, що й «Managed nodes» (≈7353): картка лишається чистим списком, а все, що
+             ним керує, стоїть в одному місці. Інакше в застосунку було б два різні способи
+             підписати таблицю. Кількість перевірок стала підзаголовком (.tab-intro-sub) —
+             вона описує список, а не є окремим контролем. -->
+        <div style="display:flex;gap:16px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+          <div class="tab-intro">
+            <div class="tab-intro-title">Checks on this node</div>
+            <div class="tab-intro-sub" id="pd-check-count"></div>
           </div>
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 18px;display:flex;align-items:baseline;gap:8px;">
-            <div id="pd-passing" style="font-size:20px;font-weight:700;color:#00AF73;">21</div>
-            <div style="font-size:11px;color:var(--text-sec);">Passed</div>
-          </div>
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 18px;display:flex;align-items:baseline;gap:8px;">
-            <div id="pd-failing" style="font-size:20px;font-weight:700;color:#FB3C44;">3</div>
-            <div style="font-size:11px;color:var(--text-sec);">Failed</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+            <div style="position:relative;flex-shrink:0;">
+              <button id="pd-filter-btn" class="scan-menu-trigger" onclick="pdToggleFilter(this)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
+                <span id="pd-filter-label">All checks</span>
+                <svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <!-- right:0 — меню тепер біля правого краю сторінки, при left:0 воно вилазило б за екран -->
+              <div id="pd-filter-menu" class="policy-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:150px;z-index:200;overflow:hidden;">
+                <div onclick="pdSetFilter(&#39;all&#39;,&#39;All checks&#39;)" data-val="all" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--green2);font-weight:600;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">All checks</div>
+                <div onclick="pdSetFilter(&#39;fail&#39;,&#39;Failed only&#39;)" data-val="fail" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);font-weight:400;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Failed only</div>
+                <div onclick="pdSetFilter(&#39;pass&#39;,&#39;Passed only&#39;)" data-val="pass" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);font-weight:400;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Passed only</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Checks list -->
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
-          <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="font-size:13px;font-weight:700;color:var(--text-default);">Checks on this node</div>
-              <span id="pd-check-count" style="font-size:11px;font-weight:400;color:var(--text-sec);"></span>
-              <div style="position:relative;display:flex;align-items:center;">
-                <button id="pd-filter-btn" class="dk-form" onclick="pdToggleFilter(this)" style="font-size:11px;padding:5px 26px 5px 10px;border-radius:6px;border:1px solid var(--border);color:var(--p-neutral-800);cursor:pointer;white-space:nowrap;position:relative;">
-                  <span id="pd-filter-label">All checks</span>
-                  <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </button>
-                <div id="pd-filter-menu" class="policy-menu" style="display:none;position:absolute;left:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:150px;z-index:200;overflow:hidden;">
-                  <div onclick="pdSetFilter(&#39;all&#39;,&#39;All checks&#39;)" data-val="all" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--green2);font-weight:600;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">All checks</div>
-                  <div onclick="pdSetFilter(&#39;fail&#39;,&#39;Failed only&#39;)" data-val="fail" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);font-weight:400;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Failed only</div>
-                  <div onclick="pdSetFilter(&#39;pass&#39;,&#39;Passed only&#39;)" data-val="pass" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);font-weight:400;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;">Passed only</div>
-                </div>
-              </div>
-            </div>
-            <button id="pd-edit-inline-btn" onclick="document.getElementById(&#39;pe-name&#39;).textContent=document.getElementById(&#39;pd-card-name&#39;).textContent;showView(&#39;policy-edit&#39;);" style="display:flex;align-items:center;gap:5px;font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;white-space:nowrap;">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-              Edit policy
-            </button>
-          </div>
           <div id="pd-checks-list"></div>
         </div>
 
@@ -10528,9 +10533,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
               <div style="font-size:13px;font-weight:700;color:var(--text-default);">Simulation results</div>
-              <span class="sim-chip" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--bg-subtle);color:var(--text-sec);">4 Evaluated</span>
-              <span class="sim-chip sim-chip-pass" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:#f0fdf4;color:#00AF73;">2 Passed</span>
-              <span class="sim-chip sim-chip-fail" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:#fef2f2;color:#FB3C44;">2 Failed</span>
+              <span class="sim-chip bdg bdg--gray">4 Evaluated</span>
+              <span class="sim-chip sim-chip-pass bdg bdg--green">2 Passed</span>
+              <span class="sim-chip sim-chip-fail bdg bdg--red">2 Failed</span>
               <span id="pd-sim-time" style="font-size:11px;color:var(--text-muted);"></span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
@@ -10548,22 +10553,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
               <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">MACBOOK-TARAS</div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">2 failed checks · Antivirus, Screen lock timeout</div>
-              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:#fef2f2;color:#FB3C44;flex-shrink:0;">Fail</span>
+              <span class="bdg bdg--red" style="flex-shrink:0;">Fail</span>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
               <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">DEV-MACPRO-03</div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">1 failed check · Minimum password length</div>
-              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:#fef2f2;color:#FB3C44;flex-shrink:0;">Fail</span>
+              <span class="bdg bdg--red" style="flex-shrink:0;">Fail</span>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
               <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">PROD-SERVER-01</div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">No failed checks</div>
-              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:#f0fdf4;color:#00AF73;flex-shrink:0;">Pass</span>
+              <span class="bdg bdg--green" style="flex-shrink:0;">Pass</span>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;">
               <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">STAGING-WIN-02</div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">No failed checks</div>
-              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:#f0fdf4;color:#00AF73;flex-shrink:0;">Pass</span>
+              <span class="bdg bdg--green" style="flex-shrink:0;">Pass</span>
             </div>
           </div>
         </div>
@@ -10588,7 +10593,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </button>
           <div style="width:1px;height:22px;background:var(--border);margin:0 4px;flex-shrink:0;"></div>
           <button class="btn-secondary" onclick="showView(&#39;policy-detail&#39;);showToast(&#39;Policy saved&#39;)">Save changes</button>
-          <button class="btn-primary btn-primary--s" style="white-space:nowrap;" onclick="peRunSimulation(this)">▶ Run simulation</button>
+          <!-- Гліф Play — Assets/icons/new/Property 1=Play.svg, stroke="currentColor", тож іде за темою.
+               Текстовий ▶ рендериться шрифтом і в кожній ОС має свій розмір та бейзлайн. -->
+          <button class="btn-primary btn-primary--s" style="white-space:nowrap;" onclick="peRunSimulation(this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linejoin="round"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z"/></svg>Run simulation</button>
         </div>
       </div>
       <!-- Policy-level tags row -->
@@ -11266,9 +11273,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         name: 'Compliance Policy · Windows 11 v1.0.0',
         sub: 'Public benchmark · Applied to this node',
         type: 'Compliance Policy', typeBg: '#ede9fe', typeColor: '#5b21b6',
-        statusText: '3 failing', statusBg: '#fef2f2', statusColor: '#FB3C44',
         desc: 'Industry-standard security configuration baseline for Windows 11, defined by the Center for Internet Security (CIS). Covers password policy, account settings, network security, and system configuration.',
-        total: 24, passing: 21, failing: 3,
         applies: 'This node',
         isCustom: false,
         checks: [
@@ -11288,9 +11293,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         name: 'Endpoint Protection Policy',
         sub: 'Custom policy · Applied to this node',
         type: 'Custom', typeBg: '#fef3c7', typeColor: '#92400e',
-        statusText: '1 failing', statusBg: '#fffbeb', statusColor: '#d97706',
         desc: 'Internal policy ensuring all endpoints have active antivirus, firewall, and endpoint detection tools running. Created and maintained by the security team.',
-        total: 6, passing: 5, failing: 1,
         applies: 'Windows nodes group',
         isCustom: true,
         checks: [
@@ -11306,9 +11309,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         name: 'Network Security Baseline',
         sub: 'Custom policy · Applied to this node',
         type: 'Custom', typeBg: '#fef3c7', typeColor: '#92400e',
-        statusText: 'All passing', statusBg: '#f0fdf4', statusColor: '#00AF73',
         desc: 'Defines the baseline network security configuration for all managed endpoints. Covers firewall rules, open ports, and remote access settings.',
-        total: 5, passing: 5, failing: 0,
         applies: 'All nodes',
         isCustom: true,
         checks: [
@@ -11323,9 +11324,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         name: 'Data Policy',
         sub: 'Custom policy · Applied to this node',
         type: 'Custom', typeBg: '#fef3c7', typeColor: '#92400e',
-        statusText: 'All passing', statusBg: '#f0fdf4', statusColor: '#00AF73',
         desc: 'Ensures data-at-rest and data-in-transit protections are in place on all managed devices, including encryption and secure transmission requirements.',
-        total: 4, passing: 4, failing: 0,
         applies: 'All nodes',
         isCustom: true,
         checks: [
@@ -11343,15 +11342,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var version = (p.name.match(/ (v[\d.]+)$/) || [])[1] || '';
       document.getElementById('pd-card-name').textContent = shortName;
       document.getElementById('pd-sub').textContent = (p.isCustom ? 'Custom policy' : 'Public benchmark') + (version ? ' · Version ' + version.replace('v','') : '') + ' · Applied to ' + p.applies.replace('This node','1 node');
+      // Єдине джерело правди про кількість — масив checks. Раніше поруч лежали власні
+      // поля total/passing/failing, і в cis-win11 вони казали 24/21/3, поки список рендерив
+      // 10 рядків. Тепер розійтись просто нема з чим.
+      var pdTotal = p.checks.length;
+      var pdFailing = p.checks.filter(function(c){ return c.status === 'fail'; }).length;
       var sb = document.getElementById('pd-status-badge');
-      sb.textContent = p.failing > 0 ? p.failing + ' failed checks' : 'All passed';
-      sb.dataset.variant = p.failing > 0 ? 'failing' : 'passing';
+      sb.textContent = pdFailing > 0 ? pdFailing + (pdFailing === 1 ? ' failed check' : ' failed checks') : 'All passed';
+      sb.dataset.variant = pdFailing > 0 ? 'failing' : 'passing';
       document.getElementById('pd-desc').textContent = p.desc;
-      document.getElementById('pd-total').textContent = p.total;
-      document.getElementById('pd-passing').textContent = p.passing;
-      document.getElementById('pd-failing').textContent = p.failing;
+      // Три KPI-картки згорнулись у цей рядок. Кількість провалених не повторюємо —
+      // її вже несе бейдж біля заголовка, а два однакові числа поруч читались як два різні факти.
+      document.getElementById('pd-score').textContent = (pdTotal - pdFailing) + ' of ' + pdTotal + ' checks passed';
+      // Хлібна крихта в топбарі має називати ВІДКРИТУ політику — див. {policy} у _BC_MAP.
+      window._pdCurrentName = shortName;
       document.getElementById('pd-edit-btn').style.display = p.isCustom ? 'inline-flex' : 'none';
-      document.getElementById('pd-edit-inline-btn').style.display = p.isCustom ? 'inline-flex' : 'none';
       pdResetFilter();
       window._pdChecks = p.checks;
       window._pdIsCustom = p.isCustom;
@@ -15152,13 +15157,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (!wrap.contains(e.target)) wrap.classList.remove('is-open');
     });
 
+    // Тригер тепер `Only icon`, тож стан «іде» — це підміна ГЛІФА, а не тексту.
+    // Раніше тут писалось btn.textContent = '⏳ Running…', що стирало вміст кнопки:
+    // у текстової воно замінювало напис, а в іконної знищувало <svg> і не відновлювало
+    // нічого, бо origText у неї порожній. Зберігаємо innerHTML.
     function pdRunSimulation() {
       var btn = event.target.closest('button') || event.target;
-      var origText = btn.textContent;
-      btn.textContent = '⏳ Running…';
+      var origHtml = btn.innerHTML;
+      // Спінер — Assets/icons/Property 1=Loading.svg, currentColor + канонічний @keyframes spin.
+      btn.innerHTML = '<svg viewBox="0 0 8 8" fill="currentColor" style="animation:spin 0.9s linear infinite;"><path d="M7.50268 4C7.77734 4 8.00319 4.22351 7.96913 4.49605C7.89222 5.11142 7.67293 5.70288 7.32588 6.22228C6.88635 6.88008 6.26164 7.39277 5.53073 7.69552C4.79983 7.99827 3.99556 8.07748 3.21964 7.92314C2.44371 7.7688 1.73098 7.38784 1.17157 6.82843C0.612163 6.26902 0.2312 5.55629 0.0768589 4.78036C-0.077482 4.00444 0.00173137 3.20017 0.304482 2.46927C0.607232 1.73836 1.11992 1.11365 1.77772 0.674121C2.29712 0.327066 2.88858 0.107782 3.50395 0.0308749C3.77649 -0.00318708 4 0.222659 4 0.497323C4 0.771986 3.77585 0.990453 3.50494 1.0357C3.08668 1.10555 2.68601 1.26347 2.33031 1.50114C1.83609 1.83137 1.45088 2.30074 1.22341 2.8499C0.995946 3.39906 0.93643 4.00333 1.05239 4.58632C1.16835 5.1693 1.45459 5.7048 1.87489 6.12511C2.2952 6.54541 2.8307 6.83165 3.41368 6.94761C3.99667 7.06357 4.60094 7.00405 5.1501 6.77659C5.69926 6.54912 6.16863 6.16391 6.49886 5.66969C6.73653 5.31399 6.89445 4.91332 6.9643 4.49506C7.00955 4.22415 7.22801 4 7.50268 4Z"/></svg>';
       btn.disabled = true;
       setTimeout(function() {
-        btn.textContent = origText;
+        btn.innerHTML = origHtml;
         btn.disabled = false;
         var panel = document.getElementById('pd-simulation');
         panel.style.display = 'block';
@@ -15223,60 +15233,60 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       });
     }
 
+    // Теги — це класифікація, тому кожен рендериться канонічним .bdg (DS §12), колір gray.
+    // Раніше поруч з іменем лежали поля bg/c, і в усіх 25 записах вони були ОДНАКОВІ
+    // (#f1f5f9 / #64748b) — тобто нічого не кодували, лише дублювали токен --bdg-gray-*.
     var _pdTagMap = {
-      'Antivirus real-time protection':        [{n:'Security',bg:'#f1f5f9',c:'#64748b'},{n:'Critical',bg:'#f1f5f9',c:'#64748b'}],
-      'Screen lock timeout ≤ 15 min':          [{n:'Config',bg:'#f1f5f9',c:'#64748b'},{n:'Compliance',bg:'#f1f5f9',c:'#64748b'}],
-      'Minimum password length ≥ 12':          [{n:'Authentication',bg:'#f1f5f9',c:'#64748b'},{n:'Compliance',bg:'#f1f5f9',c:'#64748b'}],
-      'BitLocker drive encryption':             [{n:'Data',bg:'#f1f5f9',c:'#64748b'}],
-      'Windows Firewall enabled':               [{n:'Network',bg:'#f1f5f9',c:'#64748b'}],
-      'Automatic updates enabled':              [{n:'Config',bg:'#f1f5f9',c:'#64748b'}],
-      'Guest account disabled':                 [{n:'Authentication',bg:'#f1f5f9',c:'#64748b'}],
-      'Audit logon events':                     [{n:'Monitoring',bg:'#f1f5f9',c:'#64748b'},{n:'Compliance',bg:'#f1f5f9',c:'#64748b'}],
-      'Remote desktop restricted':              [{n:'Network',bg:'#f1f5f9',c:'#64748b'}],
-      'USB autorun disabled':                   [{n:'Config',bg:'#f1f5f9',c:'#64748b'}],
-      'Antivirus active and up to date':        [{n:'Security',bg:'#f1f5f9',c:'#64748b'},{n:'Critical',bg:'#f1f5f9',c:'#64748b'}],
-      'Host firewall enabled':                  [{n:'Network',bg:'#f1f5f9',c:'#64748b'}],
-      'EDR agent installed':                    [{n:'Security',bg:'#f1f5f9',c:'#64748b'},{n:'Monitoring',bg:'#f1f5f9',c:'#64748b'}],
-      'Vulnerability scanner present':          [{n:'Monitoring',bg:'#f1f5f9',c:'#64748b'}],
-      'Endpoint encryption enabled':            [{n:'Data',bg:'#f1f5f9',c:'#64748b'},{n:'Compliance',bg:'#f1f5f9',c:'#64748b'}],
-      'Security logs retained ≥ 90 days':       [{n:'Monitoring',bg:'#f1f5f9',c:'#64748b'},{n:'Compliance',bg:'#f1f5f9',c:'#64748b'}],
-      'Firewall enabled on all profiles':       [{n:'Network',bg:'#f1f5f9',c:'#64748b'}],
-      'No unused open ports':                   [{n:'Network',bg:'#f1f5f9',c:'#64748b'},{n:'Config',bg:'#f1f5f9',c:'#64748b'}],
-      'Remote Desktop disabled or NLA enforced':[{n:'Network',bg:'#f1f5f9',c:'#64748b'}],
-      'SSH access restricted by IP':            [{n:'Network',bg:'#f1f5f9',c:'#64748b'},{n:'Authentication',bg:'#f1f5f9',c:'#64748b'}],
-      'SMBv1 disabled':                         [{n:'Network',bg:'#f1f5f9',c:'#64748b'},{n:'Config',bg:'#f1f5f9',c:'#64748b'}],
-      'Full disk encryption enabled':           [{n:'Data',bg:'#f1f5f9',c:'#64748b'},{n:'Compliance',bg:'#f1f5f9',c:'#64748b'}],
-      'TLS 1.2+ enforced':                      [{n:'Network',bg:'#f1f5f9',c:'#64748b'},{n:'Compliance',bg:'#f1f5f9',c:'#64748b'}],
-      'Removable media encryption':             [{n:'Data',bg:'#f1f5f9',c:'#64748b'}],
-      'Screen lock on suspend':                 [{n:'Config',bg:'#f1f5f9',c:'#64748b'}],
+      'Antivirus real-time protection':         ['Security','Critical'],
+      'Screen lock timeout ≤ 15 min':           ['Config','Compliance'],
+      'Minimum password length ≥ 12':           ['Authentication','Compliance'],
+      'BitLocker drive encryption':             ['Data'],
+      'Windows Firewall enabled':               ['Network'],
+      'Automatic updates enabled':              ['Config'],
+      'Guest account disabled':                 ['Authentication'],
+      'Audit logon events':                     ['Monitoring','Compliance'],
+      'Remote desktop restricted':              ['Network'],
+      'USB autorun disabled':                   ['Config'],
+      'Antivirus active and up to date':        ['Security','Critical'],
+      'Host firewall enabled':                  ['Network'],
+      'EDR agent installed':                    ['Security','Monitoring'],
+      'Vulnerability scanner present':          ['Monitoring'],
+      'Endpoint encryption enabled':            ['Data','Compliance'],
+      'Security logs retained ≥ 90 days':       ['Monitoring','Compliance'],
+      'Firewall enabled on all profiles':       ['Network'],
+      'No unused open ports':                   ['Network','Config'],
+      'Remote Desktop disabled or NLA enforced':['Network'],
+      'SSH access restricted by IP':            ['Network','Authentication'],
+      'SMBv1 disabled':                         ['Network','Config'],
+      'Full disk encryption enabled':           ['Data','Compliance'],
+      'TLS 1.2+ enforced':                      ['Network','Compliance'],
+      'Removable media encryption':             ['Data'],
+      'Screen lock on suspend':                 ['Config'],
     };
 
-    var _pdAllTags = [
-      {n:'Security',bg:'#f1f5f9',c:'#64748b'},
-      {n:'Network',bg:'#f1f5f9',c:'#64748b'},
-      {n:'Compliance',bg:'#f1f5f9',c:'#64748b'},
-      {n:'Data',bg:'#f1f5f9',c:'#64748b'},
-      {n:'Monitoring',bg:'#f1f5f9',c:'#64748b'},
-      {n:'Authentication',bg:'#f1f5f9',c:'#64748b'},
-      {n:'Config',bg:'#f1f5f9',c:'#64748b'},
-      {n:'Critical',bg:'#f1f5f9',c:'#64748b'},
-      {n:'Needs review',bg:'#f1f5f9',c:'#64748b'}
-    ];
+    var _pdAllTags = ['Security','Network','Compliance','Data','Monitoring','Authentication','Config','Critical','Needs review'];
+
+    // Гліф «плюс» із канонічного набору Assets/icons/Property 1=Plus.svg — 8×8 viewBox,
+    // stroke="currentColor", тож колір бере з кнопки й сам іде за темою і за hover.
+    var PD_PLUS_SVG = '<svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"/><path d="M0.628906 4H7.36965"/></svg>';
+
+    // Один генератор чипа тега на всі три місця рендеру (рядок перевірки, перемальовка
+    // рядка після правки, попап вибору) — інакше вони знову розійдуться, як розійшлись
+    // раніше pdRenderTagRow і pdFilter.
+    function pdTagChip(name, safeKey, removable) {
+      return removable
+        ? '<span class="bdg bdg--gray pd-tag" onclick="pdRemoveTag(\''+safeKey+'\',\''+name+'\')" title="Click to remove">'+name+' ×</span>'
+        : '<span class="bdg bdg--gray">'+name+'</span>';
+    }
 
     function pdRenderTagRow(checkName) {
       var isCustom = window._pdIsCustom || false;
       var tags = _pdTagMap[checkName] || [];
       var safeKey = checkName.replace(/[^a-zA-Z0-9]/g,'_');
       var html = '';
-      tags.forEach(function(tag) {
-        if(isCustom) {
-          html += '<span onclick="pdRemoveTag(\''+safeKey+'\',\''+tag.n+'\')" style="font-size:10px;padding:2px 8px;border-radius:20px;background:'+tag.bg+';color:'+tag.c+';border:1px solid rgba(0,0,0,0.06);cursor:pointer;" title="Click to remove">'+tag.n+' ×</span>';
-        } else {
-          html += '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:'+tag.bg+';color:'+tag.c+';border:1px solid rgba(0,0,0,0.06);">'+tag.n+'</span>';
-        }
-      });
+      tags.forEach(function(t) { html += pdTagChip(t, safeKey, isCustom); });
       if(isCustom) {
-        html += '<button onclick="pdShowTagPicker(\''+safeKey+'\',this)" style="font-size:10px;padding:2px 8px;border-radius:20px;border:1px dashed #cbd5e1;background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;">+ tag</button>';
+        html += '<button class="bdg bdg--gray pd-tag-add" onclick="pdShowTagPicker(\''+safeKey+'\',this)">' + PD_PLUS_SVG + 'tag</button>';
       }
       var container = document.getElementById('pd-tags-'+safeKey);
       if(container) container.innerHTML = html;
@@ -15285,19 +15295,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     window._pdKeyToName = {};
     function pdRemoveTag(safeKey, tagName) {
       var name = window._pdKeyToName[safeKey]; if(!name) return;
-      _pdTagMap[name] = (_pdTagMap[name]||[]).filter(function(t){return t.n!==tagName;});
+      _pdTagMap[name] = (_pdTagMap[name]||[]).filter(function(t){return t!==tagName;});
       pdRenderTagRow(name);
     }
 
     function pdShowTagPicker(safeKey, btn) {
       var pop = document.getElementById('pd-tag-picker');
       var rect = btn.getBoundingClientRect();
-      var existing = (_pdTagMap[window._pdKeyToName[safeKey]]||[]).map(function(t){return t.n;});
+      var existing = _pdTagMap[window._pdKeyToName[safeKey]] || [];
       var html = '<div style="font-size:10px;color:var(--p-neutral-400);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Add tag</div>';
       _pdAllTags.forEach(function(tag) {
-        var has = existing.indexOf(tag.n)>=0;
-        html += '<div onclick="pdPickTag(\''+safeKey+'\',\''+tag.n+'\')" style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:5px;cursor:pointer;'+(has?'opacity:0.4;pointer-events:none;':'')+'">';
-        html += '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:'+tag.bg+';color:'+tag.c+';border:1px solid rgba(0,0,0,0.06);">'+tag.n+'</span>';
+        var has = existing.indexOf(tag)>=0;
+        html += '<div onclick="pdPickTag(\''+safeKey+'\',\''+tag+'\')" style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:5px;cursor:pointer;'+(has?'opacity:0.4;pointer-events:none;':'')+'">';
+        html += pdTagChip(tag, safeKey, false);
         if(has) html += '<span style="font-size:10px;color:var(--p-neutral-400);">added</span>';
         html += '</div>';
       });
@@ -15316,11 +15326,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     function pdPickTag(safeKey, tagName) {
       document.getElementById('pd-tag-picker').style.display='none';
       var name = window._pdKeyToName[safeKey]; if(!name) return;
-      var tagDef = _pdAllTags.find(function(t){return t.n===tagName;});
-      if(!tagDef) return;
+      if(_pdAllTags.indexOf(tagName) < 0) return;
       if(!_pdTagMap[name]) _pdTagMap[name]=[];
-      if(_pdTagMap[name].find(function(t){return t.n===tagName;})) return;
-      _pdTagMap[name].push(tagDef);
+      if(_pdTagMap[name].indexOf(tagName) >= 0) return;
+      _pdTagMap[name].push(tagName);
       pdRenderTagRow(name);
     }
 
@@ -15338,29 +15347,40 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var safeKey = c.name.replace(/[^a-zA-Z0-9]/g,'_');
         window._pdKeyToName[safeKey] = c.name;
         html += '<div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;">';
-        html += '<div style="width:18px;height:18px;border-radius:50%;background:'+(isFail?'#fef2f2':'#f0fdf4')+';border:1.5px solid '+(isFail?'#fca5a5':'#86efac')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">';
-        html += isFail ? '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' : '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+        // Кружечок бере ті самі токени, що й бейдж статусу в кінці рядка (--bdg-red-*/--bdg-green-*),
+        // тож у темній темі він коректний сам по собі. Раніше тут стояли літеральні #fef2f2/#f0fdf4,
+        // і темну тему рятували правила body.dark [style*="background:#fef2f2"] — найкрихкіший
+        // механізм у файлі: досить змінити пробіл в інлайн-стилі, і рядок лишиться світлим.
+        var pdTone = isFail ? 'red' : 'green';
+        html += '<div style="width:18px;height:18px;border-radius:50%;background:var(--bdg-'+pdTone+'-bg);border:1.5px solid var(--bdg-'+pdTone+'-bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--bdg-'+pdTone+'-txt);">';
+        html += isFail ? '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' : '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
         html += '</div>';
         html += '<div style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;">';
-        html += '<div style="font-size:13px;font-weight:'+(isFail?'600':'500')+';color:'+(isFail?'#0F172A':'#374151')+';white-space:nowrap;flex-shrink:0;">' + c.name + '</div>';
+        html += '<div style="font-size:13px;font-weight:'+(isFail?'600':'500')+';color:'+(isFail?'var(--text-default)':'var(--text-sec)')+';white-space:nowrap;flex-shrink:0;">' + c.name + '</div>';
         html += '<div style="font-size:11px;color:var(--text-sec);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.detail + '</div>';
         html += '<div id="pd-tags-'+safeKey+'" style="display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap;align-items:center;">';
-        tags.forEach(function(tag) {
-          if(isCustom) {
-            html += '<span onclick="pdRemoveTag(\''+safeKey+'\',\''+tag.n+'\')" style="font-size:10px;padding:2px 8px;border-radius:20px;background:'+tag.bg+';color:'+tag.c+';border:1px solid rgba(0,0,0,0.06);cursor:pointer;" title="Click to remove">'+tag.n+' ×</span>';
-          } else {
-            html += '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:'+tag.bg+';color:'+tag.c+';border:1px solid rgba(0,0,0,0.06);">'+tag.n+'</span>';
-          }
-        });
+        tags.forEach(function(t) { html += pdTagChip(t, safeKey, isCustom); });
         if(isCustom) {
-          html += '<button onclick="pdShowTagPicker(\''+safeKey+'\',this)" style="font-size:10px;padding:2px 8px;border-radius:20px;border:1px dashed #cbd5e1;background:var(--bg-surface);color:var(--p-neutral-400);cursor:pointer;">+ tag</button>';
+          html += '<button class="bdg bdg--gray pd-tag-add" onclick="pdShowTagPicker(\''+safeKey+'\',this)">' + PD_PLUS_SVG + 'tag</button>';
         }
         html += '</div>';
         html += '</div>';
-        html += '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:'+(isFail?'#fef2f2':'#f0fdf4')+';color:'+(isFail?'#FB3C44':'#00AF73')+';flex-shrink:0;">'+(isFail?'Failed':'Passed')+'</span>';
+        // Статус перевірки — канонічний .bdg за мапою severity (fail→Red, pass→Green).
+        // Раніше тут був саморобний чип із літеральними #fef2f2/#FB3C44, які в темній
+        // темі лишались світлими, бо _syncInlineTheme їх не знав.
+        html += '<span class="bdg '+(isFail?'bdg--red':'bdg--green')+'" style="flex-shrink:0;">'+(isFail?'Failed':'Passed')+'</span>';
         html += '</div>';
       });
-      if(filtered.length===0) html = '<div style="padding:24px;text-align:center;color:var(--text-sec);font-size:13px;">No '+(mode==='fail'?'failed':'passed')+' checks on this node</div>';
+      if(filtered.length===0) {
+        // Канонічний empty-state (коло 44 + 14/600 + 12px + дія скинути фільтр),
+        // а не рядок сірого тексту — список порожній лише через фільтр.
+        html = '<div class="es">'
+          + '<div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg></div>'
+          + '<div class="es-title">No ' + (mode==='fail'?'failed':'passed') + ' checks</div>'
+          + '<div class="es-sub">Every check on this node is ' + (mode==='fail'?'passing':'failing') + ' right now.</div>'
+          + '<div class="es-act"><button class="btn-secondary" onclick="pdSetFilter(\'all\',\'All checks\')">Show all checks</button></div>'
+          + '</div>';
+      }
       document.getElementById('pd-checks-list').innerHTML = html;
       var cc = document.getElementById('pd-check-count');
       if(cc) {
@@ -15373,11 +15393,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var menu = document.getElementById('pd-filter-menu');
       var open = menu.style.display !== 'none';
       menu.style.display = open ? 'none' : 'block';
+      // .is-open обертає шеврон — це частина компонента .scan-menu-trigger,
+      // без класу стрілка лишалась би вниз при відкритому меню.
+      btn.classList.toggle('is-open', !open);
       if (!open) {
         setTimeout(function() {
           document.addEventListener('click', function h(e) {
             if (!menu.contains(e.target) && !btn.contains(e.target)) {
               menu.style.display = 'none';
+              btn.classList.remove('is-open');
               document.removeEventListener('click', h);
             }
           });
@@ -15395,6 +15419,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         o.style.fontWeight = on ? '600' : '400';
       });
       menu.style.display = 'none';
+      document.getElementById('pd-filter-btn').classList.remove('is-open');
     }
 
     function pdResetFilter() {
@@ -16977,6 +17002,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var pdStatusBadge = document.getElementById('pd-status-badge');
       if (pdCardName) pdCardName.textContent = name;
       if (pdSub) pdSub.textContent = (isCustom ? 'Custom policy' : 'Public benchmark') + ' · Just created';
+      window._pdCurrentName = name;
+      // Щойно створена політика ще не сканувалась — інакше в рядку висів би результат
+      // попередньої відкритої політики.
+      var pdScore = document.getElementById('pd-score');
+      if (pdScore) pdScore.textContent = 'Not scanned yet';
       if (pdStatusBadge) {
         pdStatusBadge.textContent = 'All passing';
         pdStatusBadge.dataset.variant = 'passing';
@@ -22948,11 +22978,11 @@ function navBack() {
 var _BC_MAP = {
   'node-detail': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-cur">MACBOOK-TARAS</span>`,
   'policy-create': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-cur">Create New Policy</span>`,
-  'policy-detail': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-cur">Compliance Policy · Windows 11</span>`,
-  'policy-edit': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-detail')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Edit</span>`,
-  'policy-assign': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-detail')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Assign</span>`,
-  'add-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Add Check</span>`,
-  'edit-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">Endpoint Protection Policy</span><span class="bc-sep">›</span><span class="bc-cur">Edit Check</span>`,
+  'policy-detail': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-cur">{policy}</span>`,
+  'policy-edit': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-detail')">{policy}</span><span class="bc-sep">›</span><span class="bc-cur">Edit</span>`,
+  'policy-assign': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-detail')">{policy}</span><span class="bc-sep">›</span><span class="bc-cur">Assign</span>`,
+  'add-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">{policy}</span><span class="bc-sep">›</span><span class="bc-cur">Add Check</span>`,
+  'edit-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">{policy}</span><span class="bc-sep">›</span><span class="bc-cur">Edit Check</span>`,
   'change-detail': `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">Windows Defender — Real-time protection</span>`,
   'change-approve': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Approve Change</span>`,
   'cr-audit': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">CHG0012345 Audit</span>`,
@@ -22977,6 +23007,11 @@ function _updateBC(name) {
   if (name === 'policy-create') { _bc = null; }
   if (name === 'cm-detail' && _currentCM) {
     _bc = '<span class="bc-link" onclick="showView(\'cm-list\')">CM Groups</span><span class="bc-sep">›</span><span class="bc-cur">' + _currentCM.name + '</span>';
+  }
+  // Крихти політики називають ВІДКРИТУ політику. Раніше ім'я було зашите в мапі, тож
+  // після Endpoint Protection топбар і далі казав «Compliance Policy · Windows 11».
+  if (_bc && _bc.indexOf('{policy}') !== -1) {
+    _bc = _bc.split('{policy}').join(window._pdCurrentName || 'Policy');
   }
   if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
 }
