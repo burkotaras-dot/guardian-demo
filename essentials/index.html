@@ -2600,6 +2600,21 @@ body.dark .recon-node-chip.recon-all[data-active="true"] { border-color:rgba(16,
 .recon-node-chip[data-active="true"] { border-color:#3FC878; background:rgba(0,175,115,0.08); color:#15803d; }
 body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.55) !important; background:rgba(16,185,129,0.18) !important; color:#fff !important; }
 
+/* CR / Type / Node group / Environment — one bordered segmented box, Figma 3466:19325 */
+.recon-seg { display:inline-flex; align-items:stretch; height:32px; box-sizing:border-box; border:1px solid var(--border); border-radius:10px; background:#F8FAFC; overflow:hidden; }
+.recon-seg .recon-node-chip { display:flex; align-items:center; justify-content:center; height:30px; padding:0 14px; gap:0; border:none !important; border-right:1px solid var(--border) !important; border-radius:0; background:transparent !important; color:#475569 !important; }
+.recon-seg .recon-node-chip:last-child { border-right:none !important; }
+.recon-seg .recon-node-chip:hover { background:var(--dropdown-option-hover) !important; }
+.recon-seg .recon-node-chip[data-active="true"] { background:rgba(0,175,115,0.15) !important; color:#334155 !important; }
+.recon-seg .recon-node-chip[data-active="true"]:hover { background:rgba(0,175,115,0.15) !important; }
+body.dark .recon-seg { background:rgba(255,255,255,0.03); border-color:var(--border); }
+body.dark .recon-seg .recon-node-chip { border-right-color:var(--border) !important; color:#94A3B8 !important; }
+body.dark .recon-seg .recon-node-chip[data-active="true"] { background:rgba(16,185,129,0.18) !important; color:#F8FAFC !important; }
+.recon-approval-comment-input::placeholder { color:#475569; }
+body.dark #recon-approval-comment,
+body.dark #recon-approval-reason { background:rgba(13,61,66,0.4) !important; }
+body.dark .recon-approval-comment-input::placeholder { color:rgba(150,166,189,0.6); }
+
 /* Dark mode: form controls need distinct bg from panels */
 /* Form controls: light bg + dark raised bg */
 .dk-form { background:#F1F5F9; }
@@ -2697,7 +2712,6 @@ body.dark .pe-sev-btn,
 body.dark select.form-input { background:var(--bg-subtle) !important; }
 .nd-scan-sel { background:var(--bg-surface); }
 body.dark .nd-scan-sel { background:var(--bg-subtle) !important; border-color:var(--border-default) !important; }
-body.dark .hh-toggle { background:rgba(255,255,255,0.07) !important; }
 /* Dropdowns INSIDE surface-bg frames need a lighter fill so they don't merge with the container.
    --bg-inset: #0A3035 (1 step above surface #062528). border stays #04363A. */
 body.dark [style*="background:var(--bg-surface)"] .csel-btn,
@@ -2711,11 +2725,30 @@ body.dark [style*="background:var(--bg-surface)"] :is(.dropdown-trigger, .dk-for
   border-color:var(--dropdown-hover-border) !important;
 }
 
-.hh-toggle { display:flex; align-items:center; justify-content:center; gap:6px; min-width:121px; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--bg-surface); font-size:12px; font-weight:600; color:var(--text-sec); cursor:pointer; user-select:none; white-space:nowrap; flex-shrink:0; transition:all 0.12s; }
-.hh-toggle .hh-check { display:none; }
-.hh-toggle.active { background:rgba(0,175,115,0.08); border-color:var(--green1); color:var(--green1); }
-.hh-toggle.active .hh-check { display:block; }
-body.dark .hh-toggle.active { background:rgba(16,185,129,0.18) !important; border-color:#34D399 !important; color:#5BE3B3 !important; }
+/* Show handled — canonical Checkbox component, Figma 3466:19325 */
+.chg-checkbox { display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; flex-shrink:0; white-space:nowrap; }
+.chg-checkbox-box { display:flex; align-items:center; justify-content:center; width:15px; height:15px; flex-shrink:0; box-sizing:border-box; border-radius:4px; border:1px solid #94A3B8; transition:background-color .12s,border-color .12s; }
+.chg-checkbox-box svg { display:none; }
+.chg-checkbox.is-checked .chg-checkbox-box { background:#059669; border-color:#059669; }
+.chg-checkbox.is-checked .chg-checkbox-box svg { display:block; }
+.chg-checkbox-label { font-size:12px; color:var(--text-default); }
+body.dark .chg-checkbox-box { border-color:rgba(255,255,255,0.35); }
+body.dark .chg-checkbox.is-checked .chg-checkbox-box { background:#10B981; border-color:#10B981; }
+/* Filters — merges Sort + Group into one dropdown trigger, Figma 3466:19325 Dropdown/Variant3 */
+.chg-filters-btn { display:flex; align-items:center; gap:6px; height:32px; box-sizing:border-box; padding:0 12px; border:1px solid #E2E8F0; border-radius:8px; background:var(--bg-surface); font-size:12px; font-weight:600; color:#334155; cursor:pointer; user-select:none; white-space:nowrap; flex-shrink:0; }
+.chg-filters-btn svg { flex-shrink:0; opacity:.85; }
+body.dark .chg-filters-btn { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.14); color:#F8FAFC; }
+.chg-filters-section { padding:0 14px 10px; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
+/* Filters popup — two columns (Sort by | Group by), Figma 3466:19325 */
+.chg-filters-dropdown { position:absolute; top:calc(100% + 6px); right:0; left:auto; background:var(--bg-surface); border:1px solid var(--border); border-radius:16px; box-shadow:0 8px 24px rgba(0,0,0,0.14); padding:10px; z-index:100; gap:10px; }
+.chg-filters-col-divider { border-left:1px solid #F6F8FA; padding-left:10px; }
+body.dark .chg-filters-col-divider { border-left-color:var(--border); }
+.chg-filters-list { display:flex; flex-direction:column; gap:4px; }
+.chg-filters-dropdown :is(.sort-opt, .group-opt) { display:flex; align-items:center; gap:9px; padding:9px 14px; font-size:14px; font-weight:500; cursor:pointer; border-radius:10px; color:var(--text-default); white-space:nowrap; transition:background-color .1s; }
+.chg-filters-dropdown :is(.sort-opt, .group-opt) svg { visibility:hidden; flex-shrink:0; color:var(--green1); }
+.chg-filters-dropdown :is(.sort-opt, .group-opt):hover { background:var(--dropdown-option-hover); }
+.chg-filters-dropdown :is(.sort-opt-active, .group-opt-active) { font-weight:600; }
+.chg-filters-dropdown :is(.sort-opt-active, .group-opt-active) svg { visibility:visible; }
 .check-card.drift-handled { opacity:0.62; background:var(--bg-subtle); }
 .check-card.drift-handled:hover { opacity:0.85; }
 /* Compact single-line drift row — operational list (replaces tall diff cards) */
@@ -3880,10 +3913,7 @@ body.dark #v-policies [style*="background: white"] { background: var(--bg-card) 
 body.dark #v-policies [style*="color:var(--text-default)"] { color: var(--p-neutral-50) !important; }
 body.dark #v-policies input[type="text"]:not(#pol-search) { color:#698787 !important; }
 body.dark #v-policies input[type="text"]:not(#pol-search)::placeholder { color:#698787; }
-#changes-sort-btn { background:var(--bg-surface) !important; }
-body.dark #changes-sort-btn { background: var(--bg-subtle) !important; color: var(--p-neutral-50) !important; }
-body.dark #changes-sort-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
-body.dark #changes-group-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
+body.dark #changes-filters-dropdown { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
 body.dark .sort-opt { color: #C0C0C0 !important; }
 body.dark #v-policies [style*="color:var(--p-neutral-800)"] { color: var(--p-neutral-300) !important; }
 body.dark #v-policies [style*="color:var(--p-neutral-500)"], body.dark #v-policies [style*="color:var(--p-neutral-600)"] { color: var(--text-sec) !important; }
@@ -17345,41 +17375,43 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <span id="drift-morefilters-label">More filters</span>
             </span>
           </div>
-          <!-- Search + Filters + Sort row -->
+          <!-- Show handled + Search + Filters row — Figma 3466:19325 -->
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <!-- Show handled (#2) — checkbox, unchecked hides reconciled/handled events from the active list, hidden by default -->
+          <div id="drift-show-handled" class="chg-checkbox" onclick="toggleShowHandled()" title="Show events that are already reconciled or handled">
+            <span class="chg-checkbox-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+            <span class="chg-checkbox-label">Show handled</span>
+          </div>
           <div class="btn-icon isearch" role="search" onclick="isearchOpen(this)" title="Space-separated terms. Prefix with - to exclude, use * as a wildcard.">
             <svg class="isearch-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
             <input type="text" id="changes-search" class="isearch-input" placeholder="Search drift… -exclude, wild*" aria-label="Search drift items" oninput="searchChanges(this.value)" onblur="isearchClose(this)" onkeydown="if(event.key==='Escape'){this.value='';searchChanges('');this.blur();}">
           </div>
-          <!-- Sort custom dropdown -->
+          <!-- Filters custom dropdown — merges Sort + Group -->
           <div style="position:relative;flex-shrink:0;">
-            <div id="changes-sort-btn" class="dk-form" onclick="toggleChangesSort(this)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-              <span id="changes-sort-label">Newest first</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div id="changes-filters-btn" class="chg-filters-btn" onclick="toggleChangesFilters(this)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
+              <span>Filters</span>
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.7;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
-            <div id="changes-sort-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:160px;z-index:100;">
-              <div class="sort-opt sort-opt-active" data-val="newest" onclick="pickSort(this,&#39;Newest first&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;sort-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Newest first</div>
-              <div class="sort-opt" data-val="oldest" onclick="pickSort(this,&#39;Oldest first&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;sort-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Oldest first</div>
-              <div class="sort-opt" data-val="severity" onclick="pickSort(this,&#39;By severity&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;sort-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>By severity</div>
-              <div class="sort-opt" data-val="node" onclick="pickSort(this,&#39;By node&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;sort-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>By node</div>
+            <div id="changes-filters-dropdown" class="chg-filters-dropdown" style="display:none;">
+              <div>
+                <div class="chg-filters-section">Sort by</div>
+                <div class="chg-filters-list">
+                  <div class="sort-opt sort-opt-active" data-val="newest" onclick="pickSort(this,&#39;Newest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Newest first</div>
+                  <div class="sort-opt" data-val="oldest" onclick="pickSort(this,&#39;Oldest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Oldest first</div>
+                  <div class="sort-opt" data-val="severity" onclick="pickSort(this,&#39;By severity&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By severity</div>
+                  <div class="sort-opt" data-val="node" onclick="pickSort(this,&#39;By node&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By node</div>
+                </div>
+              </div>
+              <div class="chg-filters-col-divider">
+                <div class="chg-filters-section">Group by</div>
+                <div class="chg-filters-list">
+                  <div class="group-opt group-opt-active" data-val="none" onclick="pickGroup(this,&#39;None&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Group: None</div>
+                  <div class="group-opt" data-val="node" onclick="pickGroup(this,&#39;Node&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Node</div>
+                  <div class="group-opt" data-val="cr" onclick="pickGroup(this,&#39;Change Request&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Change Request</div>
+                </div>
+              </div>
             </div>
-          </div>
-          <!-- Group custom dropdown — re-applies the grouping engine (node / change request) -->
-          <div style="position:relative;flex-shrink:0;">
-            <div id="changes-group-btn" class="dropdown-trigger" onclick="toggleChangesGroup(this)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-surface);font-size:12px;cursor:pointer;color:var(--text-default);white-space:nowrap;user-select:none;">
-              <span id="changes-group-label">Group: None</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div id="changes-group-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:8px;min-width:170px;z-index:100;">
-              <div class="group-opt group-opt-active" data-val="none" onclick="pickGroup(this,&#39;None&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;background:rgba(0,175,115,0.08);" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;group-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>None</div>
-              <div class="group-opt" data-val="node" onclick="pickGroup(this,&#39;Node&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;group-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Node</div>
-              <div class="group-opt" data-val="cr" onclick="pickGroup(this,&#39;Change Request&#39;)" style="padding:8px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text-default);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=this.classList.contains(&#39;group-opt-active&#39;)?&#39;rgba(0,175,115,0.08)&#39;:&#39;&#39;"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2.5" style="visibility:hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>Change Request</div>
-            </div>
-          </div>
-          <!-- Hide handled toggle (#2) — drops reconciled events from the active list, ON by default -->
-          <div id="drift-hide-handled" class="hh-toggle active" onclick="toggleHideHandled()" title="Hide events that are already reconciled or handled">
-            <svg class="hh-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            Hide handled
           </div>
           </div><!-- end right group -->
         </div>
@@ -17390,9 +17422,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg-surface);">
             <!-- Header: title + subtitle (left), result status (right) -->
             <div style="display:flex;align-items:center;gap:8px;padding:9px 16px;border-bottom:1px solid var(--border);">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-default)" stroke-width="2" style="flex-shrink:0;"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
               <div style="flex:1;min-width:0;">
-                <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;line-height:1.2;">Advanced filters</div>
+                <div style="font-size:10.5px;font-weight:700;color:var(--text-default);text-transform:uppercase;letter-spacing:0.06em;line-height:1.2;">Advanced filters</div>
               </div>
               <div style="flex-shrink:0;display:flex;align-items:center;gap:12px;white-space:nowrap;">
                 <span style="font-size:11.5px;color:var(--text-sec);white-space:nowrap;"><span id="recon-set-count" style="font-weight:600;">2 events in view</span><span id="recon-filter-count-wrap"> · <span id="recon-filter-count">0 filters active</span></span><span id="recon-clear-all" onclick="clearAllReconFilters()" style="display:none;color:var(--green1);font-weight:600;cursor:pointer;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;"> · Clear all</span></span>
@@ -17400,44 +17432,50 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             <!-- Controls: Query · Quick filters · Advanced filters -->
             <div id="recon-controls-panel" style="padding:14px 16px 12px;">
-              <!-- Section: Additional filters -->
-              <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Additional filters</div>
               <!-- Row: CR / Type / Node group / Environment -->
               <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;">
-                <div id="recon-cr-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                <div id="recon-cr-chips" style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">CR:</span>
-                  <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,&#39;recon-cr-chips&#39;,&#39;cr&#39;,null)">All</div>
-                  <div class="recon-node-chip" data-val="none" data-active="false" onclick="pickReconChip(this,&#39;recon-cr-chips&#39;,&#39;cr&#39;,&#39;none&#39;)">No CR</div>
-                  <div class="recon-node-chip" data-val="CHG0012345" data-active="false" onclick="pickReconChip(this,&#39;recon-cr-chips&#39;,&#39;cr&#39;,&#39;CHG0012345&#39;)">CHG0012345</div>
+                  <div class="recon-seg">
+                    <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,&#39;recon-cr-chips&#39;,&#39;cr&#39;,null)">All</div>
+                    <div class="recon-node-chip" data-val="none" data-active="false" onclick="pickReconChip(this,&#39;recon-cr-chips&#39;,&#39;cr&#39;,&#39;none&#39;)">No CR</div>
+                    <div class="recon-node-chip" data-val="CHG0012345" data-active="false" onclick="pickReconChip(this,&#39;recon-cr-chips&#39;,&#39;cr&#39;,&#39;CHG0012345&#39;)">CHG0012345</div>
+                  </div>
                 </div>
                 <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
-                <div id="recon-type-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                <div id="recon-type-chips" style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Type:</span>
-                  <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,&#39;recon-type-chips&#39;,&#39;type&#39;,null)">All</div>
-                  <div class="recon-node-chip" data-val="modified" data-active="false" onclick="pickReconChip(this,&#39;recon-type-chips&#39;,&#39;type&#39;,&#39;modified&#39;)">Modified</div>
-                  <div class="recon-node-chip" data-val="added" data-active="false" onclick="pickReconChip(this,&#39;recon-type-chips&#39;,&#39;type&#39;,&#39;added&#39;)">Added</div>
-                  <div class="recon-node-chip" data-val="removed" data-active="false" onclick="pickReconChip(this,&#39;recon-type-chips&#39;,&#39;type&#39;,&#39;removed&#39;)">Removed</div>
+                  <div class="recon-seg">
+                    <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,&#39;recon-type-chips&#39;,&#39;type&#39;,null)">All</div>
+                    <div class="recon-node-chip" data-val="modified" data-active="false" onclick="pickReconChip(this,&#39;recon-type-chips&#39;,&#39;type&#39;,&#39;modified&#39;)">Modified</div>
+                    <div class="recon-node-chip" data-val="added" data-active="false" onclick="pickReconChip(this,&#39;recon-type-chips&#39;,&#39;type&#39;,&#39;added&#39;)">Added</div>
+                    <div class="recon-node-chip" data-val="removed" data-active="false" onclick="pickReconChip(this,&#39;recon-type-chips&#39;,&#39;type&#39;,&#39;removed&#39;)">Removed</div>
+                  </div>
                 </div>
                 <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
-                <div id="recon-group-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                <div id="recon-group-chips" style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Node group:</span>
-                  <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,&#39;recon-group-chips&#39;,&#39;group&#39;,null)">All</div>
-                  <div class="recon-node-chip" data-val="laptops" data-active="false" onclick="pickReconChip(this,&#39;recon-group-chips&#39;,&#39;group&#39;,&#39;laptops&#39;)">Laptops</div>
-                  <div class="recon-node-chip" data-val="servers" data-active="false" onclick="pickReconChip(this,&#39;recon-group-chips&#39;,&#39;group&#39;,&#39;servers&#39;)">Servers</div>
-                  <div class="recon-node-chip" data-val="workstations" data-active="false" onclick="pickReconChip(this,&#39;recon-group-chips&#39;,&#39;group&#39;,&#39;workstations&#39;)">Workstations</div>
+                  <div class="recon-seg">
+                    <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,&#39;recon-group-chips&#39;,&#39;group&#39;,null)">All</div>
+                    <div class="recon-node-chip" data-val="laptops" data-active="false" onclick="pickReconChip(this,&#39;recon-group-chips&#39;,&#39;group&#39;,&#39;laptops&#39;)">Laptops</div>
+                    <div class="recon-node-chip" data-val="servers" data-active="false" onclick="pickReconChip(this,&#39;recon-group-chips&#39;,&#39;group&#39;,&#39;servers&#39;)">Servers</div>
+                    <div class="recon-node-chip" data-val="workstations" data-active="false" onclick="pickReconChip(this,&#39;recon-group-chips&#39;,&#39;group&#39;,&#39;workstations&#39;)">Workstations</div>
+                  </div>
                 </div>
                 <div style="width:1px;height:18px;background:var(--border);align-self:center;flex-shrink:0;"></div>
-                <div id="recon-env-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                <div id="recon-env-chips" style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                   <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Environment:</span>
-                  <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,&#39;recon-env-chips&#39;,&#39;env&#39;,null)">All</div>
-                  <div class="recon-node-chip" data-val="production" data-active="false" onclick="pickReconChip(this,&#39;recon-env-chips&#39;,&#39;env&#39;,&#39;production&#39;)">Production</div>
-                  <div class="recon-node-chip" data-val="staging" data-active="false" onclick="pickReconChip(this,&#39;recon-env-chips&#39;,&#39;env&#39;,&#39;staging&#39;)">Staging</div>
-                  <div class="recon-node-chip" data-val="development" data-active="false" onclick="pickReconChip(this,&#39;recon-env-chips&#39;,&#39;env&#39;,&#39;development&#39;)">Development</div>
+                  <div class="recon-seg">
+                    <div class="recon-node-chip" data-active="true" onclick="pickReconChip(this,&#39;recon-env-chips&#39;,&#39;env&#39;,null)">All</div>
+                    <div class="recon-node-chip" data-val="production" data-active="false" onclick="pickReconChip(this,&#39;recon-env-chips&#39;,&#39;env&#39;,&#39;production&#39;)">Production</div>
+                    <div class="recon-node-chip" data-val="staging" data-active="false" onclick="pickReconChip(this,&#39;recon-env-chips&#39;,&#39;env&#39;,&#39;staging&#39;)">Staging</div>
+                    <div class="recon-node-chip" data-val="development" data-active="false" onclick="pickReconChip(this,&#39;recon-env-chips&#39;,&#39;env&#39;,&#39;development&#39;)">Development</div>
+                  </div>
                 </div>
               </div>
               <!-- Section: Advanced criteria -->
               <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:10px;">
-              <div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px 12px;">
+              <div style="display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px 12px;">
                 <!-- Time span -->
                 <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
                   <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Time span</label>
@@ -17508,19 +17546,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   </div>
                 </div>
                 <!-- Approval reason -->
-                <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
-                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Approval reason</label>
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Approval reason</label>
                   <div style="position:relative;width:260px;">
-                    <input type="text" id="recon-approval-reason" autocomplete="off" placeholder="Search or select reason…" oninput="onReconReasonInput(this)" onfocus="openReconReasonList()" style="width:100%;box-sizing:border-box;padding:6px 26px 6px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);">
+                    <input type="text" id="recon-approval-reason" autocomplete="off" placeholder="Search or select reason…" oninput="onReconReasonInput(this)" onfocus="openReconReasonList()" style="width:100%;box-sizing:border-box;padding:6px 26px 6px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:#F8FAFC;outline:none;color:var(--text-default);">
                     <span onclick="clearDriftFilter(&#39;approvalReason&#39;)" title="Clear" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-muted)&#39;">×</span>
                     <div id="recon-reason-list" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:6px;z-index:100;max-height:200px;overflow-y:auto;"></div>
                   </div>
                 </div>
                 <!-- Approval comment -->
-                <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
-                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Approval comment</label>
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                  <label style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;">Approval comment</label>
                   <div style="position:relative;width:300px;">
-                    <input type="text" id="recon-approval-comment" placeholder="e.g. approved per change board" oninput="pickReconText(this,&#39;approvalComment&#39;)" style="width:100%;box-sizing:border-box;padding:6px 26px 6px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:var(--bg-surface);outline:none;color:var(--text-default);" onfocus="this.style.borderColor=&#39;var(--green1)&#39;;this.style.boxShadow=&#39;0 0 0 3px var(--green-dim)&#39;" onblur="this.style.borderColor=&#39;var(--border)&#39;;this.style.boxShadow=&#39;none&#39;">
+                    <input type="text" id="recon-approval-comment" class="recon-approval-comment-input" placeholder="e.g. approved per change board" oninput="pickReconText(this,&#39;approvalComment&#39;)" style="width:100%;box-sizing:border-box;padding:6px 26px 6px 11px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:12.5px;background:#F8FAFC;outline:none;color:var(--text-default);" onfocus="this.style.borderColor=&#39;var(--green1)&#39;;this.style.boxShadow=&#39;0 0 0 3px var(--green-dim)&#39;" onblur="this.style.borderColor=&#39;var(--border)&#39;;this.style.boxShadow=&#39;none&#39;">
                     <span onclick="clearDriftFilter(&#39;approvalComment&#39;)" title="Clear" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-muted)&#39;">×</span>
                   </div>
                 </div>
@@ -24582,10 +24620,11 @@ function searchChanges(query) {
   applyDriftFilters();
 }
 
-function toggleChangesSort(btn) {
-  var dd = document.getElementById('changes-sort-dropdown');
+/* Filters dropdown — single trigger, merges Sort + Group (Figma 3466:19325) */
+function toggleChangesFilters(btn) {
+  var dd = document.getElementById('changes-filters-dropdown');
   var open = dd.style.display !== 'none';
-  dd.style.display = open ? 'none' : 'block';
+  dd.style.display = open ? 'none' : 'flex';
   if (!open) {
     setTimeout(function() {
       document.addEventListener('click', function h(e) {
@@ -24595,43 +24634,17 @@ function toggleChangesSort(btn) {
   }
 }
 function pickSort(el, label) {
-  document.querySelectorAll('.sort-opt').forEach(function(o) {
-    o.classList.remove('sort-opt-active');
-    o.querySelector('.sort-check').style.visibility = 'hidden';
-    o.style.background = '';
-  });
+  document.querySelectorAll('.sort-opt').forEach(function(o) { o.classList.remove('sort-opt-active'); });
   el.classList.add('sort-opt-active');
-  el.querySelector('.sort-check').style.visibility = 'visible';
-  el.style.background = 'var(--dropdown-option-hover)';
-  document.getElementById('changes-sort-label').textContent = label;
-  document.getElementById('changes-sort-dropdown').style.display = 'none';
+  document.getElementById('changes-filters-dropdown').style.display = 'none';
   sortChanges(el.dataset.val);
 }
 
 let driftGroupBy = 'none';
-function toggleChangesGroup(btn) {
-  var dd = document.getElementById('changes-group-dropdown');
-  var open = dd.style.display !== 'none';
-  dd.style.display = open ? 'none' : 'block';
-  if (!open) {
-    setTimeout(function() {
-      document.addEventListener('click', function h(e) {
-        if (!dd.contains(e.target) && e.target !== btn) { dd.style.display = 'none'; document.removeEventListener('click', h); }
-      });
-    }, 10);
-  }
-}
 function pickGroup(el, label) {
-  document.querySelectorAll('.group-opt').forEach(function(o) {
-    o.classList.remove('group-opt-active');
-    o.querySelector('.group-check').style.visibility = 'hidden';
-    o.style.background = '';
-  });
+  document.querySelectorAll('.group-opt').forEach(function(o) { o.classList.remove('group-opt-active'); });
   el.classList.add('group-opt-active');
-  el.querySelector('.group-check').style.visibility = 'visible';
-  el.style.background = 'var(--dropdown-option-hover)';
-  document.getElementById('changes-group-label').textContent = 'Group: ' + label;
-  document.getElementById('changes-group-dropdown').style.display = 'none';
+  document.getElementById('changes-filters-dropdown').style.display = 'none';
   driftGroupBy = el.dataset.val;
   applyDriftFilters();
 }
@@ -25064,13 +25077,13 @@ function _emptyDriftFilters() { return { status: null, cr: null, node: null, typ
 let driftFilters = _emptyDriftFilters();
 // Fixed "now" reference for the prototype's relative Time Span presets
 const DRIFT_TIME_REF = '2026-07-06';
-// Hide handled (#2) — when on, reconciled/handled events drop out of the active list (ON by default)
+// Show handled (#2) — checkbox; unchecked (default) drops reconciled/handled events from the active list
 let driftHideHandled = true;
 const DRIFT_HANDLED_STATUSES = ['reconciled', 'approved'];
-function toggleHideHandled() {
+function toggleShowHandled() {
   driftHideHandled = !driftHideHandled;
-  const el = document.getElementById('drift-hide-handled');
-  if (el) el.classList.toggle('active', driftHideHandled);
+  const el = document.getElementById('drift-show-handled');
+  if (el) el.classList.toggle('is-checked', !driftHideHandled);
   applyDriftFilters();
 }
 
