@@ -3207,7 +3207,7 @@ body.dark .issues-card        { background: transparent; border-color: transpare
 body.dark .issues-card-title  { color: var(--p-neutral-50); }
 /* Комірка Last Scan у dark світліша за --text-sec. Виняток — .node-scan: там колір несе
    СТАН скану, тому власні значення компонента мають вигравати (див. блок .node-scan). */
-body.dark .node-row > div:nth-child(6):not(.node-scan) { color: var(--p-neutral-50) !important; }
+body.dark .node-row > div:nth-child(7):not(.node-scan) { color: var(--p-neutral-50) !important; }
 body.dark .score-svg circle:first-child { stroke: #335255; }
 body.dark .score-track { stroke: #335255 !important; }
 body.dark .sev-num-critical { color:#FF4646; }
@@ -3549,24 +3549,30 @@ body.dark .node-scan[data-state="idle"]   { color:var(--p-neutral-50); }
 body.dark .node-scan[data-state="failed"] { color:#FF4646; }
 body.dark .node-scan[data-state="never"]  { color:#64748B; }
 
-/* ── Стан звʼязку вузла — маркер біля імені (Adem + Stephen + Gareth, Slack 2026-08-21) ──
+/* ── Стан звʼязку вузла — КОЛОНКА «Status» (Adem, Slack 2026-08-22) ──────────────────
    Це ІНША вісь, ніж стан скану: offline = вузол не чекіниться, unscanned = немає результату.
    Вузол буває онлайн і ніколи не сканованим, і навпаки — тому колонку Last Scan НЕ чіпаємо.
 
-   Онлайн НЕ рендеримо взагалі. Підпис «Online» на 190 рядках із 200 — це шум, у якому
-   тонуть саме ті 10, заради яких фічу й просили (Gareth: «limiting the info there to only
-   the stuff hitting our core use cases by default»).
+   21.08 маркер жив біля імені, а «Online» не рендерився взагалі. Adem заперечив, і його
+   аргумент сильніший: колонка Status уже є в CM Groups і в Detected Drift, тож Managed Nodes
+   був винятком, а не взірцем стриманості. Окрема колонка НЕ зливає дві осі — вона їх
+   розводить остаточно: Status = звʼязок, Last Scan = життєвий цикл скану.
+   ⚠️ «Never scanned» у Status не потрапляє ніколи — це значення Last Scan.
 
    Гучність задає ТРИВАЛІСТЬ, а не сам факт: ноутбук із закритою кришкою відпадає щодня і
-   це норма, а вузол, мертвий тижнями, — проблема. Це і є Stephen'ове «missed check-ins or
-   gone unscanned more than X times», виражене кольором, а не окремою фічею.
+   це норма, а вузол, мертвий тижнями, — проблема. Тому Offline завжди йде з «for 3 days»:
+   без тривалості губиться саме те, з чого Adem почав («10 of them offline for days»).
    Пігулки немає: у рядку вже є Score / Issues / Detected Drift (DS §12). */
-.node-net { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; }
-.node-net::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
-.node-net[data-net="offline"]      { color:var(--text-muted); }
-.node-net[data-net="offline-long"] { color:var(--sev-medium-txt); }
-body.dark .node-net[data-net="offline"]      { color:#64748B; }
-body.dark .node-net[data-net="offline-long"] { color:#F59E0B; }
+.node-status { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; }
+.node-status::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
+.node-status[data-net="online"]       { color:#059669; }
+.node-status[data-net="offline"]      { color:var(--text-muted); }
+.node-status[data-net="offline-long"] { color:var(--sev-medium-txt); }
+/* Тривалість — та сама сімʼя кольору, але тихіша: спершу стан, потім «наскільки давно». */
+.node-status .node-status-for { font-weight:500; opacity:0.8; }
+body.dark .node-status[data-net="online"]       { color:#10B981; }
+body.dark .node-status[data-net="offline"]      { color:#64748B; }
+body.dark .node-status[data-net="offline-long"] { color:#F59E0B; }
 
 .cm-row-dim .cm-ico svg { stroke:var(--text-muted); }
 .cm-row-dim { opacity:0.55; }
@@ -7430,18 +7436,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div id="nodes-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
 
           <!-- Table header -->
-          <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+          <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
             <div><input type="checkbox" id="select-all-nodes" onchange="toggleAllNodes(this)" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div onclick="sortNodes(&#39;name&#39;)" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;&#39;">Node <span id="sort-icon-name" style="font-size:11px;color:#94a3b8;">⇅</span></div>
             <div onclick="sortNodes(&#39;score&#39;)" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;&#39;">Score <span id="sort-icon-score" style="font-size:11px;color:#94a3b8;">⇅</span></div>
             <div onclick="sortNodes(&#39;issues&#39;)" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;&#39;">Issues <span id="sort-icon-issues" style="font-size:11px;color:#94a3b8;">⇅</span></div>
             <div onclick="sortNodes(&#39;drift&#39;)" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;&#39;">Detected Drift <span id="sort-icon-drift" style="font-size:11px;color:#94a3b8;">⇅</span></div>
+            <div>Status</div>
             <div onclick="sortNodes(&#39;lastscan&#39;)" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;&#39;">Last Scan <span id="sort-icon-lastscan" style="font-size:11px;color:#94a3b8;">⇅</span></div>
             <div>Action</div>
           </div>
 
           <!-- Device row 1 — current device, good score -->
-          <div class="node-row" data-name="MACBOOK-TARAS Windows 11 This node" data-type="local" data-group="Windows Laptops" data-env="production" data-sort-score="78" data-sort-issues="9" data-sort-drift="3" data-sort-lastscan="2" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+          <div class="node-row" data-name="MACBOOK-TARAS Windows 11 This node" data-type="local" data-group="Windows Laptops" data-env="production" data-sort-score="78" data-sort-issues="9" data-sort-drift="3" data-sort-lastscan="2" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="node-ico">
@@ -7461,12 +7468,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:11px;color:var(--text-sec);">27 total</div>
             </div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">3 changes</span></div>
+            <div><span class="node-status" data-net="online">Online</span></div>
             <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>2 min ago</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Fix now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
           <!-- Device row 2 — critical score -->
-          <div class="node-row" data-name="SARAH-LAPTOP-01 Windows 11 Pro" data-type="local" data-group="Windows Laptops" data-env="production" data-sort-score="54" data-sort-issues="14" data-sort-drift="1" data-sort-lastscan="60" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+          <div class="node-row" data-name="SARAH-LAPTOP-01 Windows 11 Pro" data-type="local" data-group="Windows Laptops" data-env="production" data-sort-score="54" data-sort-issues="14" data-sort-drift="1" data-sort-lastscan="60" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="node-ico">
@@ -7486,12 +7494,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:11px;color:var(--text-sec);">36 total</div>
             </div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 change</span></div>
+            <div><span class="node-status" data-net="online">Online</span></div>
             <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>1 hour ago</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Fix now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
           <!-- Device row 3 — healthy -->
-          <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" data-group="Developer Macs" data-env="development" data-net="offline-long" data-sort-score="91" data-sort-issues="2" data-sort-drift="0" data-sort-lastscan="4320" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+          <div class="node-row" data-name="DEV-MACPRO-03 macOS Ventura" data-type="local" data-group="Developer Macs" data-env="development" data-net="offline-long" data-sort-score="91" data-sort-issues="2" data-sort-drift="0" data-sort-lastscan="4320" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="node-ico">
@@ -7499,7 +7508,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
               <div>
                 <div style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">DEV-MACPRO-03</div>
-                <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:6px;">macOS Ventura <span class="node-net" data-net="offline-long">Offline 3 days</span></div>
+                <div style="font-size:11px;color:var(--text-sec);">macOS Ventura</div>
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:9px;">
@@ -7511,12 +7520,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:11px;color:var(--text-sec);">6 total</div>
             </div>
             <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
+            <div><span class="node-status" data-net="offline-long">Offline <span class="node-status-for">for 3 days</span></span></div>
             <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>3 days ago</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Details <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
           </div>
 
           <!-- Device row 4 — scan in progress -->
-          <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" data-group="Windows Desktops" data-env="staging" data-sort-score="999" data-sort-issues="0" data-sort-drift="1" data-sort-lastscan="0" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+          <div class="node-row" data-name="JAMES-WIN-DESK Windows 10 Enterprise" data-type="local" data-group="Windows Desktops" data-env="staging" data-sort-score="999" data-sort-issues="0" data-sort-drift="1" data-sort-lastscan="0" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="node-ico">
@@ -7530,6 +7540,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 change</span></div>
+            <div><span class="node-status" data-net="online">Online</span></div>
             <div class="node-scan" data-state="running"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.22-8.56"></path></svg>Scanning…</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Scanning…</button></div>
           </div>
@@ -7537,7 +7548,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <!-- Device row 5 — online, but never scanned. Показує другу вісь: вузол на звʼязку,
                а результату скану немає. Саме через це offline і unscanned не можна зводити
                в один індикатор (Stephen Earl, Slack 2026-08-20). -->
-          <div class="node-row" data-name="BUILD-AGENT-02 Windows Server 2022" data-type="local" data-group="Windows Desktops" data-env="staging" data-scan="never" data-sort-score="1000" data-sort-issues="0" data-sort-drift="0" data-sort-lastscan="999999" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+          <div class="node-row" data-name="BUILD-AGENT-02 Windows Server 2022" data-type="local" data-group="Windows Desktops" data-env="staging" data-scan="never" data-sort-score="1000" data-sort-issues="0" data-sort-drift="0" data-sort-lastscan="999999" onclick="showView(&#39;node-detail&#39;)" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;align-items:center;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
             <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="node-ico">
@@ -7551,6 +7562,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
+            <div><span class="node-status" data-net="online">Online</span></div>
             <div class="node-scan" data-state="never"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>Never scanned</div>
             <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();scanNodeRow(this);">Scan now</button></div>
           </div>
@@ -7565,7 +7577,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
             <!-- EC2: web-prod-01 -->
-            <div class="node-row" data-name="web-prod-01 EC2 Amazon Linux us-east-1" data-type="aws" data-group="AWS Web Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div class="node-row" data-name="web-prod-01 EC2 Amazon Linux us-east-1" data-type="aws" data-group="AWS Web Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="node-ico">
@@ -7579,11 +7591,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#d97706;">71</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:71%;height:100%;background:#d97706;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:#FB3C44;">4 Critical</span><div style="font-size:11px;color:var(--text-sec);">13 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
+              <div><span class="node-status" data-net="online">Online</span></div>
               <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EC2: web-prod-02 -->
-            <div class="node-row" data-name="web-prod-02 EC2 Amazon Linux us-east-1" data-type="aws" data-group="AWS Web Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div class="node-row" data-name="web-prod-02 EC2 Amazon Linux us-east-1" data-type="aws" data-group="AWS Web Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="node-ico">
@@ -7597,11 +7610,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#00AF73;">82</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:82%;height:100%;background:#00AF73;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">7 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
+              <div><span class="node-status" data-net="online">Online</span></div>
               <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EC2: api-server-01 -->
-            <div class="node-row" data-name="api-server-01 EC2 Ubuntu eu-west-1" data-type="aws" data-group="AWS API Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div class="node-row" data-name="api-server-01 EC2 Ubuntu eu-west-1" data-type="aws" data-group="AWS API Servers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="node-ico">
@@ -7615,11 +7629,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#FB3C44;">63</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:63%;height:100%;background:#FB3C44;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:#FB3C44;">6 Critical</span><div style="font-size:11px;color:var(--text-sec);">20 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
+              <div><span class="node-status" data-net="online">Online</span></div>
               <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Fix now</button></div>
             </div>
             <!-- ECS -->
-            <div class="node-row" data-name="ecs-cluster-prod ECS us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div class="node-row" data-name="ecs-cluster-prod ECS us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="node-ico">
@@ -7633,11 +7648,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#00AF73;">78</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:78%;height:100%;background:#00AF73;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">11 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
+              <div><span class="node-status" data-net="online">Online</span></div>
               <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
             <!-- EKS -->
-            <div class="node-row" data-name="eks-prod-cluster EKS Kubernetes us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
+            <div class="node-row" data-name="eks-prod-cluster EKS Kubernetes us-east-1" data-type="aws" data-group="AWS Containers" data-env="production" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;transition:background 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;" onmouseout="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;var(--bg-card)&#39;:&#39;white&#39;">
               <div onclick="event.stopPropagation()"><input type="checkbox" class="node-checkbox" onchange="updateScanSelected()" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="node-ico">
@@ -7651,6 +7667,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:16px;font-weight:700;color:#00AF73;">85</span><div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:85%;height:100%;background:#00AF73;border-radius:99px;"></div></div></div>
               <div><span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span><div style="font-size:11px;color:var(--text-sec);">4 total</div></div>
               <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
+              <div><span class="node-status" data-net="online">Online</span></div>
               <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Just now</div>
               <div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;" onclick="event.stopPropagation();openAwsResultsModal()">Results →</button></div>
             </div>
@@ -14521,9 +14538,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var tableHTML = '<div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1fr 0.7fr 1fr;padding:10px 22px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">'
           + '<div>Node</div><div>OS</div><div>Status</div><div>Last scan</div></div>'
           + nodes.map(function(n){
-            var nSt = n.status === 'online'
-              ? '<span style="color:#059669;font-weight:600;">● Online</span>'
-              : '<span style="color:#94a3b8;font-weight:600;">● Offline</span>';
+            // Той самий факт, що і в All Nodes → той самий компонент, а не друга ручна верстка.
+            var nSt = '<span class="node-status" data-net="' + (n.status === 'online' ? 'online' : 'offline') + '">'
+              + (n.status === 'online' ? 'Online' : 'Offline') + '</span>';
             return '<div class="cm-row-node" style="display:grid;grid-template-columns:1.5fr 1fr 0.7fr 1fr;padding:10px 22px;border-bottom:1px solid var(--border);font-size:12px;cursor:pointer;transition:background .12s;">'
               + '<div style="font-weight:600;color:var(--text-default);">'+n.name+'</div>'
               + '<div style="color:var(--text-sec);">'+n.os+'</div>'
@@ -23279,19 +23296,19 @@ function NODE_SCAN_CELL(state, label) {
        + (label || s.label) + '</div>';
 }
 
-// 6-та комірка .node-row = Last Scan, 7-ма = Action. Оригінальну кнопку зберігаємо,
-// щоб повернути її, коли скан завершиться.
+// 7-ма комірка .node-row = Last Scan, 8-ма = Action (6-та — Status, колонка звʼязку).
+// Оригінальну кнопку зберігаємо, щоб повернути її, коли скан завершиться.
 function setNodeScanState(row, state, label) {
-  if (!row || row.children.length < 7) return;
+  if (!row || row.children.length < 8) return;
   /* Кешувати можна ТІЛЬКИ справжню дію рядка. Рядок, який стартував уже в стані скану
      («Scanning…», «Never scanned»), має в кнопці такий самий звіт про скан — повернути її
      після завершення не можна, інакше рядок казав би «Just now» і «Scanning…» водночас.
      Дію такому рядку дає результат скану (див. finishNodeScan). */
-  var prevState = row.children[5].dataset.state;
+  var prevState = row.children[6].dataset.state;
   if (row.dataset.scanAction === undefined && (!prevState || prevState === 'idle'))
-    row.dataset.scanAction = row.children[6].innerHTML;
-  row.children[5].outerHTML = NODE_SCAN_CELL(state, label);
-  var act = row.children[6];
+    row.dataset.scanAction = row.children[7].innerHTML;
+  row.children[6].outerHTML = NODE_SCAN_CELL(state, label);
+  var act = row.children[7];
   var s = NODE_SCAN_STATES[state];
   if (!s.action) { if (row.dataset.scanAction !== undefined) act.innerHTML = row.dataset.scanAction; return; }
   // Активні тільки ті стани, з яких користувач може вийти сам: Retry і Scan now.
@@ -23456,7 +23473,7 @@ function finishNodeScan(row, failed) {
       + 'viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" '
       + 'stroke="currentColor" stroke-linecap="round"/></svg></span></button>';
     row.dataset.scanAction = fixHtml;
-    row.children[6].innerHTML = fixHtml;
+    row.children[7].innerHTML = fixHtml;
   }
   updateNodeStateCounts();
 }
@@ -23876,7 +23893,7 @@ function promoteNode(btn) {
     newRow.className = 'node-row';
     newRow.dataset.name = nm + ' ' + subtitle;
     newRow.dataset.type = 'local';
-    newRow.style.cssText = 'display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;background:var(--bg-surface);';
+    newRow.style.cssText = 'display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;background:var(--bg-surface);';
     newRow.setAttribute('onmouseover', "this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'");
     newRow.setAttribute('onmouseout', "this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'");
     newRow.innerHTML =
@@ -23887,6 +23904,8 @@ function promoteNode(btn) {
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
+      // Щойно підвищений вузол за визначенням чекінився — інакше ми б його не виявили.
+      '<div><span class="node-status" data-net="online">Online</span></div>' +
       NODE_SCAN_CELL('pending') +
       '<div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Queued</button></div>';
 
@@ -23951,7 +23970,7 @@ function bulkPromote() {
     newRow.className = 'node-row';
     newRow.dataset.name = nm + ' ' + subtitle;
     newRow.dataset.type = 'local';
-    newRow.style.cssText = 'display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;background:var(--bg-surface);';
+    newRow.style.cssText = 'display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s;background:var(--bg-surface);';
     newRow.setAttribute('onmouseover', "this.style.background=document.body.classList.contains('dark')?'rgba(255,255,255,0.05)':'#f8fafc'");
     newRow.setAttribute('onmouseout', "this.style.background=document.body.classList.contains('dark')?'var(--bg-card)':'white'");
     newRow.innerHTML =
@@ -23962,6 +23981,8 @@ function bulkPromote() {
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
       '<div><span style="font-size:12px;color:var(--text-sec);">—</span></div>' +
+      // Щойно підвищений вузол за визначенням чекінився — інакше ми б його не виявили.
+      '<div><span class="node-status" data-net="online">Online</span></div>' +
       NODE_SCAN_CELL('pending') +
       '<div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Queued</button></div>';
     if (managedTable) {
