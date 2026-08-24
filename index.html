@@ -2611,6 +2611,14 @@ body.dark .recon-seg { background:rgba(255,255,255,0.03); border-color:var(--bor
 body.dark .recon-seg .recon-node-chip { border-right-color:var(--border) !important; color:#94A3B8 !important; }
 body.dark .recon-seg .recon-node-chip[data-active="true"] { background:rgba(16,185,129,0.18) !important; color:#F8FAFC !important; }
 .recon-approval-comment-input::placeholder { color:#475569; }
+/* Match Guardian Nodes to ServiceNow CIs — info blocks, Figma 3447:65027 */
+.j4m-info { background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:12px 16px; display:flex; align-items:flex-start; gap:10px; }
+body.dark .j4m-info { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.12); }
+.j4m-sync-label { color:#065F46; }
+body.dark .j4m-sync-label { color:#059669; }
+.j4a-works-card { border:1px solid #E2E8F0; }
+body.dark .j4a-works-card { border-color:#04363A; background:rgba(255,255,255,0.05) !important; }
+body.dark .j4a-purple { color:#8347E0 !important; stroke:#8347E0 !important; }
 body.dark #recon-approval-comment,
 body.dark #recon-approval-reason { background:rgba(13,61,66,0.4) !important; }
 body.dark .recon-approval-comment-input::placeholder { color:rgba(150,166,189,0.6); }
@@ -21498,128 +21506,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
     </div>
 
-    <!-- J4-MATCH -->
-    <div class="view" id="v-j4-match" style="display: none;">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Match Guardian Nodes to ServiceNow CIs</div>
-          <div class="page-sub">Guardian found 47 nodes already in your CMDB — confirm the mapping to enable Change Reconciliation</div>
-        </div>
-        <button class="btn-secondary" style="width:auto;" onclick="this.textContent=&#39;Re-running…&#39;;setTimeout(()=&gt;this.textContent=&#39;Re-run Matching&#39;,1800)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-          Re-run Matching
-        </button>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
-
-        <!-- Post-sync success banner -->
-        <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.25);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <div style="flex:1;font-size:12px;color:#065f46;line-height:1.5;">
-            <strong>Sync complete</strong> · 47 CIs detected from ServiceNow (cmdb_ci_server, cmdb_ci_computer)
-          </div>
-          <span class="bdg bdg--green">Manual match available</span>
-        </div>
-
-        <!-- Info banner -->
-        <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <div style="font-size:12px;color:#5B21B6;line-height:1.5;">Guardian matched your monitored nodes to CIs in ServiceNow using hostname and IP. Change Requests for these nodes will be automatically reconciled once you confirm.</div>
-        </div>
-
-        <!-- Matched nodes table -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-          <div style="padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-size:13px;font-weight:700;color:var(--text-default);">Matched</span>
-              <span class="bdg bdg--green">44 nodes</span>
-            </div>
-            <span style="font-size:11px;color:var(--text-sec);">Matched by hostname · IP address</span>
-          </div>
-          <table class="data-table">
-            <thead><tr><th>GUARDIAN NODE</th><th>SERVICENOW CI</th><th>CI REFERENCE</th><th>CI CLASS</th><th>MATCH BASIS</th></tr></thead>
-            <tbody>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">web-prod-01</td>
-                <td style="font-size:12px;color:var(--text-default);">web-prod-01</td>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:11px;color:var(--text-sec);">CI0043221</td>
-                <td style="font-size:11px;color:var(--text-sec);">cmdb_ci_linux_server</td>
-                <td><span style="font-size:11px;color:#15803d;font-weight:600;">● Hostname</span></td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">web-prod-02</td>
-                <td style="font-size:12px;color:var(--text-default);">web-prod-02</td>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:11px;color:var(--text-sec);">CI0043222</td>
-                <td style="font-size:11px;color:var(--text-sec);">cmdb_ci_linux_server</td>
-                <td><span style="font-size:11px;color:#15803d;font-weight:600;">● Hostname</span></td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">api-server-01</td>
-                <td style="font-size:12px;color:var(--text-default);">api-server-01</td>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:11px;color:var(--text-sec);">CI0043289</td>
-                <td style="font-size:11px;color:var(--text-sec);">cmdb_ci_linux_server</td>
-                <td><span style="font-size:11px;color:#15803d;font-weight:600;">● Hostname</span></td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">ecs-cluster-prod</td>
-                <td style="font-size:12px;color:var(--text-default);">ecs-cluster-prod</td>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:11px;color:var(--text-sec);">CI0044012</td>
-                <td style="font-size:11px;color:var(--text-sec);">cmdb_ci_cluster</td>
-                <td><span style="font-size:11px;color:#15803d;font-weight:600;">● Hostname</span></td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">eks-prod</td>
-                <td style="font-size:12px;color:var(--text-default);">eks-prod-cluster</td>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:11px;color:var(--text-sec);">CI0044198</td>
-                <td style="font-size:11px;color:var(--text-sec);">cmdb_ci_cluster</td>
-                <td><span style="font-size:11px;color:#d97706;font-weight:600;">● IP address</span></td>
-              </tr>
-              <tr class="data-table-footer">
-                <td colspan="5" style="font-size:11px;color:var(--text-sec);text-align:center;padding:8px;background:var(--bg-canvas);">+ 39 more matched nodes</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Unmatched nodes -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:20px;">
-          <div style="padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-size:13px;font-weight:700;color:var(--text-default);">No CI match found</span>
-              <span class="bdg bdg--orange">3 nodes</span>
-            </div>
-            <span style="font-size:11px;color:var(--text-sec);">These nodes won't be linked to CRs until manually mapped</span>
-          </div>
-          <table class="data-table">
-            <thead><tr><th>GUARDIAN NODE</th><th>REASON</th><th>ACTION</th></tr></thead>
-            <tbody>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">db-replica-03</td>
-                <td style="font-size:11px;color:#c2410c;">No matching hostname or IP in CMDB</td>
-                <td><button style="background:none;border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--text-sec);padding:3px 10px;cursor:pointer;">Map manually</button></td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">cache-01</td>
-                <td style="font-size:11px;color:#c2410c;">Hostname mismatch (cache-01 vs redis-cache-01)</td>
-                <td><button style="background:none;border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--text-sec);padding:3px 10px;cursor:pointer;">Map manually</button></td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">monitor-agent-02</td>
-                <td style="font-size:11px;color:#c2410c;">CI exists but out of scope (decommissioned)</td>
-                <td><button style="background:none;border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--text-sec);padding:3px 10px;cursor:pointer;">Map manually</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Confirm button -->
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-          <div style="font-size:12px;color:var(--text-sec);">Unmatched nodes can be mapped later in Settings → Integrations</div>
-          <button class="btn-primary" style="width:auto;padding:12px 28px;" onclick="go(&#39;j4-active&#39;)">Confirm Mapping &amp; Enable Reconciliation →</button>
-        </div>
-
-      </div>
-    </div>
+    <!-- J4-MATCH — converted to modal, see openJ4MatchModal() (Figma 3447:65027) -->
 
     <!-- CMDB-CONNECT -->
     <!-- ═══════════════════════════════════════════════════
@@ -22298,148 +22185,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     </div><!-- /gm-overlay #csv-modal -->
 
     <!-- J4-SYNCING -->
-    <!-- J4-ACTIVE -->
-    <div class="view" id="v-j4-active" style="display: none;">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Change Reconciliation Active ✓</div>
-          <div class="page-sub">ServiceNow is syncing change requests automatically — reconciliation runs in the background</div>
-        </div>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
-
-        <!-- Live status bar -->
-        <div style="background:rgba(37,167,96,0.06);border:1px solid rgba(37,167,96,0.2);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:8px;height:8px;border-radius:50%;background:#00AF73;box-shadow:0 0 0 3px rgba(22,163,74,0.2);flex-shrink:0;"></div>
-            <span style="font-size:13px;font-weight:700;color:#15803d;">Auto-sync running</span>
-            <span style="font-size:12px;color:var(--text-sec);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">· company.service-now.com · Every 15 min</span>
-          </div>
-          <span style="font-size:11px;color:var(--text-sec);">Last sync: 2 min ago · 47 CRs tracked</span>
-        </div>
-
-        <!-- How it works timeline -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;box-shadow:var(--shadow-sm);margin-bottom:20px;">
-          <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:18px;">How automated reconciliation works</div>
-          <!-- Step 1 done -->
-          <div style="display:flex;gap:14px;">
-            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-              <div style="width:28px;height:28px;border-radius:50%;background:#00AF73;display:flex;align-items:center;justify-content:center;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              <div style="width:2px;background:var(--border);flex:1;min-height:20px;margin:4px 0;"></div>
-            </div>
-            <div style="padding-bottom:18px;">
-              <div style="font-size:12px;font-weight:700;color:var(--text-default);">CRs sync automatically from ServiceNow</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:3px;">Every 15 minutes · All open change requests pulled · Matched to Guardian nodes via CMDB CI&nbsp;ID</div>
-            </div>
-          </div>
-          <!-- Step 2 in-progress -->
-          <div style="display:flex;gap:14px;">
-            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-              <div style="width:28px;height:28px;border-radius:50%;background:rgba(37,167,96,0.08);border:2px solid var(--green2);display:flex;align-items:center;justify-content:center;">
-                <div class="spin-icon" style="width:10px;height:10px;border-width:2px;border-color:var(--green2);border-top-color:transparent;"></div>
-              </div>
-              <div style="width:2px;background:var(--border);flex:1;min-height:20px;margin:4px 0;"></div>
-            </div>
-            <div style="padding-bottom:18px;">
-              <div style="font-size:12px;font-weight:700;color:var(--text-default);">Guardian captures scans before &amp; after change windows</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:3px;">Baseline snapshot before window opens · Post-change scan when window closes · Requires time to complete</div>
-            </div>
-          </div>
-          <!-- Step 3 pending -->
-          <div style="display:flex;gap:14px;">
-            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-              <div style="width:28px;height:28px;border-radius:50%;background:var(--bg-page);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-sec);">3</div>
-              <div style="width:2px;background:var(--border);flex:1;min-height:20px;margin:4px 0;"></div>
-            </div>
-            <div style="padding-bottom:18px;">
-              <div style="font-size:12px;font-weight:700;color:var(--text-default);">Change lifecycle completes in ServiceNow</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:3px;">Approval, implementation, review &amp; closure · This phase may take hours or days depending on your process</div>
-            </div>
-          </div>
-          <!-- Step 4 pending -->
-          <div style="display:flex;gap:14px;">
-            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-              <div style="width:28px;height:28px;border-radius:50%;background:var(--bg-page);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-sec);">4</div>
-            </div>
-            <div>
-              <div style="font-size:12px;font-weight:700;color:var(--text-default);">Reconciliation results appear in Changes tab</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:3px;">Guardian auto-reconciles each CR · Matched, partial or unmatched · Full audit trail logged</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Currently tracked CRs -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-          <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span style="font-size:12px;font-weight:700;color:var(--text-default);">Currently Tracked CRs <span style="font-weight:400;color:var(--text-sec);">(47 synced)</span></span>
-              <span class="bdg bdg--green">Future CRs only</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;font-size:11px;color:var(--text-sec);">
-              <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00AF73;margin-right:4px;"></span>Matched = all linked nodes in Guardian</span>
-              <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#d97706;margin-right:4px;"></span>Partial = some nodes missing</span>
-            </div>
-          </div>
-          <div style="padding:8px 16px;background:#f8fffe;border-bottom:1px solid var(--border);font-size:11px;color:#15803d;">
-            Only CRs with a planned start <strong>after reconciliation was enabled</strong> are tracked. Past/retroactive changes are excluded.
-          </div>
-          <table class="data-table">
-            <thead><tr><th>CR NUMBER</th><th>TITLE</th><th>GUARDIAN NODES</th><th>STATUS</th><th>CHANGE WINDOW</th></tr></thead>
-            <tbody>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">CHG0012345</td>
-                <td style="font-size:12px;color:var(--text-default);">Kernel update — web-prod-01</td>
-                <td style="font-size:11px;font-family:&#39;DM Sans&#39;,sans-serif;color:var(--text-default);">web-prod-01, web-prod-02</td>
-                <td><span style="font-size:11px;color:#00AF73;font-weight:600;">● Matched</span></td>
-                <td style="font-size:11px;color:var(--text-sec);">Tomorrow 02:00–04:00</td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">CHG0012346</td>
-                <td style="font-size:12px;color:var(--text-default);">SSL cert renewal</td>
-                <td style="font-size:11px;font-family:&#39;DM Sans&#39;,sans-serif;color:var(--text-default);">api-server-01</td>
-                <td><span style="font-size:11px;color:#00AF73;font-weight:600;">● Matched</span></td>
-                <td style="font-size:11px;color:var(--text-sec);">Tomorrow 03:00–05:00</td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">CHG0012347</td>
-                <td style="font-size:12px;color:var(--text-default);">Security patch</td>
-                <td style="font-size:11px;font-family:&#39;DM Sans&#39;,sans-serif;color:var(--text-default);">ecs-cluster-prod</td>
-                <td><span style="font-size:11px;color:#00AF73;font-weight:600;">● Matched</span></td>
-                <td style="font-size:11px;color:var(--text-sec);">Thu 22:00–23:00</td>
-              </tr>
-              <tr>
-                <td style="font-family:&#39;DM Sans&#39;,sans-serif;font-size:12px;font-weight:600;color:var(--text-default);">CHG0012348</td>
-                <td style="font-size:12px;color:var(--text-default);">Config change — eks-prod</td>
-                <td style="font-size:11px;font-family:&#39;DM Sans&#39;,sans-serif;color:var(--text-default);">eks-prod, eks-staging</td>
-                <td><span style="font-size:11px;color:#d97706;font-weight:600;">● Partial</span></td>
-                <td style="font-size:11px;color:var(--text-sec);">Fri 01:00–02:00</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Auto recon on/off + misreconciliation warning -->
-        <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <div style="font-size:11px;color:#92400e;">
-            <strong>Automated reconciliation is on/off — you cannot select individual changes.</strong>
-            <span style="display:block;margin-top:4px;color:#78350f;">Be aware that a change may be auto-reconciled against a CR even if the actual change that occurred does not match what the CR describes — for example, if a node was listed in the CR but the specific change was unrelated. Review flagged items in the Detected Drift tab to catch mismatches.</span>
-          </div>
-        </div>
-
-        <!-- Manual recon note -->
-        <div style="background:rgba(139,92,246,0.04);border:1px solid rgba(139,92,246,0.15);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <div style="font-size:11px;color:#5b21b6;"><strong>Manual reconciliation</strong> is also available from the Detected Drift tab for immediate results or when automated integration is not active.</div>
-        </div>
-
-        <div style="display:flex;justify-content:flex-end;">
-          <button class="btn-primary" style="width:auto;padding:12px 28px;" onclick="showView(&#39;changes&#39;)">Go to Detected Drift →</button>
-        </div>
-      </div>
-    </div>
+    <!-- J4-ACTIVE — converted to modal, see openJ4ActiveModal() (Figma 3437:63731) -->
 
     <!-- J4-SUMMARY -->
     <div class="view" id="v-j4-summary" style="display: none;">
@@ -22947,6 +22693,8 @@ function j3ResultsBack() { go('j3-scan-complete'); }
 function go(key) {
   if (key && key.indexOf('cmdb-') === 0) { cmdbShowPanel(key); return; }
   if (key && key.indexOf('csv-') === 0) { csvShowPanel(key); return; }
+  if (key === 'j4-match') { openJ4MatchModal(); return; }
+  if (key === 'j4-active') { openJ4ActiveModal(); return; }
   hideAuth();
   const isJ3Onboarding = ['j3-connect','j3-connecting','j3-connected','j3-connect-failed','j3-syncing','j3-inventory','j3-scan-config','j3-scanning','j3-scan-complete','j3-results'].includes(key);
   const isJ4Onboarding = ['j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match'].includes(key);
@@ -25667,6 +25415,182 @@ function j4SyncRender() {
       '</div>' +
     '</div>';
   }).join('');
+}
+
+// ── Match Guardian Nodes to ServiceNow CIs — modal, Figma 3447:65027 ──
+function _j4mInfoBlock(icon, html) {
+  return '<div class="j4m-info">'
+    + '<div style="flex-shrink:0;margin-top:1px;">' + icon + '</div>'
+    + '<div style="flex:1;min-width:0;">' + html + '</div>'
+    + '</div>';
+}
+function _j4mMatchedRow(node, ciRef, ciClass, basis, basisColor) {
+  return '<tr>'
+    + '<td style="font-size:12px;font-weight:600;color:var(--text-default);">' + node + '</td>'
+    + '<td style="font-size:11px;color:var(--text-sec);">' + ciRef + '</td>'
+    + '<td style="font-size:11px;color:var(--text-sec);">' + ciClass + '</td>'
+    + '<td><span class="bdg bdg--dot bdg--' + basisColor + '">' + basis + '</span></td>'
+    + '</tr>';
+}
+function _j4mUnmatchedRow(node, reason) {
+  return '<tr>'
+    + '<td style="font-size:12px;font-weight:600;color:var(--text-default);">' + node + '</td>'
+    + '<td style="font-size:11px;color:#B86410;">' + reason + '</td>'
+    + '<td><button type="button" class="bdg bdg--gray" style="cursor:pointer;">Map manually</button></td>'
+    + '</tr>';
+}
+function j4mBodyHtml() {
+  var okIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var infoIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+  var html = '';
+  html += _j4mInfoBlock(okIcon,
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
+      + '<span class="j4m-sync-label" style="font-size:12px;font-weight:700;">Sync complete</span>'
+      + '<span class="bdg bdg--dot bdg--green">Manual match available</span>'
+    + '</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);margin-top:4px;">47 CIs detected from ServiceNow (cmdb_ci_server, cmdb_ci_computer)</div>'
+  );
+  html += '<div style="height:8px;"></div>';
+  html += _j4mInfoBlock(infoIcon,
+    '<div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Guardian matched your monitored nodes to CIs in ServiceNow using hostname and IP. Change Requests for these nodes will be automatically reconciled once you confirm.</div>'
+  );
+  html += '<div style="height:20px;"></div>';
+  html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'
+    + '<span style="font-size:14px;font-weight:700;color:var(--text-default);">Matched</span>'
+    + '<span class="bdg bdg--dot bdg--green">44 nodes</span>'
+    + '</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Matched by hostname · IP address</div>';
+  html += '<div style="margin-top:12px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">'
+    + '<table class="data-table" style="font-size:12px;">'
+    + '<thead><tr><th style="width:142px;white-space:nowrap;">GUARDIAN NODE</th><th style="width:102px;white-space:nowrap;">CI REFERENCE</th><th style="width:195px;white-space:nowrap;">CI CLASS</th><th style="width:112px;white-space:nowrap;">MATCH BASIS</th></tr></thead>'
+    + '<tbody>'
+    + _j4mMatchedRow('web-prod-01', 'CI0043221', 'cmdb_ci_linux_server', 'Hostname', 'green')
+    + _j4mMatchedRow('web-prod-02', 'CI0043222', 'cmdb_ci_linux_server', 'Hostname', 'green')
+    + _j4mMatchedRow('api-server-01', 'CI0043289', 'cmdb_ci_linux_server', 'Hostname', 'green')
+    + _j4mMatchedRow('ecs-cluster-prod', 'CI0044012', 'cmdb_ci_cluster', 'Hostname', 'green')
+    + _j4mMatchedRow('eks-prod', 'CI0044198', 'cmdb_ci_cluster', 'IP address', 'orange')
+    + '<tr class="data-table-footer"><td colspan="4" style="text-align:center;font-size:11px;color:var(--text-sec);">+ 39 more matched nodes</td></tr>'
+    + '</tbody></table></div>';
+  html += '<div style="height:20px;"></div>';
+  html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'
+    + '<span style="font-size:14px;font-weight:700;color:var(--text-default);">No CI match found</span>'
+    + '<span class="bdg bdg--dot bdg--green">3 nodes</span>'
+    + '</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;">These nodes won\'t be linked to CRs until manually mapped</div>';
+  html += '<div style="margin-top:12px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">'
+    + '<table class="data-table" style="font-size:12px;">'
+    + '<thead><tr><th style="width:117px;white-space:nowrap;">GUARDIAN NODE</th><th style="width:314px;white-space:nowrap;">REASON</th><th style="width:120px;white-space:nowrap;">ACTION</th></tr></thead>'
+    + '<tbody>'
+    + _j4mUnmatchedRow('db-replica-03', 'No matching hostname or IP in CMDB')
+    + _j4mUnmatchedRow('cache-01', 'Hostname mismatch (cache-01 vs redis-cache-01)')
+    + _j4mUnmatchedRow('monitor-agent-02', 'CI exists but out of scope (decommissioned)')
+    + '</tbody></table></div>';
+  html += '<div style="margin-top:14px;text-align:center;font-size:10px;color:var(--text-sec);">Unmatched nodes can be mapped later in Settings → Integrations</div>';
+  return html;
+}
+function openJ4MatchModal() {
+  openModal({
+    id: 'j4-match-modal',
+    size: 'lg',
+    title: 'Match Guardian Nodes to ServiceNow CIs',
+    subtitle: 'Guardian found 47 nodes already in your CMDB — confirm the mapping to enable Change Reconciliation',
+    steps: [ { label: 'Match Nodes' }, { label: 'Recon Active' } ],
+    bodyHtml: j4mBodyHtml(),
+    buttons: [
+      { label: 'Confirm Mapping & Enable Reconciliation', kind: 'primary', onClick: function() {
+        closeModal('j4-match-modal');
+        go('j4-active');
+      } }
+    ]
+  });
+}
+
+// ── Change Reconciliation Active — modal, Figma 3437:63731 ──
+function _j4aStep(state, label, sub, isLast) {
+  var icon;
+  if (state === 'done') icon = '<div style="width:28px;height:28px;border-radius:50%;background:#00AF73;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>';
+  else if (state === 'active') icon = '<div style="width:28px;height:28px;border-radius:50%;background:rgba(37,167,96,0.08);border:2px solid #059669;display:flex;align-items:center;justify-content:center;"><div class="spin-icon" style="width:10px;height:10px;border-width:2px;border-color:#059669;border-top-color:transparent;"></div></div>';
+  else icon = '<div style="width:28px;height:28px;border-radius:50%;background:#F8FAFC;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-sec);">' + state + '</div>';
+  return '<div style="display:flex;gap:14px;">'
+    + '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">' + icon
+    + (isLast ? '' : '<div style="width:2px;background:var(--border);flex:1;min-height:20px;margin:4px 0;"></div>')
+    + '</div>'
+    + '<div style="padding-bottom:' + (isLast ? '0' : '18px') + ';">'
+      + '<div style="font-size:12px;font-weight:700;color:var(--text-default);">' + label + '</div>'
+      + '<div style="font-size:11px;color:var(--text-sec);margin-top:3px;">' + sub + '</div>'
+    + '</div>'
+  + '</div>';
+}
+function _j4aCrRow(cr, title, ratio, ratioColor, window) {
+  return '<tr>'
+    + '<td style="font-size:12px;font-weight:600;color:var(--text-default);">' + cr + '</td>'
+    + '<td style="font-size:12px;color:var(--text-default);">' + title + '</td>'
+    + '<td><span class="bdg bdg--dot bdg--' + ratioColor + '">' + ratio + '</span></td>'
+    + '<td style="font-size:11px;color:var(--text-sec);">' + window + '</td>'
+    + '</tr>';
+}
+function j4aBodyHtml() {
+  var syncIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var warnIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B86410" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+  var infoIcon = '<svg class="j4a-purple" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5B21B6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+  var html = '';
+  html += _j4mInfoBlock(syncIcon,
+    '<span style="font-size:13px;font-weight:700;color:#15803D;">Auto-sync running</span>'
+    + '<span style="font-size:12px;color:var(--text-sec);"> · company.service-now.com · Every 15 min</span>'
+  );
+  html += '<div class="j4a-works-card" style="margin-top:20px;background:#F8FAFC;border-radius:14px;padding:20px 24px;">'
+    + '<div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:18px;">How automated reconciliation works</div>'
+    + _j4aStep('done', 'CRs sync automatically from ServiceNow', 'Every 15 minutes · All open change requests pulled · Matched to Guardian nodes via CMDB CI&nbsp;ID')
+    + _j4aStep('active', 'Guardian captures scans before &amp; after change windows', 'Baseline snapshot before window opens · Post-change scan when window closes · Requires time to complete')
+    + _j4aStep('3', 'Change lifecycle completes in ServiceNow', 'Approval, implementation, review &amp; closure · This phase may take hours or days depending on your process')
+    + _j4aStep('4', 'Reconciliation results appear in Changes tab', 'Guardian auto-reconciles each CR · Matched, partial or unmatched · Full audit trail logged', true)
+  + '</div>';
+  html += '<div style="margin-top:20px;border:1px solid var(--border);border-radius:14px;overflow:hidden;">'
+    + '<div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">'
+      + '<span style="font-size:12px;font-weight:700;color:var(--text-default);">Currently Tracked CRs <span style="font-weight:400;color:var(--text-sec);">(47 synced)</span></span>'
+      + '<span class="bdg bdg--dot bdg--green">Future CRs only</span>'
+    + '</div>'
+    + '<div style="padding:8px 16px;border-bottom:1px solid var(--border);font-size:11px;color:#15803D;">Only CRs with a planned start <strong>after reconciliation was enabled</strong> are tracked. Past/retroactive changes are excluded.</div>'
+    + '<table class="data-table" style="font-size:12px;">'
+    + '<thead><tr><th style="white-space:nowrap;">CR NUMBER</th><th style="white-space:nowrap;">TITLE</th><th style="white-space:nowrap;">STATUS <span title="Matched = all linked nodes in Guardian · Partial = some nodes missing" style="cursor:help;color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:normal;">ⓘ</span></th><th style="white-space:nowrap;">CHANGE WINDOW</th></tr></thead>'
+    + '<tbody>'
+    + _j4aCrRow('CHG0012345', 'Kernel update', '2/2 nodes', 'green', 'Tomorrow 02:00–04:00')
+    + _j4aCrRow('CHG0012346', 'SSL cert renewal', '2/2 nodes', 'green', 'Tomorrow 03:00–05:00')
+    + _j4aCrRow('CHG0012347', 'Security patch', '2/2 nodes', 'green', 'Thu 22:00–23:00')
+    + _j4aCrRow('CHG0012348', 'Config change', '1/2 nodes', 'orange', 'Fri 01:00–02:00')
+    + '</tbody></table></div>';
+  html += '<div style="height:8px;"></div>';
+  html += _j4mInfoBlock(warnIcon,
+    '<span style="font-size:12px;font-weight:700;color:#B86410;">Automated reconciliation is on/off — you cannot select individual changes.</span>'
+    + '<div style="font-size:12px;color:var(--text-sec);margin-top:4px;">Be aware that a change may be auto-reconciled against a CR even if the actual change that occurred does not match what the CR describes — for example, if a node was listed in the CR but the specific change was unrelated. Review flagged items in the Detected Drift tab to catch mismatches.</div>'
+  );
+  html += '<div style="height:8px;"></div>';
+  html += _j4mInfoBlock(infoIcon,
+    '<span class="j4a-purple" style="font-size:12px;font-weight:700;color:#5B21B6;">Manual reconciliation</span>'
+    + '<span style="font-size:12px;color:var(--text-sec);"> is also available from the Detected Drift tab for immediate results or when automated integration is not active.</span>'
+  );
+  return html;
+}
+function openJ4ActiveModal() {
+  openModal({
+    id: 'j4-active-modal',
+    size: 'lg',
+    title: 'Change Reconciliation Active',
+    subtitle: 'ServiceNow is syncing change requests automatically — reconciliation runs in the background',
+    steps: [ { label: 'Match Nodes' }, { label: 'Recon Active' } ],
+    bodyHtml: j4aBodyHtml(),
+    backButton: { label: 'Back', onClick: function(e, close) {
+      close();
+      openJ4MatchModal();
+    } },
+    buttons: [
+      { label: 'Done', kind: 'primary', onClick: function() {
+        closeModal('j4-active-modal');
+        showView('changes');
+      } }
+    ],
+    afterMount: function(ov) { gmGoStep('j4-active-modal', 1); }
+  });
 }
 
 document.addEventListener('click', function(e) {
