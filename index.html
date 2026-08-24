@@ -575,7 +575,8 @@ body.dark .intg-logo svg path[fill="#4D4D4D"] { fill:#e6e9ef; }
 .es-ico svg { width:20px; height:20px; stroke:var(--text-muted); }
 .es-title { font-size:14px; font-weight:600; color:var(--text-default); margin-bottom:4px; }
 .es-sub { font-size:12px; color:var(--text-muted); line-height:1.5; }
-.es-act { margin-top:16px; }
+/* Кнопки DS — display:flex, тому text-align:center із .es не центрує їх. */
+.es-act { margin-top:16px; display:flex; justify-content:center; }
 .es-sm { padding:24px 12px; }
 
 /* Only icon — canonical sixth button type, DS §6.5 (Figma 3204:13731). The only NEUTRAL type:
@@ -2355,9 +2356,17 @@ body.dark .action-row:hover { background:#012F32; border-color:rgba(255,255,255,
 .policy-card > div:nth-child(2) > div:nth-child(2) > div:last-child { margin-bottom:0 !important; }
 .policy-card:hover { background:var(--bg-surface) !important; border-color:var(--border-strong) !important; box-shadow:var(--shadow-sm) !important; transform:translateY(-1px); opacity:1 !important; }
 body.dark .policy-card:hover { background:#012F32 !important; border-color:rgba(255,255,255,0.18) !important; }
-.policy-card[data-pol-type="archived"] { background:#FAFAFA; }
-body.dark .policy-card[data-pol-type="archived"] { background:var(--bg-surface); }
-.policy-card[data-pol-type="archived"]:hover { opacity:.75 !important; }
+/* !important і дубль із :hover — бо картка несе інлайновий background:var(--bg-surface),
+   а базовий .policy-card:hover теж б'є !important; без цього заархівована з меню картка
+   лишалась білою, а та, що прийшла архівною з розмітки (без інлайну), сіріла. */
+.policy-card[data-pol-type="archived"],
+.policy-card[data-pol-type="archived"]:hover { background:#FAFAFA !important; opacity:.75 !important; }
+body.dark .policy-card[data-pol-type="archived"],
+body.dark .policy-card[data-pol-type="archived"]:hover { background:var(--bg-surface) !important; }
+/* Приглушення чіпляється за сам атрибут, щоб картка, заархівована з меню, виглядала
+   так само, як та, що прийшла архівною з розмітки. Смуга акценту з'являється лише на
+   hover (канон вище) — архівній вона стає сірою, бо зелений читався б як «активна». */
+.policy-card[data-pol-type="archived"]:hover > div:first-child { background:var(--text-muted) !important; }
 /* Policies actions — canonical DS §6.5 "Only icon" (.btn-icon) row utilities: View · Edit · More.
    The button never repeats the surface under it: on the white card the fill drops to the canvas
    grey, on the page canvas it stays white (the base rule). Dark needs no pair — the base
@@ -3505,7 +3514,10 @@ body.dark [onclick^="peToggleSec"] { border-bottom-color: rgba(255,255,255,0.12)
 /* Policy-edit check rows — make dividers visible in dark mode */
 body.dark [style*="grid-template-columns:16px 20px 1fr 148px"] { border-bottom-color: rgba(255,255,255,0.08) !important; }
 body.dark .policy-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
-body.dark .policy-menu > div { color: #C0C0C0 !important; }
+/* Нейтральний колір — усім пунктам, КРІМ деструктивного: інакше Delete втрачав червоний
+   і читався як звичайна дія. Дублює канон темного danger (.node-scan[data-state="failed"]). */
+body.dark .policy-menu > div:not([onclick^="policyDelete"]) { color: #C0C0C0 !important; }
+body.dark .policy-menu > div[onclick^="policyDelete"] { color: #FF4646 !important; }
 /* ── Connection Managers list ── */
 .stat-mini { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 18px; position:relative; overflow:hidden; transition:box-shadow .15s,border-color .15s; box-shadow:0 1px 2px rgba(15,23,42,0.04); }
 .stat-mini:hover { box-shadow:0 2px 8px rgba(15,23,42,0.08); }
@@ -10037,8 +10049,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="position:relative;">
                   <button class="btn-icon" aria-label="More actions" title="More actions" onclick="togglePolicyMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></button>
                   <div class="policy-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:140px;z-index:200;overflow:hidden;">
-                    <div onclick="showToast(&#39;Policy duplicated&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
-                    <div onclick="showToast(&#39;Policy archived&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
+                    <div onclick="policyDuplicate(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
+                    <div onclick="policyArchive(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
                     <div style="height:1px;background:var(--border);margin:2px 0;"></div>
                     <div onclick="policyDelete(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:#FB3C44;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(251,60,68,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>Delete</div>
                   </div>
@@ -10067,8 +10079,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="position:relative;">
                   <button class="btn-icon" aria-label="More actions" title="More actions" onclick="togglePolicyMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></button>
                   <div class="policy-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:140px;z-index:200;overflow:hidden;">
-                    <div onclick="showToast(&#39;Policy duplicated&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
-                    <div onclick="showToast(&#39;Policy archived&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
+                    <div onclick="policyDuplicate(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
+                    <div onclick="policyArchive(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
                     <div style="height:1px;background:var(--border);margin:2px 0;"></div>
                     <div onclick="policyDelete(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:#FB3C44;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(251,60,68,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>Delete</div>
                   </div>
@@ -10097,8 +10109,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="position:relative;">
                   <button class="btn-icon" aria-label="More actions" title="More actions" onclick="togglePolicyMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></button>
                   <div class="policy-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:140px;z-index:200;overflow:hidden;">
-                    <div onclick="showToast(&#39;Policy duplicated&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
-                    <div onclick="showToast(&#39;Policy archived&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
+                    <div onclick="policyDuplicate(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
+                    <div onclick="policyArchive(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
                     <div style="height:1px;background:var(--border);margin:2px 0;"></div>
                     <div onclick="policyDelete(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:#FB3C44;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(251,60,68,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>Delete</div>
                   </div>
@@ -10127,8 +10139,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="position:relative;">
                   <button class="btn-icon" aria-label="More actions" title="More actions" onclick="togglePolicyMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></button>
                   <div class="policy-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:140px;z-index:200;overflow:hidden;">
-                    <div onclick="showToast(&#39;Policy duplicated&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
-                    <div onclick="showToast(&#39;Policy archived&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
+                    <div onclick="policyDuplicate(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
+                    <div onclick="policyArchive(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
                     <div style="height:1px;background:var(--border);margin:2px 0;"></div>
                     <div onclick="policyDelete(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:#FB3C44;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(251,60,68,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>Delete</div>
                   </div>
@@ -10157,8 +10169,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div style="position:relative;">
                   <button class="btn-icon" aria-label="More actions" title="More actions" onclick="togglePolicyMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></button>
                   <div class="policy-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:140px;z-index:200;overflow:hidden;">
-                    <div onclick="showToast(&#39;Policy duplicated&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
-                    <div onclick="showToast(&#39;Policy archived&#39;);this.closest(&#39;.policy-menu&#39;).style.display=&#39;none&#39;" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
+                    <div onclick="policyDuplicate(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
+                    <div onclick="policyArchive(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archive</div>
                     <div style="height:1px;background:var(--border);margin:2px 0;"></div>
                     <div onclick="policyDelete(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:#FB3C44;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(251,60,68,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>Delete</div>
                   </div>
@@ -10167,24 +10179,36 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
           </div>
 
-          <!-- Policy card 6: CIS Ubuntu 22.04 (not assigned / archived look) -->
-          <div data-pol-type="archived" data-tags="Security Config Monitoring" class="policy-card" style="--policy-accent:var(--text-muted);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);opacity:0.75;cursor:pointer;" onclick="if(!event.target.closest(&#39;button,.policy-menu&#39;))showPolicyDetail(&#39;cis_ubuntu&#39;)">
-            <div style="width:4px;background:var(--text-muted);flex-shrink:0;"></div>
+          <!-- Policy card 6: CIS Ubuntu 22.04 (archived). Приглушення дає САМ атрибут
+               data-pol-type="archived" (CSS вище), а не зашиті інлайном сірі кольори —
+               інакше Restore не повертав би картку до нормального вигляду, а сусідня
+               картка, заархівована з меню, виглядала б інакше. data-pol-prev-type каже,
+               куди її повертати. -->
+          <div data-pol-type="archived" data-pol-prev-type="cis" data-tags="Security Config Monitoring" class="policy-card" style="--policy-accent:#d97706;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="if(!event.target.closest(&#39;button,.policy-menu&#39;))showPolicyDetail(&#39;cis_ubuntu&#39;)">
+            <div style="width:4px;background:#d97706;flex-shrink:0;"></div>
             <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:0;">
-              <div class="action-ico" style="color:var(--text-muted);"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
+              <div class="action-ico action-ico--compliance"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
               <div style="flex:1;min-width:0;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;min-width:0;"><div style="font-size:13px;font-weight:700;color:var(--p-neutral-400);">CIS Ubuntu 22.04 LTS Benchmark</div><span class="type-pill type-pill--polarchived">Compliance Policy</span></div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;min-width:0;"><div style="font-size:13px;font-weight:700;color:var(--text-default);">CIS Ubuntu 22.04 LTS Benchmark</div><span class="type-pill type-pill--compliance">Compliance Policy</span></div>
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;min-width:0;">
-                  <span style="font-size:12px;color:#b0bec5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">CIS security baseline for Ubuntu Linux 22.04 LTS — kernel hardening, SSH, firewall, and user account controls.</span>
+                  <span style="font-size:12px;color:var(--text-sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">CIS security baseline for Ubuntu Linux 22.04 LTS — kernel hardening, SSH, firewall, and user account controls.</span>
                 </div>              </div>
               <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:11px;color:#b0bec5;margin-bottom:3px;">Applied to 0 nodes</div>
-                <div style="font-size:12px;font-weight:600;color:var(--p-neutral-400);">Not assigned</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;">Applied to 0 nodes</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text-muted);">Not assigned</div>
               </div>
               <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                <button onclick="showPolicyDetail(&#39;cis_ubuntu&#39;)" class="btn-icon" aria-label="View" title="View" style="opacity:0.6;"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor"><path d="M14.3614 7.36203C14.564 7.64603 14.6654 7.7887 14.6654 7.9987C14.6654 8.20936 14.564 8.35136 14.3614 8.63536C13.4507 9.9127 11.1247 12.6654 7.9987 12.6654C4.87203 12.6654 2.5467 9.91203 1.63603 8.63536C1.43336 8.35136 1.33203 8.2087 1.33203 7.9987C1.33203 7.78803 1.43336 7.64603 1.63603 7.36203C2.5467 6.0847 4.8727 3.33203 7.9987 3.33203C11.1254 3.33203 13.4507 6.08536 14.3614 7.36203Z"/><path d="M9.99922 7.99844C9.99922 7.468 9.78851 6.9593 9.41343 6.58422C9.03836 6.20915 8.52965 5.99844 7.99922 5.99844C7.46879 5.99844 6.96008 6.20915 6.585 6.58422C6.20993 6.9593 5.99922 7.468 5.99922 7.99844C5.99922 8.52887 6.20993 9.03758 6.585 9.41265C6.96008 9.78772 7.46879 9.99844 7.99922 9.99844C8.52965 9.99844 9.03836 9.78772 9.41343 9.41265C9.78851 9.03758 9.99922 8.52887 9.99922 7.99844Z"/></svg></button>
-                <button onclick="showView(&#39;policy-edit&#39;)" class="btn-icon" aria-label="Edit" title="Edit" style="opacity:0.6;"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"/></svg></button>
-                <button class="btn-icon" aria-label="More actions" title="More actions" style="opacity:0.6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></button>
+                <button onclick="showPolicyDetail(&#39;cis_ubuntu&#39;)" class="btn-icon" aria-label="View" title="View"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor"><path d="M14.3614 7.36203C14.564 7.64603 14.6654 7.7887 14.6654 7.9987C14.6654 8.20936 14.564 8.35136 14.3614 8.63536C13.4507 9.9127 11.1247 12.6654 7.9987 12.6654C4.87203 12.6654 2.5467 9.91203 1.63603 8.63536C1.43336 8.35136 1.33203 8.2087 1.33203 7.9987C1.33203 7.78803 1.43336 7.64603 1.63603 7.36203C2.5467 6.0847 4.8727 3.33203 7.9987 3.33203C11.1254 3.33203 13.4507 6.08536 14.3614 7.36203Z"/><path d="M9.99922 7.99844C9.99922 7.468 9.78851 6.9593 9.41343 6.58422C9.03836 6.20915 8.52965 5.99844 7.99922 5.99844C7.46879 5.99844 6.96008 6.20915 6.585 6.58422C6.20993 6.9593 5.99922 7.468 5.99922 7.99844C5.99922 8.52887 6.20993 9.03758 6.585 9.41265C6.96008 9.78772 7.46879 9.99844 7.99922 9.99844C8.52965 9.99844 9.03836 9.78772 9.41343 9.41265C9.78851 9.03758 9.99922 8.52887 9.99922 7.99844Z"/></svg></button>
+                <button onclick="showView(&#39;policy-edit&#39;)" class="btn-icon" aria-label="Edit" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"/></svg></button>
+                <div style="position:relative;">
+                  <button class="btn-icon" aria-label="More actions" title="More actions" onclick="togglePolicyMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></button>
+                  <div class="policy-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.35);min-width:140px;z-index:200;overflow:hidden;">
+                    <div onclick="policyDuplicate(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Duplicate</div>
+                    <div onclick="policyRestore(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(0,175,115,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Restore</div>
+                    <div style="height:1px;background:var(--border);margin:2px 0;"></div>
+                    <div onclick="policyDelete(this)" style="padding:9px 14px;font-size:12px;cursor:pointer;color:#FB3C44;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background=&#39;rgba(251,60,68,0.08)&#39;" onmouseout="this.style.background=&#39;&#39;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>Delete</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -11405,45 +11429,81 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         card.style.display = show ? 'flex' : 'none';
         if (show) anyVisible = true;
       });
+      polRenderEmpty();
+    }
+
+    // Порожній стан малює ОДНА функція на всі три фільтри (вкладка · пошук · тег).
+    // Раніше polSetTab і filterPoliciesBySearch писали різний текст у той самий вузол,
+    // а polFilterByTag не малював нічого — список міг спорожніти без жодного пояснення.
+    var POL_EMPTY = {
+      all:      { t:'No policies yet',         s:'Create a policy to start checking nodes against a baseline.', cta:1 },
+      cis:      { t:'No compliance policies',  s:'Compliance policies start from an industry benchmark template.', cta:1 },
+      custom:   { t:'No custom policies',      s:'A custom policy checks the settings your own baseline cares about.', cta:1 },
+      archived: { t:'No archived policies',    s:'Policies you archive stay here until you restore or delete them.', cta:0 }
+    };
+    var POL_ES_ICO_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
+    var POL_ES_ICO_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>';
+
+    function polActiveTabKey() {
+      var tab = document.querySelector('#v-policies .pol-tab-active');
+      var m = tab && (tab.getAttribute('onclick') || '').match(/polSetTab\('([^']+)'/);
+      return m ? m[1] : 'all';
+    }
+
+    function polResetFilters() {
+      var input = document.getElementById('pol-search');
+      if (input) input.value = '';
+      _polActiveSearch = '';
+      polFilterByTag('');
+    }
+
+    function polRenderEmpty() {
       var empty = document.getElementById('pol-search-empty');
       if (!empty) {
         empty = document.createElement('div');
         empty.id = 'pol-search-empty';
-        empty.style.cssText = 'padding:40px;text-align:center;color:var(--text-sec);font-size:13px;';
+        empty.className = 'es';
         var list = document.querySelector('#v-policies [data-pol-type]');
         if (list) list.parentElement.appendChild(empty);
+        else return;
       }
-      empty.textContent = 'No policies match';
+      var anyVisible = Array.prototype.some.call(
+        document.querySelectorAll('#v-policies [data-pol-type]'),
+        function(card) { return card.style.display !== 'none'; }
+      );
       empty.style.display = anyVisible ? 'none' : 'block';
+      if (anyVisible) return;
+
+      // Дві причини порожнечі — два різні виходи: фільтр можна скинути, порожню
+      // вкладку скидати нічим, тому там пояснення + CTA (а в Archived і CTA немає,
+      // бо «створити архівний поліс» неможливо).
+      var filtered = !!_polActiveSearch || !!_polActiveTag;
+      if (filtered) {
+        empty.innerHTML =
+          '<div class="es-ico">' + POL_ES_ICO_SEARCH + '</div>' +
+          '<div class="es-title">No policies match</div>' +
+          '<div class="es-sub">Try a shorter term or clear the tag filter.</div>' +
+          '<div class="es-act"><button class="btn-outline" style="width:auto;padding:0 14px;" onclick="polResetFilters()">Reset filters</button></div>';
+        return;
+      }
+      var v = POL_EMPTY[polActiveTabKey()] || POL_EMPTY.all;
+      empty.innerHTML =
+        '<div class="es-ico">' + POL_ES_ICO_SHIELD + '</div>' +
+        '<div class="es-title">' + v.t + '</div>' +
+        '<div class="es-sub">' + v.s + '</div>' +
+        (v.cta ? '<div class="es-act"><button class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;" onclick="openPolicyCreate()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create Policy</button></div>' : '');
     }
     var _polActiveSearch = '';
     function filterPoliciesBySearch(q) {
       _polActiveSearch = (q || '').toLowerCase().trim();
-      var activeTab = document.querySelector('#v-policies .pol-tab-active');
-      var typeKey = 'all';
-      if (activeTab) {
-        var m = (activeTab.getAttribute('onclick')||'').match(/polSetTab\('([^']+)'/);
-        if (m) typeKey = m[1];
-      }
-      var anyVisible = false;
+      var typeKey = polActiveTabKey();
       document.querySelectorAll('#v-policies [data-pol-type]').forEach(function(card) {
         var tabOk = typeKey === 'all' || card.getAttribute('data-pol-type') === typeKey;
         var tagOk = !card.hasAttribute('data-tag-hidden');
         var searchOk = !_polActiveSearch || card.textContent.toLowerCase().indexOf(_polActiveSearch) !== -1;
-        var show = tabOk && tagOk && searchOk;
-        card.style.display = show ? 'flex' : 'none';
-        if (show) anyVisible = true;
+        card.style.display = (tabOk && tagOk && searchOk) ? 'flex' : 'none';
       });
-      var empty = document.getElementById('pol-search-empty');
-      if (!empty) {
-        empty = document.createElement('div');
-        empty.id = 'pol-search-empty';
-        empty.style.cssText = 'padding:40px;text-align:center;color:var(--text-sec);font-size:13px;';
-        empty.textContent = 'No policies match your search';
-        var list = document.querySelector('#v-policies [data-pol-type]');
-        if (list) list.parentElement.appendChild(empty);
-      }
-      empty.style.display = (!anyVisible && _polActiveSearch) ? 'block' : 'none';
+      polRenderEmpty();
     }
     document.addEventListener('click', function(e){
       var wrap = document.getElementById('tag-filter-wrap');
@@ -15074,18 +15134,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           if (match) card.removeAttribute('data-tag-hidden');
           else card.setAttribute('data-tag-hidden','1');
         }
-        // re-apply tab filter
-        var typeKey = (function(){
-          var activeTab = document.querySelector('#v-policies .pol-tab-active');
-          if (!activeTab) return 'all';
-          var m = (activeTab.getAttribute('onclick')||'').match(/polSetTab\('([^']+)'/);
-          return m ? m[1] : 'all';
-        })();
+        // re-apply tab + search filters
+        var typeKey = polActiveTabKey();
         var t = card.getAttribute('data-pol-type');
         var tabOk = (typeKey === 'all' || t === typeKey);
         var tagOk = !card.hasAttribute('data-tag-hidden');
-        card.style.display = (tabOk && tagOk) ? 'flex' : 'none';
+        var searchOk = !_polActiveSearch || card.textContent.toLowerCase().indexOf(_polActiveSearch) !== -1;
+        card.style.display = (tabOk && tagOk && searchOk) ? 'flex' : 'none';
       });
+      polRenderEmpty();
       var wrap = document.getElementById('tag-filter-wrap');
       if (wrap) wrap.classList.remove('is-open');
     }
@@ -15656,11 +15713,74 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       });
     }
 
-    function policyDelete(el) {
-      var menu = el.closest('.policy-menu');
-      if (menu) menu.style.display = 'none';
+    function polCardTitle(card) { return card ? card.querySelector('div[style*="font-weight:700"]') : null; }
+
+    // Вкладка «Archived» та її лічильник уже керуються атрибутом data-pol-type, тож
+    // архівування — це зміна атрибута плюс перефільтрування списку, а не окрема механіка.
+    // Вигляд архівної картки теж чіпляється за атрибут у CSS, тому інлайнових стилів
+    // тут не ставимо (_syncInlineTheme їх перезаписує).
+    function polRefreshList() {
+      polUpdateCounts();
+      var active = document.querySelector('#v-policies button.pol-tab-active');
+      if (active) active.click();
+    }
+
+    function polSwapArchiveItem(card, archived) {
+      var item = card.querySelector('.policy-menu > div[onclick^="policyArchive"], .policy-menu > div[onclick^="policyRestore"]');
+      if (!item) return;
+      item.setAttribute('onclick', archived ? 'policyRestore(this)' : 'policyArchive(this)');
+      item.lastChild.textContent = archived ? 'Restore' : 'Archive';
+    }
+
+    function policyArchive(el) {
+      closePolicyMenus();
       var card = el.closest('[data-pol-type]');
-      var titleEl = card ? card.querySelector('div[style*="font-weight:700"]') : null;
+      if (!card) return;
+      var titleEl = polCardTitle(card);
+      card.dataset.polPrevType = card.getAttribute('data-pol-type');
+      card.setAttribute('data-pol-type', 'archived');
+      polSwapArchiveItem(card, true);
+      polRefreshList();
+      showToast('Policy archived · ' + (titleEl ? titleEl.textContent.trim() : 'policy'));
+    }
+
+    function policyRestore(el) {
+      closePolicyMenus();
+      var card = el.closest('[data-pol-type]');
+      if (!card) return;
+      var titleEl = polCardTitle(card);
+      card.setAttribute('data-pol-type', card.dataset.polPrevType || 'custom');
+      polSwapArchiveItem(card, false);
+      polRefreshList();
+      showToast('Policy restored · ' + (titleEl ? titleEl.textContent.trim() : 'policy'));
+    }
+
+    function policyDuplicate(el) {
+      closePolicyMenus();
+      var card = el.closest('[data-pol-type]');
+      if (!card) return;
+      var copy = card.cloneNode(true);
+      var titleEl = polCardTitle(copy);
+      var name = titleEl ? titleEl.textContent.trim() : 'Policy';
+      if (titleEl) titleEl.textContent = name + ' (copy)';
+      // Копія ще нікуди не призначена — інакше «Applied to N nodes» і відсоток перевірок
+      // брехали б, приписуючи новому полісу чужий результат.
+      var meta = copy.querySelector('div[style*="text-align:right"]');
+      if (meta && meta.children.length >= 2) {
+        meta.children[0].textContent = 'Applied to 0 nodes';
+        meta.children[1].textContent = 'Not assigned';
+        meta.children[1].style.color = 'var(--text-muted)';
+        meta.children[1].style.fontWeight = '600';
+      }
+      card.parentElement.insertBefore(copy, card.nextSibling);
+      polRefreshList();
+      showToast('Policy duplicated · ' + name + ' (copy)');
+    }
+
+    function policyDelete(el) {
+      closePolicyMenus();
+      var card = el.closest('[data-pol-type]');
+      var titleEl = polCardTitle(card);
       var name = titleEl ? titleEl.textContent.trim() : 'this policy';
       openModal({
         id: 'policy-del-overlay',
@@ -15695,26 +15815,43 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (cisDiv) cisDiv.style.display = radio.value === 'cis' ? 'block' : 'none';
     }
 
+    // Рівно ОДИН слухач на документ, і закриття завжди йде через closePolicyMenus().
+    // Раніше слухач реєструвався на кожне відкриття, а знімав себе лише на гілці
+    // «клік повз меню»; закриття через пункт меню чи policyDelete лишало його живим,
+    // і той стояк гасив наступне відкриття тієї ж миті — звідси «працює через раз».
+    var _polMenuHandler = null;
+    var _polMenuOpen = null;
+
+    function closePolicyMenus() {
+      if (_polMenuOpen) { _polMenuOpen.home.appendChild(_polMenuOpen.menu); _polMenuOpen = null; }
+      document.querySelectorAll('.policy-menu').forEach(function(m){ m.style.display = 'none'; });
+      if (_polMenuHandler) { document.removeEventListener('click', _polMenuHandler); _polMenuHandler = null; }
+    }
+
     function togglePolicyMenu(btn) {
       var menu = btn.nextElementSibling;
-      var open = menu.style.display !== 'none';
-      document.querySelectorAll('.policy-menu').forEach(function(m){ m.style.display='none'; });
-      if (!open) {
-        var rect = btn.getBoundingClientRect();
-        menu.style.position = 'fixed';
-        menu.style.top = (rect.bottom + 4) + 'px';
-        menu.style.right = (window.innerWidth - rect.right) + 'px';
-        menu.style.left = 'auto';
-        menu.style.display = 'block';
-        setTimeout(function() {
-          document.addEventListener('click', function h(e) {
-            if (!menu.contains(e.target) && e.target !== btn) {
-              menu.style.display = 'none';
-              document.removeEventListener('click', h);
-            }
-          });
-        }, 10);
-      }
+      var wasOpen = menu.style.display !== 'none';
+      closePolicyMenus();
+      if (wasOpen) return;
+      // .policy-card:hover має transform, а трансформований предок стає containing block
+      // для position:fixed — координати відлічувались від картки, і меню їхало під сусідні
+      // рядки. Тому на час відкриття виносимо його з піддерева картки в body й повертаємо
+      // назад на закритті (btn.nextElementSibling має лишатись валідним).
+      _polMenuOpen = { menu: menu, home: menu.parentElement };
+      document.body.appendChild(menu);
+      var rect = btn.getBoundingClientRect();
+      menu.style.position = 'fixed';
+      menu.style.top = (rect.bottom + 4) + 'px';
+      menu.style.right = (window.innerWidth - rect.right) + 'px';
+      menu.style.left = 'auto';
+      menu.style.display = 'block';
+      // btn.contains(), а не e.target !== btn: клік приходить по <svg> всередині кнопки.
+      var h = function(e) {
+        if (menu.contains(e.target) || btn.contains(e.target)) return;
+        closePolicyMenus();
+      };
+      _polMenuHandler = h;
+      setTimeout(function(){ if (_polMenuHandler === h) document.addEventListener('click', h); }, 0);
     }
 
     function closeScanDropdown(id) {
