@@ -10484,14 +10484,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Теги й опис — єдине, що лишилось від плашки, і це справжній вміст, а не шапка.
              Без картки: обгортка нічого не додавала б, крім ще однієї рамки. -->
         <div style="margin-bottom:20px;">
-          <div id="pd-tags-row" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
-              <span id="pd-tag-1" class="bdg bdg--blue">Security</span>
-              <span id="pd-tag-2" class="bdg bdg--green">Compliance</span>
-              <!-- Та сама .pd-tag-add, що й у рядках перевірок: на сторінці має бути ОДИН спосіб
-                   додати тег, а не два різні. Плюс — гліф із Assets/icons/Property 1=Plus.svg
-                   (stroke="currentColor", тож іде за темою і за hover). -->
-              <button class="bdg bdg--gray pd-tag-add"><svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"/><path d="M0.628906 4H7.36965"/></svg>Add tag</button>
-          </div>
+          <!-- Теги політики рендерить pdRenderTagRow — той самий генератор, що й теги перевірок.
+               Раніше тут лежала статична розмітка, і кнопка «Add tag» була без onclick: клікалась,
+               але нічого не робила. Дублювати пікер заради неї не можна — сторінка мусить мати
+               ОДИН спосіб додати тег. Контейнер порожній: вміст ставить JS у showPolicyDetail. -->
+          <div id="pd-tags-__policy__" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;"></div>
           <div id="pd-desc" style="font-size:12px;color:var(--text-sec);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Industry-standard security configuration baseline for Windows 11, defined by the Center for Internet Security (CIS). Covers password policy, account settings, network security, and system configuration.</div>
         </div>
 
@@ -10547,30 +10544,57 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
           <!-- Table: Node / Simulation result / Status -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
-            <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
-              <div style="flex:0 0 200px;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Node</div>
-              <div style="flex:1;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Simulation result</div>
-              <div style="flex-shrink:0;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Status</div>
+            <!-- .col-thead — канонічна поверхня шапки колонок (--table-header-bg: light #F1F5F9,
+                 dark #063135). Це div-таблиця, тож глобальне правило `table thead th` її не ловить;
+                 клас — саме той гак, який для таких випадків і заведено. Типографіка — як у
+                 .data-table th: 10px/700, letter-spacing .5px, UPPERCASE. -->
+            <div class="col-thead" style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
+              <div style="flex:0 0 200px;">Node</div>
+              <div style="flex:1;">Simulation result</div>
+              <!-- 56px + text-align:right — та сама колонка Status, що й у «Checks on this node».
+                   Раніше тут був flex-shrink:0 без ширини, тож шапка й бейджі стояли на різних x. -->
+              <div style="flex:0 0 56px;text-align:right;">Status</div>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
-              <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">MACBOOK-TARAS</div>
+              <!-- .node-ico (32×32, r8, --bg-subtle) + 16px гліф — той самий компонент, що
+                   в All Nodes (index.html:3550, приклад рядка :7469). Гліф вказує на ОС:
+                   4 квадрати = Windows, монітор = macOS/сервер.
+                   Обведення йде за статусом рядка — той самий контракт, що в All Nodes:
+                   #FB3C44 = провал, #3FC878 = пройдено. Значення літеральні, бо такі вони
+                   і в All Nodes, і однакові в обох темах. -->
+              <div style="flex:0 0 200px;display:flex;align-items:center;gap:10px;">
+                <div class="node-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.5"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg></div>
+                <div style="font-size:13px;font-weight:600;color:var(--text-default);">MACBOOK-TARAS</div>
+              </div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">2 failed checks · Antivirus, Screen lock timeout</div>
-              <span class="bdg bdg--dot bdg--red" style="flex-shrink:0;">Fail</span>
+              <!-- Той самий Dot+text (.bdg--quiet) і те саме слово, що в «Checks on this node»:
+                   дві таблиці на одному екрані не можуть називати один стан по-різному
+                   («Fail» пігулкою тут і «Failed» маркером там). -->
+              <div style="flex:0 0 56px;display:flex;justify-content:flex-end;"><span class="bdg bdg--quiet bdg--red">Failed</span></div>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
-              <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">DEV-MACPRO-03</div>
+              <div style="flex:0 0 200px;display:flex;align-items:center;gap:10px;">
+                <div class="node-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></div>
+                <div style="font-size:13px;font-weight:600;color:var(--text-default);">DEV-MACPRO-03</div>
+              </div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">1 failed check · Minimum password length</div>
-              <span class="bdg bdg--dot bdg--red" style="flex-shrink:0;">Fail</span>
+              <div style="flex:0 0 56px;display:flex;justify-content:flex-end;"><span class="bdg bdg--quiet bdg--red">Failed</span></div>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
-              <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">PROD-SERVER-01</div>
+              <div style="flex:0 0 200px;display:flex;align-items:center;gap:10px;">
+                <div class="node-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></div>
+                <div style="font-size:13px;font-weight:600;color:var(--text-default);">PROD-SERVER-01</div>
+              </div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">No failed checks</div>
-              <span class="bdg bdg--dot bdg--green" style="flex-shrink:0;">Pass</span>
+              <div style="flex:0 0 56px;display:flex;justify-content:flex-end;"><span class="bdg bdg--quiet bdg--green">Passed</span></div>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;">
-              <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">STAGING-WIN-02</div>
+              <div style="flex:0 0 200px;display:flex;align-items:center;gap:10px;">
+                <div class="node-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.5"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg></div>
+                <div style="font-size:13px;font-weight:600;color:var(--text-default);">STAGING-WIN-02</div>
+              </div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">No failed checks</div>
-              <span class="bdg bdg--dot bdg--green" style="flex-shrink:0;">Pass</span>
+              <div style="flex:0 0 56px;display:flex;justify-content:flex-end;"><span class="bdg bdg--quiet bdg--green">Passed</span></div>
             </div>
           </div>
         </div>
@@ -11362,7 +11386,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       pdResetFilter();
       window._pdChecks = p.checks;
       window._pdIsCustom = p.isCustom;
+      // Теги політики — свої в кожної; ініціалізуємо один раз, далі зберігаються між заходами.
+      window._pdPolicyTagKey = '__policy__:' + key;
+      if (!_pdTagMap[window._pdPolicyTagKey]) _pdTagMap[window._pdPolicyTagKey] = ['Security','Compliance'];
       pdFilter('all');
+      pdRenderTagRow(window._pdPolicyTagKey);
       document.querySelectorAll('#nd-attrs-pop,#nd-policies-pop').forEach(function(el){ el.style.display='none'; });
       showView('policy-detail');
     }
@@ -15311,23 +15339,55 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // stroke="currentColor", тож колір бере з кнопки й сам іде за темою і за hover.
     var PD_PLUS_SVG = '<svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"/><path d="M0.628906 4H7.36965"/></svg>';
 
+    // Колір — властивість САМОГО тега, а не місця рендеру: один тег мусить виглядати
+    // однаково і в шапці політики, і в колонці Tags, і в попапі вибору.
+    // Кольорів навмисно не девʼять, а три групи — інакше колір перестає щось означати
+    // і стає просто розфарбовкою:
+    //   red/orange — тег міняє наступну дію (це терміново / це ще не переглянуто);
+    //   blue/green — навіщо перевірка існує (безпекова програма / вимога регулятора);
+    //   gray       — описова категорія, потрібна лише для фільтра.
+    var PD_TAG_COLOR = {
+      'Critical':     'red',
+      'Needs review': 'orange',
+      'Security':     'blue',
+      'Compliance':   'green'
+    };
+    function pdTagColor(name) { return PD_TAG_COLOR[name] || 'gray'; }
+
     // Один генератор чипа тега на всі три місця рендеру (рядок перевірки, перемальовка
     // рядка після правки, попап вибору) — інакше вони знову розійдуться, як розійшлись
     // раніше pdRenderTagRow і pdFilter.
     function pdTagChip(name, safeKey, removable) {
+      var cls = 'bdg bdg--' + pdTagColor(name);
       return removable
-        ? '<span class="bdg bdg--gray pd-tag" onclick="pdRemoveTag(\''+safeKey+'\',\''+name+'\')" title="Click to remove">'+name+' ×</span>'
-        : '<span class="bdg bdg--gray">'+name+'</span>';
+        ? '<span class="'+cls+' pd-tag" onclick="pdRemoveTag(\''+safeKey+'\',\''+name+'\')" title="Click to remove">'+name+' ×</span>'
+        : '<span class="'+cls+'">'+name+'</span>';
+    }
+
+    // Теги самої політики живуть у тому ж _pdTagMap, що й теги перевірок, але під ключем
+    // з префіксом політики — інакше тег, доданий одній політиці, зʼявився б у всіх.
+    // safeKey при цьому СТАЛИЙ ('__policy__'), бо контейнер у розмітці один.
+    var PD_POLICY_SAFEKEY = '__policy__';
+
+    // safeKey беремо зі зворотного індексу, а не перераховуємо формулою вдруге: у політики
+    // ключ і назва навмисно різні, і друга копія формули дала б інший id контейнера.
+    function pdSafeKeyFor(name) {
+      var m = window._pdKeyToName || {};
+      for (var k in m) if (m[k] === name) return k;
+      return name.replace(/[^a-zA-Z0-9]/g,'_');
     }
 
     function pdRenderTagRow(checkName) {
-      var isCustom = window._pdIsCustom || false;
+      var isPolicy = checkName === window._pdPolicyTagKey;
+      // Теги політики редаговані завжди — це наш обʼєкт незалежно від того, чий бенчмарк
+      // усередині. Теги перевірок — лише у власних політиках.
+      var editable = isPolicy || window._pdIsCustom || false;
       var tags = _pdTagMap[checkName] || [];
-      var safeKey = checkName.replace(/[^a-zA-Z0-9]/g,'_');
+      var safeKey = pdSafeKeyFor(checkName);
       var html = '';
-      tags.forEach(function(t) { html += pdTagChip(t, safeKey, isCustom); });
-      if(isCustom) {
-        html += '<button class="bdg bdg--gray pd-tag-add" onclick="pdShowTagPicker(\''+safeKey+'\',this)">' + PD_PLUS_SVG + 'tag</button>';
+      tags.forEach(function(t) { html += pdTagChip(t, safeKey, editable); });
+      if(editable) {
+        html += '<button class="bdg bdg--gray pd-tag-add" onclick="pdShowTagPicker(\''+safeKey+'\',this)">' + PD_PLUS_SVG + (isPolicy ? 'Add tag' : 'tag') + '</button>';
       }
       var container = document.getElementById('pd-tags-'+safeKey);
       if(container) container.innerHTML = html;
@@ -15340,8 +15400,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       pdRenderTagRow(name);
     }
 
+    // Закриття попапа = одна точка виходу. Раніше pdPickTag просто ховав його, лишаючи
+    // живим слухач «клік поза попапом»; той спрацьовував уже на НАСТУПНОМУ кліку по
+    // «Add tag» — кнопка відкривала попап, а слухач, що всплив тим самим кліком, одразу
+    // закривав. Ззовні це виглядало як «кнопка не клікається».
+    function pdHideTagPicker() {
+      var pop = document.getElementById('pd-tag-picker');
+      pop.style.display = 'none';
+      if (pop._closer) { document.removeEventListener('click', pop._closer); pop._closer = null; }
+      pop._anchor = null;
+    }
+
     function pdShowTagPicker(safeKey, btn) {
       var pop = document.getElementById('pd-tag-picker');
+      // Повторний клік по тій самій кнопці закриває попап — інакше стан «відкрито»
+      // не мав би виходу через ту саму кнопку, якою його відкрили.
+      if (pop.style.display === 'block' && pop._anchor === btn) { pdHideTagPicker(); return; }
       var rect = btn.getBoundingClientRect();
       var existing = _pdTagMap[window._pdKeyToName[safeKey]] || [];
       var html = '<div style="font-size:10px;color:var(--p-neutral-400);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Add tag</div>';
@@ -15357,15 +15431,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       pop.style.left = rect.left + 'px';
       pop.style.display = 'block';
       pop._safeKey = safeKey;
-      setTimeout(function(){
-        document.addEventListener('click', function close(e){
-          if(!pop.contains(e.target)){pop.style.display='none';document.removeEventListener('click',close);}
-        });
-      }, 0);
+      pop._anchor = btn;
+      if (pop._closer) document.removeEventListener('click', pop._closer);
+      pop._closer = function(e) {
+        // Кліки по самих кнопках «Add tag» пропускаємо: у них є власний onclick, який і
+        // вирішує відкрити/закрити. Тому setTimeout більше не потрібен — слухач може
+        // жити з моменту відкриття.
+        if (pop.contains(e.target) || (e.target.closest && e.target.closest('.pd-tag-add'))) return;
+        pdHideTagPicker();
+      };
+      document.addEventListener('click', pop._closer);
     }
 
     function pdPickTag(safeKey, tagName) {
-      document.getElementById('pd-tag-picker').style.display='none';
+      pdHideTagPicker();
       var name = window._pdKeyToName[safeKey]; if(!name) return;
       if(_pdAllTags.indexOf(tagName) < 0) return;
       if(!_pdTagMap[name]) _pdTagMap[name]=[];
@@ -15374,14 +15453,34 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       pdRenderTagRow(name);
     }
 
+    // Одна декларація ширин на шапку і на рядки: якщо колонки описати двічі, вони роз'їдуться
+    // від першої ж правки. 18px — кружечок статусу, у шапці замість нього порожня комірка
+    // тієї ж ширини, інакше всі підписи поїдуть уліво.
+    var PD_COL_MARK   = 'flex:0 0 18px;';
+    var PD_COL_CHECK  = 'flex:1;min-width:0;';
+    var PD_COL_TAGS   = 'flex:0 0 280px;';   // виміряний максимум тегів = 245px + запас
+    var PD_COL_STATUS = 'flex:0 0 56px;';    // «Passed» = 51px
+
     function pdFilter(mode) {
       var checks = window._pdChecks || [];
       var filtered = mode==='fail' ? checks.filter(function(c){return c.status==='fail';})
                    : mode==='pass' ? checks.filter(function(c){return c.status==='pass';})
                    : checks;
       var isCustom = window._pdIsCustom || false;
+      // Індекс перебудовується щоразу, але запис політики має пережити перемальовку —
+      // інакше після зміни фільтра «Add tag» у шапці перестала б знаходити свій обʼєкт.
       window._pdKeyToName = {};
-      var html = '';
+      if (window._pdPolicyTagKey) window._pdKeyToName[PD_POLICY_SAFEKEY] = window._pdPolicyTagKey;
+      // Шапка колонок. Живе всередині html, а не окремим блоком над списком, бо
+      // порожній стан переприсвоює html цілком — інакше підписи колонок висіли б
+      // над empty-state. .col-thead — канонічна поверхня шапки (--table-header-bg),
+      // типографіка — як у .data-table th.
+      var html = '<div class="col-thead" style="padding:10px 20px;display:flex;align-items:center;gap:14px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">'
+        + '<div style="'+PD_COL_MARK+'"></div>'
+        + '<div style="'+PD_COL_CHECK+'">Check</div>'
+        + '<div style="'+PD_COL_TAGS+'">Tags</div>'
+        + '<div style="'+PD_COL_STATUS+'text-align:right;">Status</div>'
+        + '</div>';
       filtered.forEach(function(c) {
         var isFail = c.status==='fail';
         var tags = _pdTagMap[c.name] || [];
@@ -15396,20 +15495,32 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         html += '<div style="width:18px;height:18px;border-radius:50%;background:var(--bdg-'+pdTone+'-bg);border:1.5px solid var(--bdg-'+pdTone+'-bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--bdg-'+pdTone+'-txt);">';
         html += isFail ? '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' : '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
         html += '</div>';
-        html += '<div style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;">';
+        // Колонка Check: назва + опис — це заголовок і підзаголовок одного обʼєкта,
+        // тому вони живуть в ОДНІЙ комірці, як `Simulation result` у сусідній таблиці.
+        html += '<div style="'+PD_COL_CHECK+'display:flex;align-items:center;gap:10px;">';
         html += '<div style="font-size:13px;font-weight:'+(isFail?'600':'500')+';color:'+(isFail?'var(--text-default)':'var(--text-sec)')+';white-space:nowrap;flex-shrink:0;">' + c.name + '</div>';
         html += '<div style="font-size:11px;color:var(--text-sec);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.detail + '</div>';
-        html += '<div id="pd-tags-'+safeKey+'" style="display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap;align-items:center;">';
+        html += '</div>';
+        // Теги — власна колонка фіксованої ширини. Раніше вони були всередині комірки Check
+        // і їх ліва межа гуляла на 115px від рядка до рядка (виміряно: 840…955), бо їх
+        // штовхав гумовий опис. flex-wrap — бо кількість тегів задає користувач: зайві
+        // переносяться на другий рядок, а не обрізаються.
+        html += '<div id="pd-tags-'+safeKey+'" style="'+PD_COL_TAGS+'display:flex;gap:4px;flex-wrap:wrap;align-items:center;">';
         tags.forEach(function(t) { html += pdTagChip(t, safeKey, isCustom); });
         if(isCustom) {
           html += '<button class="bdg bdg--gray pd-tag-add" onclick="pdShowTagPicker(\''+safeKey+'\',this)">' + PD_PLUS_SVG + 'tag</button>';
         }
         html += '</div>';
-        html += '</div>';
         // Статус перевірки — канонічний .bdg--dot за мапою severity (fail→Red, pass→Green).
         // Раніше тут був саморобний чип із літеральними #fef2f2/#FB3C44, які в темній
         // темі лишались світлими, бо _syncInlineTheme їх не знав.
-        html += '<span class="bdg bdg--dot '+(isFail?'bdg--red':'bdg--green')+'" style="flex-shrink:0;">'+(isFail?'Failed':'Passed')+'</span>';
+        // Варіант Dot+text (.bdg--quiet), не пігулка: рядок уже має кольорове коло зліва,
+        // тож пігулка кодувала статус утретє (коло + крапка + заливка). Форма лишається
+        // за тегами, статус звучить тихим маркером — це той самий канон, що й у
+        // before→after значеннях (DS §12).
+        html += '<div style="'+PD_COL_STATUS+'display:flex;justify-content:flex-end;">';
+        html += '<span class="bdg bdg--quiet '+(isFail?'bdg--red':'bdg--green')+'">'+(isFail?'Failed':'Passed')+'</span>';
+        html += '</div>';
         html += '</div>';
       });
       if(filtered.length===0) {
