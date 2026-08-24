@@ -7353,7 +7353,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
 
         <!-- Tab intro on the left, all controls on the right -->
-        <div id="node-filter-row" style="display:flex;gap:16px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+        <div id="node-filter-row" style="display:flex;gap:16px;margin-bottom:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
           <div class="tab-intro">
             <div class="tab-intro-title">Managed nodes</div>
             <div class="tab-intro-sub">Scanned, scored and tracked</div>
@@ -10483,7 +10483,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Теги й опис — єдине, що лишилось від плашки, і це справжній вміст, а не шапка.
              Без картки: обгортка нічого не додавала б, крім ще однієї рамки. -->
-        <div style="margin-bottom:16px;">
+        <div style="margin-bottom:20px;">
           <div id="pd-tags-row" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
               <span id="pd-tag-1" class="bdg bdg--blue">Security</span>
               <span id="pd-tag-2" class="bdg bdg--green">Compliance</span>
@@ -10492,7 +10492,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                    (stroke="currentColor", тож іде за темою і за hover). -->
               <button class="bdg bdg--gray pd-tag-add"><svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"/><path d="M0.628906 4H7.36965"/></svg>Add tag</button>
           </div>
-          <div id="pd-desc" style="font-size:12px;color:var(--text-sec);line-height:1.5;max-width:65%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">Industry-standard security configuration baseline for Windows 11, defined by the Center for Internet Security (CIS). Covers password policy, account settings, network security, and system configuration.</div>
+          <div id="pd-desc" style="font-size:12px;color:var(--text-sec);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Industry-standard security configuration baseline for Windows 11, defined by the Center for Internet Security (CIS). Covers password policy, account settings, network security, and system configuration.</div>
         </div>
 
         <!-- Підпис таблиці живе НАД карткою, контролі — праворуч у тому ж рядку. Це той самий
@@ -10500,7 +10500,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
              ним керує, стоїть в одному місці. Інакше в застосунку було б два різні способи
              підписати таблицю. Кількість перевірок стала підзаголовком (.tab-intro-sub) —
              вона описує список, а не є окремим контролем. -->
-        <div style="display:flex;gap:16px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+        <div style="display:flex;gap:16px;margin-bottom:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
           <div class="tab-intro">
             <div class="tab-intro-title">Checks on this node</div>
             <div class="tab-intro-sub" id="pd-check-count"></div>
@@ -10527,10 +10527,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="pd-checks-list"></div>
         </div>
 
-        <!-- Simulation results panel (hidden by default) -->
-        <div id="pd-simulation" style="display:none;margin-top:16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+        <!-- Simulation results panel (hidden by default). Заголовок + кнопки живуть НАД карткою,
+             той самий патерн, що й «Checks on this node» (≈10503): картка лишається чистим
+             списком, керування — окремо над нею. -->
+        <div id="pd-simulation" style="display:none;margin-top:16px;">
           <!-- Header: title + summary chips + actions -->
-          <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
               <div style="font-size:13px;font-weight:700;color:var(--text-default);">Simulation results</div>
               <span class="sim-chip bdg bdg--gray">4 Evaluated</span>
@@ -10539,12 +10541,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <span id="pd-sim-time" style="font-size:11px;color:var(--text-muted);"></span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
-              <button onclick="pdRunSimulation();" class="btn-secondary">Run again</button>
-              <button onclick="document.getElementById(&#39;pd-simulation&#39;).style.display=&#39;none&#39;;" style="font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;">Close</button>
+              <button onclick="pdRunSimulation();" class="action-cta" style="width:auto;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linejoin="round"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z"/></svg>Run again</button>
+              <button onclick="document.getElementById(&#39;pd-simulation&#39;).style.display=&#39;none&#39;;" class="btn-outline">Close</button>
             </div>
           </div>
           <!-- Table: Node / Simulation result / Status -->
-          <div>
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
               <div style="flex:0 0 200px;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Node</div>
               <div style="flex:1;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Simulation result</div>
@@ -10553,22 +10555,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
               <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">MACBOOK-TARAS</div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">2 failed checks · Antivirus, Screen lock timeout</div>
-              <span class="bdg bdg--red" style="flex-shrink:0;">Fail</span>
+              <span class="bdg bdg--dot bdg--red" style="flex-shrink:0;">Fail</span>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
               <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">DEV-MACPRO-03</div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">1 failed check · Minimum password length</div>
-              <span class="bdg bdg--red" style="flex-shrink:0;">Fail</span>
+              <span class="bdg bdg--dot bdg--red" style="flex-shrink:0;">Fail</span>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);">
               <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">PROD-SERVER-01</div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">No failed checks</div>
-              <span class="bdg bdg--green" style="flex-shrink:0;">Pass</span>
+              <span class="bdg bdg--dot bdg--green" style="flex-shrink:0;">Pass</span>
             </div>
             <div style="display:flex;align-items:center;padding:10px 20px;">
               <div style="flex:0 0 200px;font-size:13px;font-weight:600;color:var(--text-default);">STAGING-WIN-02</div>
               <div style="flex:1;font-size:13px;color:var(--text-sec);">No failed checks</div>
-              <span class="bdg bdg--green" style="flex-shrink:0;">Pass</span>
+              <span class="bdg bdg--dot bdg--green" style="flex-shrink:0;">Pass</span>
             </div>
           </div>
         </div>
@@ -15365,10 +15367,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         }
         html += '</div>';
         html += '</div>';
-        // Статус перевірки — канонічний .bdg за мапою severity (fail→Red, pass→Green).
+        // Статус перевірки — канонічний .bdg--dot за мапою severity (fail→Red, pass→Green).
         // Раніше тут був саморобний чип із літеральними #fef2f2/#FB3C44, які в темній
         // темі лишались світлими, бо _syncInlineTheme їх не знав.
-        html += '<span class="bdg '+(isFail?'bdg--red':'bdg--green')+'" style="flex-shrink:0;">'+(isFail?'Failed':'Passed')+'</span>';
+        html += '<span class="bdg bdg--dot '+(isFail?'bdg--red':'bdg--green')+'" style="flex-shrink:0;">'+(isFail?'Failed':'Passed')+'</span>';
         html += '</div>';
       });
       if(filtered.length===0) {
