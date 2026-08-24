@@ -2608,7 +2608,7 @@ body.dark .recon-node-chip[data-active="true"] { border-color:rgba(16,185,129,0.
 .recon-seg .recon-node-chip[data-active="true"] { background:rgba(0,175,115,0.15) !important; color:#334155 !important; }
 .recon-seg .recon-node-chip[data-active="true"]:hover { background:rgba(0,175,115,0.15) !important; }
 body.dark .recon-seg { background:rgba(255,255,255,0.03); border-color:var(--border); }
-body.dark .recon-seg .recon-node-chip { border-right-color:var(--border) !important; color:#94A3B8 !important; }
+body.dark .recon-seg .recon-node-chip { border-right-color:var(--border) !important; color:#F8FAFC !important; }
 body.dark .recon-seg .recon-node-chip[data-active="true"] { background:rgba(16,185,129,0.18) !important; color:#F8FAFC !important; }
 .recon-approval-comment-input::placeholder { color:#475569; }
 /* Match Guardian Nodes to ServiceNow CIs — info blocks, Figma 3447:65027 */
@@ -2619,6 +2619,17 @@ body.dark .j4m-sync-label { color:#059669; }
 .j4a-works-card { border:1px solid #E2E8F0; }
 body.dark .j4a-works-card { border-color:#04363A; background:rgba(255,255,255,0.05) !important; }
 body.dark .j4a-purple { color:#8347E0 !important; stroke:#8347E0 !important; }
+/* STATUS column tooltip — legend for the X/Y nodes badge, Figma 3437:63731 */
+.j4a-status-tip { position:relative; display:inline-flex; cursor:help; }
+.j4a-tip-bubble { display:none; position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%); background:#FFFFFF; border:1px solid #EBEBEB; border-radius:6px; padding:8px 12px; white-space:nowrap; z-index:50; flex-direction:column; gap:8px; }
+.j4a-status-tip:hover .j4a-tip-bubble { display:flex; }
+.j4a-tip-bubble::after { content:''; position:absolute; top:100%; left:50%; width:10px; height:10px; margin-left:-5px; margin-top:-6px; background:#FFFFFF; border-right:1px solid #EBEBEB; border-bottom:1px solid #EBEBEB; transform:rotate(45deg); }
+.j4a-tip-row { display:flex; align-items:center; gap:4px; }
+.j4a-tip-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.j4a-tip-text { font-size:12px; font-weight:400; text-transform:none; letter-spacing:normal; color:#475569; }
+body.dark .j4a-tip-bubble { background:#0F3A40; border-color:rgba(255,255,255,0.12); }
+body.dark .j4a-tip-bubble::after { background:#0F3A40; border-color:rgba(255,255,255,0.12); }
+body.dark .j4a-tip-text { color:rgba(255,255,255,0.75); }
 body.dark #recon-approval-comment,
 body.dark #recon-approval-reason { background:rgba(13,61,66,0.4) !important; }
 body.dark .recon-approval-comment-input::placeholder { color:rgba(150,166,189,0.6); }
@@ -25552,7 +25563,14 @@ function j4aBodyHtml() {
     + '</div>'
     + '<div style="padding:8px 16px;border-bottom:1px solid var(--border);font-size:11px;color:#15803D;">Only CRs with a planned start <strong>after reconciliation was enabled</strong> are tracked. Past/retroactive changes are excluded.</div>'
     + '<table class="data-table" style="font-size:12px;">'
-    + '<thead><tr><th style="white-space:nowrap;">CR NUMBER</th><th style="white-space:nowrap;">TITLE</th><th style="white-space:nowrap;">STATUS <span title="Matched = all linked nodes in Guardian · Partial = some nodes missing" style="cursor:help;color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:normal;">ⓘ</span></th><th style="white-space:nowrap;">CHANGE WINDOW</th></tr></thead>'
+    + '<thead><tr><th style="white-space:nowrap;">CR NUMBER</th><th style="white-space:nowrap;">TITLE</th><th style="white-space:nowrap;">STATUS '
+      + '<span class="j4a-status-tip" style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:normal;">ⓘ'
+        + '<span class="j4a-tip-bubble">'
+          + '<span class="j4a-tip-row"><span class="j4a-tip-dot" style="background:#00AF73;"></span><span class="j4a-tip-text">n/n — all linked nodes are in Guardian</span></span>'
+          + '<span class="j4a-tip-row"><span class="j4a-tip-dot" style="background:#D97706;"></span><span class="j4a-tip-text">x/n — some linked nodes are missing</span></span>'
+        + '</span>'
+      + '</span>'
+    + '</th><th style="white-space:nowrap;">CHANGE WINDOW</th></tr></thead>'
     + '<tbody>'
     + _j4aCrRow('CHG0012345', 'Kernel update', '2/2 nodes', 'green', 'Tomorrow 02:00–04:00')
     + _j4aCrRow('CHG0012346', 'SSL cert renewal', '2/2 nodes', 'green', 'Tomorrow 03:00–05:00')
