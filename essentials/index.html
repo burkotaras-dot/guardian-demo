@@ -275,16 +275,16 @@ button, input, select, textarea, option, code, pre {
 .ms-wrap { position:relative; display:inline-block; vertical-align:middle; }
 .ms-btn { display:inline-flex; align-items:center; height:32px; box-sizing:border-box; font-size:12px; font-weight:600; padding:0 26px 0 10px; border-radius:8px; border:1px solid var(--border); background:#F9FAFC; color:var(--text-default); cursor:pointer; font-family:inherit; position:relative; white-space:nowrap; }
 .rep-scope-sel { height:32px; box-sizing:border-box; background:#F9FAFC !important; }
-#rep-scope-bar .csel-btn { background:#F9FAFC !important; min-width:140px; }
+#rep-scope-bar .csel-btn { background:#FFFFFF !important; min-width:140px; }
 .report-table-filter-controls select.rep-scope-sel,
 .report-table-filter-controls .csel-wrap,
 .report-table-filter-controls .csel-btn,
 .report-table-filter-controls .ms-wrap,
 .report-table-filter-controls .ms-btn { width:160px; box-sizing:border-box; }
 .report-table-filter-controls :is(.csel-btn, .ms-btn) { background:#FFFFFF !important; }
-body.dark .report-table-filter-controls :is(.csel-btn, .ms-btn) { background:#133033 !important; border-color:#42595C !important; }
+body.dark .report-table-filter-controls :is(.csel-btn, .ms-btn) { background:#062528 !important; border-color:#04363A !important; }
 body.dark .rep-scope-sel { background:rgba(255,255,255,0.11) !important; border-color:rgba(255,255,255,0.28) !important; }
-body.dark #rep-scope-bar .csel-btn { background:rgba(255,255,255,0.11) !important; border-color:rgba(255,255,255,0.28) !important; }
+body.dark #rep-scope-bar .csel-btn { background:#062528 !important; border-color:#04363A !important; }
 body.dark #rc-table .csel-btn, body.dark #rb-table .csel-btn, body.dark #ri-table .csel-btn { background:rgba(255,255,255,0.11) !important; border-color:var(--border-default) !important; }
 .rep-prow, .rep-frow { transition:background 0.12s; }
 .rep-row-link { cursor:pointer; }
@@ -16256,10 +16256,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
     function _repPolRow(p) {
       var score = Math.round(p.pass / (p.pass + p.fail) * 100);
-      var accent = p.crit > 0 ? '#FB3C44' : (p.fail > 0 ? '#F97316' : '#10B981');
       var scoreColor = score >= 100 ? '#15803d' : (score >= 90 ? '#00AF73' : '#d97706');
       return '<div class="rep-prow rep-row-link" data-pol="' + p.pol + '" onclick="repOpenPolicy(&#39;' + p.pol + '&#39;)" ' +
-        'style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ' + accent + ';font-size:12px;">' +
+        'style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);font-size:12px;">' +
         '<div style="font-weight:600;color:var(--text-default);display:flex;align-items:center;gap:6px;">' + (REP_POL_ICO[p.pol] || '') + REP_POL_NAMES[p.pol] + '</div>' +
         '<div style="color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">' + p.pass + '</span> / <span style="color:' + (p.fail > 0 ? '#FB3C44' : 'var(--text-muted)') + ';font-weight:600;">' + p.fail + '</span></div>' +
         '<div>' + _repSevChips(p) + '</div>' +
@@ -16267,9 +16266,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         '<div style="font-weight:700;color:' + scoreColor + ';">' + score + '%</div>' +
         '</div>';
     }
-    var _REP_SEV_ACCENT = { critical: '#FB3C44', high: '#F97316', medium: '#F59E0B', low: '#3B82F6' };
     function _repFailRow(f, dim) {
-      var accent = _REP_SEV_ACCENT[f.sev] || 'var(--border)';
       var parts = f.delta.split(' → ');
       var deltaHtml = parts.length === 2
         ? '<span class="bdg bdg--quiet bdg--red">' + parts[0] + '</span>' +
@@ -16278,7 +16275,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         : f.delta;
       var nodeStyle = 'font-weight:600;color:var(--text-default);font-family:\'DM Sans\',sans-serif;font-size:11px;';
       return '<div class="rep-frow rep-row-link" data-pol="' + f.pol + '" data-sev="' + f.sev + '" onclick="repOpenPolicy(&#39;' + f.pol + '&#39;)" ' +
-        'style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ' + accent + ';font-size:12px;transition:background 0.12s;" ' +
+        'style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);font-size:12px;transition:background 0.12s;" ' +
         'onmouseover="this.style.background=document.body.classList.contains(\'dark\')?\'#063135\':\'#f8fafc\'" onmouseout="this.style.background=\'\'">' +
         '<div style="' + nodeStyle + 'display:flex;align-items:center;gap:6px;">' +
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>' +
@@ -20679,7 +20676,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button id="rep-back" class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
-          <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,175,115,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></div>
           <div>
             <div class="page-title">Compliance report</div>
             <div class="page-sub" id="rep-scope-desc">Policy and check compliance across the selected scope</div>
@@ -20706,8 +20702,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
-        <!-- Scope + Report view bar -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+        <!-- Scope + Report view bar — жодної фонової картки навколо (Figma 3474:51913):
+             це звичайний рядок керування прямо на фоні сторінки, без border/shadow/padding. -->
+        <div style="margin-bottom:16px;">
           <div id="rep-scope-bar" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
             <!-- SCOPE -->
             <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Scope</span>
@@ -20725,7 +20722,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <button id="rt-failed" class="seg-btn" onclick="setReportType(&#39;failed&#39;)" aria-pressed="false">Failed checks</button>
               <button id="rt-full" class="seg-btn is-active" onclick="setReportType(&#39;full&#39;)" aria-pressed="true">All sections</button>
             </div>
-            <button id="rep-reset" onclick="reportResetScope()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
+            <button id="rep-reset" onclick="reportResetScope()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;"><svg width="12" height="12" viewBox="0 0 11.25 11.6667" fill="none" style="flex-shrink:0;"><path d="M5.625 1.04167V1.66667V1.04167ZM0.625 6.04167H0H0.625ZM5.625 11.0417V10.4167V11.0417ZM11.25 6.04167C11.25 5.69649 10.9702 5.41667 10.625 5.41667C10.2798 5.41667 10 5.69649 10 6.04167H10.625H11.25ZM10.8333 0.625C10.8333 0.279822 10.5535 0 10.2083 0C9.86316 0 9.58333 0.279822 9.58333 0.625H10.2083H10.8333ZM10.2083 3.95833V4.58333H10.8333V3.95833H10.2083ZM6.875 3.33333C6.52982 3.33333 6.25 3.61316 6.25 3.95833C6.25 4.30351 6.52982 4.58333 6.875 4.58333V3.95833V3.33333ZM10.0694 3.81944L10.6342 3.55175C9.75251 1.69157 7.83419 0.416667 5.625 0.416667V1.04167V1.66667C7.34581 1.66667 8.82749 2.65843 9.50467 4.08714L10.0694 3.81944ZM5.625 1.04167V0.416667C4.88631 0.416667 4.15486 0.562161 3.47241 0.844844L3.71158 1.42227L3.95076 1.99969C4.48156 1.77983 5.05047 1.66667 5.625 1.66667V1.04167ZM3.71158 1.42227L3.47241 0.844844C2.78995 1.12753 2.16985 1.54186 1.64752 2.06419L2.08947 2.50613L2.53141 2.94807C2.93766 2.54182 3.41996 2.21956 3.95076 1.99969L3.71158 1.42227ZM2.08947 2.50613L1.64752 2.06419C1.12519 2.58652 0.71086 3.20662 0.428178 3.88907L1.0056 4.12825L1.58303 4.36743C1.80289 3.83663 2.12515 3.35433 2.53141 2.94807L2.08947 2.50613ZM1.0056 4.12825L0.428178 3.88907C0.145495 4.57153 0 5.30298 0 6.04167H0.625H1.25C1.25 5.46713 1.36316 4.89823 1.58303 4.36743L1.0056 4.12825ZM0.625 6.04167H0C0 6.78035 0.145495 7.5118 0.428178 8.19426L1.0056 7.95508L1.58303 7.71591C1.36316 7.18511 1.25 6.6162 1.25 6.04167H0.625ZM1.0056 7.95508L0.428178 8.19426C0.71086 8.87672 1.12519 9.49681 1.64752 10.0191L2.08947 9.5772L2.53141 9.13526C2.12515 8.729 1.80289 8.24671 1.58303 7.71591L1.0056 7.95508ZM2.08947 9.5772L1.64752 10.0191C2.16985 10.5415 2.78995 10.9558 3.47241 11.2385L3.71158 10.6611L3.95076 10.0836C3.41996 9.86378 2.93766 9.54151 2.53141 9.13526L2.08947 9.5772ZM3.71158 10.6611L3.47241 11.2385C4.15486 11.5212 4.88631 11.6667 5.625 11.6667V11.0417V10.4167C5.05047 10.4167 4.48156 10.3035 3.95076 10.0836L3.71158 10.6611ZM5.625 11.0417V11.6667C7.11684 11.6667 8.54758 11.074 9.60248 10.0191L9.16053 9.5772L8.71859 9.13526C7.89812 9.95573 6.78532 10.4167 5.625 10.4167V11.0417ZM9.16053 9.5772L9.60248 10.0191C10.6574 8.96425 11.25 7.53351 11.25 6.04167H10.625H10C10 7.20199 9.53906 8.31479 8.71859 9.13526L9.16053 9.5772ZM10.2083 0.625H9.58333V3.95833H10.2083H10.8333V0.625H10.2083ZM10.2083 3.95833V3.33333H6.875V3.95833V4.58333H10.2083V3.95833Z" fill="currentColor"/></svg>Reset</button>
             <!-- Metadata -->
             <span id="rep-when-label" style="margin-left:auto;font-size:11px;color:var(--text-sec);">Based on latest completed scans · Updated at 14:22</span>
           </div>
@@ -20740,7 +20737,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- filters moved into Failed checks table header below -->
 
         <!-- Per-policy table: benchmark → policies → checks → score -->
-        <div id="rep-policy-title" style="margin-bottom:10px;padding:0 18px;font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
+        <div id="rep-policy-title" style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
         <div id="rep-policy-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
           <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div style="cursor:pointer;">Policy <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Checks (pass / fail) <span style="opacity:0.4;">⇅</span></div><div>Failing by severity</div><div style="cursor:pointer;">Nodes <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Score <span style="opacity:0.4;">⇅</span></div>
@@ -20750,7 +20747,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Failed-checks detail -->
-        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;padding:0 18px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;">
           <div style="font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (<span id="rep-failed-count">4</span>)</div>
           <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
               <div class="ms-wrap" id="ms-pol">
