@@ -1557,6 +1557,16 @@ code { font-family:'DM Sans',sans-serif; }
    на кожному блоці: на .check-card інлайновий display вже належить setSevFilter, і
    два власники одного стилю рано чи пізно розійшлись би. #results-empty («no critical
    issues in this preview») теж гасимо — це повідомлення фільтра, а фільтрувати нема що. */
+/* Обидва порожні стани стоять вище геометричного центру: у порожній області око
+   зупиняється трохи вище середини, а не рівно посередині. Зсув через position, а не
+   margin — щоб не вплинути на розрахунок вільного місця у flex-контейнері. */
+#results-firstrun, #drift-firstrun { position:relative; top:-150px; }
+/* Коло-іконка у світлій темі темніша за канву, інакше зникає на ній. Тільки для цих
+   двох станів — решта .es-ico по застосунку лишається на --bg-canvas.
+   ⚠️ Обовʼязково під body:not(.dark), інакше правило протече в темну тему. */
+body:not(.dark) #results-firstrun .es-ico,
+body:not(.dark) #drift-firstrun .es-ico { background:#EDF2F7; }
+
 #results-firstrun { display:none; }
 #v-results.is-firstrun .results-scope-bar,
 #v-results.is-firstrun .results-top,
@@ -1564,7 +1574,33 @@ code { font-family:'DM Sans',sans-serif; }
 #v-results.is-firstrun #results-pills,
 #v-results.is-firstrun .check-card,
 #v-results.is-firstrun #results-empty { display:none !important; }
+/* Без плашки: у першому запуску блок лишається єдиним вмістом сторінки, а картка
+   потрібна лише там, де вона щось відмежовує від сусідів. Тому центруємо контейнером —
+   решта його дітей уже display:none, тож flex-центрування бере в роботу один блок. */
 #v-results.is-firstrun #results-firstrun { display:block; }
+#v-results.is-firstrun .results-body { display:flex; align-items:center; justify-content:center; }
+
+/* Те саме для Detected Drift. Дрейф — це різниця між двома сканами, тож у першому
+   запуску його не може бути за визначенням, і зникає весь апарат роботи з ним:
+   смуга reconciliation, фільтри, select-all, картки, пагінація. #changes-empty —
+   повідомлення фільтра, його теж гасимо, бо фільтрувати нема що.
+   .page-header знімаємо цілком — так само, як на Scans: у порожньому стані заголовок
+   блока вже називає, що тут буде, і другий заголовок над ним лише дублює. Місце
+   користувач бачить по активному пункту сайдбара. */
+#drift-firstrun { display:none; }
+#v-changes.is-firstrun .page-header,
+#v-changes.is-firstrun #sn-reconcile-banner,
+#v-changes.is-firstrun #drift-summary-toolbar,
+#v-changes.is-firstrun #drift-reconcile-panel,
+#v-changes.is-firstrun #changes-active-filters,
+#v-changes.is-firstrun #drift-select-all-row,
+#v-changes.is-firstrun #drift-cards,
+#v-changes.is-firstrun #drift-pagination-footer,
+#v-changes.is-firstrun #changes-empty { display:none !important; }
+#v-changes.is-firstrun #drift-firstrun { display:block; }
+/* padding-top тут 4px проти 24px знизу — під смугу reconciliation, якої в першому
+   запуску немає. Вирівнюємо, інакше центр блока зʼїхав би вгору на ці 20px. */
+#v-changes.is-firstrun #changes-body { display:flex; align-items:center; justify-content:center; padding-top:24px !important; }
 
 .score-wrap { position:relative; width:76px; height:76px; flex-shrink:0; }
 .score-svg  { width:76px; height:76px; }
@@ -6839,7 +6875,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                Обидва прочитання брехливі, і кожне гірше за відсутність блока.
                CTA — той самий Add Node, що й на All Nodes: у порожньому акаунті наступна
                дія одна, і вона не «запустити скан», бо сканувати нема чого. -->
-          <div id="results-firstrun" class="es" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);">
+          <div id="results-firstrun" class="es">
             <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
             <div class="es-title">No scan results yet</div>
             <div class="es-sub">Add a node and run your first scan. Your compliance score, failed checks<br>and the controls that passed will appear here.</div>
@@ -17933,7 +17969,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div class="page-title">Detected Drift Summary</div>
           <div class="page-sub" id="changes-sub">Detected since last scan · 1 unreconciled · 1 flagged · across 2 nodes</div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">
+        <div id="changes-head-meta" style="display:flex;gap:8px;align-items:center;">
           <div style="font-size:11px;color:var(--text-sec);white-space:nowrap;">
             Last scan: 2 hours ago
           </div>
@@ -17943,7 +17979,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </button>
         </div>
       </div>
-      <div style="flex:1;background:var(--bg-page);padding:4px 24px 24px;overflow-y:auto;min-width:0;">
+      <div id="changes-body" style="flex:1;background:var(--bg-page);padding:4px 24px 24px;overflow-y:auto;min-width:0;">
+
+        <!-- Перший запуск. Смугу reconciliation ховаємо разом з усім іншим, хоч вона й
+             схожа на пропозицію підключення: вона твердить про дані («6 upcoming CRs ·
+             8 drift events without CR»), а не пропонує дію. Тим вона й відрізняється від
+             смуги AWS на All Nodes, яку в порожньому стані ми лишили. -->
+        <div id="drift-firstrun" class="es">
+          <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 7l3-3M4 7l3 3M20 17H4M20 17l-3-3M20 17l-3 3"></path></svg></div>
+          <div class="es-title">No drift detected yet</div>
+          <div class="es-sub">Drift is the difference between two scans. Add a node and scan it — from the<br>second scan on, everything that changes on it will be listed here.</div>
+          <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openAddDeviceModal()">Add Node</button></div>
+        </div>
 
         <!-- Change reconciliation — compact ACTIVE status strip -->
         <div id="sn-reconcile-banner" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:9px 14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -28632,11 +28679,18 @@ function setScansState(state) {
   if (view) view.classList.toggle('is-firstrun', state === 'empty');
 }
 
+// Detected Drift — той самий підхід, що й на Scans: клас на вʼю, решту вирішує CSS.
+function setDriftState(state) {
+  var view = document.getElementById('v-changes');
+  if (view) view.classList.toggle('is-firstrun', state === 'empty');
+}
+
 function setAppState(state) {
   var empty = state === 'empty';
   setDashState(empty ? 'empty' : 'data');
   setNodesState(empty ? 'empty' : 'data');
   setScansState(empty ? 'empty' : 'data');
+  setDriftState(empty ? 'empty' : 'data');
 
   // Зворотний відлік до наступного скану — теж твердження про дані, тільки живе воно
   // в сайдбарі, а не на сторінці. Лишити «Next scan in 23h 44m» поруч із «No scan
