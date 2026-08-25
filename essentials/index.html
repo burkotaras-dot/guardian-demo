@@ -547,7 +547,11 @@ body.dark .policies-tabs-bar { background:var(--bg-page); }
 .intg-cat { padding:6px 12px; font-size:12px; font-weight:600; border:1px solid var(--border); border-radius:20px; background:var(--bg-surface); color:var(--text-sec); cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.12s; white-space:nowrap; }
 .intg-cat:hover { border-color:var(--text-muted); }
 .intg-cat.active { background:var(--green1); border-color:var(--green1); color:#fff; }
-.intg-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; }
+/* 4 картки в ряд. Поріг 340px підібраний під ширину контенту: на широкому екрані
+   (1732px) вміщається рівно 4 колонки по 423px, на 1440px — 3 по 381px. Жорсткий
+   repeat(4,1fr) не годиться: на 1440px колонка стискається до 283px, і рядок
+   ENABLED CAPABILITIES у підключеній картці розповзається з одного рядка на три. */
+.intg-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px; }
 .intg-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow-sm); cursor:pointer; transition:border-color 0.15s, box-shadow 0.15s; display:flex; flex-direction:column; gap:12px; }
 .intg-card:hover { border-color:rgba(16,185,129,0.28); box-shadow:var(--shadow-md); }
 body.dark .intg-card:hover { border-color:rgba(16,185,129,0.32); }
@@ -563,9 +567,14 @@ body.dark .intg-logo svg path[fill="#252F3E"],
 body.dark .intg-logo svg path[fill="#231556"],
 body.dark .intg-logo svg path[fill="#4D4D4D"] { fill:#e6e9ef; }
 .intg-logo-mono { font-weight:800; font-size:14px; }
-.intg-id-sub { display:flex; align-items:center; gap:8px; margin-top:9px; }
+/* Назва продукту («Secret Server») — ідентичність картки, вона не переноситься.
+   Раніше назва і тег категорії стояли в нерозривному ряду й ділили дефіцит ширини
+   між собою: щойно картка ставала вужчою за 352px, назва ламалась на «Secret» /
+   «Server». Тепер назва nowrap, а ряд може перенестись — тісно стає тегу, і він
+   з'їжджає під назву, а не рве її навпіл. */
+.intg-id-sub { display:flex; align-items:center; gap:8px; margin-top:9px; flex-wrap:wrap; }
 .intg-id-sub .intg-card-tag { margin-top:0; }
-.intg-card-name { font-size:14px; font-weight:700; color:var(--text-default); }
+.intg-card-name { font-size:14px; font-weight:700; color:var(--text-default); white-space:nowrap; }
 .intg-card-cat { font-size:11px; color:var(--text-muted); margin-top:1px; }
 .intg-card-meta { font-size:11px; color:var(--text-sec); }
 /* .intg-status — див. канонічний блок BADGE */
@@ -21704,12 +21713,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <button class="btn-primary" style="white-space:nowrap;padding:8px 16px;font-size:12px;width:auto;flex-shrink:0;" onclick="openIntegrationSetup()">Add connection</button>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
-        <div style="max-width:1240px;">
-          <div id="intg-list"></div>
-        </div>
-        <!-- Смуга запиту нової інтеграції свідомо ЗА межами обмежувача 1240px: це не
-             картка каталогу, а підсумковий рядок сторінки, тож він тягнеться на всю
-             ширину контенту, а кнопка стоїть на правому краї. -->
+        <div id="intg-list"></div>
+        <!-- Смуга запиту нової інтеграції — не картка каталогу, а підсумковий рядок
+             сторінки: сусід #intg-list, тягнеться на всю ширину контенту, кнопка
+             стоїть на правому краї, під Add connection. -->
         <div class="intg-footer">
           <div class="intg-footer-txt"><span id="intg-foot-title">Can&#39;t find the integration you need?</span><br><span class="intg-footer-sub" id="intg-foot-sub">Request a new integration for your organisation.</span></div>
           <button class="action-cta" style="width:auto;" onclick="showToast('Request noted — we\'ll follow up with you about this integration')">Request integration <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
