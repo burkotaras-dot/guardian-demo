@@ -1702,6 +1702,17 @@ body:not(.dark) #cred-firstrun .es-ico { background:#EDF2F7; }
 #v-credentials.is-firstrun #cred-firstrun { display:block; }
 #v-credentials.is-firstrun #cred-body { display:flex; align-items:center; justify-content:center; }
 
+/* Integrations — єдина сторінка, яка НЕ згортається в центрований порожній стан.
+   Решта сторінок показують те, що користувач створив; тут пʼять карток провайдерів
+   існують у день перший і однакові для всіх — це твердження про МОЖЛИВОСТІ, а не про
+   дані (той самий випадок, що каталог на v-reports-list). Накрити їх блоком
+   «No integrations yet» означало б сховати єдине, заради чого сюди заходять.
+   Тому гасне лише те, що бреше: секцію Connected прибирає renderIntegrations(),
+   а тут — підзаголовок, який на порожньому акаунті пропонує «керувати» нічим. */
+#intg-sub-firstrun { display:none; }
+#v-settings-integrations.is-firstrun #intg-sub-data { display:none; }
+#v-settings-integrations.is-firstrun #intg-sub-firstrun { display:block; }
+
 .score-wrap { position:relative; width:76px; height:76px; flex-shrink:0; }
 .score-svg  { width:76px; height:76px; }
 .score-inner {
@@ -12769,8 +12780,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
     function renderIntegrations() {
       var list = document.getElementById('intg-list'); if (!list) return;
-      var connected = INTG_PROVIDERS.filter(function(p){ return p.status==='connected' || p.status==='attention'; });
-      var available = INTG_PROVIDERS.filter(function(p){ return p.status==='notset'; });
+      // Перший запуск: підключеного немає нічого, тож секція Connected зникає, а всі
+      // провайдери стають доступними. Статус копіюємо в notset, інакше картка ServiceNow
+      // стояла б у Available з баджем CONNECTED. Джерело істини — клас на вʼю, як у
+      // renderCMList()/renderCredentials(); лічильники секцій підхопляться самі.
+      var view = document.getElementById('v-settings-integrations');
+      var firstRun = !!(view && view.classList.contains('is-firstrun'));
+      var connected = firstRun ? [] : INTG_PROVIDERS.filter(function(p){ return p.status==='connected' || p.status==='attention'; });
+      var available = firstRun
+        ? INTG_PROVIDERS.map(function(p){ var c = Object.assign({}, p); c.status = 'notset'; return c; })
+        : INTG_PROVIDERS.filter(function(p){ return p.status==='notset'; });
       var html = '';
       if (connected.length) {
         html += '<div class="intg-section-title">Connected integrations <span class="intg-count">· '+connected.length+'</span></div>';
@@ -12801,6 +12820,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           fs.textContent = 'Request a new integration for your organisation.';
         }
       }
+      // Зелений бейдж у сайдбарі захардкоджений у розмітці (:6276) і не належить жодному
+      // рендереру — незрозуміло, що саме він рахує. У першому запуску він читається як
+      // «тут щось є», тому гасне. У режимі з даними лишаємо як було, щоб не міняти чуже.
+      var sbBadge = document.querySelector('#sb-integrations span');
+      if (sbBadge) sbBadge.style.display = firstRun ? 'none' : '';
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
     }
     // ── Capability data per provider (keyed by provider id) ──
@@ -21672,7 +21696,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="page-header">
         <div>
           <div class="page-title">Integrations</div>
-          <div class="page-sub">Manage connections used across Guardian workflows.</div>
+          <div class="page-sub" id="intg-sub-data">Manage connections used across Guardian workflows.</div>
+          <div class="page-sub" id="intg-sub-firstrun">Connect a cloud account, CMDB or credential vault — Guardian imports nodes and reconciles changes from them.</div>
         </div>
         <button class="btn-primary" style="white-space:nowrap;padding:8px 16px;font-size:12px;width:auto;flex-shrink:0;" onclick="openIntegrationSetup()">Add connection</button>
       </div>
@@ -28909,6 +28934,17 @@ function setCredentialsState(state) {
   if (typeof renderCredentials === 'function') renderCredentials();
 }
 
+// Integrations. Каталог провайдерів — не дані користувача, а перелік того, до чого
+// Guardian уміє підключатись, тож він лишається на місці й сам працює закликом до дії.
+// Гасне тільки секція Connected із «Synced 4 min ago» — це єдине твердження про дані.
+// Клас виставляємо ДО renderIntegrations(): той читає стан саме з нього.
+function setIntegrationsState(state) {
+  var view = document.getElementById('v-settings-integrations');
+  if (!view) return;
+  view.classList.toggle('is-firstrun', state === 'empty');
+  if (typeof renderIntegrations === 'function') renderIntegrations();
+}
+
 function setAppState(state) {
   var empty = state === 'empty';
   setDashState(empty ? 'empty' : 'data');
@@ -28920,6 +28956,7 @@ function setAppState(state) {
   setSchedulesState(empty ? 'empty' : 'data');
   setCmGroupsState(empty ? 'empty' : 'data');
   setCredentialsState(empty ? 'empty' : 'data');
+  setIntegrationsState(empty ? 'empty' : 'data');
 
   // Зворотний відлік до наступного скану — теж твердження про дані, тільки живе воно
   // в сайдбарі, а не на сторінці. Лишити «Next scan in 23h 44m» поруч із «No scan
