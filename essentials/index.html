@@ -1560,7 +1560,7 @@ code { font-family:'DM Sans',sans-serif; }
 /* Обидва порожні стани стоять вище геометричного центру: у порожній області око
    зупиняється трохи вище середини, а не рівно посередині. Зсув через position, а не
    margin — щоб не вплинути на розрахунок вільного місця у flex-контейнері. */
-#results-firstrun, #drift-firstrun, #policies-firstrun, #reports-firstrun, #sched-firstrun { position:relative; top:-150px; }
+#results-firstrun, #drift-firstrun, #policies-firstrun, #reports-firstrun, #sched-firstrun, #cm-firstrun { position:relative; top:-150px; }
 /* Коло-іконка у світлій темі темніша за канву, інакше зникає на ній. Тільки для цих
    станів першого запуску — решта .es-ico по застосунку лишається на --bg-canvas.
    ⚠️ Обовʼязково під body:not(.dark), інакше правило протече в темну тему. */
@@ -1568,7 +1568,8 @@ body:not(.dark) #results-firstrun .es-ico,
 body:not(.dark) #drift-firstrun .es-ico,
 body:not(.dark) #policies-firstrun .es-ico,
 body:not(.dark) #reports-firstrun .es-ico,
-body:not(.dark) #sched-firstrun .es-ico { background:#EDF2F7; }
+body:not(.dark) #sched-firstrun .es-ico,
+body:not(.dark) #cm-firstrun .es-ico { background:#EDF2F7; }
 
 #results-firstrun { display:none; }
 #v-results.is-firstrun .results-scope-bar,
@@ -1669,6 +1670,22 @@ body:not(.dark) #sched-firstrun .es-ico { background:#EDF2F7; }
 #v-scan-schedule.is-firstrun #sched-note { display:none !important; }
 #v-scan-schedule.is-firstrun #sched-firstrun { display:block; }
 #v-scan-schedule.is-firstrun #sched-body { display:flex; align-items:center; justify-content:center; }
+
+/* Те саме для CM Groups — з тією ж різницею в змісті, що й на Policies. Група
+   Connection Manager-ів не походить від даних: це інфраструктура, яку створюють ДО
+   вузлів, бо саме через неї агентлес-скан до них дістається. Тому CTA тут «+ Create
+   Group», а не «Add Node» — та сама дія, що й у наявному порожньому стані таблиці.
+   Разом із таблицею йдуть KPI-картки (0 груп / — активних) і смуга контролів: пошук,
+   фільтри й лічильник «N groups» — усе це апарат роботи зі списком, якого нема.
+   renderCMList() малює власні порожні стани (KPI + рядок таблиці), але тут ховаються
+   цілі контейнери, тож вони не перетинаються. Padding .dash-main симетричний 24px. */
+#cm-firstrun { display:none; }
+#v-cm-list.is-firstrun #cm-head,
+#v-cm-list.is-firstrun #cm-stat-row,
+#v-cm-list.is-firstrun #cm-controls,
+#v-cm-list.is-firstrun #cm-table-card { display:none !important; }
+#v-cm-list.is-firstrun #cm-firstrun { display:block; }
+#v-cm-list.is-firstrun #cm-body { display:flex; align-items:center; justify-content:center; }
 
 .score-wrap { position:relative; width:76px; height:76px; flex-shrink:0; }
 .score-svg  { width:76px; height:76px; }
@@ -14247,9 +14264,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         }
       }
 
-      // Update sidebar count
+      // Update sidebar count. У першому запуску лічильник рахує те саме, що й сторінка,
+      // тож лишити його на 5 поруч із «No Connection Manager groups yet» означало б
+      // показати дві різні правди про одне число. Джерело істини одне — клас на вʼю:
+      // showView('cm-list') кличе renderCMList(), і без цієї перевірки той повернув би 5.
       var sbCount = document.querySelector('#sb-cm-list span');
-      if(sbCount) sbCount.textContent = groups.length;
+      var cmView = document.getElementById('v-cm-list');
+      if(sbCount) sbCount.textContent = (cmView && cmView.classList.contains('is-firstrun')) ? '0' : groups.length;
 
       // Apply filters
       var searchVal = (document.getElementById('cm-search') || {}).value || '';
@@ -21397,8 +21418,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
     <!-- ── CONNECTION MANAGERS LIST ── -->
     <div class="view" id="v-cm-list" style="display: none;">
-      <div class="dash-main" style="max-width:100%;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+      <div id="cm-body" class="dash-main" style="max-width:100%;">
+
+      <!-- Перший запуск. Іконка-стійка — та сама, що й у порожньому стані таблиці
+           та в картці CM Instances: сторінка одна, тож і символ у неї один. -->
+      <div id="cm-firstrun" class="es">
+        <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg></div>
+        <div class="es-title">No Connection Manager groups yet</div>
+        <div class="es-sub">A group is a set of lightweight relays that reach your nodes over<br>WinRM or SSH — that is how an agentless scan gets through.</div>
+        <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openCmSetup('cm-list')">+ Create Group</button></div>
+      </div>
+
+      <div id="cm-head" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
         <div>
           <div class="page-title">Connection Manager Groups</div>
           <div class="page-sub" style="color:var(--text-muted);">Organise lightweight relays that reach your nodes over WinRM / SSH</div>
@@ -21407,7 +21438,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
 
       <!-- Summary cards -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+      <div id="cm-stat-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
         <div id="cm-stat-total" class="stat-mini"></div>
         <div id="cm-stat-connected" class="stat-mini" data-accent="green"></div>
         <div id="cm-stat-offline" class="stat-mini" data-accent="amber" style="cursor:pointer;" onclick="cmQuickFilterAttention()"></div>
@@ -21415,7 +21446,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
 
       <!-- Groups table heading + controls -->
-      <div style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
+      <div id="cm-controls" style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
         <div style="min-width:180px;">
           <div style="font-size:14px;font-weight:700;color:var(--text-default);">Groups</div>
           <div id="cm-count-label" style="font-size:11px;color:var(--text-sec);margin-top:3px;white-space:nowrap;"></div>
@@ -21448,7 +21479,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
 
       <!-- Table -->
-      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+      <div id="cm-table-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
         <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 0.8fr 1.4fr 1fr 0.6fr 0.8fr 42px;min-width:760px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
           <!-- Лише Group і Nodes — стабільно порівнювані значення (ім'я, число). Status —
                категорійний (як STATUS у Managed Nodes), Connection health — складений рядок
@@ -28810,6 +28841,16 @@ function setSchedulesState(state) {
   if (view) view.classList.toggle('is-firstrun', state === 'empty');
 }
 
+// CM Groups. Група релеїв — інфраструктура, яку створюють ДО вузлів, тож CTA тут
+// «+ Create Group», а не «Add Node». Клас треба виставити ДО renderCMList(): той пише
+// лічильник у сайдбарі й читає стан саме з класу.
+function setCmGroupsState(state) {
+  var view = document.getElementById('v-cm-list');
+  if (!view) return;
+  view.classList.toggle('is-firstrun', state === 'empty');
+  if (typeof renderCMList === 'function') renderCMList();
+}
+
 function setAppState(state) {
   var empty = state === 'empty';
   setDashState(empty ? 'empty' : 'data');
@@ -28819,6 +28860,7 @@ function setAppState(state) {
   setPoliciesState(empty ? 'empty' : 'data');
   setReportsState(empty ? 'empty' : 'data');
   setSchedulesState(empty ? 'empty' : 'data');
+  setCmGroupsState(empty ? 'empty' : 'data');
 
   // Зворотний відлік до наступного скану — теж твердження про дані, тільки живе воно
   // в сайдбарі, а не на сторінці. Лишити «Next scan in 23h 44m» поруч із «No scan
