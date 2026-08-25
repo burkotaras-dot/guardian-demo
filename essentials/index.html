@@ -2685,8 +2685,8 @@ body.dark .remed-risk-cta.action-cta .remed-risk-check { color:#00AF73; }
   background:url('Assets/radix-icons_reload.svg') center/15px 15px no-repeat;
   filter:brightness(0) invert(1);
 }
-/* Scan Schedules row actions — narrower than the 124px default; colours from the base rule. */
-.schedule-action-cta.action-cta { min-width:68px; padding:0 10px; }
+/* Scan Schedules row actions — canonical DS Secondary (s=32), with 20px inline padding. */
+.schedule-action-cta.btn-secondary { min-width:0; padding:0 20px; }
 /* ── Segmented control (THE one, app-wide) ────────────────────────────────────────────────
    DS §6.5 has no segmented type, so this borrows the Secondary box (h32, r10, 12/600) and
    the Secondary tint ladder per theme — no new colours are invented:
@@ -25305,19 +25305,19 @@ function renderSchedules() {
       return '<div class="schedule-table-row" style="' + grid + '">' + nameCell
         + '<div><span class="bdg bdg--gray" style="border-style:dashed;">Not scheduled</span></div>'
         + '<div style="grid-column:3 / 7;font-size:12px;color:var(--text-muted);">No scan schedule set — scans run on demand only</div>'
-        + '<div><button class="action-cta schedule-action-cta" onclick="openScheduleModal(\'' + g + '\')">Set ' + actionArrow + '</button></div>'
+        + '<div><button class="btn-secondary schedule-action-cta" onclick="openScheduleModal(\'' + g + '\')">Set ' + actionArrow + '</button></div>'
         + '</div>';
     }
     const pill = s.enabled
       ? '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--green" style="cursor:pointer;font-family:inherit;">Active</button>'
-      : '<button onclick="toggleSchedule(\'' + g + '\')" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text-sec);background:rgba(100,116,139,0.1);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-family:inherit;"><span style="width:7px;height:7px;border-radius:50%;background:#94a3b8;"></span>Paused</button>';
+      : '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--gray" style="cursor:pointer;font-family:inherit;">Paused</button>';
     return '<div class="schedule-table-row" style="' + grid + '">' + nameCell
       + '<div>' + pill + '</div>'
       + '<div style="font-size:12px;color:var(--text-default);">' + s.freq + '</div>'
       + '<div style="font-size:12px;color:var(--text-sec);">' + s.time + ' UTC</div>'
       + '<div style="font-size:12px;color:var(--text-sec);">' + (s.last || 'Never') + '</div>'
       + '<div style="font-size:12px;color:var(--text-sec);">' + schedNextRun(s) + '</div>'
-      + '<div><button class="action-cta schedule-action-cta" onclick="openScheduleModal(\'' + g + '\')">Edit ' + actionArrow + '</button></div>'
+      + '<div><button class="btn-secondary schedule-action-cta" onclick="openScheduleModal(\'' + g + '\')">Edit ' + actionArrow + '</button></div>'
       + '</div>';
   }).join('');
 }
