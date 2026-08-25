@@ -1560,13 +1560,14 @@ code { font-family:'DM Sans',sans-serif; }
 /* Обидва порожні стани стоять вище геометричного центру: у порожній області око
    зупиняється трохи вище середини, а не рівно посередині. Зсув через position, а не
    margin — щоб не вплинути на розрахунок вільного місця у flex-контейнері. */
-#results-firstrun, #drift-firstrun, #policies-firstrun { position:relative; top:-150px; }
+#results-firstrun, #drift-firstrun, #policies-firstrun, #reports-firstrun { position:relative; top:-150px; }
 /* Коло-іконка у світлій темі темніша за канву, інакше зникає на ній. Тільки для цих
    станів першого запуску — решта .es-ico по застосунку лишається на --bg-canvas.
    ⚠️ Обовʼязково під body:not(.dark), інакше правило протече в темну тему. */
 body:not(.dark) #results-firstrun .es-ico,
 body:not(.dark) #drift-firstrun .es-ico,
-body:not(.dark) #policies-firstrun .es-ico { background:#EDF2F7; }
+body:not(.dark) #policies-firstrun .es-ico,
+body:not(.dark) #reports-firstrun .es-ico { background:#EDF2F7; }
 
 #results-firstrun { display:none; }
 #v-results.is-firstrun .results-scope-bar,
@@ -1617,6 +1618,39 @@ body:not(.dark) #policies-firstrun .es-ico { background:#EDF2F7; }
 /* padding-top тут 0 проти 24px знизу — під смугу вкладок, якої в першому запуску
    немає. Вирівнюємо, інакше центр блока зʼїхав би вгору на ці 24px. */
 #v-policies.is-firstrun #policies-body { display:flex; align-items:center; justify-content:center; padding-top:24px !important; }
+
+/* Згенерований звіт (v-reports). Звіт цілком походить від даних — це згортка
+   завершених сканів, тож без жодного вузла звітувати нема про що, і CTA той самий
+   «Add Node». #report-results / #report-loading / #report-empty мають інлайновий
+   display, який пише renderReport() — тому тут !important, а сам інлайн не чіпаємо.
+   #report-empty («No data for this scope») — повідомлення фільтра скоупу, гасимо:
+   скоуп нема з чого складати. Padding тіла вже симетричний 24px, вирівнювати нічого.
+   ⚠️ На відміну від Scans / Drift / Policies тут .page-header ЛИШАЄТЬСЯ: це не
+   верхньорівнева сторінка, а екран, у який заходять із каталогу Reports, і в його
+   хедері живе єдина кнопка Back. Гасимо лише праву групу дій — Demo-перемикач і
+   Export, бо експортувати порожній звіт нема сенсу. */
+#reports-firstrun { display:none; }
+#v-reports.is-firstrun #rep-head-actions,
+#v-reports.is-firstrun #rep-scope-wrap,
+#v-reports.is-firstrun #report-results,
+#v-reports.is-firstrun #report-loading,
+#v-reports.is-firstrun #report-empty { display:none !important; }
+#v-reports.is-firstrun #reports-firstrun { display:block; }
+#v-reports.is-firstrun #reports-body { display:flex; align-items:center; justify-content:center; }
+
+/* Каталог Reports (v-reports-list) — єдиний випадок, де порожній стан НЕ витісняє
+   сторінку. Картки описують типи звітів, тобто можливості продукту, а не дані
+   користувача: на порожньому акаунті вони так само правдиві й кажуть, про що
+   Guardian взагалі вміє звітувати. Тому прибираємо рівно три твердження про дані —
+   «Last run · 2 days ago», «8 items need attention» і Bulk export (експортувати
+   нема чого) — і підставляємо на їх місце чесні підписи з тієї ж родини .rpt-meta,
+   що вже стоять на решті карток («Needs 2+ scans»). Бейдж Available лишається:
+   він каже, що тип звіту готовий, а не що є дані. */
+.rpt-meta-firstrun { display:none; }
+#v-reports-list.is-firstrun .rpt-bulk-bar,
+#v-reports-list.is-firstrun #rpt-meta-compliance,
+#v-reports-list.is-firstrun #rpt-meta-investigation { display:none !important; }
+#v-reports-list.is-firstrun .rpt-meta-firstrun { display:flex; }
 
 .score-wrap { position:relative; width:76px; height:76px; flex-shrink:0; }
 .score-svg  { width:76px; height:76px; }
@@ -20256,7 +20290,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <li>Scope by nodes, groups and benchmarks</li>
             </ul>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;">
-              <span class="rpt-meta ready">Last run · 2 days ago</span>
+              <span class="rpt-meta ready" id="rpt-meta-compliance">Last run · 2 days ago</span>
+              <span class="rpt-meta rpt-meta-firstrun">Needs at least one scan</span>
               <button class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;" onclick="generateReport('compliance')">Generate report →</button>
             </div>
           </div>
@@ -20325,7 +20360,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <li>Scan failures and other attention states</li>
             </ul>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;">
-              <span class="rpt-meta">8 items need attention</span>
+              <span class="rpt-meta" id="rpt-meta-investigation">8 items need attention</span>
+              <span class="rpt-meta rpt-meta-firstrun">Nothing to investigate yet</span>
               <button class="rpt-preview-btn" onclick="generateReport('investigation')">View preview<span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
             </div>
           </div>
@@ -21123,7 +21159,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div class="page-sub" id="rep-scope-desc">Policy and check compliance across the selected scope</div>
           </div>
         </div>
-        <div style="display:flex;gap:12px;align-items:center;">
+        <div id="rep-head-actions" style="display:flex;gap:12px;align-items:center;">
           <div class="demo-wrap" title="Prototype only — simulate export success or failure. Not shown in the live product.">
             <span class="demo-lbl">Demo</span>
             <div class="demo-seg-group">
@@ -21142,11 +21178,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
         </div>
       </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
+      <div id="reports-body" style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
+
+        <!-- Перший запуск. Іконка-документ — та сама, що й у наявному #report-empty:
+             сторінка одна, тож і символ у неї один. -->
+        <div id="reports-firstrun" class="es">
+          <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></div>
+          <div class="es-title">Nothing to report yet</div>
+          <div class="es-sub">A report is built from completed scans. Add a node and scan it — its<br>compliance results will roll up here.</div>
+          <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openAddDeviceModal()">Add Node</button></div>
+        </div>
 
         <!-- Scope + Report view bar — жодної фонової картки навколо (Figma 3474:51913):
              це звичайний рядок керування прямо на фоні сторінки, без border/shadow/padding. -->
-        <div style="margin-bottom:16px;">
+        <div id="rep-scope-wrap" style="margin-bottom:16px;">
           <div id="rep-scope-bar" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
             <!-- SCOPE -->
             <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Scope</span>
@@ -28717,6 +28762,18 @@ function setPoliciesState(state) {
   if (view) view.classList.toggle('is-firstrun', state === 'empty');
 }
 
+// Reports — дві вʼюхи. Каталог типів звітів (v-reports-list) лишається на місці,
+// у ньому лише гаснуть твердження про дані. Згенерований звіт (v-reports) —
+// повноцінний порожній стан. Інлайновий display на #report-results / #report-loading /
+// #report-empty належить renderReport(), тож тут його не чіпаємо — лише клас на вʼю.
+function setReportsState(state) {
+  var empty = state === 'empty';
+  ['v-reports', 'v-reports-list'].forEach(function(id) {
+    var view = document.getElementById(id);
+    if (view) view.classList.toggle('is-firstrun', empty);
+  });
+}
+
 function setAppState(state) {
   var empty = state === 'empty';
   setDashState(empty ? 'empty' : 'data');
@@ -28724,6 +28781,7 @@ function setAppState(state) {
   setScansState(empty ? 'empty' : 'data');
   setDriftState(empty ? 'empty' : 'data');
   setPoliciesState(empty ? 'empty' : 'data');
+  setReportsState(empty ? 'empty' : 'data');
 
   // Зворотний відлік до наступного скану — теж твердження про дані, тільки живе воно
   // в сайдбарі, а не на сторінці. Лишити «Next scan in 23h 44m» поруч із «No scan
