@@ -1668,16 +1668,24 @@ body:not(.dark) #cred-firstrun .es-ico { background:#EDF2F7; }
 /* Каталог Reports (v-reports-list) — єдиний випадок, де порожній стан НЕ витісняє
    сторінку. Картки описують типи звітів, тобто можливості продукту, а не дані
    користувача: на порожньому акаунті вони так само правдиві й кажуть, про що
-   Guardian взагалі вміє звітувати. Тому прибираємо рівно три твердження про дані —
+   Guardian взагалі вміє звітувати. Тому прибираємо три твердження про дані —
    «Last run · 2 days ago», «8 items need attention» і Bulk export (експортувати
    нема чого) — і підставляємо на їх місце чесні підписи з тієї ж родини .rpt-meta,
-   що вже стоять на решті карток («Needs 2+ scans»). Бейдж Available лишається:
-   він каже, що тип звіту готовий, а не що є дані. */
+   що вже стоять на решті карток («Needs 2+ scans»).
+   Клієнт (Stephen, 26.08) відкинув попередній компроміс «лишити Available»:
+   звіт — похідний артефакт, без жодного скану згенерувати його неможливо, тож
+   зелений «Generate report» на first-run був фейковим CTA, що вів у глухий кут
+   «Nothing to report yet». На first-run Compliance теж стає Preview (без Available,
+   без активного Generate), а над сіткою зʼявляється єдиний реальний наступний крок
+   — Add Node (той самий openAddDeviceModal, що й у детальному empty-state). */
 .rpt-meta-firstrun { display:none; }
+.rpt-firstrun-only { display:none; }
 #v-reports-list.is-firstrun .rpt-bulk-bar,
+#v-reports-list.is-firstrun .rpt-data-only,
 #v-reports-list.is-firstrun #rpt-meta-compliance,
 #v-reports-list.is-firstrun #rpt-meta-investigation { display:none !important; }
 #v-reports-list.is-firstrun .rpt-meta-firstrun { display:flex; }
+#v-reports-list.is-firstrun .rpt-firstrun-only { display:inline-flex; }
 
 /* Те саме для Scan Schedules. Розклад не існує сам по собі — його вішають на node group
    або на environment, а групи й середовища беруться з вузлів. Без жодного вузла планувати
@@ -20529,6 +20537,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
           </div>
+          <button class="btn-primary btn-primary--s rpt-firstrun-only" style="width:auto;white-space:nowrap;" onclick="openAddDeviceModal()">Add Node</button>
         </div>
 
         <div class="rpt-grid" id="rpt-grid">
@@ -20541,7 +20550,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
               </div>
               </div>
-              <span class="rpt-badge avail">Available</span>
+              <span class="rpt-badge avail rpt-data-only">Available</span>
+              <span class="rpt-badge preview rpt-firstrun-only">Preview</span>
             </div>
             <div style="font-size:15px;font-weight:700;color:var(--text-default);margin-top:12px;">Compliance</div>
             <div style="font-size:12px;color:var(--text-sec);line-height:1.5;margin-top:5px;">Policy and check compliance state across your estate.</div>
@@ -20550,9 +20560,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <li>Scope by nodes, groups and benchmarks</li>
             </ul>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;">
-              <span class="rpt-meta ready" id="rpt-meta-compliance">Last run · 2 days ago</span>
+              <span class="rpt-meta ready rpt-data-only" id="rpt-meta-compliance">Last run · 2 days ago</span>
               <span class="rpt-meta rpt-meta-firstrun">Needs at least one scan</span>
-              <button class="btn-primary" style="width:auto;padding:9px 18px;font-size:13px;" onclick="generateReport('compliance')">Generate report →</button>
+              <button class="btn-primary rpt-data-only" style="width:auto;padding:9px 18px;font-size:13px;" onclick="generateReport('compliance')">Generate report →</button>
+              <button class="rpt-preview-btn rpt-firstrun-only" onclick="generateReport('compliance')">View preview<span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
             </div>
           </div>
 
@@ -23894,6 +23905,13 @@ function showView(name) {
   const _nav = document.querySelector('.top-nav');
   if (_nav) _nav.style.background = isWizardChrome ? '#062A2E' : 'linear-gradient(to right, #062A2E 220px, transparent 220px)';
   showOnly(name);
+  // Data-state toggle belongs only on the ten main pages (those with a First-run state),
+  // not on detail / edit / wizard views.
+  var _seg = document.getElementById('app-state-seg');
+  if (_seg) {
+    var MAIN_VIEWS = ['dashboard','all-devices','results','changes','policies','reports-list','scan-schedule','cm-list','credentials','settings-integrations'];
+    _seg.style.display = MAIN_VIEWS.indexOf(name) !== -1 ? 'inline-flex' : 'none';
+  }
   if (name === 'settings-integrations' && typeof renderIntegrations === 'function') renderIntegrations();
   if (name === 'all-devices' && typeof resumeNodeScans === 'function') resumeNodeScans();
   if (name === 'all-devices' && typeof updateNodeStateCounts === 'function') updateNodeStateCounts();
