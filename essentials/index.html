@@ -6308,7 +6308,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="sidebar-item" id="sb-integrations" onclick="showView(&#39;settings-integrations&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"></circle><circle cx="16" cy="16" r="3"></circle><path d="M8 11v2a5 5 0 0 0 5 5h1"></path><path d="M16 5v2a5 5 0 0 0-5 5h-1" transform="rotate(180 16 10)"></path><path d="M11 8h2M13 16h-2"></path></svg>
         Integrations
-        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">1</span>
+        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">2</span>
       </div>
     </div>
     <div class="sidebar-footer" id="sidebar-footer">
@@ -12820,11 +12820,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           fs.textContent = 'Request a new integration for your organisation.';
         }
       }
-      // Зелений бейдж у сайдбарі захардкоджений у розмітці (:6276) і не належить жодному
-      // рендереру — незрозуміло, що саме він рахує. У першому запуску він читається як
-      // «тут щось є», тому гасне. У режимі з даними лишаємо як було, щоб не міняти чуже.
+      // Бейдж у сайдбарі був захардкоджений у розмітці і показував «1», хоча підключень
+      // два — його не писав жоден рендерер, тож ніхто й не міг сказати, що саме він
+      // рахує. Тепер це кількість ПІДКЛЮЧЕНИХ інтеграцій: сусідні лічильники (All Nodes,
+      // CM Groups, Credentials) так само рахують те, що в користувача вже є, а не те,
+      // що йому доступно. У першому запуску звідси природно виходить 0.
       var sbBadge = document.querySelector('#sb-integrations span');
-      if (sbBadge) sbBadge.style.display = firstRun ? 'none' : '';
+      if (sbBadge) sbBadge.textContent = connected.length;
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
     }
     // ── Capability data per provider (keyed by provider id) ──
