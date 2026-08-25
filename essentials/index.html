@@ -540,10 +540,11 @@ body.dark .policies-tabs-bar { background:var(--bg-page); }
 .intg-meta-txt { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .intg-caps { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
 /* увімкнена можливість інтеграції — канон .bdg, колір Green */
-.intg-cap-more { font-size:11px; font-weight:600; color:var(--text-muted); white-space:nowrap; }
 .intg-card-desc { font-size:12px; color:var(--text-sec); line-height:1.45; }
-.intg-foot-caps { display:flex; flex-direction:column; gap:5px; min-width:0; flex:1; }
 .intg-card-foot { margin-top:auto; padding-top:2px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+/* Футер підключеної картки несе лише дію — вміст переїхав у тіло картки, тож єдину
+   кнопку треба тримати на правому краї, під «Add connection». */
+.intg-foot--end { justify-content:flex-end; }
 .intg-cat { padding:6px 12px; font-size:12px; font-weight:600; border:1px solid var(--border); border-radius:20px; background:var(--bg-surface); color:var(--text-sec); cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.12s; white-space:nowrap; }
 .intg-cat:hover { border-color:var(--text-muted); }
 .intg-cat.active { background:var(--green1); border-color:var(--green1); color:#fff; }
@@ -12735,15 +12736,23 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (f) return '<div class="intg-logo" data-logo="'+f+'"></div>';
       return '<div class="intg-logo"><span class="intg-logo-mono" style="color:'+p.color+';">'+p.name.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()+'</span></div>';
     }
-    function intgCardHead(p) {
+    // connected=true — картка в секції «Connected integrations». Пігулка статусу
+    // (CONNECTED / Attention / Error) — головний сигнал картки: саме «підключено» це
+    // стан, якого користувач досяг, тож він і отримує форму в шапці. Прибираємо лише
+    // ДРУГУ пігулку — категорію: на підключеній картці ідентичність уже дає лого,
+    // а тег дублював би статус за геометрією. Категорія лишається на Available-картках,
+    // де вона потрібна для ВИБОРУ. Отже: connected → одна пігулка в шапці (статус),
+    // available → одна пігулка в шапці (категорія) + власний маркер стану.
+    function intgCardHead(p, connected) {
       // Wordmark already carries the product name → hide the redundant text label.
       // Secret Server is the exception (Delinea wordmark ≠ product), so keep its name.
       var showName = !INTG_LOGO[p.id] || p.id==='secretserver';
-      var sub = (showName ? '<span class="intg-card-name">'+p.name+'</span>' : '') + '<span class="intg-card-tag">'+p.catLabel+'</span>';
+      var sub = (showName ? '<span class="intg-card-name">'+p.name+'</span>' : '')
+              + (connected ? '' : '<span class="intg-card-tag">'+p.catLabel+'</span>');
       return '<div class="intg-card-top">'
         +   '<div style="flex:1;min-width:0;">'
         +     intgLogoTile(p)
-        +     '<div class="intg-id-sub">'+sub+'</div>'
+        +     (sub ? '<div class="intg-id-sub">'+sub+'</div>' : '')
         +   '</div>'
         +   '<span class="intg-status '+p.status+'"><span class="dot"></span>'+INTG_STATUS[p.status]+'</span>'
         + '</div>';
@@ -12763,26 +12772,33 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (p.metricShort) bits.push(p.metricShort);
       var warn = p.syncState==='attention';
       var meta = '<div class="intg-meta'+(warn?' warn':'')+'"><span class="hdot"></span><span class="intg-meta-txt">'+bits.join(' · ')+'</span></div>';
-      // Capabilities: first + "+N more" (full list lives on Manage) OR purpose (connection-only).
+      // Capabilities: повний список. Раніше показували перший чип і «+N more» — але
+      // максимум у даних це 2 можливості, тобто чип-заглушка ховала рівно ОДИН елемент
+      // і при цьому сам займав місце. Тепер це єдина родина пігулок на картці, тож їй
+      // віддано весь звільнений простір; переносяться штатним flex-wrap у .intg-caps.
       var capsRow = '';
       if ((p.caps||[]).length) {
-        var chips = '<span class="intg-cap">'+p.caps[0]+'</span>';
-        if (p.caps.length>1) chips += '<span class="intg-cap-more">+'+(p.caps.length-1)+' more</span>';
+        var chips = p.caps.map(function(c){ return '<span class="intg-cap">'+c+'</span>'; }).join('');
         capsRow = '<div class="intg-zlabel">Enabled capabilities</div><div class="intg-caps">'+chips+'</div>';
       } else if (p.purpose) {
         capsRow = '<div class="intg-zlabel">Purpose</div><div class="intg-detail-val">'+p.purpose+'</div>';
       }
+      // Capabilities стоять у ТІЛІ картки на всю ширину, а не в колонці футера поруч із
+      // кнопкою. У футері під них лишалось 209px (381 картка − 36 падинг − 124 кнопка −
+      // 12 gap), а чип «AUTOMATED CHANGE RECONCILIATION» має 229px: flex-wrap не вміє
+      // розірвати один чип, тож він наїжджав на кнопку. Повна ширина знімає конфлікт
+      // і саме вона дозволяє показати список цілком замість «+N more».
       return '<div class="intg-card" onclick="openIntegrationDetail(\''+p.id+'\')">'
-        + intgCardHead(p)
-        + '<div class="intg-card-body">'+meta+'</div>'
-        + '<div class="intg-card-foot"><div class="intg-foot-caps">'+capsRow+'</div>'
+        + intgCardHead(p, true)
+        + '<div class="intg-card-body">'+meta+(capsRow ? '<div class="intg-zone">'+capsRow+'</div>' : '')+'</div>'
+        + '<div class="intg-card-foot intg-foot--end">'
         +   '<button class="action-cta" style="width:auto;" onclick="event.stopPropagation();openIntegrationDetail(\''+p.id+'\')">Manage <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>'
         + '</div>'
         + '</div>';
     }
     function intgAvailableCard(p) {
       return '<div class="intg-card" onclick="openIntegrationSetup(\''+p.id+'\')">'
-        + intgCardHead(p)
+        + intgCardHead(p, false)
         + '<div class="intg-card-body"><div class="intg-card-desc">'+(p.desc||'')+'</div></div>'
         + '<div class="intg-card-foot"><button class="btn-primary" style="width:auto;padding:7px 16px;font-size:12px;" onclick="event.stopPropagation();openIntegrationSetup(\''+p.id+'\')">Connect</button></div>'
         + '</div>';
