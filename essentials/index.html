@@ -4177,6 +4177,12 @@ body.dark #pd-tag-picker div:hover { background: #012F32 !important; border-radi
 /* Inactive filter pills — lighter text on dark backgrounds */
 body.dark .pill { color: #94A3B8; }
 
+/* Кнопка Reset (Figma 3536:43803) — Default/Active, спільна для All Nodes і всіх Reports:
+   сірий, поки нічого не змінено; зелений #059669, щойно фільтр/пошук відрізняється від
+   дефолту. Іконка = fill:currentColor, тож перемикається разом із текстом. */
+.reset-btn-2s { color: var(--text-muted); }
+.reset-btn-2s.is-active { color: #059669; }
+
 /* All Nodes table header dark mode */
 body.dark #v-all-devices [style*="background:#F9FAFC"] { background: var(--table-header-bg) !important; }
 /* Peer Baseline table headers and group headers */
@@ -7796,6 +7802,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
           </div>
+          <div style="width:1px;height:20px;background:var(--border);margin:0 2px;"></div>
+          <!-- Скидання всіх фільтрів рядка — стан, група/середовище/джерело і пошук разом
+               (Figma 3474:50935 · 3474:50937). Іконка — та сама кругова стрілка, що й на
+               Compliance report (index.html:20725), 16×16, stroke=currentColor. -->
+          <button id="nodes-reset-btn" class="reset-btn-2s" onclick="nodesResetFilters()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><path d="M8 2.95833V3.58333V2.95833ZM3 7.95833H2.375H3ZM8 12.9583V12.3333V12.9583ZM13.625 7.95833C13.625 7.61315 13.3452 7.33333 13 7.33333C12.6548 7.33333 12.375 7.61315 12.375 7.95833H13H13.625ZM13.2083 2.54166C13.2083 2.19648 12.9285 1.91666 12.5833 1.91666C12.2382 1.91666 11.9583 2.19648 11.9583 2.54166H12.5833H13.2083ZM12.5833 5.87499V6.49999H13.2083V5.87499H12.5833ZM9.25 5.24999C8.90482 5.24999 8.625 5.52982 8.625 5.87499C8.625 6.22017 8.90482 6.49999 9.25 6.49999V5.87499V5.24999ZM12.4444 5.73611L13.0092 5.46841C12.1275 3.60823 10.2092 2.33333 8 2.33333V2.95833V3.58333C9.72081 3.58333 11.2025 4.5751 11.8797 6.0038L12.4444 5.73611ZM8 2.95833V2.33333C7.26131 2.33333 6.52986 2.47882 5.84741 2.76151L6.08658 3.33893L6.32576 3.91636C6.85656 3.69649 7.42547 3.58333 8 3.58333V2.95833ZM6.08658 3.33893L5.84741 2.76151C5.16495 3.04419 4.54485 3.45852 4.02252 3.98085L4.46447 4.42279L4.90641 4.86474C5.31266 4.45848 5.79496 4.13622 6.32576 3.91636L6.08658 3.33893ZM4.46447 4.42279L4.02252 3.98085C3.50019 4.50318 3.08586 5.12328 2.80318 5.80573L3.3806 6.04491L3.95803 6.28409C4.17789 5.75329 4.50015 5.27099 4.90641 4.86474L4.46447 4.42279ZM3.3806 6.04491L2.80318 5.80573C2.52049 6.48819 2.375 7.21964 2.375 7.95833H3H3.625C3.625 7.38379 3.73816 6.81489 3.95803 6.28409L3.3806 6.04491ZM3 7.95833H2.375C2.375 8.69701 2.52049 9.42847 2.80318 10.1109L3.3806 9.87175L3.95803 9.63257C3.73816 9.10177 3.625 8.53286 3.625 7.95833H3ZM3.3806 9.87175L2.80318 10.1109C3.08586 10.7934 3.50019 11.4135 4.02252 11.9358L4.46447 11.4939L4.90641 11.0519C4.50015 10.6457 4.17789 10.1634 3.95803 9.63257L3.3806 9.87175ZM4.46447 11.4939L4.02252 11.9358C4.54485 12.4581 5.16495 12.8725 5.84741 13.1551L6.08658 12.5777L6.32576 12.0003C5.79496 11.7804 5.31266 11.4582 4.90641 11.0519L4.46447 11.4939ZM6.08658 12.5777L5.84741 13.1551C6.52986 13.4378 7.26131 13.5833 8 13.5833V12.9583V12.3333C7.42547 12.3333 6.85656 12.2202 6.32576 12.0003L6.08658 12.5777ZM8 12.9583V13.5833C9.49184 13.5833 10.9226 12.9907 11.9775 11.9358L11.5355 11.4939L11.0936 11.0519C10.2731 11.8724 9.16032 12.3333 8 12.3333V12.9583ZM11.5355 11.4939L11.9775 11.9358C13.0324 10.8809 13.625 9.45017 13.625 7.95833H13H12.375C12.375 9.11865 11.9141 10.2314 11.0936 11.0519L11.5355 11.4939ZM12.5833 2.54166H11.9583V5.87499H12.5833H13.2083V2.54166H12.5833ZM12.5833 5.87499V5.24999H9.25V5.87499V6.49999H12.5833V5.87499Z" fill="currentColor"/></svg>Reset</button>
           <!-- Selection actions — same right group, appears in front of the filters -->
           <div id="node-action-bar" style="display:none;align-items:center;gap:8px;flex-shrink:0;order:-1;">
             <span id="node-action-count" style="font-size:12px;font-weight:500;color:var(--text-sec);white-space:nowrap;"></span>
@@ -16935,12 +16946,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (empty) empty.style.display = visible === 0 ? '' : 'none';
       var active = (period !== 'all' || type !== 'all' || node !== 'all');
       var reset = document.getElementById('rc-f-reset');
-      if (reset) {
-        reset.style.opacity = active ? '1' : '0.5';
-        reset.style.pointerEvents = active ? 'auto' : 'none';
-        reset.style.cursor = active ? 'pointer' : 'default';
-        reset.style.color = active ? 'var(--text-sec)' : 'var(--text-muted)';
-      }
+      if (reset) reset.classList.toggle('is-active', active);
     }
     function rcResetFilters() {
       ['rc-f-period', 'rc-f-type', 'rc-f-node'].forEach(function(id) { var s = document.getElementById(id); if (s) s.selectedIndex = 0; });
@@ -16968,12 +16974,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (empty) empty.style.display = visible === 0 ? '' : 'none';
       var active = (period !== 'all' || type !== 'all' || node !== 'all');
       var reset = document.getElementById('rb-f-reset');
-      if (reset) {
-        reset.style.opacity = active ? '1' : '0.5';
-        reset.style.pointerEvents = active ? 'auto' : 'none';
-        reset.style.cursor = active ? 'pointer' : 'default';
-        reset.style.color = active ? 'var(--text-sec)' : 'var(--text-muted)';
-      }
+      if (reset) reset.classList.toggle('is-active', active);
     }
     function rbResetFilters() {
       ['rb-f-period', 'rb-f-type', 'rb-f-node'].forEach(function(id) { var s = document.getElementById(id); if (s) s.selectedIndex = 0; });
@@ -17002,12 +17003,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (empty) empty.style.display = visible === 0 ? '' : 'none';
       var active = (cat !== 'all' || sev !== 'all' || node !== 'all');
       var reset = document.getElementById('ri-f-reset');
-      if (reset) {
-        reset.style.opacity = active ? '1' : '0.5';
-        reset.style.pointerEvents = active ? 'auto' : 'none';
-        reset.style.cursor = active ? 'pointer' : 'default';
-        reset.style.color = active ? 'var(--text-sec)' : 'var(--text-muted)';
-      }
+      if (reset) reset.classList.toggle('is-active', active);
     }
     function riResetFilters() {
       ['ri-f-cat', 'ri-f-sev', 'ri-f-node'].forEach(function(id) { var s = document.getElementById(id); if (s) s.selectedIndex = 0; });
@@ -17299,10 +17295,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var sevAll = msValues('ms-sev').length === document.querySelectorAll('#ms-sev input').length;
       var full = document.getElementById('rt-full') && document.getElementById('rt-full').classList.contains('on');
       var nonDefault = scopeChanged || !polAll || !sevAll || !full;
-      btn.style.color = nonDefault ? 'var(--green1)' : 'var(--text-muted)';
-      btn.style.cursor = nonDefault ? 'pointer' : 'default';
-      btn.style.pointerEvents = nonDefault ? '' : 'none';
-      btn.style.opacity = nonDefault ? '1' : '0.5';
+      btn.classList.toggle('is-active', nonDefault);
     }
     function reportApplyFilters() {
       updateResetVisibility();
@@ -20445,7 +20438,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="back-btn" id="rc-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
-          <div style="width:38px;height:38px;border-radius:10px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></div>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">What changed report</div>
@@ -20632,13 +20624,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Changes table heading + filters -->
-        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;padding:0 18px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;">
           <div id="rc-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Detected changes (6)</div>
           <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
             <select id="rc-f-period" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">Since last scan</option><option value="6">Last 6 hours</option><option value="24">Last 24 hours</option><option value="alltime">All time</option></select>
             <select id="rc-f-type" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All change types</option><option value="added">Added</option><option value="modified">Modified</option><option value="removed">Removed</option></select>
             <select id="rc-f-node" onchange="rcApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option></select>
-            <button id="rc-f-reset" onclick="rcResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
+            <button id="rc-f-reset" class="reset-btn-2s" onclick="rcResetFilters()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;white-space:nowrap;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><path d="M8 2.95833V3.58333V2.95833ZM3 7.95833H2.375H3ZM8 12.9583V12.3333V12.9583ZM13.625 7.95833C13.625 7.61315 13.3452 7.33333 13 7.33333C12.6548 7.33333 12.375 7.61315 12.375 7.95833H13H13.625ZM13.2083 2.54166C13.2083 2.19648 12.9285 1.91666 12.5833 1.91666C12.2382 1.91666 11.9583 2.19648 11.9583 2.54166H12.5833H13.2083ZM12.5833 5.87499V6.49999H13.2083V5.87499H12.5833ZM9.25 5.24999C8.90482 5.24999 8.625 5.52982 8.625 5.87499C8.625 6.22017 8.90482 6.49999 9.25 6.49999V5.87499V5.24999ZM12.4444 5.73611L13.0092 5.46841C12.1275 3.60823 10.2092 2.33333 8 2.33333V2.95833V3.58333C9.72081 3.58333 11.2025 4.5751 11.8797 6.0038L12.4444 5.73611ZM8 2.95833V2.33333C7.26131 2.33333 6.52986 2.47882 5.84741 2.76151L6.08658 3.33893L6.32576 3.91636C6.85656 3.69649 7.42547 3.58333 8 3.58333V2.95833ZM6.08658 3.33893L5.84741 2.76151C5.16495 3.04419 4.54485 3.45852 4.02252 3.98085L4.46447 4.42279L4.90641 4.86474C5.31266 4.45848 5.79496 4.13622 6.32576 3.91636L6.08658 3.33893ZM4.46447 4.42279L4.02252 3.98085C3.50019 4.50318 3.08586 5.12328 2.80318 5.80573L3.3806 6.04491L3.95803 6.28409C4.17789 5.75329 4.50015 5.27099 4.90641 4.86474L4.46447 4.42279ZM3.3806 6.04491L2.80318 5.80573C2.52049 6.48819 2.375 7.21964 2.375 7.95833H3H3.625C3.625 7.38379 3.73816 6.81489 3.95803 6.28409L3.3806 6.04491ZM3 7.95833H2.375C2.375 8.69701 2.52049 9.42847 2.80318 10.1109L3.3806 9.87175L3.95803 9.63257C3.73816 9.10177 3.625 8.53286 3.625 7.95833H3ZM3.3806 9.87175L2.80318 10.1109C3.08586 10.7934 3.50019 11.4135 4.02252 11.9358L4.46447 11.4939L4.90641 11.0519C4.50015 10.6457 4.17789 10.1634 3.95803 9.63257L3.3806 9.87175ZM4.46447 11.4939L4.02252 11.9358C4.54485 12.4581 5.16495 12.8725 5.84741 13.1551L6.08658 12.5777L6.32576 12.0003C5.79496 11.7804 5.31266 11.4582 4.90641 11.0519L4.46447 11.4939ZM6.08658 12.5777L5.84741 13.1551C6.52986 13.4378 7.26131 13.5833 8 13.5833V12.9583V12.3333C7.42547 12.3333 6.85656 12.2202 6.32576 12.0003L6.08658 12.5777ZM8 12.9583V13.5833C9.49184 13.5833 10.9226 12.9907 11.9775 11.9358L11.5355 11.4939L11.0936 11.0519C10.2731 11.8724 9.16032 12.3333 8 12.3333V12.9583ZM11.5355 11.4939L11.9775 11.9358C13.0324 10.8809 13.625 9.45017 13.625 7.95833H13H12.375C12.375 9.11865 11.9141 10.2314 11.0936 11.0519L11.5355 11.4939ZM12.5833 2.54166H11.9583V5.87499H12.5833H13.2083V2.54166H12.5833ZM12.5833 5.87499V5.24999H9.25V5.87499V6.49999H12.5833V5.87499Z" fill="currentColor"/></svg>Reset</button>
           </div>
         </div>
         <div id="rc-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
@@ -20703,7 +20695,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="back-btn" id="rb-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
-          <div style="width:38px;height:38px;border-radius:10px;background:rgba(217,119,6,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">Baseline deviation report</div>
@@ -20892,13 +20883,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Deviations table heading + filters -->
-        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;padding:0 18px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;">
           <div id="rb-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Baseline deviations (6)</div>
           <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
             <select id="rb-f-period" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">Since baseline set</option><option value="6">Last 6 hours</option><option value="24">Last 24 hours</option><option value="alltime">All time</option></select>
             <select id="rb-f-type" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All deviation types</option><option value="added">Added</option><option value="modified">Modified</option><option value="removed">Removed</option></select>
             <select id="rb-f-node" onchange="rbApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option></select>
-            <button id="rb-f-reset" onclick="rbResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
+            <button id="rb-f-reset" class="reset-btn-2s" onclick="rbResetFilters()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;white-space:nowrap;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><path d="M8 2.95833V3.58333V2.95833ZM3 7.95833H2.375H3ZM8 12.9583V12.3333V12.9583ZM13.625 7.95833C13.625 7.61315 13.3452 7.33333 13 7.33333C12.6548 7.33333 12.375 7.61315 12.375 7.95833H13H13.625ZM13.2083 2.54166C13.2083 2.19648 12.9285 1.91666 12.5833 1.91666C12.2382 1.91666 11.9583 2.19648 11.9583 2.54166H12.5833H13.2083ZM12.5833 5.87499V6.49999H13.2083V5.87499H12.5833ZM9.25 5.24999C8.90482 5.24999 8.625 5.52982 8.625 5.87499C8.625 6.22017 8.90482 6.49999 9.25 6.49999V5.87499V5.24999ZM12.4444 5.73611L13.0092 5.46841C12.1275 3.60823 10.2092 2.33333 8 2.33333V2.95833V3.58333C9.72081 3.58333 11.2025 4.5751 11.8797 6.0038L12.4444 5.73611ZM8 2.95833V2.33333C7.26131 2.33333 6.52986 2.47882 5.84741 2.76151L6.08658 3.33893L6.32576 3.91636C6.85656 3.69649 7.42547 3.58333 8 3.58333V2.95833ZM6.08658 3.33893L5.84741 2.76151C5.16495 3.04419 4.54485 3.45852 4.02252 3.98085L4.46447 4.42279L4.90641 4.86474C5.31266 4.45848 5.79496 4.13622 6.32576 3.91636L6.08658 3.33893ZM4.46447 4.42279L4.02252 3.98085C3.50019 4.50318 3.08586 5.12328 2.80318 5.80573L3.3806 6.04491L3.95803 6.28409C4.17789 5.75329 4.50015 5.27099 4.90641 4.86474L4.46447 4.42279ZM3.3806 6.04491L2.80318 5.80573C2.52049 6.48819 2.375 7.21964 2.375 7.95833H3H3.625C3.625 7.38379 3.73816 6.81489 3.95803 6.28409L3.3806 6.04491ZM3 7.95833H2.375C2.375 8.69701 2.52049 9.42847 2.80318 10.1109L3.3806 9.87175L3.95803 9.63257C3.73816 9.10177 3.625 8.53286 3.625 7.95833H3ZM3.3806 9.87175L2.80318 10.1109C3.08586 10.7934 3.50019 11.4135 4.02252 11.9358L4.46447 11.4939L4.90641 11.0519C4.50015 10.6457 4.17789 10.1634 3.95803 9.63257L3.3806 9.87175ZM4.46447 11.4939L4.02252 11.9358C4.54485 12.4581 5.16495 12.8725 5.84741 13.1551L6.08658 12.5777L6.32576 12.0003C5.79496 11.7804 5.31266 11.4582 4.90641 11.0519L4.46447 11.4939ZM6.08658 12.5777L5.84741 13.1551C6.52986 13.4378 7.26131 13.5833 8 13.5833V12.9583V12.3333C7.42547 12.3333 6.85656 12.2202 6.32576 12.0003L6.08658 12.5777ZM8 12.9583V13.5833C9.49184 13.5833 10.9226 12.9907 11.9775 11.9358L11.5355 11.4939L11.0936 11.0519C10.2731 11.8724 9.16032 12.3333 8 12.3333V12.9583ZM11.5355 11.4939L11.9775 11.9358C13.0324 10.8809 13.625 9.45017 13.625 7.95833H13H12.375C12.375 9.11865 11.9141 10.2314 11.0936 11.0519L11.5355 11.4939ZM12.5833 2.54166H11.9583V5.87499H12.5833H13.2083V2.54166H12.5833ZM12.5833 5.87499V5.24999H9.25V5.87499V6.49999H12.5833V5.87499Z" fill="currentColor"/></svg>Reset</button>
           </div>
         </div>
         <div id="rb-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
@@ -20963,7 +20954,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="page-header">
         <div style="display:flex;align-items:flex-start;gap:14px;">
           <button class="back-btn" id="ri-back" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
-          <div style="width:38px;height:38px;border-radius:10px;background:rgba(251,60,68,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
           <div>
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="page-title">Needs investigation report</div>
@@ -21154,13 +21144,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Attention items table heading + filters -->
-        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;padding:0 18px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;">
           <div id="ri-count" style="font-size:13px;font-weight:700;color:var(--text-default);">Items needing investigation (6)</div>
           <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
             <select id="ri-f-cat" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All categories</option><option value="compliance">Failed check</option><option value="drift">Drift</option><option value="polarchived">Scan failure</option></select>
             <select id="ri-f-sev" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All severities</option><option value="critical">Critical</option><option value="medium">Medium</option><option value="low">Low</option></select>
             <select id="ri-f-node" onchange="riApplyFilters()" class="csel rep-scope-sel" style="font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;"><option value="all">All nodes</option><option value="MACBOOK-TARAS">MACBOOK-TARAS</option><option value="PROD-SERVER-01">PROD-SERVER-01</option><option value="STAGING-WIN-02">STAGING-WIN-02</option></select>
-            <button id="ri-f-reset" onclick="riResetFilters()" style="font-size:11px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;">↺ Reset</button>
+            <button id="ri-f-reset" class="reset-btn-2s" onclick="riResetFilters()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;white-space:nowrap;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><path d="M8 2.95833V3.58333V2.95833ZM3 7.95833H2.375H3ZM8 12.9583V12.3333V12.9583ZM13.625 7.95833C13.625 7.61315 13.3452 7.33333 13 7.33333C12.6548 7.33333 12.375 7.61315 12.375 7.95833H13H13.625ZM13.2083 2.54166C13.2083 2.19648 12.9285 1.91666 12.5833 1.91666C12.2382 1.91666 11.9583 2.19648 11.9583 2.54166H12.5833H13.2083ZM12.5833 5.87499V6.49999H13.2083V5.87499H12.5833ZM9.25 5.24999C8.90482 5.24999 8.625 5.52982 8.625 5.87499C8.625 6.22017 8.90482 6.49999 9.25 6.49999V5.87499V5.24999ZM12.4444 5.73611L13.0092 5.46841C12.1275 3.60823 10.2092 2.33333 8 2.33333V2.95833V3.58333C9.72081 3.58333 11.2025 4.5751 11.8797 6.0038L12.4444 5.73611ZM8 2.95833V2.33333C7.26131 2.33333 6.52986 2.47882 5.84741 2.76151L6.08658 3.33893L6.32576 3.91636C6.85656 3.69649 7.42547 3.58333 8 3.58333V2.95833ZM6.08658 3.33893L5.84741 2.76151C5.16495 3.04419 4.54485 3.45852 4.02252 3.98085L4.46447 4.42279L4.90641 4.86474C5.31266 4.45848 5.79496 4.13622 6.32576 3.91636L6.08658 3.33893ZM4.46447 4.42279L4.02252 3.98085C3.50019 4.50318 3.08586 5.12328 2.80318 5.80573L3.3806 6.04491L3.95803 6.28409C4.17789 5.75329 4.50015 5.27099 4.90641 4.86474L4.46447 4.42279ZM3.3806 6.04491L2.80318 5.80573C2.52049 6.48819 2.375 7.21964 2.375 7.95833H3H3.625C3.625 7.38379 3.73816 6.81489 3.95803 6.28409L3.3806 6.04491ZM3 7.95833H2.375C2.375 8.69701 2.52049 9.42847 2.80318 10.1109L3.3806 9.87175L3.95803 9.63257C3.73816 9.10177 3.625 8.53286 3.625 7.95833H3ZM3.3806 9.87175L2.80318 10.1109C3.08586 10.7934 3.50019 11.4135 4.02252 11.9358L4.46447 11.4939L4.90641 11.0519C4.50015 10.6457 4.17789 10.1634 3.95803 9.63257L3.3806 9.87175ZM4.46447 11.4939L4.02252 11.9358C4.54485 12.4581 5.16495 12.8725 5.84741 13.1551L6.08658 12.5777L6.32576 12.0003C5.79496 11.7804 5.31266 11.4582 4.90641 11.0519L4.46447 11.4939ZM6.08658 12.5777L5.84741 13.1551C6.52986 13.4378 7.26131 13.5833 8 13.5833V12.9583V12.3333C7.42547 12.3333 6.85656 12.2202 6.32576 12.0003L6.08658 12.5777ZM8 12.9583V13.5833C9.49184 13.5833 10.9226 12.9907 11.9775 11.9358L11.5355 11.4939L11.0936 11.0519C10.2731 11.8724 9.16032 12.3333 8 12.3333V12.9583ZM11.5355 11.4939L11.9775 11.9358C13.0324 10.8809 13.625 9.45017 13.625 7.95833H13H12.375C12.375 9.11865 11.9141 10.2314 11.0936 11.0519L11.5355 11.4939ZM12.5833 2.54166H11.9583V5.87499H12.5833H13.2083V2.54166H12.5833ZM12.5833 5.87499V5.24999H9.25V5.87499V6.49999H12.5833V5.87499Z" fill="currentColor"/></svg>Reset</button>
           </div>
         </div>
         <div id="ri-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
@@ -21279,7 +21269,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <button id="rt-failed" class="seg-btn" onclick="setReportType(&#39;failed&#39;)" aria-pressed="false">Failed checks</button>
               <button id="rt-full" class="seg-btn is-active" onclick="setReportType(&#39;full&#39;)" aria-pressed="true">All sections</button>
             </div>
-            <button id="rep-reset" onclick="reportResetScope()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--text-muted);background:none;border:none;padding:4px 0;white-space:nowrap;cursor:default;pointer-events:none;opacity:0.5;"><svg width="12" height="12" viewBox="0 0 11.25 11.6667" fill="none" style="flex-shrink:0;"><path d="M5.625 1.04167V1.66667V1.04167ZM0.625 6.04167H0H0.625ZM5.625 11.0417V10.4167V11.0417ZM11.25 6.04167C11.25 5.69649 10.9702 5.41667 10.625 5.41667C10.2798 5.41667 10 5.69649 10 6.04167H10.625H11.25ZM10.8333 0.625C10.8333 0.279822 10.5535 0 10.2083 0C9.86316 0 9.58333 0.279822 9.58333 0.625H10.2083H10.8333ZM10.2083 3.95833V4.58333H10.8333V3.95833H10.2083ZM6.875 3.33333C6.52982 3.33333 6.25 3.61316 6.25 3.95833C6.25 4.30351 6.52982 4.58333 6.875 4.58333V3.95833V3.33333ZM10.0694 3.81944L10.6342 3.55175C9.75251 1.69157 7.83419 0.416667 5.625 0.416667V1.04167V1.66667C7.34581 1.66667 8.82749 2.65843 9.50467 4.08714L10.0694 3.81944ZM5.625 1.04167V0.416667C4.88631 0.416667 4.15486 0.562161 3.47241 0.844844L3.71158 1.42227L3.95076 1.99969C4.48156 1.77983 5.05047 1.66667 5.625 1.66667V1.04167ZM3.71158 1.42227L3.47241 0.844844C2.78995 1.12753 2.16985 1.54186 1.64752 2.06419L2.08947 2.50613L2.53141 2.94807C2.93766 2.54182 3.41996 2.21956 3.95076 1.99969L3.71158 1.42227ZM2.08947 2.50613L1.64752 2.06419C1.12519 2.58652 0.71086 3.20662 0.428178 3.88907L1.0056 4.12825L1.58303 4.36743C1.80289 3.83663 2.12515 3.35433 2.53141 2.94807L2.08947 2.50613ZM1.0056 4.12825L0.428178 3.88907C0.145495 4.57153 0 5.30298 0 6.04167H0.625H1.25C1.25 5.46713 1.36316 4.89823 1.58303 4.36743L1.0056 4.12825ZM0.625 6.04167H0C0 6.78035 0.145495 7.5118 0.428178 8.19426L1.0056 7.95508L1.58303 7.71591C1.36316 7.18511 1.25 6.6162 1.25 6.04167H0.625ZM1.0056 7.95508L0.428178 8.19426C0.71086 8.87672 1.12519 9.49681 1.64752 10.0191L2.08947 9.5772L2.53141 9.13526C2.12515 8.729 1.80289 8.24671 1.58303 7.71591L1.0056 7.95508ZM2.08947 9.5772L1.64752 10.0191C2.16985 10.5415 2.78995 10.9558 3.47241 11.2385L3.71158 10.6611L3.95076 10.0836C3.41996 9.86378 2.93766 9.54151 2.53141 9.13526L2.08947 9.5772ZM3.71158 10.6611L3.47241 11.2385C4.15486 11.5212 4.88631 11.6667 5.625 11.6667V11.0417V10.4167C5.05047 10.4167 4.48156 10.3035 3.95076 10.0836L3.71158 10.6611ZM5.625 11.0417V11.6667C7.11684 11.6667 8.54758 11.074 9.60248 10.0191L9.16053 9.5772L8.71859 9.13526C7.89812 9.95573 6.78532 10.4167 5.625 10.4167V11.0417ZM9.16053 9.5772L9.60248 10.0191C10.6574 8.96425 11.25 7.53351 11.25 6.04167H10.625H10C10 7.20199 9.53906 8.31479 8.71859 9.13526L9.16053 9.5772ZM10.2083 0.625H9.58333V3.95833H10.2083H10.8333V0.625H10.2083ZM10.2083 3.95833V3.33333H6.875V3.95833V4.58333H10.2083V3.95833Z" fill="currentColor"/></svg>Reset</button>
+            <button id="rep-reset" class="reset-btn-2s" onclick="reportResetScope()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;white-space:nowrap;"><svg width="12" height="12" viewBox="0 0 11.25 11.6667" fill="none" style="flex-shrink:0;"><path d="M5.625 1.04167V1.66667V1.04167ZM0.625 6.04167H0H0.625ZM5.625 11.0417V10.4167V11.0417ZM11.25 6.04167C11.25 5.69649 10.9702 5.41667 10.625 5.41667C10.2798 5.41667 10 5.69649 10 6.04167H10.625H11.25ZM10.8333 0.625C10.8333 0.279822 10.5535 0 10.2083 0C9.86316 0 9.58333 0.279822 9.58333 0.625H10.2083H10.8333ZM10.2083 3.95833V4.58333H10.8333V3.95833H10.2083ZM6.875 3.33333C6.52982 3.33333 6.25 3.61316 6.25 3.95833C6.25 4.30351 6.52982 4.58333 6.875 4.58333V3.95833V3.33333ZM10.0694 3.81944L10.6342 3.55175C9.75251 1.69157 7.83419 0.416667 5.625 0.416667V1.04167V1.66667C7.34581 1.66667 8.82749 2.65843 9.50467 4.08714L10.0694 3.81944ZM5.625 1.04167V0.416667C4.88631 0.416667 4.15486 0.562161 3.47241 0.844844L3.71158 1.42227L3.95076 1.99969C4.48156 1.77983 5.05047 1.66667 5.625 1.66667V1.04167ZM3.71158 1.42227L3.47241 0.844844C2.78995 1.12753 2.16985 1.54186 1.64752 2.06419L2.08947 2.50613L2.53141 2.94807C2.93766 2.54182 3.41996 2.21956 3.95076 1.99969L3.71158 1.42227ZM2.08947 2.50613L1.64752 2.06419C1.12519 2.58652 0.71086 3.20662 0.428178 3.88907L1.0056 4.12825L1.58303 4.36743C1.80289 3.83663 2.12515 3.35433 2.53141 2.94807L2.08947 2.50613ZM1.0056 4.12825L0.428178 3.88907C0.145495 4.57153 0 5.30298 0 6.04167H0.625H1.25C1.25 5.46713 1.36316 4.89823 1.58303 4.36743L1.0056 4.12825ZM0.625 6.04167H0C0 6.78035 0.145495 7.5118 0.428178 8.19426L1.0056 7.95508L1.58303 7.71591C1.36316 7.18511 1.25 6.6162 1.25 6.04167H0.625ZM1.0056 7.95508L0.428178 8.19426C0.71086 8.87672 1.12519 9.49681 1.64752 10.0191L2.08947 9.5772L2.53141 9.13526C2.12515 8.729 1.80289 8.24671 1.58303 7.71591L1.0056 7.95508ZM2.08947 9.5772L1.64752 10.0191C2.16985 10.5415 2.78995 10.9558 3.47241 11.2385L3.71158 10.6611L3.95076 10.0836C3.41996 9.86378 2.93766 9.54151 2.53141 9.13526L2.08947 9.5772ZM3.71158 10.6611L3.47241 11.2385C4.15486 11.5212 4.88631 11.6667 5.625 11.6667V11.0417V10.4167C5.05047 10.4167 4.48156 10.3035 3.95076 10.0836L3.71158 10.6611ZM5.625 11.0417V11.6667C7.11684 11.6667 8.54758 11.074 9.60248 10.0191L9.16053 9.5772L8.71859 9.13526C7.89812 9.95573 6.78532 10.4167 5.625 10.4167V11.0417ZM9.16053 9.5772L9.60248 10.0191C10.6574 8.96425 11.25 7.53351 11.25 6.04167H10.625H10C10 7.20199 9.53906 8.31479 8.71859 9.13526L9.16053 9.5772ZM10.2083 0.625H9.58333V3.95833H10.2083H10.8333V0.625H10.2083ZM10.2083 3.95833V3.33333H6.875V3.95833V4.58333H10.2083V3.95833Z" fill="currentColor"/></svg>Reset</button>
             <!-- Metadata -->
             <span id="rep-when-label" style="margin-left:auto;font-size:11px;color:var(--text-sec);">Based on latest completed scans · Updated at 14:22</span>
           </div>
@@ -23471,7 +23461,17 @@ function pickNodeEnv(el) { nodeScopePick(el, 'ne-opt', 'ne-check'); }
 // перемикання вкладок). Сам вибір і підсвітка — той самий механізм, що в Group і Environment.
 function pickNodeSource(el) { _nodeFilter = el.dataset.val || 'all'; nodeScopePick(el, 'ns-opt', 'ns-check'); }
 
+function updateNodesResetState() {
+  const btn = document.getElementById('nodes-reset-btn');
+  if (!btn) return;
+  const q = document.getElementById('node-search')?.value || '';
+  const group = document.querySelector('.ng-opt-active')?.dataset.val || 'all';
+  const env = document.querySelector('.ne-opt-active')?.dataset.val || 'all';
+  const nonDefault = !!q || _nodeStateFilter !== 'all' || _nodeFilter !== 'all' || group !== 'all' || env !== 'all';
+  btn.classList.toggle('is-active', nonDefault);
+}
 function filterNodes() {
+  updateNodesResetState();
   const q = (document.getElementById('node-search')?.value || '').toLowerCase();
   const group = document.querySelector('.ng-opt-active')?.dataset.val || 'all';
   const env = document.querySelector('.ne-opt-active')?.dataset.val || 'all';
