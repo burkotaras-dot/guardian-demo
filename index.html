@@ -23600,29 +23600,63 @@ function renderNodeKpiCards() {
   host.innerHTML = html;
 }
 
+// Threshold coloring shared by both score rings (Lowest/Average) — same bands the
+// gauge version used, so red/orange/green still means the same thing either way.
+function scoreThresholdColor(score) {
+  return score < 60 ? '#E84C3D' : (score < 80 ? '#D97706' : '#15803d');
+}
+
+// A single-arc progress ring (76px, matches the Dashboard donut geometry exactly) —
+// used where the "whole" is a fixed /100 scale rather than a sum of real categories.
+function ringGaugeSvg(pct, color) {
+  var circumference = 238.76;
+  var len = Math.max(0, Math.min(100, pct)) / 100 * circumference;
+  return '<svg width="76" height="76" viewBox="0 0 100 100">'
+    + '<circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>'
+    + '<circle cx="50" cy="50" r="38" fill="none" stroke="' + color + '" stroke-width="8" stroke-dasharray="' + len.toFixed(1) + ' ' + circumference + '" stroke-dashoffset="0" transform="rotate(-90 50 50)" class="donut-seg"></circle>'
+    + '</svg>';
+}
+
+// Segmented donut where each slice is one real node's contribution to a total (critical
+// count, drift count, …) — the ring's proportions are the actual per-node split, not a
+// fabricated category breakdown. items: [{name, value, tooltip}].
+function buildNodeDonutSegments(items, palette) {
+  var total = items.reduce(function(s, i) { return s + i.value; }, 0);
+  var circumference = 238.76;
+  var offset = 0;
+  var segsHtml = '', legendHtml = '';
+  items.forEach(function(item, i) {
+    var color = palette[i % palette.length];
+    var len = total ? (item.value / total * circumference) : 0;
+    segsHtml += '<circle cx="50" cy="50" r="38" fill="none" stroke="' + color + '" stroke-width="8" stroke-dasharray="' + len.toFixed(1) + ' ' + circumference + '" stroke-dashoffset="' + (-offset).toFixed(1) + '" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,\'' + item.tooltip + '\')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>';
+    legendHtml += '<div class="stat-legend-row">'
+      + '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="width:8px;height:8px;border-radius:50%;background:' + color + ';flex-shrink:0;"></span>' + item.name + '</span>'
+      + '<span style="font-size:12px;font-weight:700;color:' + color + ';">' + item.value + '</span>'
+      + '</div>';
+    offset += len;
+  });
+  return { segsHtml: segsHtml, legendHtml: legendHtml, total: total };
+}
+
 function renderLowestScoreCard(node) {
-  var color = node.score < 60 ? '#E84C3D' : (node.score < 80 ? '#D97706' : '#15803d');
+  var color = scoreThresholdColor(node.score);
   return ''
     + '<div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView(\'node-detail\')">'
     +   '<div class="node-kpi-head">'
     +     '<div class="node-kpi-head-l"><div class="stat-card-label">Lowest Node Score</div></div>'
     +     '<div class="stat-info">i<div class="stat-tip">The lowest compliance score across all scored nodes. Start here — this node carries the most risk.</div></div>'
     +   '</div>'
-    +   '<div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">'
-    +     '<div style="display:flex;align-items:baseline;gap:6px;">'
-    +       '<span style="font-size:32px;font-weight:800;color:' + color + ';line-height:1;">' + node.score + '</span>'
-    +       '<span style="font-size:12px;font-weight:600;color:var(--text-sec);">/100</span>'
-    +       '<span style="margin-left:auto;font-size:11px;font-weight:650;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;">' + node.name + '</span>'
-    +     '</div>'
-    +     '<div style="margin-top:16px;">'
-    +       '<div style="position:relative;display:flex;height:7px;border-radius:99px;overflow:visible;">'
-    +         '<div style="flex:0 0 60%;background:rgba(251,60,68,0.30);border-radius:99px 0 0 99px;"></div>'
-    +         '<div style="flex:0 0 20%;background:rgba(245,158,11,0.30);"></div>'
-    +         '<div style="flex:0 0 20%;background:rgba(63,200,120,0.32);border-radius:0 99px 99px 0;"></div>'
-    +         '<div style="position:absolute;top:-3px;left:' + node.score + '%;transform:translateX(-50%);width:2px;height:13px;background:' + color + ';border-radius:2px;pointer-events:none;"></div>'
-    +         '<div style="position:absolute;top:-5px;left:' + node.score + '%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:transparent;cursor:pointer;" onmouseenter="showDonutTip(event,\'Score ' + node.score + '/100\')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>'
-    +         '<div style="position:absolute;top:-2px;left:' + node.score + '%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:var(--bg-surface);border:2.5px solid ' + color + ';box-sizing:border-box;pointer-events:none;"></div>'
+    +   '<div style="display:flex;align-items:center;gap:16px;flex:1;margin-top:14px;">'
+    +     '<div style="position:relative;width:76px;height:76px;flex-shrink:0;cursor:pointer;" onmouseenter="showDonutTip(event,\'Score ' + node.score + '/100\')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()">'
+    +       ringGaugeSvg(node.score, color)
+    +       '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">'
+    +         '<div style="font-size:17px;font-weight:800;color:' + color + ';line-height:1;">' + node.score + '</div>'
+    +         '<div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">/100</div>'
     +       '</div>'
+    +     '</div>'
+    +     '<div style="flex:1;min-width:0;">'
+    +       '<div style="font-size:11px;color:var(--text-sec);margin-bottom:4px;">Node</div>'
+    +       '<div style="font-size:14px;font-weight:700;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + node.name + '</div>'
     +     '</div>'
     +   '</div>'
     +   '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">'
@@ -23633,74 +23667,62 @@ function renderLowestScoreCard(node) {
 }
 
 function renderAvgScoreCard(avg, scored, totalNodes) {
-  var n = scored.length;
-  var pts = scored.map(function(node, i) {
-    var x = n > 1 ? (2 + i * (195 / (n - 1))) : 100;
-    var y = 58 - (node.score / 100) * 46;
-    return { x: x, y: y, node: node };
-  });
-  var polyPoints = pts.map(function(p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
-  var areaPoints = polyPoints + ' ' + pts[pts.length - 1].x.toFixed(1) + ',60 ' + pts[0].x.toFixed(1) + ',60';
-  var dotsHtml = pts.map(function(p) {
-    var leftPct = (p.x / 200 * 100).toFixed(1);
-    var topPct = (p.y / 60 * 100).toFixed(1);
-    return '<div style="position:absolute;left:' + leftPct + '%;top:' + topPct + '%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3FC878;border:1.5px solid var(--bg-surface);box-sizing:border-box;pointer-events:none;"></div>';
-  }).join('');
-  var hoverCols = pts.map(function(p) {
-    return '<div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,\'' + p.node.name + ' · ' + p.node.score + '/100\')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>';
-  }).join('');
+  var color = scoreThresholdColor(avg);
+  var min = Math.min.apply(null, scored.map(function(n) { return n.score; }));
+  var max = Math.max.apply(null, scored.map(function(n) { return n.score; }));
   return ''
     + '<div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView(\'results\')">'
     +   '<div class="node-kpi-head">'
     +     '<div class="node-kpi-head-l"><div class="stat-card-label">Average Node Score</div></div>'
     +     '<div class="stat-info">i<div class="stat-tip">The mean compliance score across all scored nodes — a fleet-wide health indicator that complements the lowest node score.</div></div>'
     +   '</div>'
-    +   '<div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">'
-    +     '<div style="display:flex;align-items:baseline;gap:6px;">'
-    +       '<span class="nkpi-num-good" style="font-size:32px;font-weight:800;line-height:1;">' + avg + '</span>'
-    +       '<span style="font-size:12px;font-weight:600;color:var(--text-sec);">/100</span>'
+    +   '<div style="display:flex;align-items:center;gap:16px;flex:1;margin-top:14px;">'
+    +     '<div style="position:relative;width:76px;height:76px;flex-shrink:0;cursor:pointer;" onmouseenter="showDonutTip(event,\'Average ' + avg + '/100\')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()">'
+    +       ringGaugeSvg(avg, color)
+    +       '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">'
+    +         '<div style="font-size:17px;font-weight:800;color:' + color + ';line-height:1;">' + avg + '</div>'
+    +         '<div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">/100</div>'
+    +       '</div>'
     +     '</div>'
-    +     '<div style="position:relative;height:40px;margin-top:auto;">'
-    +       '<svg width="100%" height="100%" viewBox="0 0 200 60" preserveAspectRatio="none" style="display:block;position:absolute;inset:0;">'
-    +         '<polygon points="' + areaPoints + '" fill="#3FC878" fill-opacity="0.10"></polygon>'
-    +         '<polyline points="' + polyPoints + '" fill="none" stroke="#3FC878" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>'
-    +       '</svg>'
-    +       dotsHtml
-    +       '<div style="position:absolute;inset:0;display:flex;">' + hoverCols + '</div>'
+    +     '<div style="flex:1;min-width:0;">'
+    +       '<div style="font-size:11px;color:var(--text-sec);margin-bottom:4px;">Score range</div>'
+    +       '<div style="font-size:14px;font-weight:700;color:var(--text-default);">' + min + '–' + max + '</div>'
     +     '</div>'
     +   '</div>'
     +   '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">'
-    +     '<div class="stat-foot" style="padding-top:0;">Across ' + n + ' of ' + totalNodes + ' managed nodes</div>'
+    +     '<div class="stat-foot" style="padding-top:0;">Across ' + scored.length + ' of ' + totalNodes + ' managed nodes</div>'
     +     '<button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView(\'results\')"><span class="stat-link-txt">View score details</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>'
     +   '</div>'
     + '</div>';
 }
 
 function renderCriticalCard(total, criticalNodes) {
-  var max = criticalNodes.length ? criticalNodes[0].critical : 0;
-  var barsHtml = criticalNodes.map(function(n) {
-    var h = max ? Math.round(n.critical / max * 100) : 0;
-    return '<div class="nkpi-vbar crit" style="height:' + Math.max(h, 6) + '%;" onmouseenter="showDonutTip(event,\'' + n.name + ' · ' + n.critical + ' critical\')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>';
-  }).join('');
-  var mostAffected = criticalNodes[0];
-  var mostAffectedHtml = mostAffected
-    ? 'Most affected: <span style="color:var(--text-default);font-weight:600;">' + mostAffected.name + '</span> · ' + mostAffected.critical + ' critical'
-    : 'No critical issues on scored nodes';
+  var palette = ['#FB3C44', '#f59e0b', '#f97316', '#a855f7', '#2563eb'];
+  var donut = buildNodeDonutSegments(criticalNodes.map(function(n) {
+    return { name: n.name, value: n.critical, tooltip: n.name + ' · ' + n.critical + ' critical' };
+  }), palette);
   return ''
     + '<div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView(\'results\')">'
     +   '<div class="node-kpi-head">'
     +     '<div class="node-kpi-head-l"><div class="stat-card-label">Critical Issues</div></div>'
-    +     '<div class="stat-info">i<div class="stat-tip">Critical-severity check failures across all scored nodes in the latest scan, and their impact on your fleet.</div></div>'
+    +     '<div class="stat-info">i<div class="stat-tip">Critical-severity check failures across all scored nodes in the latest scan, broken down by node.</div></div>'
     +   '</div>'
-    +   '<div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">'
-    +     '<div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">'
-    +       '<span style="font-size:28px;font-weight:800;color:' + (total ? '#FB3C44' : 'var(--text-default)') + ';line-height:1;">' + total + '</span>'
-    +       '<span style="font-size:12px;font-weight:600;color:var(--text-sec);">critical</span>'
+    +   '<div style="display:flex;align-items:center;gap:16px;flex:1;margin-top:14px;">'
+    +     '<div style="position:relative;width:76px;height:76px;flex-shrink:0;">'
+    +       '<svg width="76" height="76" viewBox="0 0 100 100">'
+    +         '<circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>'
+    +         donut.segsHtml
+    +       '</svg>'
+    +       '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">'
+    +         '<div style="font-size:17px;font-weight:800;color:' + (total ? '#FB3C44' : 'var(--text-default)') + ';line-height:1;">' + total + '</div>'
+    +         '<div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">critical</div>'
+    +       '</div>'
     +     '</div>'
-    +     (criticalNodes.length
-      ? '<div style="height:42px;display:flex;align-items:flex-end;gap:3px;margin-top:14px;">' + barsHtml + '</div>'
-      : '<div style="height:42px;"></div>')
-    +     '<div style="font-size:10px;color:var(--text-sec);margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + mostAffectedHtml + '</div>'
+    +     '<div style="flex:1;min-width:0;">'
+    +       (criticalNodes.length
+        ? '<div style="display:flex;flex-direction:column;">' + donut.legendHtml + '</div>'
+        : '<div style="font-size:12px;color:var(--text-sec);">No critical issues on scored nodes</div>')
+    +     '</div>'
     +   '</div>'
     +   '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">'
     +     '<div class="stat-foot" style="padding-top:0;">' + criticalNodes.length + ' node' + (criticalNodes.length === 1 ? '' : 's') + ' need attention</div>'
@@ -23711,20 +23733,31 @@ function renderCriticalCard(total, criticalNodes) {
 
 function renderDriftCard(total, driftNodes) {
   var palette = ['#00AF73', '#6366f1', '#f59e0b', '#a855f7', '#2563eb'];
-  var circumference = 238.76;
-  var offset = 0;
-  var segsHtml = '';
-  var legendHtml = '';
-  driftNodes.forEach(function(n, i) {
+  var donut = buildNodeDonutSegments(driftNodes.map(function(n) {
+    return { name: n.name, value: n.changes, tooltip: n.name + ' · ' + n.changes + ' change' + (n.changes === 1 ? '' : 's') };
+  }), palette);
+
+  // Ring keeps every real node's slice (hoverable via donut.segsHtml above); the legend
+  // text lists only the top 2 by name and folds the rest into one "+N more" row — same
+  // overflow pattern already used for group node lists (showGroupNodes' "+117 more").
+  var LEGEND_CAP = 2;
+  var shown = driftNodes.slice(0, LEGEND_CAP);
+  var rest = driftNodes.slice(LEGEND_CAP);
+  var legendHtml = shown.map(function(n, i) {
     var color = palette[i % palette.length];
-    var len = total ? (n.changes / total * circumference) : 0;
-    segsHtml += '<circle cx="50" cy="50" r="38" fill="none" stroke="' + color + '" stroke-width="8" stroke-dasharray="' + len.toFixed(1) + ' ' + circumference + '" stroke-dashoffset="' + (-offset).toFixed(1) + '" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,\'' + n.name + ' · ' + n.changes + ' change' + (n.changes === 1 ? '' : 's') + '\')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>';
-    legendHtml += '<div class="stat-legend-row">'
+    return '<div class="stat-legend-row">'
       + '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="width:8px;height:8px;border-radius:50%;background:' + color + ';flex-shrink:0;"></span>' + n.name + '</span>'
       + '<span style="font-size:12px;font-weight:700;color:' + color + ';">' + n.changes + '</span>'
       + '</div>';
-    offset += len;
-  });
+  }).join('');
+  if (rest.length) {
+    var restTotal = rest.reduce(function(s, n) { return s + n.changes; }, 0);
+    legendHtml += '<div class="stat-legend-row">'
+      + '<span style="font-size:10px;font-weight:600;color:var(--text-muted);background:rgba(100,116,139,0.12);padding:1px 7px;border-radius:8px;">+' + rest.length + ' more</span>'
+      + '<span style="font-size:12px;font-weight:700;color:var(--text-muted);">' + restTotal + '</span>'
+      + '</div>';
+  }
+
   return ''
     + '<div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView(\'changes\')">'
     +   '<div class="node-kpi-head">'
@@ -23738,7 +23771,7 @@ function renderDriftCard(total, driftNodes) {
     +     '<div style="position:relative;width:76px;height:76px;flex-shrink:0;">'
     +       '<svg width="76" height="76" viewBox="0 0 100 100">'
     +         '<circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>'
-    +         segsHtml
+    +         donut.segsHtml
     +       '</svg>'
     +       '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">'
     +         '<div style="font-size:17px;font-weight:800;color:' + (total ? '#D97706' : 'var(--text-default)') + ';line-height:1;">' + total + '</div>'
