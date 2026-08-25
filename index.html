@@ -1560,14 +1560,15 @@ code { font-family:'DM Sans',sans-serif; }
 /* Обидва порожні стани стоять вище геометричного центру: у порожній області око
    зупиняється трохи вище середини, а не рівно посередині. Зсув через position, а не
    margin — щоб не вплинути на розрахунок вільного місця у flex-контейнері. */
-#results-firstrun, #drift-firstrun, #policies-firstrun, #reports-firstrun { position:relative; top:-150px; }
+#results-firstrun, #drift-firstrun, #policies-firstrun, #reports-firstrun, #sched-firstrun { position:relative; top:-150px; }
 /* Коло-іконка у світлій темі темніша за канву, інакше зникає на ній. Тільки для цих
    станів першого запуску — решта .es-ico по застосунку лишається на --bg-canvas.
    ⚠️ Обовʼязково під body:not(.dark), інакше правило протече в темну тему. */
 body:not(.dark) #results-firstrun .es-ico,
 body:not(.dark) #drift-firstrun .es-ico,
 body:not(.dark) #policies-firstrun .es-ico,
-body:not(.dark) #reports-firstrun .es-ico { background:#EDF2F7; }
+body:not(.dark) #reports-firstrun .es-ico,
+body:not(.dark) #sched-firstrun .es-ico { background:#EDF2F7; }
 
 #results-firstrun { display:none; }
 #v-results.is-firstrun .results-scope-bar,
@@ -1651,6 +1652,23 @@ body:not(.dark) #reports-firstrun .es-ico { background:#EDF2F7; }
 #v-reports-list.is-firstrun #rpt-meta-compliance,
 #v-reports-list.is-firstrun #rpt-meta-investigation { display:none !important; }
 #v-reports-list.is-firstrun .rpt-meta-firstrun { display:flex; }
+
+/* Те саме для Scan Schedules. Розклад не існує сам по собі — його вішають на node group
+   або на environment, а групи й середовища беруться з вузлів. Без жодного вузла планувати
+   нема чому, тож CTA той самий «Add Node».
+   Разом із таблицею йдуть вкладки: у них лічильники (6 / 3), тобто твердження про дані,
+   і перемикати нема між чим. Виноска під таблицею пояснює, як таблиця працює, — без
+   таблиці вона зависає, тож теж гасне.
+   Наявний порожній стан усередині #schedule-tbody (keys.length === 0) лишається на місці:
+   він про інший випадок — групи є, розкладів у них нема. Тут ховається весь контейнер,
+   тож два стани не перетинаються. Padding .dash-main симетричний 24px — вирівнювати нічого. */
+#sched-firstrun { display:none; }
+#v-scan-schedule.is-firstrun #sched-head,
+#v-scan-schedule.is-firstrun #sched-scope-tabs,
+#v-scan-schedule.is-firstrun #sched-table-card,
+#v-scan-schedule.is-firstrun #sched-note { display:none !important; }
+#v-scan-schedule.is-firstrun #sched-firstrun { display:block; }
+#v-scan-schedule.is-firstrun #sched-body { display:flex; align-items:center; justify-content:center; }
 
 .score-wrap { position:relative; width:76px; height:76px; flex-shrink:0; }
 .score-svg  { width:76px; height:76px; }
@@ -21324,9 +21342,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     <!-- SETTINGS-INTEGRATIONS -->
     <!-- SCAN SCHEDULES — per node group -->
     <div class="view" id="v-scan-schedule" style="display: none;">
-      <div class="dash-main" style="max-width:100%;">
+      <div id="sched-body" class="dash-main" style="max-width:100%;">
+
+        <!-- Перший запуск. Іконка-годинник — та сама, що й у рядку розкладу та в
+             порожньому стані таблиці: сторінка одна, тож і символ у неї один. -->
+        <div id="sched-firstrun" class="es">
+          <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5V12l3 2"></path></svg></div>
+          <div class="es-title">No scan schedules yet</div>
+          <div class="es-sub">A schedule runs scans automatically for a node group or environment.<br>Add a node, then set how often Guardian should check it.</div>
+          <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openAddDeviceModal()">Add Node</button></div>
+        </div>
+
         <!-- Header -->
-        <div style="margin-bottom:12px;">
+        <div id="sched-head" style="margin-bottom:12px;">
           <div>
             <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Scan Schedules</div>
             <div id="sched-sub" style="font-size:12px;color:var(--text-sec);margin-top:3px;">Automated scan cadence per node group · times in UTC</div>
@@ -21340,7 +21368,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Schedule table -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+        <div id="sched-table-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div class="col-thead" style="display:grid;grid-template-columns:minmax(260px,2fr) repeat(5,minmax(120px,1fr)) 84px;column-gap:24px;padding:10px 20px;background:var(--table-header-bg);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
             <!-- Лише Node group і Time мають надійний, завжди-однаковий формат значення —
                  стабільно сортуються. Status/Frequency лишаються без стрілки (категорійні,
@@ -21358,7 +21386,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="schedule-tbody"></div>
         </div>
 
-        <div style="font-size:11px;color:var(--text-muted);margin-top:14px;line-height:1.6;">
+        <div id="sched-note" style="font-size:11px;color:var(--text-muted);margin-top:14px;line-height:1.6;">
           Schedules run on the Guardian scan engine. A node can override its group cadence from its own detail page.
         </div>
       </div>
@@ -28774,6 +28802,14 @@ function setReportsState(state) {
   });
 }
 
+// Scan Schedules. Розклад вішають на node group або environment, а ті беруться з вузлів —
+// на порожньому акаунті планувати нема чому. renderSchedules() малює свій порожній стан
+// усередині таблиці, але тут ховається весь контейнер, тож вони не перетинаються.
+function setSchedulesState(state) {
+  var view = document.getElementById('v-scan-schedule');
+  if (view) view.classList.toggle('is-firstrun', state === 'empty');
+}
+
 function setAppState(state) {
   var empty = state === 'empty';
   setDashState(empty ? 'empty' : 'data');
@@ -28782,6 +28818,7 @@ function setAppState(state) {
   setDriftState(empty ? 'empty' : 'data');
   setPoliciesState(empty ? 'empty' : 'data');
   setReportsState(empty ? 'empty' : 'data');
+  setSchedulesState(empty ? 'empty' : 'data');
 
   // Зворотний відлік до наступного скану — теж твердження про дані, тільки живе воно
   // в сайдбарі, а не на сторінці. Лишити «Next scan in 23h 44m» поруч із «No scan
