@@ -1553,6 +1553,19 @@ code { font-family:'DM Sans',sans-serif; }
 }
 .results-body { flex:1; background:var(--bg-page); padding:24px; overflow-y:auto; min-width:0; }
 
+/* Перший запуск Scans. Стан задає ОДИН клас на самому вʼю, а не інлайновий display
+   на кожному блоці: на .check-card інлайновий display вже належить setSevFilter, і
+   два власники одного стилю рано чи пізно розійшлись би. #results-empty («no critical
+   issues in this preview») теж гасимо — це повідомлення фільтра, а фільтрувати нема що. */
+#results-firstrun { display:none; }
+#v-results.is-firstrun .results-scope-bar,
+#v-results.is-firstrun .results-top,
+#v-results.is-firstrun #results-head-row,
+#v-results.is-firstrun #results-pills,
+#v-results.is-firstrun .check-card,
+#v-results.is-firstrun #results-empty { display:none !important; }
+#v-results.is-firstrun #results-firstrun { display:block; }
+
 .score-wrap { position:relative; width:76px; height:76px; flex-shrink:0; }
 .score-svg  { width:76px; height:76px; }
 .score-inner {
@@ -6054,6 +6067,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
   </div>
   <div id="nav-breadcrumb" style="display:none;flex:1;padding:0 20px;align-items:center;gap:5px;font-size:12px;"></div>
   <div id="navUser" class="nav-user" style="display: flex;">
+    <!-- Прототипний перемикач стану даних. У продукті стан диктують дані; тут потрібен
+         ручний вхід у сценарій «щойно зайшов уперше». ОДИН на застосунок, а не по одному
+         на сторінку: окремі перемикачі дозволяли поставити прототип у комбінацію, якої
+         не буває — 0 вузлів у сайдбарі й водночас score 78 на Scans. -->
+    <div class="seg" id="app-state-seg" role="group" aria-label="Preview data state" style="margin-right:8px;">
+      <button id="ast-data" class="seg-btn is-active" aria-pressed="true" onclick="setAppState('data')">With data</button>
+      <button id="ast-empty" class="seg-btn" aria-pressed="false" onclick="setAppState('empty')">First run</button>
+    </div>
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
       <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
@@ -6119,7 +6140,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">1</span>
       </div>
     </div>
-    <div class="sidebar-footer">
+    <div class="sidebar-footer" id="sidebar-footer">
       <div class="sidebar-footer-label" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Next scan in 23h 44m</span>
         <span style="font-size:9px;color:var(--text-sec);">Per-node schedule</span>
@@ -6811,7 +6832,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <button class="btn-primary" style="flex-shrink:0;width:auto;" onclick="showView(&#39;remediation&#39;)">Fix issues now →</button>
         </div>
         <div class="results-body">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+
+          <!-- Перший запуск: жодного вузла, отже й жодного скану. Герой-смугу зі score
+               ховаємо цілком, а не занулюємо зі збереженням геометрії: «0 / 100» читалось
+               би як «провалив усі перевірки», а «0 Critical» — як «ідеально чисто».
+               Обидва прочитання брехливі, і кожне гірше за відсутність блока.
+               CTA — той самий Add Node, що й на All Nodes: у порожньому акаунті наступна
+               дія одна, і вона не «запустити скан», бо сканувати нема чого. -->
+          <div id="results-firstrun" class="es" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);">
+            <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
+            <div class="es-title">No scan results yet</div>
+            <div class="es-sub">Add a node and run your first scan. Your compliance score, failed checks<br>and the controls that passed will appear here.</div>
+            <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openAddDeviceModal()">Add Node</button></div>
+          </div>
+
+          <div id="results-head-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
             <div>
               <div id="results-heading" style="font-size:17px;font-weight:700;color:var(--text-default);letter-spacing:-0.3px;">Failed checks</div>
               <div style="font-size:12px;color:var(--text-sec);margin-top:2px;"><span id="results-subline-lead">27 issues · fix to improve your score</span> · <span style="color:var(--text-muted);">use the ⋯ menu (or right-click) on any check — passing ones too — to add it to a policy</span></div>
@@ -7005,13 +7040,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div>
             <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Dashboard</div>
             <div style="font-size:12px;color:var(--text-sec);margin-top:3px;" id="dash-sub">4 nodes monitored · Last scanned 2 minutes ago · Deltas compared to previous scan</div>
-          </div>
-          <!-- Прототипний перемикач стану. У продукті стан визначають дані (є вузли — є
-               цифри), тут потрібен ручний вхід у сценарій «щойно зайшов уперше».
-               .seg — той самий сегментований контрол, що фільтрує стан у All Nodes. -->
-          <div class="seg" id="dash-state-seg" role="group" aria-label="Preview dashboard state">
-            <button id="dst-data" class="seg-btn is-active" aria-pressed="true" onclick="setDashState('data')">With data</button>
-            <button id="dst-empty" class="seg-btn" aria-pressed="false" onclick="setDashState('empty')">First run</button>
           </div>
         </div>
         <div class="stat-grid" id="dash-kpi-live" style="grid-template-columns:repeat(4,minmax(0,1fr));">
@@ -7530,12 +7558,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div id="all-devices-sub-empty" style="display:none;font-size:12px;color:var(--text-muted);margin-top:5px;line-height:1.2;">No nodes yet · Add a node to run your first scan</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
-            <!-- Прототипний перемикач стану, той самий, що в шапці дашборда: у продукті
-                 стан диктують дані, тут потрібен ручний вхід у сценарій «щойно зайшов уперше». -->
-            <div class="seg" id="nodes-state-seg" role="group" aria-label="Preview nodes state">
-              <button id="nst-data" class="seg-btn is-active" aria-pressed="true" onclick="setNodesState('data')">With data</button>
-              <button id="nst-empty" class="seg-btn" aria-pressed="false" onclick="setNodesState('empty')">First run</button>
-            </div>
             <button class="btn-primary" style="width:auto;" onclick="openAddDeviceModal()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               Add Node
@@ -24232,12 +24254,6 @@ function setNodesState(state) {
     _nodesCountsBackup = null;
   }
 
-  [['nst-data', !empty], ['nst-empty', empty]].forEach(function(p) {
-    var b = document.getElementById(p[0]);
-    if (!b) return;
-    b.classList.toggle('is-active', p[1]);
-    b.setAttribute('aria-pressed', String(p[1]));
-  });
 }
 
 // ── Peer card collapse / section / show-all ──────────────────────────────
@@ -28603,8 +28619,34 @@ function setDashState(state) {
     ? 'No nodes yet · Add a node to run your first scan'
     : '4 nodes monitored · Last scanned 2 minutes ago · Deltas compared to previous scan';
 
-  [['dst-data', !empty], ['dst-empty', empty]].forEach(function(p) {
+}
+
+// Єдина точка входу в стан даних для всього прототипу. Сторінкові setDashState /
+// setNodesState лишаються — вони знають, що саме ховати у себе, — але кнопку має
+// лише ця функція, тож розійтись між собою вони більше не можуть.
+// Scans має ті самі два стани, але тут поштучно ховати нічого не треба: інлайновий
+// display на .check-card належить setSevFilter, тож стан задаємо класом на вʼю, а
+// що саме зникає — вирішує CSS поруч із .results-body.
+function setScansState(state) {
+  var view = document.getElementById('v-results');
+  if (view) view.classList.toggle('is-firstrun', state === 'empty');
+}
+
+function setAppState(state) {
+  var empty = state === 'empty';
+  setDashState(empty ? 'empty' : 'data');
+  setNodesState(empty ? 'empty' : 'data');
+  setScansState(empty ? 'empty' : 'data');
+
+  // Зворотний відлік до наступного скану — теж твердження про дані, тільки живе воно
+  // в сайдбарі, а не на сторінці. Лишити «Next scan in 23h 44m» поруч із «No scan
+  // results yet» означало б показати дві різні правди про один акаунт.
+  var sf = document.getElementById('sidebar-footer');
+  if (sf) sf.style.display = empty ? 'none' : 'block';
+
+  [['ast-data', !empty], ['ast-empty', empty]].forEach(function(p) {
     var b = document.getElementById(p[0]);
+    if (!b) return;
     b.classList.toggle('is-active', p[1]);
     b.setAttribute('aria-pressed', String(p[1]));
   });
