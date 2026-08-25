@@ -7736,16 +7736,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
           <div>
             <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">All Nodes</div>
+            <!-- Хедер несе лише ідентичність + свіжість (скільки вузлів, коли останній скан).
+                 KPI-числа (Score / critical / drift) переїхали в summary-картки нижче — тримаємо
+                 одне значення в одному місці, щоб не дублювати ті самі цифри двічі. -->
             <div id="all-devices-sub" style="font-size:12px;color:var(--text-muted);margin-top:5px;display:flex;align-items:center;flex-wrap:wrap;gap:3px 9px;line-height:1.2;">
               <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg><span><b style="font-weight:600;color:var(--text-sec);">5</b> monitored nodes</span></span>
               <span style="opacity:.45;">·</span>
               <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 16 14"></polyline></svg>Last scan 2h ago</span>
-              <span style="opacity:.45;">·</span>
-              <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg><span>Score <b style="font-weight:600;color:var(--text-sec);">71</b></span></span>
-              <span style="opacity:.45;">·</span>
-              <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span><b style="font-weight:600;color:var(--text-sec);">31</b> critical</span></span>
-              <span style="opacity:.45;">·</span>
-              <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg><span><b style="font-weight:600;color:var(--text-sec);">5</b> drift</span></span>
             </div>
             <!-- Той самий підпис у першому запуску: жодної статистики, бо сканів ще не було.
                  Окремий блок, а не переписаний текст — у стані з даними це 5 інлайн-флекс
@@ -7758,6 +7755,120 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               Add Node
             </button>
           </div>
+        </div>
+
+        <!-- Fleet summary cards — повернуті на прохання клієнта (Stephen), але компактні й
+             консистентні з Dashboard .stat-card: та сама оболонка (label + info / value+trend /
+             тонка віз-підказка / stat-link). Легші за старі KPI-картки — без важких гістограм.
+             Ховаються в порожньому стані разом з рештою блоків (setNodesState → #node-kpi-cards). -->
+        <div id="node-kpi-cards" class="stat-grid node-kpi-grid" style="margin-bottom:22px;">
+
+          <!-- Lowest Node Score -->
+          <div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView('node-detail')">
+            <div class="node-kpi-head">
+              <div class="stat-card-label">Lowest Node Score</div>
+              <div class="stat-info">i<div class="stat-tip">The lowest compliance score across all monitored nodes. Start here — this node carries the most risk.</div></div>
+            </div>
+            <div class="node-kpi-main" style="display:flex;align-items:center;gap:6px;">
+              <span class="node-kpi-value" style="color:#E84C3D;">54</span>
+              <span class="node-kpi-unit">/100</span>
+              <span class="node-kpi-trend danger">↓ 8</span>
+            </div>
+            <div style="margin-top:12px;">
+              <div style="position:relative;display:flex;height:6px;border-radius:99px;overflow:visible;">
+                <div style="flex:0 0 60%;background:rgba(251,60,68,0.30);border-radius:99px 0 0 99px;"></div>
+                <div style="flex:0 0 20%;background:rgba(245,158,11,0.30);"></div>
+                <div style="flex:0 0 20%;background:rgba(63,200,120,0.32);border-radius:0 99px 99px 0;"></div>
+                <div style="position:absolute;top:-2px;left:54%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:var(--bg-surface);border:2.5px solid #E84C3D;box-sizing:border-box;pointer-events:none;"></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:12px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">SARAH-LAPTOP-01</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView('node-detail')"><span class="stat-link-txt">View node</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+            </div>
+          </div>
+
+          <!-- Average Node Score -->
+          <div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView('results')">
+            <div class="node-kpi-head">
+              <div class="stat-card-label">Average Node Score</div>
+              <div class="stat-info">i<div class="stat-tip">The mean compliance score across all monitored nodes — a fleet-wide health indicator that complements the lowest node score.</div></div>
+            </div>
+            <div class="node-kpi-main" style="display:flex;align-items:center;gap:6px;">
+              <span class="node-kpi-value nkpi-num-good">71</span>
+              <span class="node-kpi-unit">/100</span>
+              <span class="node-kpi-trend success">↑ 3</span>
+            </div>
+            <div style="height:24px;display:flex;align-items:flex-end;gap:3px;margin-top:12px;">
+              <div class="nkpi-vbar" style="height:45%;"></div>
+              <div class="nkpi-vbar" style="height:52%;"></div>
+              <div class="nkpi-vbar" style="height:50%;"></div>
+              <div class="nkpi-vbar" style="height:64%;"></div>
+              <div class="nkpi-vbar" style="height:72%;"></div>
+              <div class="nkpi-vbar" style="height:80%;"></div>
+              <div class="nkpi-vbar" style="height:100%;"></div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:12px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">Across 5 nodes</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView('results')"><span class="stat-link-txt">View details</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+            </div>
+          </div>
+
+          <!-- Critical Issues -->
+          <div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView('results')">
+            <div class="node-kpi-head">
+              <div class="stat-card-label">Critical Issues</div>
+              <div class="stat-info">i<div class="stat-tip">Critical-severity check failures across all nodes in the latest scan.</div></div>
+            </div>
+            <div class="node-kpi-main" style="display:flex;align-items:center;gap:6px;">
+              <span class="node-kpi-value" style="color:#FB3C44;">31</span>
+              <span class="node-kpi-unit">issues</span>
+              <span class="node-kpi-trend danger">↑ 4</span>
+            </div>
+            <div style="height:24px;display:flex;align-items:flex-end;gap:3px;margin-top:12px;">
+              <div class="nkpi-vbar crit" style="height:100%;"></div>
+              <div class="nkpi-vbar crit" style="height:83%;"></div>
+              <div class="nkpi-vbar crit" style="height:67%;"></div>
+              <div class="nkpi-vbar" style="height:50%;"></div>
+              <div class="nkpi-vbar" style="height:33%;"></div>
+              <div class="nkpi-vbar" style="height:33%;"></div>
+              <div class="nkpi-vbar" style="height:17%;"></div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:12px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">15 nodes affected</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView('results')"><span class="stat-link-txt">View issues</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+            </div>
+          </div>
+
+          <!-- Unreconciled Drift -->
+          <div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView('changes')">
+            <div class="node-kpi-head">
+              <div class="stat-card-label">Unreconciled Drift</div>
+              <div class="stat-info">i<div class="stat-tip">Configuration changes detected with no matching Change Request. Review and reconcile to stay audit-ready.</div></div>
+            </div>
+            <div class="node-kpi-main" style="display:flex;align-items:center;gap:6px;">
+              <span class="node-kpi-value" style="color:#D97706;">5</span>
+              <span class="node-kpi-unit">drift</span>
+              <span class="node-kpi-trend warning">↑ 2</span>
+            </div>
+            <div style="margin-top:12px;">
+              <div style="display:flex;height:6px;border-radius:99px;overflow:hidden;gap:2px;">
+                <div style="flex:3;background:#D97706;border-radius:99px;"></div>
+                <div style="flex:1;background:#2563EB;border-radius:99px;"></div>
+                <div style="flex:1;background:#FB3C44;border-radius:99px;"></div>
+              </div>
+              <div style="display:flex;gap:12px;margin-top:8px;font-size:10px;color:var(--text-sec);">
+                <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:7px;height:7px;border-radius:50%;background:#D97706;flex-shrink:0;"></span>Modified <b style="font-weight:700;color:var(--text-default);">3</b></span>
+                <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:7px;height:7px;border-radius:50%;background:#2563EB;flex-shrink:0;"></span>Added <b style="font-weight:700;color:var(--text-default);">1</b></span>
+                <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:7px;height:7px;border-radius:50%;background:#FB3C44;flex-shrink:0;"></span>Removed <b style="font-weight:700;color:var(--text-default);">1</b></span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:12px;gap:8px;">
+              <div class="stat-foot" style="padding-top:0;">Across 3 nodes</div>
+              <button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView('changes')"><span class="stat-link-txt">Review now</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+            </div>
+          </div>
+
         </div>
 
         <!-- Managed / Detected tabs — shared Policies tab component -->
@@ -7858,13 +7969,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </button>
             </span>
             <span class="tip-wrap" data-tip="Compare — shows where two nodes differ, setting by setting, side by side. Needs exactly 2 nodes.">
-            <button id="node-action-compare" class="btn-icon" onclick="showCompare()" disabled="" aria-label="Compare">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><mask id="cmp-inside" fill="white"><path d="M8 2C8.13261 2 8.25979 2.05268 8.35355 2.14645C8.44732 2.24021 8.5 2.36739 8.5 2.5V13.5C8.5 13.6326 8.44732 13.7598 8.35355 13.8536C8.25979 13.9473 8.13261 14 8 14C7.86739 14 7.74021 13.9473 7.64645 13.8536C7.55268 13.7598 7.5 13.6326 7.5 13.5V2.5C7.5 2.36739 7.55268 2.24021 7.64645 2.14645C7.74021 2.05268 7.86739 2 8 2ZM4.5 5.5C4.89782 5.5 5.27936 5.65804 5.56066 5.93934C5.84196 6.22064 6 6.60218 6 7V9C6 9.39782 5.84196 9.77936 5.56066 10.0607C5.27936 10.342 4.89782 10.5 4.5 10.5H2.5C2.10218 10.5 1.72064 10.342 1.43934 10.0607C1.15804 9.77936 1 9.39782 1 9V7C1 6.60218 1.15804 6.22064 1.43934 5.93934C1.72064 5.65804 2.10218 5.5 2.5 5.5H4.5ZM13.5 5.5C13.8978 5.5 14.2794 5.65804 14.5607 5.93934C14.842 6.22064 15 6.60218 15 7V9C15 9.39782 14.842 9.77936 14.5607 10.0607C14.2794 10.342 13.8978 10.5 13.5 10.5H11.5C11.1022 10.5 10.7206 10.342 10.4393 10.0607C10.158 9.77936 10 9.39782 10 9V7C10 6.60218 10.158 6.22064 10.4393 5.93934C10.7206 5.65804 11.1022 5.5 11.5 5.5H13.5ZM2.5 6.5C2.36739 6.5 2.24021 6.55268 2.14645 6.64645C2.05268 6.74021 2 6.86739 2 7V9C2 9.13261 2.05268 9.25979 2.14645 9.35355C2.24021 9.44732 2.36739 9.5 2.5 9.5H4.5C4.63261 9.5 4.75979 9.44732 4.85355 9.35355C4.94732 9.25979 5 9.13261 5 9V7C5 6.86739 4.94732 6.74021 4.85355 6.64645C4.75979 6.55268 4.63261 6.5 4.5 6.5H2.5ZM11.5 6.5C11.3674 6.5 11.2402 6.55268 11.1464 6.64645C11.0527 6.74021 11 6.86739 11 7V9C11 9.13261 11.0527 9.25979 11.1464 9.35355C11.2402 9.44732 11.3674 9.5 11.5 9.5H13.5C13.6326 9.5 13.7598 9.44732 13.8536 9.35355C13.9473 9.25979 14 9.13261 14 9V7C14 6.86739 13.9473 6.74021 13.8536 6.64645C13.7598 6.55268 13.6326 6.5 13.5 6.5H11.5Z"></path></mask><path d="M8 2V3V2ZM4.5 5.5V6.5V5.5ZM4.5 10.5V11.5V10.5ZM2.5 10.5V11.5V10.5ZM1 9H0H1ZM1 7H0H1ZM13.5 5.5V6.5V5.5ZM15 7H16H15ZM15 9H16H15ZM13.5 10.5V11.5V10.5ZM11.5 10.5V11.5V10.5ZM10 9H9H10ZM2 7H1H2ZM8 2V3C7.86739 3 7.74022 2.94732 7.64645 2.85355L8.35355 2.14645L9.06066 1.43934C8.77936 1.15804 8.39782 1 8 1V2ZM8.35355 2.14645L7.64645 2.85355C7.55268 2.75978 7.5 2.63261 7.5 2.5H8.5H9.5C9.5 2.10218 9.34197 1.72065 9.06066 1.43934L8.35355 2.14645ZM8.5 2.5H7.5V13.5H8.5H9.5V2.5H8.5ZM8.5 13.5H7.5C7.5 13.3674 7.55268 13.2402 7.64645 13.1464L8.35355 13.8536L9.06066 14.5607C9.34197 14.2794 9.5 13.8978 9.5 13.5H8.5ZM8.35355 13.8536L7.64645 13.1464C7.74022 13.0527 7.86739 13 8 13V14V15C8.39782 15 8.77935 14.842 9.06066 14.5607L8.35355 13.8536ZM8 14V13C8.13261 13 8.25978 13.0527 8.35355 13.1464L7.64645 13.8536L6.93934 14.5607C7.22065 14.842 7.60218 15 8 15V14ZM7.64645 13.8536L8.35355 13.1464C8.44732 13.2402 8.5 13.3674 8.5 13.5H7.5H6.5C6.5 13.8978 6.65804 14.2794 6.93934 14.5607L7.64645 13.8536ZM7.5 13.5H8.5V2.5H7.5H6.5V13.5H7.5ZM7.5 2.5H8.5C8.5 2.63261 8.44732 2.75979 8.35355 2.85355L7.64645 2.14645L6.93934 1.43934C6.65804 1.72064 6.5 2.10217 6.5 2.5H7.5ZM7.64645 2.14645L8.35355 2.85355C8.25979 2.94732 8.13261 3 8 3V2V1C7.60217 1 7.22064 1.15804 6.93934 1.43934L7.64645 2.14645ZM4.5 5.5V6.5C4.63261 6.5 4.75979 6.55268 4.85355 6.64645L5.56066 5.93934L6.26777 5.23223C5.79893 4.76339 5.16304 4.5 4.5 4.5V5.5ZM5.56066 5.93934L4.85355 6.64645C4.94732 6.74021 5 6.86739 5 7H6H7C7 6.33696 6.73661 5.70107 6.26777 5.23223L5.56066 5.93934ZM6 7H5V9H6H7V7H6ZM6 9H5C5 9.13261 4.94732 9.25979 4.85355 9.35355L5.56066 10.0607L6.26777 10.7678C6.73661 10.2989 7 9.66304 7 9H6ZM5.56066 10.0607L4.85355 9.35355C4.75979 9.44732 4.63261 9.5 4.5 9.5V10.5V11.5C5.16304 11.5 5.79893 11.2366 6.26777 10.7678L5.56066 10.0607ZM4.5 10.5V9.5H2.5V10.5V11.5H4.5V10.5ZM2.5 10.5V9.5C2.36739 9.5 2.24021 9.44732 2.14645 9.35355L1.43934 10.0607L0.732233 10.7678C1.20107 11.2366 1.83696 11.5 2.5 11.5V10.5ZM1.43934 10.0607L2.14645 9.35355C2.05268 9.25979 2 9.13261 2 9H1H0C0 9.66304 0.263392 10.2989 0.732233 10.7678L1.43934 10.0607ZM1 9H2V7H1H0V9H1ZM1 7H2C2 6.86739 2.05268 6.74021 2.14645 6.64645L1.43934 5.93934L0.732233 5.23223C0.263392 5.70107 0 6.33696 0 7H1ZM1.43934 5.93934L2.14645 6.64645C2.24021 6.55268 2.36739 6.5 2.5 6.5V5.5V4.5C1.83696 4.5 1.20107 4.76339 0.732233 5.23223L1.43934 5.93934ZM2.5 5.5V6.5H4.5V5.5V4.5H2.5V5.5ZM13.5 5.5V6.5C13.6326 6.5 13.7598 6.55268 13.8536 6.64645L14.5607 5.93934L15.2678 5.23223C14.7989 4.76339 14.163 4.5 13.5 4.5V5.5ZM14.5607 5.93934L13.8536 6.64645C13.9473 6.74021 14 6.86739 14 7H15H16C16 6.33696 15.7366 5.70107 15.2678 5.23223L14.5607 5.93934ZM15 7H14V9H15H16V7H15ZM15 9H14C14 9.13261 13.9473 9.25979 13.8536 9.35355L14.5607 10.0607L15.2678 10.7678C15.7366 10.2989 16 9.66304 16 9H15ZM14.5607 10.0607L13.8536 9.35355C13.7598 9.44732 13.6326 9.5 13.5 9.5V10.5V11.5C14.163 11.5 14.7989 11.2366 15.2678 10.7678L14.5607 10.0607ZM13.5 10.5V9.5H11.5V10.5V11.5H13.5V10.5ZM11.5 10.5V9.5C11.3674 9.5 11.2402 9.44732 11.1464 9.35355L10.4393 10.0607L9.73223 10.7678C10.2011 11.2366 10.837 11.5 11.5 11.5V10.5ZM10.4393 10.0607L11.1464 9.35355C11.0527 9.25979 11 9.13261 11 9H10H9C9 9.66304 9.26339 10.2989 9.73223 10.7678L10.4393 10.0607ZM10 9H11V7H10H9V9H10ZM10 7H11C11 6.86739 11.0527 6.74021 11.1464 6.64645L10.4393 5.93934L9.73223 5.23223C9.26339 5.70107 9 6.33696 9 7H10ZM10.4393 5.93934L11.1464 6.64645C11.2402 6.55268 11.3674 6.5 11.5 6.5V5.5V4.5C10.837 4.5 10.2011 4.76339 9.73223 5.23223L10.4393 5.93934ZM11.5 5.5V6.5H13.5V5.5V4.5H11.5V5.5ZM2.5 6.5V5.5C2.10217 5.5 1.72064 5.65804 1.43934 5.93934L2.14645 6.64645L2.85355 7.35355C2.75979 7.44732 2.63261 7.5 2.5 7.5V6.5ZM2.14645 6.64645L1.43934 5.93934C1.15804 6.22064 1 6.60217 1 7H2H3C3 7.13261 2.94732 7.25979 2.85355 7.35355L2.14645 6.64645ZM2 7H1V9H2H3V7H2ZM2 9H1C1 9.39782 1.15804 9.77936 1.43934 10.0607L2.14645 9.35355L2.85355 8.64645C2.94732 8.74022 3 8.86739 3 9H2ZM2.14645 9.35355L1.43934 10.0607C1.72065 10.342 2.10218 10.5 2.5 10.5V9.5V8.5C2.63261 8.5 2.75978 8.55268 2.85355 8.64645L2.14645 9.35355ZM2.5 9.5V10.5H4.5V9.5V8.5H2.5V9.5ZM4.5 9.5V10.5C4.89782 10.5 5.27935 10.342 5.56066 10.0607L4.85355 9.35355L4.14645 8.64645C4.24022 8.55268 4.36739 8.5 4.5 8.5V9.5ZM4.85355 9.35355L5.56066 10.0607C5.84196 9.77936 6 9.39782 6 9H5H4C4 8.86739 4.05268 8.74022 4.14645 8.64645L4.85355 9.35355ZM5 9H6V7H5H4V9H5ZM5 7H6C6 6.60217 5.84196 6.22064 5.56066 5.93934L4.85355 6.64645L4.14645 7.35355C4.05268 7.25979 4 7.13261 4 7H5ZM4.85355 6.64645L5.56066 5.93934C5.27936 5.65804 4.89783 5.5 4.5 5.5V6.5V7.5C4.36739 7.5 4.24021 7.44732 4.14645 7.35355L4.85355 6.64645ZM4.5 6.5V5.5H2.5V6.5V7.5H4.5V6.5ZM11.5 6.5V5.5C11.1022 5.5 10.7206 5.65804 10.4393 5.93934L11.1464 6.64645L11.8536 7.35355C11.7598 7.44732 11.6326 7.5 11.5 7.5V6.5ZM11.1464 6.64645L10.4393 5.93934C10.158 6.22065 10 6.60218 10 7H11H12C12 7.13261 11.9473 7.25978 11.8536 7.35355L11.1464 6.64645ZM11 7H10V9H11H12V7H11ZM11 9H10C10 9.39782 10.158 9.77935 10.4393 10.0607L11.1464 9.35355L11.8536 8.64645C11.9473 8.74022 12 8.86739 12 9H11ZM11.1464 9.35355L10.4393 10.0607C10.7206 10.342 11.1022 10.5 11.5 10.5V9.5V8.5C11.6326 8.5 11.7598 8.55268 11.8536 8.64645L11.1464 9.35355ZM11.5 9.5V10.5H13.5V9.5V8.5H11.5V9.5ZM13.5 9.5V10.5C13.8978 10.5 14.2794 10.342 14.5607 10.0607L13.8536 9.35355L13.1464 8.64645C13.2402 8.55268 13.3674 8.5 13.5 8.5V9.5ZM13.8536 9.35355L14.5607 10.0607C14.842 9.77935 15 9.39782 15 9H14H13C13 8.86739 13.0527 8.74022 13.1464 8.64645L13.8536 9.35355ZM14 9H15V7H14H13V9H14ZM14 7H15C15 6.60218 14.842 6.22065 14.5607 5.93934L13.8536 6.64645L13.1464 7.35355C13.0527 7.25978 13 7.13261 13 7H14ZM13.8536 6.64645L14.5607 5.93934C14.2794 5.65804 13.8978 5.5 13.5 5.5V6.5V7.5C13.3674 7.5 13.2402 7.44732 13.1464 7.35355L13.8536 6.64645ZM13.5 6.5V5.5H11.5V6.5V7.5H13.5V6.5Z" fill="currentColor" mask="url(#cmp-inside)"></path></svg>
+            <button id="node-action-compare" class="btn-secondary" onclick="showCompare()" disabled="" aria-label="Compare">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><mask id="cmp-inside" fill="white"><path d="M8 2C8.13261 2 8.25979 2.05268 8.35355 2.14645C8.44732 2.24021 8.5 2.36739 8.5 2.5V13.5C8.5 13.6326 8.44732 13.7598 8.35355 13.8536C8.25979 13.9473 8.13261 14 8 14C7.86739 14 7.74021 13.9473 7.64645 13.8536C7.55268 13.7598 7.5 13.6326 7.5 13.5V2.5C7.5 2.36739 7.55268 2.24021 7.64645 2.14645C7.74021 2.05268 7.86739 2 8 2ZM4.5 5.5C4.89782 5.5 5.27936 5.65804 5.56066 5.93934C5.84196 6.22064 6 6.60218 6 7V9C6 9.39782 5.84196 9.77936 5.56066 10.0607C5.27936 10.342 4.89782 10.5 4.5 10.5H2.5C2.10218 10.5 1.72064 10.342 1.43934 10.0607C1.15804 9.77936 1 9.39782 1 9V7C1 6.60218 1.15804 6.22064 1.43934 5.93934C1.72064 5.65804 2.10218 5.5 2.5 5.5H4.5ZM13.5 5.5C13.8978 5.5 14.2794 5.65804 14.5607 5.93934C14.842 6.22064 15 6.60218 15 7V9C15 9.39782 14.842 9.77936 14.5607 10.0607C14.2794 10.342 13.8978 10.5 13.5 10.5H11.5C11.1022 10.5 10.7206 10.342 10.4393 10.0607C10.158 9.77936 10 9.39782 10 9V7C10 6.60218 10.158 6.22064 10.4393 5.93934C10.7206 5.65804 11.1022 5.5 11.5 5.5H13.5ZM2.5 6.5C2.36739 6.5 2.24021 6.55268 2.14645 6.64645C2.05268 6.74021 2 6.86739 2 7V9C2 9.13261 2.05268 9.25979 2.14645 9.35355C2.24021 9.44732 2.36739 9.5 2.5 9.5H4.5C4.63261 9.5 4.75979 9.44732 4.85355 9.35355C4.94732 9.25979 5 9.13261 5 9V7C5 6.86739 4.94732 6.74021 4.85355 6.64645C4.75979 6.55268 4.63261 6.5 4.5 6.5H2.5ZM11.5 6.5C11.3674 6.5 11.2402 6.55268 11.1464 6.64645C11.0527 6.74021 11 6.86739 11 7V9C11 9.13261 11.0527 9.25979 11.1464 9.35355C11.2402 9.44732 11.3674 9.5 11.5 9.5H13.5C13.6326 9.5 13.7598 9.44732 13.8536 9.35355C13.9473 9.25979 14 9.13261 14 9V7C14 6.86739 13.9473 6.74021 13.8536 6.64645C13.7598 6.55268 13.6326 6.5 13.5 6.5H11.5Z"></path></mask><path d="M8 2V3V2ZM4.5 5.5V6.5V5.5ZM4.5 10.5V11.5V10.5ZM2.5 10.5V11.5V10.5ZM1 9H0H1ZM1 7H0H1ZM13.5 5.5V6.5V5.5ZM15 7H16H15ZM15 9H16H15ZM13.5 10.5V11.5V10.5ZM11.5 10.5V11.5V10.5ZM10 9H9H10ZM2 7H1H2ZM8 2V3C7.86739 3 7.74022 2.94732 7.64645 2.85355L8.35355 2.14645L9.06066 1.43934C8.77936 1.15804 8.39782 1 8 1V2ZM8.35355 2.14645L7.64645 2.85355C7.55268 2.75978 7.5 2.63261 7.5 2.5H8.5H9.5C9.5 2.10218 9.34197 1.72065 9.06066 1.43934L8.35355 2.14645ZM8.5 2.5H7.5V13.5H8.5H9.5V2.5H8.5ZM8.5 13.5H7.5C7.5 13.3674 7.55268 13.2402 7.64645 13.1464L8.35355 13.8536L9.06066 14.5607C9.34197 14.2794 9.5 13.8978 9.5 13.5H8.5ZM8.35355 13.8536L7.64645 13.1464C7.74022 13.0527 7.86739 13 8 13V14V15C8.39782 15 8.77935 14.842 9.06066 14.5607L8.35355 13.8536ZM8 14V13C8.13261 13 8.25978 13.0527 8.35355 13.1464L7.64645 13.8536L6.93934 14.5607C7.22065 14.842 7.60218 15 8 15V14ZM7.64645 13.8536L8.35355 13.1464C8.44732 13.2402 8.5 13.3674 8.5 13.5H7.5H6.5C6.5 13.8978 6.65804 14.2794 6.93934 14.5607L7.64645 13.8536ZM7.5 13.5H8.5V2.5H7.5H6.5V13.5H7.5ZM7.5 2.5H8.5C8.5 2.63261 8.44732 2.75979 8.35355 2.85355L7.64645 2.14645L6.93934 1.43934C6.65804 1.72064 6.5 2.10217 6.5 2.5H7.5ZM7.64645 2.14645L8.35355 2.85355C8.25979 2.94732 8.13261 3 8 3V2V1C7.60217 1 7.22064 1.15804 6.93934 1.43934L7.64645 2.14645ZM4.5 5.5V6.5C4.63261 6.5 4.75979 6.55268 4.85355 6.64645L5.56066 5.93934L6.26777 5.23223C5.79893 4.76339 5.16304 4.5 4.5 4.5V5.5ZM5.56066 5.93934L4.85355 6.64645C4.94732 6.74021 5 6.86739 5 7H6H7C7 6.33696 6.73661 5.70107 6.26777 5.23223L5.56066 5.93934ZM6 7H5V9H6H7V7H6ZM6 9H5C5 9.13261 4.94732 9.25979 4.85355 9.35355L5.56066 10.0607L6.26777 10.7678C6.73661 10.2989 7 9.66304 7 9H6ZM5.56066 10.0607L4.85355 9.35355C4.75979 9.44732 4.63261 9.5 4.5 9.5V10.5V11.5C5.16304 11.5 5.79893 11.2366 6.26777 10.7678L5.56066 10.0607ZM4.5 10.5V9.5H2.5V10.5V11.5H4.5V10.5ZM2.5 10.5V9.5C2.36739 9.5 2.24021 9.44732 2.14645 9.35355L1.43934 10.0607L0.732233 10.7678C1.20107 11.2366 1.83696 11.5 2.5 11.5V10.5ZM1.43934 10.0607L2.14645 9.35355C2.05268 9.25979 2 9.13261 2 9H1H0C0 9.66304 0.263392 10.2989 0.732233 10.7678L1.43934 10.0607ZM1 9H2V7H1H0V9H1ZM1 7H2C2 6.86739 2.05268 6.74021 2.14645 6.64645L1.43934 5.93934L0.732233 5.23223C0.263392 5.70107 0 6.33696 0 7H1ZM1.43934 5.93934L2.14645 6.64645C2.24021 6.55268 2.36739 6.5 2.5 6.5V5.5V4.5C1.83696 4.5 1.20107 4.76339 0.732233 5.23223L1.43934 5.93934ZM2.5 5.5V6.5H4.5V5.5V4.5H2.5V5.5ZM13.5 5.5V6.5C13.6326 6.5 13.7598 6.55268 13.8536 6.64645L14.5607 5.93934L15.2678 5.23223C14.7989 4.76339 14.163 4.5 13.5 4.5V5.5ZM14.5607 5.93934L13.8536 6.64645C13.9473 6.74021 14 6.86739 14 7H15H16C16 6.33696 15.7366 5.70107 15.2678 5.23223L14.5607 5.93934ZM15 7H14V9H15H16V7H15ZM15 9H14C14 9.13261 13.9473 9.25979 13.8536 9.35355L14.5607 10.0607L15.2678 10.7678C15.7366 10.2989 16 9.66304 16 9H15ZM14.5607 10.0607L13.8536 9.35355C13.7598 9.44732 13.6326 9.5 13.5 9.5V10.5V11.5C14.163 11.5 14.7989 11.2366 15.2678 10.7678L14.5607 10.0607ZM13.5 10.5V9.5H11.5V10.5V11.5H13.5V10.5ZM11.5 10.5V9.5C11.3674 9.5 11.2402 9.44732 11.1464 9.35355L10.4393 10.0607L9.73223 10.7678C10.2011 11.2366 10.837 11.5 11.5 11.5V10.5ZM10.4393 10.0607L11.1464 9.35355C11.0527 9.25979 11 9.13261 11 9H10H9C9 9.66304 9.26339 10.2989 9.73223 10.7678L10.4393 10.0607ZM10 9H11V7H10H9V9H10ZM10 7H11C11 6.86739 11.0527 6.74021 11.1464 6.64645L10.4393 5.93934L9.73223 5.23223C9.26339 5.70107 9 6.33696 9 7H10ZM10.4393 5.93934L11.1464 6.64645C11.2402 6.55268 11.3674 6.5 11.5 6.5V5.5V4.5C10.837 4.5 10.2011 4.76339 9.73223 5.23223L10.4393 5.93934ZM11.5 5.5V6.5H13.5V5.5V4.5H11.5V5.5ZM2.5 6.5V5.5C2.10217 5.5 1.72064 5.65804 1.43934 5.93934L2.14645 6.64645L2.85355 7.35355C2.75979 7.44732 2.63261 7.5 2.5 7.5V6.5ZM2.14645 6.64645L1.43934 5.93934C1.15804 6.22064 1 6.60217 1 7H2H3C3 7.13261 2.94732 7.25979 2.85355 7.35355L2.14645 6.64645ZM2 7H1V9H2H3V7H2ZM2 9H1C1 9.39782 1.15804 9.77936 1.43934 10.0607L2.14645 9.35355L2.85355 8.64645C2.94732 8.74022 3 8.86739 3 9H2ZM2.14645 9.35355L1.43934 10.0607C1.72065 10.342 2.10218 10.5 2.5 10.5V9.5V8.5C2.63261 8.5 2.75978 8.55268 2.85355 8.64645L2.14645 9.35355ZM2.5 9.5V10.5H4.5V9.5V8.5H2.5V9.5ZM4.5 9.5V10.5C4.89782 10.5 5.27935 10.342 5.56066 10.0607L4.85355 9.35355L4.14645 8.64645C4.24022 8.55268 4.36739 8.5 4.5 8.5V9.5ZM4.85355 9.35355L5.56066 10.0607C5.84196 9.77936 6 9.39782 6 9H5H4C4 8.86739 4.05268 8.74022 4.14645 8.64645L4.85355 9.35355ZM5 9H6V7H5H4V9H5ZM5 7H6C6 6.60217 5.84196 6.22064 5.56066 5.93934L4.85355 6.64645L4.14645 7.35355C4.05268 7.25979 4 7.13261 4 7H5ZM4.85355 6.64645L5.56066 5.93934C5.27936 5.65804 4.89783 5.5 4.5 5.5V6.5V7.5C4.36739 7.5 4.24021 7.44732 4.14645 7.35355L4.85355 6.64645ZM4.5 6.5V5.5H2.5V6.5V7.5H4.5V6.5ZM11.5 6.5V5.5C11.1022 5.5 10.7206 5.65804 10.4393 5.93934L11.1464 6.64645L11.8536 7.35355C11.7598 7.44732 11.6326 7.5 11.5 7.5V6.5ZM11.1464 6.64645L10.4393 5.93934C10.158 6.22065 10 6.60218 10 7H11H12C12 7.13261 11.9473 7.25978 11.8536 7.35355L11.1464 6.64645ZM11 7H10V9H11H12V7H11ZM11 9H10C10 9.39782 10.158 9.77935 10.4393 10.0607L11.1464 9.35355L11.8536 8.64645C11.9473 8.74022 12 8.86739 12 9H11ZM11.1464 9.35355L10.4393 10.0607C10.7206 10.342 11.1022 10.5 11.5 10.5V9.5V8.5C11.6326 8.5 11.7598 8.55268 11.8536 8.64645L11.1464 9.35355ZM11.5 9.5V10.5H13.5V9.5V8.5H11.5V9.5ZM13.5 9.5V10.5C13.8978 10.5 14.2794 10.342 14.5607 10.0607L13.8536 9.35355L13.1464 8.64645C13.2402 8.55268 13.3674 8.5 13.5 8.5V9.5ZM13.8536 9.35355L14.5607 10.0607C14.842 9.77935 15 9.39782 15 9H14H13C13 8.86739 13.0527 8.74022 13.1464 8.64645L13.8536 9.35355ZM14 9H15V7H14H13V9H14ZM14 7H15C15 6.60218 14.842 6.22065 14.5607 5.93934L13.8536 6.64645L13.1464 7.35355C13.0527 7.25978 13 7.13261 13 7H14ZM13.8536 6.64645L14.5607 5.93934C14.2794 5.65804 13.8978 5.5 13.5 5.5V6.5V7.5C13.3674 7.5 13.2402 7.44732 13.1464 7.35355L13.8536 6.64645ZM13.5 6.5V5.5H11.5V6.5V7.5H13.5V6.5Z" fill="currentColor" mask="url(#cmp-inside)"></path></svg>Compare
             </button>
             </span>
             <span class="tip-wrap" data-tip="Scan Selected — runs a compliance scan on the selected nodes now, outside their schedule. Needs 1 or more nodes.">
-            <button id="node-action-scan" class="btn-icon" onclick="scanSelectedNodes()" disabled="" aria-label="Scan Selected">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z" stroke="currentColor"></path></svg>
+            <button id="node-action-scan" class="btn-secondary" onclick="scanSelectedNodes()" disabled="" aria-label="Scan Selected">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z" stroke="currentColor"></path></svg>Scan Selected
             </button>
             </span>
             <span class="tip-wrap" data-tip="Consensus Comparison — finds the settings the selected nodes disagree on, and shows which node is the outlier. Needs 3 or more nodes.">
@@ -24503,6 +24614,7 @@ function setNodesState(state) {
   // Managed
   show('all-devices-sub',      !empty, 'flex');
   show('all-devices-sub-empty', empty, 'block');
+  show('node-kpi-cards',       !empty, 'grid');
   show('node-filter-row',      !empty, 'flex');
   show('nodes-list-wrap',      !empty, 'block');
   show('nodes-managed-empty',   empty, 'block');
