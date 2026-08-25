@@ -4182,15 +4182,22 @@ body.dark #v-all-devices [style*="background:#F9FAFC"] { background: var(--table
 /* Peer Baseline table headers and group headers */
 body.dark #nodes-peer-view [style*="background:var(--bg-canvas)"] { background: #00262A !important; }
 body.dark #nodes-peer-view [style*="background:#fff"] { background: var(--bg-card) !important; }
-body.dark #nodes-peer-view .col-thead { background: var(--table-header-bg) !important; }
+/* Figma 3474:53522 — ATTRIBUTE/MAJORITY/OUTLIER лишається плоским рядком без фону
+   й рамки, категорії нижче самі несуть власну картку; тут явно виходимо з-під
+   канонічного .col-thead-правила (index.html:737), яке інакше фарбує кожен .col-thead. */
+#nodes-peer-view .col-thead { background:transparent !important; border-bottom:none !important; }
 
 /* Peer card sections — show/hide match rows */
 .peer-card.show-all .peer-row-match { display: grid !important; }
+/* Кожна категорія (Security/Access control/…) — окрема картка (Figma 3474:53531:
+   bg white, border #e2e8f0, radius 6px), не один суцільний список. 24px — той самий
+   інсет, що й у ATTRIBUTE-рядка над ними; 16px — проміжок між картками (нема перед
+   першою — вона впритул до заголовка колонок, як у макеті). */
+.peer-sec { background:var(--bg-surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; margin:0 24px; }
+.peer-sec + .peer-sec { margin-top:16px; }
 .peer-sec-hdr:hover { background: rgba(100,116,139,0.1) !important; }
 body.dark .peer-sec-hdr { background: rgba(255,255,255,0.03) !important; }
 body.dark .peer-sec-hdr:hover { background: rgba(255,255,255,0.06) !important; }
-body.dark #peer-os-view [style*="grid-template-columns:2fr 1.5fr 2fr"][style*="text-transform:uppercase"],
-body.dark #peer-team-view [style*="grid-template-columns:2fr 1.5fr 2fr"][style*="text-transform:uppercase"] { background: var(--table-header-bg) !important; }
 body.dark .peer-row-match { background: transparent !important; }
 body.dark #nodes-peer-view [style*="background:rgba(100,116,139,0.05)"] { background: rgba(255,255,255,0.03) !important; }
 
@@ -8267,7 +8274,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
               </div>
               <div id="peer-card-win-body">
-                <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 24px;font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
                   <div>Attribute</div><div>Majority (93+/120)</div><div>Outlier nodes · value</div>
                 </div>
                 <div class="peer-sec">
@@ -8457,7 +8464,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                     </div>
                   </div>
                 </div>
-                <div style="padding:11px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                <div style="margin-top:20px;padding:11px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
                   <span style="font-size:13px;color:#00AF73;">✓</span>
                   <span style="font-size:12px;color:var(--text-sec);">32 attributes match across all 120 nodes — domain membership, password policy, account lockout, Secure Boot, SMB signing, Chrome, Slack, Teams, auto-updates, IPv6 disabled, screensaver lock and 21 more</span>
                 </div>
@@ -8530,7 +8537,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
               </div>
               <div id="peer-card-eng-body">
-                <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 24px;font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
                   <div>Attribute</div><div>Majority (3+/4)</div><div>Outlier nodes · value</div>
                 </div>
                 <div class="peer-sec">
@@ -8590,7 +8597,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                     </div>
                   </div>
                 </div>
-                <div style="padding:11px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                <div style="margin-top:20px;padding:11px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
                   <span style="font-size:13px;color:#00AF73;">✓</span>
                   <span style="font-size:12px;color:var(--text-sec);">31 attributes match across all nodes — firewall, disk encryption, domain, Slack, auto-updates, audit logging, Zoom, Teams and 23 more</span>
                 </div>
@@ -8613,7 +8620,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
               </div>
               <div id="peer-card-fin-body">
-                <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 20px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 24px;font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
                   <div>Attribute</div><div>Majority (2+/3)</div><div>Outlier node · value</div>
                 </div>
                 <div class="peer-row peer-row-diff" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
@@ -8646,7 +8653,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <div style="font-size:12px;color:var(--text-sec);">80, 443</div>
                   <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">PETER-SALES-02</span><span style="font-size:11px;color:var(--text-sec);">+ 8080, 8443</span></div>
                 </div>
-                <div style="padding:11px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                <div style="margin-top:20px;padding:11px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
                   <span style="font-size:13px;color:#00AF73;">✓</span>
                   <span style="font-size:12px;color:var(--text-sec);">29 attributes match across all nodes — domain, auto-updates, firewall, screen lock, audit logging, Zoom, Teams, Slack and 21 more</span>
                 </div>
