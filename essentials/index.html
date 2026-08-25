@@ -1560,7 +1560,7 @@ code { font-family:'DM Sans',sans-serif; }
 /* Обидва порожні стани стоять вище геометричного центру: у порожній області око
    зупиняється трохи вище середини, а не рівно посередині. Зсув через position, а не
    margin — щоб не вплинути на розрахунок вільного місця у flex-контейнері. */
-#results-firstrun, #drift-firstrun, #policies-firstrun, #reports-firstrun, #sched-firstrun, #cm-firstrun { position:relative; top:-150px; }
+#results-firstrun, #drift-firstrun, #policies-firstrun, #reports-firstrun, #sched-firstrun, #cm-firstrun, #cred-firstrun { position:relative; top:-150px; }
 /* Коло-іконка у світлій темі темніша за канву, інакше зникає на ній. Тільки для цих
    станів першого запуску — решта .es-ico по застосунку лишається на --bg-canvas.
    ⚠️ Обовʼязково під body:not(.dark), інакше правило протече в темну тему. */
@@ -1569,7 +1569,8 @@ body:not(.dark) #drift-firstrun .es-ico,
 body:not(.dark) #policies-firstrun .es-ico,
 body:not(.dark) #reports-firstrun .es-ico,
 body:not(.dark) #sched-firstrun .es-ico,
-body:not(.dark) #cm-firstrun .es-ico { background:#EDF2F7; }
+body:not(.dark) #cm-firstrun .es-ico,
+body:not(.dark) #cred-firstrun .es-ico { background:#EDF2F7; }
 
 #results-firstrun { display:none; }
 #v-results.is-firstrun .results-scope-bar,
@@ -1686,6 +1687,20 @@ body:not(.dark) #cm-firstrun .es-ico { background:#EDF2F7; }
 #v-cm-list.is-firstrun #cm-table-card { display:none !important; }
 #v-cm-list.is-firstrun #cm-firstrun { display:block; }
 #v-cm-list.is-firstrun #cm-body { display:flex; align-items:center; justify-content:center; }
+
+/* Те саме для Credentials. Облікові дані не походять від даних — це те, що вводять ДО
+   першого скану, щоб було чим до вузла достукатись. Тому CTA «+ New credential».
+   Виноска про Guardian Vault пояснює, де лежить те, що в таблиці; без таблиці вона
+   зависає, тож гасне — а факт про шифроване сховище переїхав у підпис порожнього стану,
+   щоб нічого правдивого не загубилось. */
+#cred-firstrun { display:none; }
+#v-credentials.is-firstrun #cred-head,
+#v-credentials.is-firstrun #cred-stat-row,
+#v-credentials.is-firstrun #cred-controls,
+#v-credentials.is-firstrun #cred-table-card,
+#v-credentials.is-firstrun .cred-source-note { display:none !important; }
+#v-credentials.is-firstrun #cred-firstrun { display:block; }
+#v-credentials.is-firstrun #cred-body { display:flex; align-items:center; justify-content:center; }
 
 .score-wrap { position:relative; width:76px; height:76px; flex-shrink:0; }
 .score-svg  { width:76px; height:76px; }
@@ -14869,8 +14884,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (s3) s3.innerHTML = '<div class="sm-label">Needs attention</div><div class="sm-val" style="color:'+(issues?'#dc2626':'#059669')+';">'+issues+'</div><div class="sm-sub">'+(issues ? 'Invalid / expired / failing' : 'All valid')+'</div>';
       if (s4) s4.innerHTML = '<div class="sm-label">Unused</div><div class="sm-val" style="color:'+(unused?'#64748b':'#059669')+';">'+unused+'</div><div class="sm-sub">Not assigned to any node</div>';
 
+      // Лічильник у сайдбарі рахує те саме, що й сторінка, тож лишити його на 8 поруч із
+      // «No credentials yet» означало б показати дві різні правди про одне число. Джерело
+      // істини одне — клас на вʼю: showView('credentials') кличе renderCredentials(), і без
+      // цієї перевірки той повернув би 8.
       var sbCount = document.querySelector('#sb-credentials span');
-      if (sbCount) sbCount.textContent = all.length;
+      var credView = document.getElementById('v-credentials');
+      if (sbCount) sbCount.textContent = (credView && credView.classList.contains('is-firstrun')) ? '0' : all.length;
       var tableCount = document.getElementById('cred-table-count');
       if (tableCount) tableCount.textContent = all.length + ' reusable credential' + (all.length === 1 ? '' : 's') + ' available for Connection Managers';
 
@@ -21573,8 +21593,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
     <!-- ═══ Credential Vault list ═══ -->
     <div class="view" id="v-credentials" style="display: none;">
-      <div class="dash-main" style="max-width:100%;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+      <div id="cred-body" class="dash-main" style="max-width:100%;">
+
+      <!-- Перший запуск. Іконка-ключ — та сама, що й у порожньому стані таблиці:
+           сторінка одна, тож і символ у неї один. -->
+      <div id="cred-firstrun" class="es">
+        <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"></path></svg></div>
+        <div class="es-title">No credentials yet</div>
+        <div class="es-sub">A credential is how a Connection Manager signs in to a node at scan time.<br>Add one and Guardian keeps it encrypted in its own vault.</div>
+        <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="credOpenEditor(null)">+ New credential</button></div>
+      </div>
+
+      <div id="cred-head" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
         <div>
           <div class="page-title">Credential Vault</div>
           <div class="page-sub">Reusable scan credentials — stored encrypted, used by Connection Managers at scan time</div>
@@ -21583,7 +21613,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
 
       <!-- Summary cards -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;">
+      <div id="cred-stat-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;">
         <div id="cred-stat-total" class="stat-mini"></div>
         <div id="cred-stat-valid" class="stat-mini"></div>
         <div id="cred-stat-issues" class="stat-mini"></div>
@@ -21591,7 +21621,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
 
       <!-- Stored credentials table heading + search -->
-      <div style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
+      <div id="cred-controls" style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
         <div style="min-width:220px;">
           <div style="font-size:14px;font-weight:700;color:var(--text-default);">Stored credentials</div>
           <div id="cred-table-count" style="font-size:11px;color:var(--text-sec);margin-top:3px;">8 reusable credentials available for Connection Managers</div>
@@ -21603,7 +21633,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
 
       <!-- Table -->
-      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;">
+      <div id="cred-table-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;">
         <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px;min-width:900px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
           <!-- Лише Name і Used by — стабільно порівнювані значення (ім'я, число вузлів).
                Type/Status/Source — категорійні (як STATUS у Managed Nodes), Username — довільний
@@ -28851,6 +28881,16 @@ function setCmGroupsState(state) {
   if (typeof renderCMList === 'function') renderCMList();
 }
 
+// Credentials. Обліковий запис для скану вводять ДО першого скану, тож CTA тут
+// «+ New credential». Клас треба виставити ДО renderCredentials(): той пише лічильник
+// у сайдбарі й читає стан саме з класу.
+function setCredentialsState(state) {
+  var view = document.getElementById('v-credentials');
+  if (!view) return;
+  view.classList.toggle('is-firstrun', state === 'empty');
+  if (typeof renderCredentials === 'function') renderCredentials();
+}
+
 function setAppState(state) {
   var empty = state === 'empty';
   setDashState(empty ? 'empty' : 'data');
@@ -28861,6 +28901,7 @@ function setAppState(state) {
   setReportsState(empty ? 'empty' : 'data');
   setSchedulesState(empty ? 'empty' : 'data');
   setCmGroupsState(empty ? 'empty' : 'data');
+  setCredentialsState(empty ? 'empty' : 'data');
 
   // Зворотний відлік до наступного скану — теж твердження про дані, тільки живе воно
   // в сайдбарі, а не на сторінці. Лишити «Next scan in 23h 44m» поруч із «No scan
