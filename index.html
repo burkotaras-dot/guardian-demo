@@ -7776,6 +7776,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span style="font-size:12px;color:var(--text-default);">Viewing: <strong id="crumb-group-name">Windows 11</strong> group</span>
         </div>
 
+        <!-- Fleet summary cards — computed live from the Managed table's own data-sort-*
+             attributes (renderNodeKpiCards(), called from setNodesTab). Restored 25.08.2026
+             after the 11.08 removal (ed02b2f); this time sourced from real per-row data
+             instead of hand-authored numbers, so it can't drift out of sync with the table. -->
+        <div class="stat-grid node-kpi-grid" id="node-kpi-row" style="margin-bottom:24px;"></div>
 
         <!-- Tab intro on the left, all controls on the right -->
         <div id="node-filter-row" style="display:flex;gap:16px;margin-bottom:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
@@ -7900,7 +7905,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.5"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg>
               </div>
               <div>
-                <div style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">MACBOOK-TARAS</div>
+                <div class="node-name" style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">MACBOOK-TARAS</div>
                 <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:6px;">Windows 11 <span style="font-size:9px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bg-subtle);color:var(--text-sec);border:1px solid var(--border);letter-spacing:0.2px;">This node</span></div>
               </div>
             </div>
@@ -7926,7 +7931,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="1.5"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg>
               </div>
               <div>
-                <div style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">SARAH-LAPTOP-01</div>
+                <div class="node-name" style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">SARAH-LAPTOP-01</div>
                 <div style="font-size:11px;color:var(--text-sec);">Windows 11 Pro</div>
               </div>
             </div>
@@ -7952,7 +7957,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
               </div>
               <div>
-                <div style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">DEV-MACPRO-03</div>
+                <div class="node-name" style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">DEV-MACPRO-03</div>
                 <div style="font-size:11px;color:var(--text-sec);">macOS Ventura</div>
               </div>
             </div>
@@ -7978,7 +7983,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
               </div>
               <div>
-                <div style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">JAMES-WIN-DESK</div>
+                <div class="node-name" style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">JAMES-WIN-DESK</div>
                 <div style="font-size:11px;color:var(--text-sec);">Windows 10 Enterprise</div>
               </div>
             </div>
@@ -8000,7 +8005,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
               </div>
               <div>
-                <div style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">BUILD-AGENT-02</div>
+                <div class="node-name" style="font-size:13px;font-weight:600;color:var(--text-default);cursor:pointer;width:fit-content;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;)" onmouseover="this.style.color=&#39;#00AF73&#39;;this.style.textDecoration=&#39;underline&#39;" onmouseout="this.style.color=&#39;var(--text-default)&#39;;this.style.textDecoration=&#39;none&#39;">BUILD-AGENT-02</div>
                 <div style="font-size:11px;color:var(--text-sec);">Windows Server 2022</div>
               </div>
             </div>
@@ -23544,6 +23549,213 @@ function updateNodesResetState() {
   const nonDefault = !!q || _nodeStateFilter !== 'all' || _nodeFilter !== 'all' || group !== 'all' || env !== 'all';
   btn.classList.toggle('is-active', nonDefault);
 }
+// Fleet KPI row (Lowest/Average score, Critical issues, Unreconciled drift) — computed live
+// from the Managed table's own data-sort-* attributes so the cards can't drift out of sync
+// with the rows below them. James/BuildAgent-style sentinel scores (>=900) mean "no scan
+// result yet" and are excluded from score math; "never scanned" nodes are excluded from
+// drift math the same way the table itself shows "—" for them.
+function renderNodeKpiCards() {
+  var host = document.getElementById('node-kpi-row');
+  if (!host) return;
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#nodes-managed-view .node-row[data-sort-score]'));
+  if (!rows.length) { host.innerHTML = ''; return; }
+
+  var nodes = rows.map(function(row) {
+    var nameEl = row.querySelector('.node-name');
+    // Critical count read from the ISSUES cell's own displayed text (row.children[3]), not
+    // data-sort-issues: that sort key can go stale independently of the label it sorts (e.g.
+    // DEV-MACPRO-03 carries data-sort-issues="2" while its cell reads "0 Critical") — the
+    // visible text is the one number the user actually sees, so it's the honest source here.
+    var issuesCell = row.children[3];
+    var issuesLabel = issuesCell ? issuesCell.textContent : '';
+    var criticalMatch = issuesLabel.match(/(\d+)\s*Critical/i);
+    return {
+      name: nameEl ? nameEl.textContent.trim() : (row.dataset.name || 'Node').split(' ')[0],
+      score: parseInt(row.dataset.sortScore, 10),
+      critical: criticalMatch ? parseInt(criticalMatch[1], 10) : 0,
+      changes: parseInt(row.dataset.sortDrift, 10) || 0,
+      neverScanned: row.dataset.scan === 'never'
+    };
+  });
+
+  var scored = nodes.filter(function(n) { return n.score < 900; });
+  var driftKnown = nodes.filter(function(n) { return !n.neverScanned; });
+
+  var html = '';
+  if (scored.length) {
+    var lowest = scored.reduce(function(a, b) { return b.score < a.score ? b : a; });
+    html += renderLowestScoreCard(lowest);
+    var avg = Math.round(scored.reduce(function(s, n) { return s + n.score; }, 0) / scored.length);
+    html += renderAvgScoreCard(avg, scored, nodes.length);
+  }
+
+  var criticalTotal = scored.reduce(function(s, n) { return s + n.critical; }, 0);
+  var criticalNodes = scored.filter(function(n) { return n.critical > 0; }).sort(function(a, b) { return b.critical - a.critical; });
+  html += renderCriticalCard(criticalTotal, criticalNodes);
+
+  var driftTotal = driftKnown.reduce(function(s, n) { return s + n.changes; }, 0);
+  var driftNodes = driftKnown.filter(function(n) { return n.changes > 0; }).sort(function(a, b) { return b.changes - a.changes; });
+  html += renderDriftCard(driftTotal, driftNodes);
+
+  host.innerHTML = html;
+}
+
+function renderLowestScoreCard(node) {
+  var color = node.score < 60 ? '#E84C3D' : (node.score < 80 ? '#D97706' : '#15803d');
+  return ''
+    + '<div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView(\'node-detail\')">'
+    +   '<div class="node-kpi-head">'
+    +     '<div class="node-kpi-head-l"><div class="stat-card-label">Lowest Node Score</div></div>'
+    +     '<div class="stat-info">i<div class="stat-tip">The lowest compliance score across all scored nodes. Start here — this node carries the most risk.</div></div>'
+    +   '</div>'
+    +   '<div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">'
+    +     '<div style="display:flex;align-items:baseline;gap:6px;">'
+    +       '<span style="font-size:32px;font-weight:800;color:' + color + ';line-height:1;">' + node.score + '</span>'
+    +       '<span style="font-size:12px;font-weight:600;color:var(--text-sec);">/100</span>'
+    +       '<span style="margin-left:auto;font-size:11px;font-weight:650;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;">' + node.name + '</span>'
+    +     '</div>'
+    +     '<div style="margin-top:16px;">'
+    +       '<div style="position:relative;display:flex;height:7px;border-radius:99px;overflow:visible;">'
+    +         '<div style="flex:0 0 60%;background:rgba(251,60,68,0.30);border-radius:99px 0 0 99px;"></div>'
+    +         '<div style="flex:0 0 20%;background:rgba(245,158,11,0.30);"></div>'
+    +         '<div style="flex:0 0 20%;background:rgba(63,200,120,0.32);border-radius:0 99px 99px 0;"></div>'
+    +         '<div style="position:absolute;top:-3px;left:' + node.score + '%;transform:translateX(-50%);width:2px;height:13px;background:' + color + ';border-radius:2px;pointer-events:none;"></div>'
+    +         '<div style="position:absolute;top:-5px;left:' + node.score + '%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:transparent;cursor:pointer;" onmouseenter="showDonutTip(event,\'Score ' + node.score + '/100\')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>'
+    +         '<div style="position:absolute;top:-2px;left:' + node.score + '%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:var(--bg-surface);border:2.5px solid ' + color + ';box-sizing:border-box;pointer-events:none;"></div>'
+    +       '</div>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">'
+    +     '<div class="stat-foot" style="padding-top:0;">Lowest scoring node</div>'
+    +     '<button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView(\'node-detail\')"><span class="stat-link-txt">View node</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>'
+    +   '</div>'
+    + '</div>';
+}
+
+function renderAvgScoreCard(avg, scored, totalNodes) {
+  var n = scored.length;
+  var pts = scored.map(function(node, i) {
+    var x = n > 1 ? (2 + i * (195 / (n - 1))) : 100;
+    var y = 58 - (node.score / 100) * 46;
+    return { x: x, y: y, node: node };
+  });
+  var polyPoints = pts.map(function(p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
+  var areaPoints = polyPoints + ' ' + pts[pts.length - 1].x.toFixed(1) + ',60 ' + pts[0].x.toFixed(1) + ',60';
+  var dotsHtml = pts.map(function(p) {
+    var leftPct = (p.x / 200 * 100).toFixed(1);
+    var topPct = (p.y / 60 * 100).toFixed(1);
+    return '<div style="position:absolute;left:' + leftPct + '%;top:' + topPct + '%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3FC878;border:1.5px solid var(--bg-surface);box-sizing:border-box;pointer-events:none;"></div>';
+  }).join('');
+  var hoverCols = pts.map(function(p) {
+    return '<div style="flex:1;cursor:pointer;" onmouseenter="showDonutTip(event,\'' + p.node.name + ' · ' + p.node.score + '/100\')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>';
+  }).join('');
+  return ''
+    + '<div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView(\'results\')">'
+    +   '<div class="node-kpi-head">'
+    +     '<div class="node-kpi-head-l"><div class="stat-card-label">Average Node Score</div></div>'
+    +     '<div class="stat-info">i<div class="stat-tip">The mean compliance score across all scored nodes — a fleet-wide health indicator that complements the lowest node score.</div></div>'
+    +   '</div>'
+    +   '<div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">'
+    +     '<div style="display:flex;align-items:baseline;gap:6px;">'
+    +       '<span class="nkpi-num-good" style="font-size:32px;font-weight:800;line-height:1;">' + avg + '</span>'
+    +       '<span style="font-size:12px;font-weight:600;color:var(--text-sec);">/100</span>'
+    +     '</div>'
+    +     '<div style="position:relative;height:40px;margin-top:auto;">'
+    +       '<svg width="100%" height="100%" viewBox="0 0 200 60" preserveAspectRatio="none" style="display:block;position:absolute;inset:0;">'
+    +         '<polygon points="' + areaPoints + '" fill="#3FC878" fill-opacity="0.10"></polygon>'
+    +         '<polyline points="' + polyPoints + '" fill="none" stroke="#3FC878" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>'
+    +       '</svg>'
+    +       dotsHtml
+    +       '<div style="position:absolute;inset:0;display:flex;">' + hoverCols + '</div>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">'
+    +     '<div class="stat-foot" style="padding-top:0;">Across ' + n + ' of ' + totalNodes + ' managed nodes</div>'
+    +     '<button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView(\'results\')"><span class="stat-link-txt">View score details</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>'
+    +   '</div>'
+    + '</div>';
+}
+
+function renderCriticalCard(total, criticalNodes) {
+  var max = criticalNodes.length ? criticalNodes[0].critical : 0;
+  var barsHtml = criticalNodes.map(function(n) {
+    var h = max ? Math.round(n.critical / max * 100) : 0;
+    return '<div class="nkpi-vbar crit" style="height:' + Math.max(h, 6) + '%;" onmouseenter="showDonutTip(event,\'' + n.name + ' · ' + n.critical + ' critical\')" onmousemove="moveDonutTip(event)" onmouseleave="hideDonutTip()"></div>';
+  }).join('');
+  var mostAffected = criticalNodes[0];
+  var mostAffectedHtml = mostAffected
+    ? 'Most affected: <span style="color:var(--text-default);font-weight:600;">' + mostAffected.name + '</span> · ' + mostAffected.critical + ' critical'
+    : 'No critical issues on scored nodes';
+  return ''
+    + '<div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView(\'results\')">'
+    +   '<div class="node-kpi-head">'
+    +     '<div class="node-kpi-head-l"><div class="stat-card-label">Critical Issues</div></div>'
+    +     '<div class="stat-info">i<div class="stat-tip">Critical-severity check failures across all scored nodes in the latest scan, and their impact on your fleet.</div></div>'
+    +   '</div>'
+    +   '<div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:12px;">'
+    +     '<div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">'
+    +       '<span style="font-size:28px;font-weight:800;color:' + (total ? '#FB3C44' : 'var(--text-default)') + ';line-height:1;">' + total + '</span>'
+    +       '<span style="font-size:12px;font-weight:600;color:var(--text-sec);">critical</span>'
+    +     '</div>'
+    +     (criticalNodes.length
+      ? '<div style="height:42px;display:flex;align-items:flex-end;gap:3px;margin-top:14px;">' + barsHtml + '</div>'
+      : '<div style="height:42px;"></div>')
+    +     '<div style="font-size:10px;color:var(--text-sec);margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + mostAffectedHtml + '</div>'
+    +   '</div>'
+    +   '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">'
+    +     '<div class="stat-foot" style="padding-top:0;">' + criticalNodes.length + ' node' + (criticalNodes.length === 1 ? '' : 's') + ' need attention</div>'
+    +     '<button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView(\'results\')"><span class="stat-link-txt">View issues</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>'
+    +   '</div>'
+    + '</div>';
+}
+
+function renderDriftCard(total, driftNodes) {
+  var palette = ['#00AF73', '#6366f1', '#f59e0b', '#a855f7', '#2563eb'];
+  var circumference = 238.76;
+  var offset = 0;
+  var segsHtml = '';
+  var legendHtml = '';
+  driftNodes.forEach(function(n, i) {
+    var color = palette[i % palette.length];
+    var len = total ? (n.changes / total * circumference) : 0;
+    segsHtml += '<circle cx="50" cy="50" r="38" fill="none" stroke="' + color + '" stroke-width="8" stroke-dasharray="' + len.toFixed(1) + ' ' + circumference + '" stroke-dashoffset="' + (-offset).toFixed(1) + '" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,\'' + n.name + ' · ' + n.changes + ' change' + (n.changes === 1 ? '' : 's') + '\')" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>';
+    legendHtml += '<div class="stat-legend-row">'
+      + '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="width:8px;height:8px;border-radius:50%;background:' + color + ';flex-shrink:0;"></span>' + n.name + '</span>'
+      + '<span style="font-size:12px;font-weight:700;color:' + color + ';">' + n.changes + '</span>'
+      + '</div>';
+    offset += len;
+  });
+  return ''
+    + '<div class="stat-card node-kpi-card" style="cursor:pointer;" onclick="showView(\'changes\')">'
+    +   '<div class="node-kpi-head">'
+    +     '<div class="node-kpi-head-l">'
+    +       '<div class="stat-card-label">Unreconciled Drift</div>'
+    +       (total ? '<span class="node-kpi-badge">Needs review</span>' : '')
+    +     '</div>'
+    +     '<div class="stat-info">i<div class="stat-tip">Configuration changes detected on nodes with no matching Change Request, broken down by node. Review and reconcile to stay audit-ready.</div></div>'
+    +   '</div>'
+    +   '<div style="display:flex;align-items:center;gap:16px;flex:1;margin-top:14px;">'
+    +     '<div style="position:relative;width:76px;height:76px;flex-shrink:0;">'
+    +       '<svg width="76" height="76" viewBox="0 0 100 100">'
+    +         '<circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>'
+    +         segsHtml
+    +       '</svg>'
+    +       '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">'
+    +         '<div style="font-size:17px;font-weight:800;color:' + (total ? '#D97706' : 'var(--text-default)') + ';line-height:1;">' + total + '</div>'
+    +         '<div style="font-size:7px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">drift</div>'
+    +       '</div>'
+    +     '</div>'
+    +     '<div style="flex:1;min-width:0;">'
+    +       '<div style="display:flex;flex-direction:column;">' + legendHtml + '</div>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:8px;gap:8px;">'
+    +     '<div class="stat-foot" style="padding-top:0;">Across ' + driftNodes.length + ' node' + (driftNodes.length === 1 ? '' : 's') + '</div>'
+    +     '<button class="stat-link" style="padding-top:0;flex-shrink:0;" onclick="event.stopPropagation();showView(\'changes\')"><span class="stat-link-txt">Review now</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>'
+    +   '</div>'
+    + '</div>';
+}
+
 function filterNodes() {
   updateNodesResetState();
   const q = (document.getElementById('node-search')?.value || '').toLowerCase();
@@ -23772,6 +23984,7 @@ function showView(name) {
   if (name === 'settings-integrations' && typeof renderIntegrations === 'function') renderIntegrations();
   if (name === 'all-devices' && typeof resumeNodeScans === 'function') resumeNodeScans();
   if (name === 'all-devices' && typeof updateNodeStateCounts === 'function') updateNodeStateCounts();
+  if (name === 'all-devices' && typeof renderNodeKpiCards === 'function') renderNodeKpiCards();
   _updateBC(name);
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
@@ -24478,6 +24691,7 @@ function setNodesTab(tab) {
   } else {
     if (managedView) managedView.style.display = 'block';
     activateNodesTab(mTab);
+    if (typeof renderNodeKpiCards === 'function') renderNodeKpiCards();
   }
   // Перемикання вкладок тягне за собою clearSelectionConsensus / setPeerGroup, які
   // повертають свої блоки у видимий стан. Тому після зміни вкладки перший запуск
@@ -24503,6 +24717,7 @@ function setNodesState(state) {
   // Managed
   show('all-devices-sub',      !empty, 'flex');
   show('all-devices-sub-empty', empty, 'block');
+  show('node-kpi-row',         !empty, 'grid');
   show('node-filter-row',      !empty, 'flex');
   show('nodes-list-wrap',      !empty, 'block');
   show('nodes-managed-empty',   empty, 'block');
