@@ -6081,7 +6081,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="sidebar-item" id="sb-all-devices" onclick="showView(&#39;all-devices&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path><path d="M2 10h20"></path></svg>
         All Nodes
-        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
+        <span id="sb-all-devices-count" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
       </div>
       <div class="sidebar-item" id="sb-results" onclick="showView(&#39;results&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect><path d="m9 12 2 2 4-4"></path></svg>
@@ -7524,8 +7524,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <span style="opacity:.45;">·</span>
               <span style="display:inline-flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg><span><b style="font-weight:600;color:var(--text-sec);">5</b> drift</span></span>
             </div>
+            <!-- Той самий підпис у першому запуску: жодної статистики, бо сканів ще не було.
+                 Окремий блок, а не переписаний текст — у стані з даними це 5 інлайн-флекс
+                 спанів з іконками, і підміняти їх рядком довелося б розміткою в JS. -->
+            <div id="all-devices-sub-empty" style="display:none;font-size:12px;color:var(--text-muted);margin-top:5px;line-height:1.2;">No nodes yet · Add a node to run your first scan</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
+            <!-- Прототипний перемикач стану, той самий, що в шапці дашборда: у продукті
+                 стан диктують дані, тут потрібен ручний вхід у сценарій «щойно зайшов уперше». -->
+            <div class="seg" id="nodes-state-seg" role="group" aria-label="Preview nodes state">
+              <button id="nst-data" class="seg-btn is-active" aria-pressed="true" onclick="setNodesState('data')">With data</button>
+              <button id="nst-empty" class="seg-btn" aria-pressed="false" onclick="setNodesState('empty')">First run</button>
+            </div>
             <button class="btn-primary" style="width:auto;" onclick="openAddDeviceModal()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               Add Node
@@ -7893,8 +7903,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         </div>
 
+        <!-- Перший запуск: вузлів немає взагалі. Це НЕ той самий стан, що «фільтри нічого
+             не знайшли» (#node-empty-state у filterNodes) — там дія «скинути фільтр», тут
+             скидати нічого. Канонічний .es на тій самій поверхні, що й таблиця, яку він
+             замінює, щоб блок не висів на канві. CTA дублює кнопку в шапці навмисно: у
+             порожньому стані око йде в центр, а не в правий верхній кут. -->
+        <div id="nodes-managed-empty" class="es" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);">
+          <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></div>
+          <div class="es-title">No nodes yet</div>
+          <div class="es-sub">Add your first node to run a scan. Score, failed checks and detected drift<br>will appear in this table.</div>
+          <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openAddDeviceModal()">Add Node</button></div>
+        </div>
+
         <!-- Footer hint -->
-        <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-sec);">
+        <div id="nodes-foot-hint" style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-sec);">
           Click any node to view its full dashboard and scan results
         </div>
 
@@ -7904,7 +7926,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div id="nodes-detected-view" style="display:none;">
 
           <!-- Info banner -->
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;">
+          <div id="detected-banner" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;">
             <div class="node-ico">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>
             </div>
@@ -7915,7 +7937,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- Detected table heading + controls -->
-          <div style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
+          <div id="detected-controls" style="display:flex;gap:20px;margin-bottom:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">
             <div style="min-width:210px;">
               <div>
                 <div style="font-size:14px;font-weight:700;color:var(--text-default);">Detected nodes</div>
@@ -7941,8 +7963,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
           </div>
 
+          <!-- Перший запуск: жодного джерела не підключено, тож і виявляти нічого. Дії тут
+               немає навмисно — підключення джерела живе у смузі AWS одразу під вкладкою,
+               і другий primary на екрані сперечався б із нею. -->
+          <div id="nodes-detected-empty" class="es" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);">
+            <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg></div>
+            <div class="es-title">Nothing detected yet</div>
+            <div class="es-sub">Connect AWS, a CMDB or install an agent — assets Guardian finds but you<br>haven't promoted yet will show up here for review.</div>
+          </div>
+
           <!-- Detected table -->
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+          <div id="detected-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
 
             <!-- Table header -->
             <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 260px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
@@ -8029,7 +8060,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- Footer hint -->
-          <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-sec);">
+          <div id="detected-foot-hint" style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-sec);">
             Detected nodes are not monitored until promoted. Sources: agent, AWS, network scan, CMDB.
           </div>
 
@@ -8048,6 +8079,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <button onclick="setPeerGroup(&#39;os&#39;)" id="pg-os" class="seg-btn is-active" aria-pressed="true">By OS</button>
               <button onclick="setPeerGroup(&#39;team&#39;)" id="pg-team" class="seg-btn" aria-pressed="false">By Team</button>
             </div>
+          </div>
+
+          <!-- Перший запуск: консенсус рахується від більшості в групі, а групу нема з чого
+               скласти. Дія — та сама, що й на вкладці Managed, тому кнопки тут немає. -->
+          <div id="nodes-peer-empty" class="es" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);">
+            <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></div>
+            <div class="es-title">Nothing to compare yet</div>
+            <div class="es-sub">Consensus needs at least a few scanned nodes in the same group<br>before it can tell you which one is the outlier.</div>
           </div>
 
           <!-- OS groups -->
@@ -24127,6 +24166,78 @@ function setNodesTab(tab) {
     if (managedView) managedView.style.display = 'block';
     activateNodesTab(mTab);
   }
+  // Перемикання вкладок тягне за собою clearSelectionConsensus / setPeerGroup, які
+  // повертають свої блоки у видимий стан. Тому після зміни вкладки перший запуск
+  // накладаємо ще раз — інакше на Consensus крізь порожній стан проступали б таблиці.
+  if (_nodesState === 'empty') setNodesState('empty');
+}
+
+// All Nodes має два стани: з даними і перший запуск. У продукті стан диктують дані,
+// у прототипі — сегментований перемикач у шапці (той самий патерн, що setDashState).
+// Перемикаємо ЦІЛІ блоки, а не чистимо таблицю: порожній стан — не «таблиця без рядків»,
+// а інше повідомлення, тож разом із рядками зникають шапка колонок, фільтри й підказка
+// внизу — фільтрувати й клікати нема що. Смуга AWS лишається: це другий шлях завести вузли.
+var _nodesCountsBackup = null;
+var _nodesState = 'data';
+function setNodesState(state) {
+  var empty = state === 'empty';
+  _nodesState = empty ? 'empty' : 'data';
+  function show(id, on, mode) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = on ? (mode || 'block') : 'none';
+  }
+
+  // Managed
+  show('all-devices-sub',      !empty, 'flex');
+  show('all-devices-sub-empty', empty, 'block');
+  show('node-filter-row',      !empty, 'flex');
+  show('nodes-list-wrap',      !empty, 'block');
+  show('nodes-managed-empty',   empty, 'block');
+  show('nodes-foot-hint',      !empty, 'block');
+
+  // Detected
+  show('detected-banner',      !empty, 'flex');
+  show('detected-controls',    !empty, 'flex');
+  show('detected-list-wrap',   !empty, 'block');
+  show('detected-foot-hint',   !empty, 'block');
+  show('nodes-detected-empty',  empty, 'block');
+
+  // Consensus. Перемикач груп теж ховаємо — інакше setPeerGroup повернув би таблиці назад.
+  show('peer-group-btns',      !empty, 'flex');
+  show('nodes-peer-empty',      empty, 'block');
+  if (empty) {
+    show('peer-os-view', false);
+    show('peer-team-view', false);
+  } else {
+    var team = document.getElementById('pg-team');
+    setPeerGroup(team && team.classList.contains('is-active') ? 'team' : 'os');
+  }
+
+  // Лічильники вкладок. Managed-лічильник рухає promote/dismiss, тому запамʼятовуємо
+  // фактичне значення на момент переходу, а не константу.
+  // Лічильник у сайдбарі рахує ті самі вузли, тож лишити його на 5 поруч із «No nodes yet»
+  // означало б показати дві різні правди про одне число.
+  var mc = document.getElementById('nodes-tab-managed-count');
+  var dc = document.getElementById('nodes-tab-detected-count');
+  var sc = document.getElementById('sb-all-devices-count');
+  if (empty) {
+    if (!_nodesCountsBackup) _nodesCountsBackup = { m: mc.textContent, d: dc.textContent, s: sc ? sc.textContent : null };
+    mc.textContent = '0';
+    dc.textContent = '0';
+    if (sc) sc.textContent = '0';
+  } else if (_nodesCountsBackup) {
+    mc.textContent = _nodesCountsBackup.m;
+    dc.textContent = _nodesCountsBackup.d;
+    if (sc && _nodesCountsBackup.s !== null) sc.textContent = _nodesCountsBackup.s;
+    _nodesCountsBackup = null;
+  }
+
+  [['nst-data', !empty], ['nst-empty', empty]].forEach(function(p) {
+    var b = document.getElementById(p[0]);
+    if (!b) return;
+    b.classList.toggle('is-active', p[1]);
+    b.setAttribute('aria-pressed', String(p[1]));
+  });
 }
 
 // ── Peer card collapse / section / show-all ──────────────────────────────
@@ -24247,9 +24358,9 @@ function clearSelectionConsensus() {
   var banner = document.getElementById('peer-sel-banner');
   if (banner) banner.style.display = 'none';
 
-  // Restore group switcher
+  // Restore group switcher — але не в першому запуску: там груп не існує.
   var groupBtns = document.getElementById('peer-group-btns');
-  if (groupBtns) groupBtns.style.display = 'flex';
+  if (groupBtns) groupBtns.style.display = _nodesState === 'empty' ? 'none' : 'flex';
 
   // Restore subtitle
   var headerDiv = document.querySelector('#nodes-peer-view > div[style*="justify-content:space-between"]');
@@ -24288,8 +24399,11 @@ function setPeerGroup(g) {
   });
   var osView   = document.getElementById('peer-os-view');
   var teamView = document.getElementById('peer-team-view');
-  if (osView)   osView.style.display   = g === 'os'   ? 'block' : 'none';
-  if (teamView) teamView.style.display = g === 'team' ? 'block' : 'none';
+  // Єдина точка, що показує таблиці консенсусу, тому й перевірка стану живе тут:
+  // clearSelectionConsensus кличе setPeerGroup при кожному вході на вкладку.
+  var live = _nodesState !== 'empty';
+  if (osView)   osView.style.display   = live && g === 'os'   ? 'block' : 'none';
+  if (teamView) teamView.style.display = live && g === 'team' ? 'block' : 'none';
 }
 
 // ── Compare section collapse/expand ──
