@@ -656,6 +656,21 @@ body.dark .isearch:focus-within, body.dark .isearch.is-open:focus-within:hover {
 .tab-intro { min-width:0; }
 .tab-intro-title { font-size:14px; font-weight:600; color:var(--text-default); }
 .tab-intro-sub { font-size:12px; color:var(--text-muted); line-height:1.5; margin-top:2px; max-width:560px; }
+.pe-checks-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:8px; flex-wrap:wrap; }
+.pe-check-grid { display:grid; grid-template-columns:16px 20px repeat(4,minmax(0,1fr)); gap:14px; align-items:center; }
+.pe-check-grid > * { min-width:0; }
+.pe-check-grid > .pe-sev-btn { width:148px; justify-self:start; }
+.pe-check-grid > .pe-edit-check-btn { justify-self:start; }
+.pe-edit-check-btn { background:var(--bg-subtle); }
+.pe-bulk-actions { align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+.pe-bulk-count { margin-right:4px; font-size:12px; font-weight:600; color:var(--text-sec); white-space:nowrap; }
+.pe-bulk-sev { position:relative; flex-shrink:0; }
+.pe-bulk-sev .scan-menu-trigger { height:32px; border-radius:10px; background:var(--bg-surface); }
+.pe-bulk-sev .scan-menu-panel { width:160px; min-width:160px; }
+.pe-bulk-divider { width:1px; height:24px; margin:0 4px; background:var(--border); flex-shrink:0; }
+.pe-bulk-reset { display:inline-flex; align-items:center; gap:4px; padding:0; border:0; background:none; font-family:inherit; font-size:12px; font-weight:600; white-space:nowrap; cursor:pointer; }
+.pe-bulk-reset:hover { color:#059669; }
+.pe-reset-icon { width:16px; height:16px; flex:0 0 16px; background:currentColor; -webkit-mask:url('Assets/radix-icons_reload.svg') center/15px 15px no-repeat; mask:url('Assets/radix-icons_reload.svg') center/15px 15px no-repeat; }
 
 /* ── Integration Detail page (id-*) ── */
 .id-head { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
@@ -3671,11 +3686,9 @@ body.dark #v-policy-edit select[style*="background:var(--bg-warning)"] { backgro
 body.dark #v-policy-edit select[style*="background:var(--bg-canvas)"] { background: var(--p-dark-muted) !important; border-color: #143A2F !important; color: var(--p-neutral-300) !important; }
 body.dark #v-policy-edit select[style*="background:var(--bg-success)"] { background: #082A1F !important; border-color: var(--p-navy-teal-100) !important; color: var(--p-green-200) !important; }
 body.dark #pe-tag-pop { background: var(--bg-card) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important; }
-body.dark #pe-tag-pop [style*="background:var(--bg-subtle)"] { background: rgba(255,255,255,0.07) !important; color: var(--p-neutral-200) !important; }
-body.dark #pe-tag-pop [style*="background:var(--bg-subtle)"]:hover { background: rgba(16,185,129,0.12) !important; color: #FFFFFF !important; cursor: pointer; }
 /* + tag row buttons — override hardcoded onmouseout colors */
-body.dark button[onclick*="peAddTagMenu"] { border-color: rgba(148,163,184,0.35) !important; color: var(--text-sec) !important; }
-body.dark button[onclick*="peAddTagMenu"]:hover { border-color: var(--green1) !important; color: var(--green1) !important; background: rgba(16,185,129,0.08) !important; }
+body.dark button[onclick*="peAddTagMenu"]:not(.btn-secondary) { border-color: rgba(148,163,184,0.35) !important; color: var(--text-sec) !important; }
+body.dark button[onclick*="peAddTagMenu"]:not(.btn-secondary):hover { border-color: var(--green1) !important; color: var(--green1) !important; background: rgba(16,185,129,0.08) !important; }
 /* Policy tags — all approved tags shown inline, click to toggle (no dropdown) */
 .tagpick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .tagpick-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border-default); background: var(--bg-subtle); color: var(--text-sec); cursor: pointer; user-select: none; transition: all 0.12s; }
@@ -3687,15 +3700,6 @@ body.dark .tagpick-chip { background: rgba(255,255,255,0.05); border-color: rgba
 body.dark .tagpick-chip:hover { border-color: var(--green1); color: var(--p-neutral-50); }
 body.dark .tagpick-chip.is-on { background: rgba(0,175,115,0.15); border-color: rgba(0,175,115,0.5); color: var(--p-neutral-50); }
 body.dark .tagpick-chip.is-on .tagpick-check { color: #00AF73; }
-/* Classification tags in policy edit rows */
-body.dark [id^="pe-a-tags"] span { --p-neutral-500: #FFFFFF; color: #FFFFFF !important; background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.1) !important; }
-/* Bulk toolbar — opaque bg in dark mode so column header doesn't bleed through */
-body.dark #pe-bulk-toolbar { background: #082A1F !important; border-color: #1C5142 !important; }
-/* Policy edit — Edit check button */
-body.dark button[title="Edit check"] { border-color: rgba(16,185,129,0.35) !important; background: rgba(16,185,129,0.06) !important; }
-body.dark button[title="Edit check"] svg { stroke: var(--green1) !important; }
-body.dark button[title="Edit check"]:hover { border-color: var(--green1) !important; background: rgba(16,185,129,0.14) !important; }
-body.dark button[title="Edit check"]:hover svg { stroke: var(--green1) !important; }
 /* Compare view dark mode */
 body.dark #v-compare-nodes div.compare-thead { background: var(--table-header-bg) !important; color: #94a3b8 !important; }
 /* App-wide rule: table column-header rows use #063135 in dark (never black) */
@@ -3706,17 +3710,20 @@ body.dark .compare-sec { border-bottom: 1px solid #1C4A50 !important; }
 body.dark #v-compare-nodes [style*="background:var(--bg-canvas)"] { background: #0F3539 !important; }
 /* RULE: severity SELECTs use neutral control chrome; colour lives ONLY on a small dot next to the
    always-present text label (never fill the whole field). Same dot colours light + dark. */
-body.dark #pe-sev-pick { background: var(--bg-card) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important; }
-.pe-sev-btn { background: var(--bg-subtle); }
+.pe-sev-btn { width:100%; height:32px; padding:0 10px; justify-content:space-between; border-radius:8px; background:var(--bg-subtle); font-weight:600; }
+.pc-check-field-bg.pe-sev-btn { width:130px; }
 .pe-sev-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; display:inline-block; background:#94A3B8; }
 .pe-sev-btn[data-val="critical"] .pe-sev-dot, .pe-sev-opt[data-val="critical"] .pe-sev-dot { background:#FB3C44; }
 .pe-sev-btn[data-val="high"]     .pe-sev-dot, .pe-sev-opt[data-val="high"]     .pe-sev-dot { background:#F97316; }
 .pe-sev-btn[data-val="medium"]   .pe-sev-dot, .pe-sev-opt[data-val="medium"]   .pe-sev-dot { background:#F59E0B; }
 .pe-sev-btn[data-val="low"]      .pe-sev-dot, .pe-sev-opt[data-val="low"]      .pe-sev-dot { background:#3B82F6; }
-#pe-sev-pick .pe-sev-opt { display:flex; align-items:center; gap:8px; color:var(--text-default); }
+#pe-sev-pick { position:fixed; right:auto; width:auto; z-index:10001; }
+#pe-sev-pick .pe-sev-opt { display:flex; align-items:center; gap:8px; font-weight:600; }
+#pe-sev-pick .pe-sev-opt::after { content:'✓'; margin-left:auto; color:var(--green1); opacity:0; }
+#pe-sev-pick .pe-sev-opt.is-selected::after { opacity:1; }
 body.dark .pe-sev-btn { border-color: var(--border) !important; color: var(--text-default) !important; }
 /* Check-row severity pill + remove button share one fill — Figma 3023:16673/3018:4171. */
-.pc-check-field-bg { background:#F8FAFC; }
+.pc-check-field-bg { background:var(--bg-subtle); }
 body.dark .pc-check-field-bg { background:rgba(255,255,255,.05) !important; }
 /* Check-row status icon fill — Figma 3023:16799 literal tints. */
 .pc-check-icon-error { background:#FDF5F5; }
@@ -3751,7 +3758,7 @@ body.dark .gm-body::-webkit-scrollbar-thumb:hover, body.dark .gm-body pre::-webk
 body.dark div:has(> #pe-col-header) { border-bottom-color: rgba(255,255,255,0.12) !important; }
 body.dark [onclick^="peToggleSec"] { border-bottom-color: rgba(255,255,255,0.12) !important; }
 /* Policy-edit check rows — make dividers visible in dark mode */
-body.dark [style*="grid-template-columns:16px 20px 1fr 148px"] { border-bottom-color: rgba(255,255,255,0.08) !important; }
+body.dark .pe-check-grid { border-bottom-color: rgba(255,255,255,0.08) !important; }
 body.dark .policy-menu { background: #00262A !important; border-color: #1A3D40 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
 /* Нейтральний колір — усім пунктам, КРІМ деструктивного: інакше Delete втрачав червоний
    і читався як звичайна дія. Дублює канон темного danger (.node-scan[data-state="failed"]). */
@@ -4193,7 +4200,6 @@ body.dark #changes-filters-dropdown { background: #00262A !important; border-col
 body.dark .sort-opt { color: #C0C0C0 !important; }
 body.dark #v-policies [style*="color:var(--p-neutral-800)"] { color: var(--p-neutral-300) !important; }
 body.dark #v-policies [style*="color:var(--p-neutral-500)"], body.dark #v-policies [style*="color:var(--p-neutral-600)"] { color: var(--text-sec) !important; }
-body.dark #pe-tag-pop [style*="background:var(--bg-subtle)"] { background: rgba(255,255,255,0.07) !important; color: var(--p-neutral-200) !important; }
 
 /* CI chips + popover dark mode (j4-connect Sync Scope) */
 body.dark #ci-chips span[style] { background: rgba(139,92,246,0.2) !important; border-color: rgba(139,92,246,0.5) !important; }
@@ -10936,7 +10942,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                <div class="pe-sev-btn pc-check-field-bg" data-val="critical" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;height:32px;padding:0 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:130px;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+                <button type="button" class="scan-menu-trigger pe-sev-btn pc-check-field-bg" data-val="critical" onclick="peOpenSevPick(this,-1)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
                 <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" class="pc-check-field-bg" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;&#39;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
               </div>
             </div>
@@ -10952,7 +10958,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                <div class="pe-sev-btn pc-check-field-bg" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;height:32px;padding:0 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:130px;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+                <button type="button" class="scan-menu-trigger pe-sev-btn pc-check-field-bg" data-val="high" onclick="peOpenSevPick(this,-1)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
                 <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" class="pc-check-field-bg" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;&#39;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
               </div>
             </div>
@@ -10968,7 +10974,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                <div class="pe-sev-btn pc-check-field-bg" data-val="high" onclick="peOpenSevPick(this,-1)" style="font-size:12px;font-weight:600;height:32px;padding:0 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:130px;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+                <button type="button" class="scan-menu-trigger pe-sev-btn pc-check-field-bg" data-val="high" onclick="peOpenSevPick(this,-1)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
                 <button onclick="this.closest(&#39;.pc-check-row&#39;).remove()" class="pc-check-field-bg" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border);color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove" onmouseover="this.style.borderColor=&#39;#fca5a5&#39;;this.style.color=&#39;#FB3C44&#39;;this.style.background=&#39;rgba(251,60,68,0.12)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;&#39;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
               </div>
             </div>
@@ -11236,46 +11242,56 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Edit checks -->
 
         <div id="pe-option-a">
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
-            <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <div style="font-size:13px;font-weight:700;color:var(--text-default);">Checks <span style="font-weight:400;color:var(--text-sec);">(6)</span></div>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">Set severity and classification tags directly on each row</div>
-              </div>
+          <!-- Підпис і bulk-дії живуть над table-card, як інші toolbar-и застосунку. -->
+          <div class="pe-checks-head">
+            <div class="tab-intro">
+              <div class="tab-intro-title">Checks (6)</div>
+              <div class="tab-intro-sub">Set severity and classification tags directly on each row</div>
             </div>
-            <!-- Header row with bulk toolbar overlay (no layout shift) -->
-            <div class="col-thead" style="position:relative;background:var(--bg-canvas);border-bottom:1px solid var(--border);">
+            <div id="pe-bulk-toolbar" class="pe-bulk-actions" style="display:none;">
+              <span id="pe-bulk-count" class="pe-bulk-count">0 checks selected</span>
+              <button class="btn-secondary" onclick="peAddTagMenu(this)">
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true"><path d="M4 0.63V7.37M0.63 4H7.37" stroke="currentColor" stroke-linecap="round"/></svg>
+                Add tags
+              </button>
+              <div class="pe-bulk-sev">
+                <button class="scan-menu-trigger" onclick="toggleScanDropdown('pe-bulk-sev-panel',this)">
+                  Set severity…
+                  <svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div id="pe-bulk-sev-panel" class="scan-menu-panel" style="display:none;">
+                  <button class="scan-menu-option" onclick="peBulkSev('critical')">Critical</button>
+                  <button class="scan-menu-option" onclick="peBulkSev('high')">High</button>
+                  <button class="scan-menu-option" onclick="peBulkSev('medium')">Medium</button>
+                  <button class="scan-menu-option" onclick="peBulkSev('low')">Low</button>
+                </div>
+              </div>
+              <span class="pe-bulk-divider" aria-hidden="true"></span>
+              <button class="reset-btn-2s pe-bulk-reset" onclick="peDeselectAll()"><span class="pe-reset-icon" aria-hidden="true"></span>Reset</button>
+            </div>
+          </div>
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+            <!-- Header row -->
+            <div class="col-thead" style="background:var(--bg-canvas);border-bottom:1px solid var(--border);">
               <!-- Column headers -->
-              <div id="pe-col-header" style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 46px;gap:14px;padding:11px 20px;align-items:center;">
-                <input type="checkbox" onchange="peSelectAll(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
+              <div id="pe-col-header" class="pe-check-grid" style="padding:11px 20px;">
+                <input type="checkbox" id="pe-bulk-master" data-selectall="1" onchange="peSelectAll(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
                 <div></div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Severity</div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Classification tags</div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Action</div>
               </div>
-              <!-- Bulk toolbar — overlays column header, no layout shift -->
-              <div id="pe-bulk-toolbar" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;align-items:center;gap:10px;padding:0 20px;background:var(--bg-success);border-bottom:1px solid var(--bg-success-border);">
-                <input type="checkbox" id="pe-bulk-master" data-selectall="1" checked="" onchange="peDeselectAll()" title="Clear selection" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;flex-shrink:0;">
-                <span id="pe-bulk-count" style="font-size:12px;font-weight:700;color:#00AF73;margin-left:4px;">0 checks selected</span>
-                <div style="flex:1;"></div>
-                <button onclick="peAddTagMenu(this)" style="font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--bg-success-border);background:var(--bg-surface);color:#00AF73;cursor:pointer;">+ Add tags</button>
-                <select class="csel csel-sm" onchange="peBulkSev(this)" style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-800);cursor:pointer;">
-                  <option>Set severity…</option>
-                  <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
-                </select>
-                <button onclick="peDeselectAll()" style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">✕ Clear</button>
-              </div>
             </div>
             <!-- Section 1: Endpoint Security -->
-            <div onclick="peToggleSec(0)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #94a3b8;cursor:pointer;user-select:none;">
-              <svg id="pe-sec-chev-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div onclick="peToggleSec(0)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
               <span style="font-size:12px;font-weight:700;color:var(--p-neutral-800);">Endpoint Security</span>
               <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">3 checks</span>
+              <svg id="pe-sec-chev-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="pe-sec-0">
             <!-- Row 0 — Antivirus (critical / fail) -->
-            <div style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 46px;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;align-items:center;">
+            <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-error);border:1.5px solid #fca5a5;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -11287,18 +11303,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <span class="bdg bdg--gray">2 rules</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="0" data-val="critical" onclick="peOpenSevPick(this,0)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button type="button" class="scan-menu-trigger pe-sev-btn" data-idx="0" data-val="critical" onclick="peOpenSevPick(this,0)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Critical</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
               <div id="pe-a-tags-0" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
+                <span class="bdg bdg--blue pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Security ×</span>
+                <span class="bdg bdg--green pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Compliance ×</span>
                 <button onclick="peAddTagMenu(this,0)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
-              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor=&#39;var(--green1)&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#64748b&#39;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" class="btn-icon pe-edit-check-btn" aria-label="Edit check" title="Edit check">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"></path></svg>
               </button>
             </div>
             <!-- Row 1 — Host firewall (high / pass) -->
-            <div style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 46px;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
+            <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -11310,17 +11326,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <span class="bdg bdg--gray">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="1" data-val="high" onclick="peOpenSevPick(this,1)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button type="button" class="scan-menu-trigger pe-sev-btn" data-idx="1" data-val="high" onclick="peOpenSevPick(this,1)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
               <div id="pe-a-tags-1" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Network ×</span>
+                <span class="bdg bdg--gray pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Network ×</span>
                 <button onclick="peAddTagMenu(this,1)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
-              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor=&#39;var(--green1)&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#64748b&#39;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" class="btn-icon pe-edit-check-btn" aria-label="Edit check" title="Edit check">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"></path></svg>
               </button>
             </div>
             <!-- Row 2 — EDR (high / pass) -->
-            <div style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 46px;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
+            <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -11332,25 +11348,25 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <span class="bdg bdg--gray">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="2" data-val="high" onclick="peOpenSevPick(this,2)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button type="button" class="scan-menu-trigger pe-sev-btn" data-idx="2" data-val="high" onclick="peOpenSevPick(this,2)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
               <div id="pe-a-tags-2" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Security ×</span>
+                <span class="bdg bdg--blue pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Security ×</span>
                 <button onclick="peAddTagMenu(this,2)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
-              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor=&#39;var(--green1)&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#64748b&#39;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" class="btn-icon pe-edit-check-btn" aria-label="Edit check" title="Edit check">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"></path></svg>
               </button>
             </div>
             </div>
             <!-- Section 2: Data Protection -->
-            <div onclick="peToggleSec(1)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #94a3b8;cursor:pointer;user-select:none;">
-              <svg id="pe-sec-chev-1" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div onclick="peToggleSec(1)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
               <span style="font-size:12px;font-weight:700;color:var(--p-neutral-800);">Data Protection</span>
               <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">2 checks</span>
+              <svg id="pe-sec-chev-1" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="pe-sec-1">
             <!-- Row 3 — Vulnerability scanner (medium / pass) -->
-            <div style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 46px;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
+            <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -11362,17 +11378,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <span class="bdg bdg--gray">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button type="button" class="scan-menu-trigger pe-sev-btn" data-idx="3" data-val="medium" onclick="peOpenSevPick(this,3)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
               <div id="pe-a-tags-3" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
+                <span class="bdg bdg--gray pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Monitoring ×</span>
                 <button onclick="peAddTagMenu(this,3)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
-              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor=&#39;var(--green1)&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#64748b&#39;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" class="btn-icon pe-edit-check-btn" aria-label="Edit check" title="Edit check">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"></path></svg>
               </button>
             </div>
             <!-- Row 4 — Endpoint encryption (high / pass) -->
-            <div style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 46px;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
+            <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -11384,26 +11400,26 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <span class="bdg bdg--gray">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="4" data-val="high" onclick="peOpenSevPick(this,4)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button type="button" class="scan-menu-trigger pe-sev-btn" data-idx="4" data-val="high" onclick="peOpenSevPick(this,4)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">High</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
               <div id="pe-a-tags-4" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Data ×</span>
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
+                <span class="bdg bdg--gray pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Data ×</span>
+                <span class="bdg bdg--green pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Compliance ×</span>
                 <button onclick="peAddTagMenu(this,4)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
-              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor=&#39;var(--green1)&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#64748b&#39;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" class="btn-icon pe-edit-check-btn" aria-label="Edit check" title="Edit check">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"></path></svg>
               </button>
             </div>
             </div>
             <!-- Section 3: Compliance & Logging -->
-            <div onclick="peToggleSec(2)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #94a3b8;cursor:pointer;user-select:none;">
-              <svg id="pe-sec-chev-2" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div onclick="peToggleSec(2)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
               <span style="font-size:12px;font-weight:700;color:var(--p-neutral-800);">Compliance &amp; Logging</span>
               <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">1 check</span>
+              <svg id="pe-sec-chev-2" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="pe-sec-2">
             <!-- Row 5 — Security logs (medium / pass) -->
-            <div style="display:grid;grid-template-columns:16px 20px 1fr 148px minmax(180px,1fr) 46px;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);border-left:3px solid #10B981;align-items:center;">
+            <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
               <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -11415,14 +11431,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <span class="bdg bdg--gray">1 rule</span>
                 </div>
               </div>
-              <div class="pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);color:var(--text-default);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;box-sizing:border-box;"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+              <button type="button" class="scan-menu-trigger pe-sev-btn" data-idx="5" data-val="medium" onclick="peOpenSevPick(this,5)"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">Medium</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
               <div id="pe-a-tags-5" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;">
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Monitoring ×</span>
-                <span onclick="peRemoveTag(this)" style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;">Compliance ×</span>
+                <span class="bdg bdg--gray pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Monitoring ×</span>
+                <span class="bdg bdg--green pd-tag" onclick="peRemoveTag(this)" title="Click to remove">Compliance ×</span>
                 <button onclick="peAddTagMenu(this,5)" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button>
               </div>
-              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" title="Edit check" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.borderColor=&#39;var(--green1)&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;#64748b&#39;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <button onclick="openCheck(&#39;edit&#39;,&#39;policy-create&#39;)" class="btn-icon pe-edit-check-btn" aria-label="Edit check" title="Edit check">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"></path></svg>
               </button>
             </div>
             </div>
@@ -16354,7 +16370,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         span.innerHTML = '<svg class="gm-tag-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' + name;
         span.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); peRemoveTag(span); } };
       } else {
-        span.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-subtle);color:var(--tag-text-color);border:1px solid var(--border-default);cursor:pointer;';
+        span.className = 'bdg bdg--' + pdTagColor(name) + ' pd-tag';
+        span.title = 'Click to remove';
         span.textContent = name + ' ×';
       }
       span.onclick = function(){ peRemoveTag(span); };
@@ -17841,8 +17858,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       low:      {border:'#86efac', bg:'#f0fdf4', color:'#00AF73'}
     };
     var _peSevPickTarget = null;
+    var _peSevPickCloser = null;
+    function peCloseSevPick() {
+      var pick = document.getElementById('pe-sev-pick');
+      if (pick) pick.style.display = 'none';
+      if (_peSevPickTarget) _peSevPickTarget.classList.remove('is-open');
+      _peSevPickTarget = null;
+      if (_peSevPickCloser) {
+        document.removeEventListener('click', _peSevPickCloser);
+        _peSevPickCloser = null;
+      }
+    }
     function peOpenSevPick(btn, idx) {
       var pick = document.getElementById('pe-sev-pick');
+      if (_peSevPickTarget === btn && pick.style.display === 'block') { peCloseSevPick(); return; }
+      peCloseSevPick();
       var current = btn.getAttribute('data-val');
       pick.querySelectorAll('.pe-sev-opt').forEach(function(opt) { opt.classList.toggle('is-selected', opt.getAttribute('data-val') === current); });
       var rect = btn.getBoundingClientRect();
@@ -17851,26 +17881,24 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       pick.style.minWidth = rect.width + 'px';
       pick.style.display = 'block';
       _peSevPickTarget = btn;
+      btn.classList.add('is-open');
+      _peSevPickCloser = function(e) {
+        if (!pick.contains(e.target) && !btn.contains(e.target)) peCloseSevPick();
+      };
       setTimeout(function() {
-        document.addEventListener('click', function closePick(e) {
-          if (!pick.contains(e.target)) {
-            pick.style.display = 'none';
-            document.removeEventListener('click', closePick);
-          }
-        });
+        if (_peSevPickCloser) document.addEventListener('click', _peSevPickCloser);
       }, 0);
     }
     function pePickSev(val) {
-      document.getElementById('pe-sev-pick').style.display = 'none';
       if (!_peSevPickTarget) return;
       var s = _peSevMap[val];
       if (!s) return;
       var btn = _peSevPickTarget;
-      _peSevPickTarget = null;
       btn.setAttribute('data-val', val);
       document.querySelectorAll('#pe-sev-pick .pe-sev-opt').forEach(function(opt) { opt.classList.toggle('is-selected', opt.getAttribute('data-val') === val); });
       var span = btn.querySelector('.pe-sev-lbl');
       if (span) span.textContent = val.charAt(0).toUpperCase() + val.slice(1);
+      peCloseSevPick();
     }
     function peASev(idx, val) {
       // legacy: find by data-idx for bulk apply
@@ -17914,13 +17942,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       document.querySelectorAll('#pe-option-a input[type=checkbox]').forEach(function(cb){ cb.checked = false; });
       var tb = document.getElementById('pe-bulk-toolbar');
       if (tb) tb.style.display = 'none';
+      closeScanDropdown('pe-bulk-sev-panel');
+      var master = document.getElementById('pe-bulk-master');
+      if (master) master.indeterminate = false;
     }
 
-    function peBulkSev(sel) {
-      var val = sel.value;
-      if (!val || val.startsWith('Set')) return;
+    function peBulkSev(val) {
       var s = _peSevMap[val];
-      if (!s) { sel.selectedIndex = 0; return; }
+      if (!s) return;
       document.querySelectorAll('#pe-option-a input[type=checkbox]:checked').forEach(function(cb) {
         var btn = cb.parentElement.querySelector('.pe-sev-btn');
         if (btn) {
@@ -17929,7 +17958,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           if (span) span.textContent = val.charAt(0).toUpperCase() + val.slice(1);
         }
       });
-      sel.selectedIndex = 0;
+      closeScanDropdown('pe-bulk-sev-panel');
     }
 
     function ecToggleSec(e) {
@@ -18106,18 +18135,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       medium:{bg:'#f9fafb',color:'#374151',border:'#d1d5db',label:'Medium'},
       low:{bg:'#f0fdf4',color:'#00AF73',border:'#86efac',label:'Low'}
     };
-    var _peTagStyles = {
-      'Security':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'},
-      'Network':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'},
-      'Data':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'},
-      'Compliance':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'},
-      'Monitoring':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'},
-      'Authentication':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'},
-      'Config':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'},
-      'Custom':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'},
-      'Needs review':{bg:'#f1f5f9',color:'#64748b',border:'#e2e8f0'}
-    };
-
     function peRenderRow(idx) {
       var check = _peState[idx];
       var sev = _peSevStyles[check.severity];
@@ -18125,8 +18142,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if(!container) return;
       var html = '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:'+sev.bg+';color:'+sev.color+';border:1px solid '+sev.border+';">'+sev.label+'</span>';
       check.tags.forEach(function(tag) {
-        var ts = _peTagStyles[tag];
-        if(ts) html += '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:'+ts.bg+';color:'+ts.color+';border:1px solid '+ts.border+';">'+tag+'</span>';
+        html += pdTagChip(tag, '', false);
       });
       container.innerHTML = html;
     }
@@ -28987,25 +29003,25 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
 <div id="pd-tag-picker" style="display:none;position:fixed;z-index:10001;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,0.25);min-width:180px;"></div>
 
 <!-- Global tag picker popover — lives outside all views so position:fixed works everywhere -->
-<div id="pe-sev-pick" style="display:none;position:fixed;z-index:10001;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:5px;box-shadow:0 8px 24px rgba(0,0,0,0.25);">
-  <div class="pe-sev-opt" data-val="critical" onclick="pePickSev(&#39;critical&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;&#39;"><span class="pe-sev-dot"></span><span>Critical</span></div>
-  <div class="pe-sev-opt" data-val="high" onclick="pePickSev(&#39;high&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;&#39;"><span class="pe-sev-dot"></span><span>High</span></div>
-  <div class="pe-sev-opt" data-val="medium" onclick="pePickSev(&#39;medium&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;&#39;"><span class="pe-sev-dot"></span><span>Medium</span></div>
-  <div class="pe-sev-opt" data-val="low" onclick="pePickSev(&#39;low&#39;)" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;" onmouseover="this.style.background=&#39;var(--bg-canvas)&#39;" onmouseout="this.style.background=&#39;&#39;"><span class="pe-sev-dot"></span><span>Low</span></div>
+<div id="pe-sev-pick" class="scan-menu-panel" style="display:none;">
+  <button type="button" class="scan-menu-option pe-sev-opt" data-val="critical" onclick="pePickSev('critical')"><span class="pe-sev-dot"></span><span>Critical</span></button>
+  <button type="button" class="scan-menu-option pe-sev-opt" data-val="high" onclick="pePickSev('high')"><span class="pe-sev-dot"></span><span>High</span></button>
+  <button type="button" class="scan-menu-option pe-sev-opt" data-val="medium" onclick="pePickSev('medium')"><span class="pe-sev-dot"></span><span>Medium</span></button>
+  <button type="button" class="scan-menu-option pe-sev-opt" data-val="low" onclick="pePickSev('low')"><span class="pe-sev-dot"></span><span>Low</span></button>
 </div>
 
 <div id="pe-tag-pop" style="display:none;position:fixed;z-index:10001;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,0.25);min-width:210px;">
-  <div style="font-size:11px;color:var(--text-sec);margin-bottom:10px;">Approved tags <span style="color:var(--text-muted);">(example)</span></div>
+  <div style="font-size:10px;color:var(--p-neutral-400);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Add tag</div>
   <div style="display:flex;flex-direction:column;gap:4px;">
-    <div onclick="peApplyTag(&#39;Security&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Security</div>
-    <div onclick="peApplyTag(&#39;Network&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Network</div>
-    <div onclick="peApplyTag(&#39;Data&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Data</div>
-    <div onclick="peApplyTag(&#39;Compliance&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Compliance</div>
-    <div onclick="peApplyTag(&#39;Monitoring&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Monitoring</div>
-    <div onclick="peApplyTag(&#39;Authentication&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Authentication</div>
-    <div onclick="peApplyTag(&#39;Config&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Config</div>
-    <div onclick="peApplyTag(&#39;Custom&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Custom</div>
-    <div onclick="peApplyTag(&#39;Needs review&#39;,&#39;#f1f5f9&#39;,&#39;#64748b&#39;)" style="font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;background:var(--bg-subtle);color:var(--p-neutral-500);">Needs review</div>
+    <button class="scan-menu-option" onclick="peApplyTag('Security')"><span class="bdg bdg--blue">Security</span></button>
+    <button class="scan-menu-option" onclick="peApplyTag('Network')"><span class="bdg bdg--gray">Network</span></button>
+    <button class="scan-menu-option" onclick="peApplyTag('Compliance')"><span class="bdg bdg--green">Compliance</span></button>
+    <button class="scan-menu-option" onclick="peApplyTag('Data')"><span class="bdg bdg--gray">Data</span></button>
+    <button class="scan-menu-option" onclick="peApplyTag('Monitoring')"><span class="bdg bdg--gray">Monitoring</span></button>
+    <button class="scan-menu-option" onclick="peApplyTag('Authentication')"><span class="bdg bdg--gray">Authentication</span></button>
+    <button class="scan-menu-option" onclick="peApplyTag('Config')"><span class="bdg bdg--gray">Config</span></button>
+    <button class="scan-menu-option" onclick="peApplyTag('Critical')"><span class="bdg bdg--red">Critical</span></button>
+    <button class="scan-menu-option" onclick="peApplyTag('Needs review')"><span class="bdg bdg--orange">Needs review</span></button>
   </div>
 </div>
 
