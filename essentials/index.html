@@ -1560,12 +1560,13 @@ code { font-family:'DM Sans',sans-serif; }
 /* Обидва порожні стани стоять вище геометричного центру: у порожній області око
    зупиняється трохи вище середини, а не рівно посередині. Зсув через position, а не
    margin — щоб не вплинути на розрахунок вільного місця у flex-контейнері. */
-#results-firstrun, #drift-firstrun { position:relative; top:-150px; }
+#results-firstrun, #drift-firstrun, #policies-firstrun { position:relative; top:-150px; }
 /* Коло-іконка у світлій темі темніша за канву, інакше зникає на ній. Тільки для цих
-   двох станів — решта .es-ico по застосунку лишається на --bg-canvas.
+   станів першого запуску — решта .es-ico по застосунку лишається на --bg-canvas.
    ⚠️ Обовʼязково під body:not(.dark), інакше правило протече в темну тему. */
 body:not(.dark) #results-firstrun .es-ico,
-body:not(.dark) #drift-firstrun .es-ico { background:#EDF2F7; }
+body:not(.dark) #drift-firstrun .es-ico,
+body:not(.dark) #policies-firstrun .es-ico { background:#EDF2F7; }
 
 #results-firstrun { display:none; }
 #v-results.is-firstrun .results-scope-bar,
@@ -1601,6 +1602,21 @@ body:not(.dark) #drift-firstrun .es-ico { background:#EDF2F7; }
 /* padding-top тут 4px проти 24px знизу — під смугу reconciliation, якої в першому
    запуску немає. Вирівнюємо, інакше центр блока зʼїхав би вгору на ці 20px. */
 #v-changes.is-firstrun #changes-body { display:flex; align-items:center; justify-content:center; padding-top:24px !important; }
+
+/* Те саме для Policies — з однією різницею в змісті. Поліс не походить від даних:
+   його можна створити на порожньому акаунті, не маючи ні вузла, ні скану. Тому CTA
+   тут не «Add Node», а «Create Policy» — та сама дія, що й у наявному порожньому
+   стані вкладки (POL_EMPTY.all).
+   #pol-search-empty гасимо: це повідомлення фільтра, а фільтрувати нема що. */
+#policies-firstrun { display:none; }
+#v-policies.is-firstrun .policies-header,
+#v-policies.is-firstrun .policies-tabs-bar,
+#v-policies.is-firstrun .policy-card,
+#v-policies.is-firstrun #pol-search-empty { display:none !important; }
+#v-policies.is-firstrun #policies-firstrun { display:block; }
+/* padding-top тут 0 проти 24px знизу — під смугу вкладок, якої в першому запуску
+   немає. Вирівнюємо, інакше центр блока зʼїхав би вгору на ці 24px. */
+#v-policies.is-firstrun #policies-body { display:flex; align-items:center; justify-content:center; padding-top:24px !important; }
 
 .score-wrap { position:relative; width:76px; height:76px; flex-shrink:0; }
 .score-svg  { width:76px; height:76px; }
@@ -10325,7 +10341,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Policy list -->
-        <div style="flex:1;overflow-y:auto;padding:0 24px 24px;">
+        <div id="policies-body" style="flex:1;overflow-y:auto;padding:0 24px 24px;">
+
+          <!-- Перший запуск. Іконка-щит — та сама, що й у порожній вкладці Policies
+               (POL_ES_ICO_SHIELD): сторінка одна, тож і символ у неї має бути один. -->
+          <div id="policies-firstrun" class="es">
+            <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
+            <div class="es-title">No policies yet</div>
+            <div class="es-sub">A policy is the baseline your nodes get checked against. Start from a<br>compliance benchmark or build your own set of checks.</div>
+            <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openPolicyCreate()">Create Policy</button></div>
+          </div>
 
           <!-- Policy card 1: CIS Windows 11 -->
           <div data-pol-type="cis" data-tags="Security Compliance" class="policy-card" style="--policy-accent:#00AF73;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;display:flex;overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="if(!event.target.closest(&#39;button,.policy-menu&#39;))showPolicyDetail(&#39;cis-win11&#39;)">
@@ -28685,12 +28710,20 @@ function setDriftState(state) {
   if (view) view.classList.toggle('is-firstrun', state === 'empty');
 }
 
+// Policies. Інлайновий display на .policy-card належить polSetTab / filterPoliciesBySearch,
+// тож тут його не чіпаємо взагалі — стан задає клас, а CSS перебиває через !important.
+function setPoliciesState(state) {
+  var view = document.getElementById('v-policies');
+  if (view) view.classList.toggle('is-firstrun', state === 'empty');
+}
+
 function setAppState(state) {
   var empty = state === 'empty';
   setDashState(empty ? 'empty' : 'data');
   setNodesState(empty ? 'empty' : 'data');
   setScansState(empty ? 'empty' : 'data');
   setDriftState(empty ? 'empty' : 'data');
+  setPoliciesState(empty ? 'empty' : 'data');
 
   // Зворотний відлік до наступного скану — теж твердження про дані, тільки живе воно
   // в сайдбарі, а не на сторінці. Лишити «Next scan in 23h 44m» поруч із «No scan
