@@ -3950,6 +3950,17 @@ body.dark #cmd-actions .btn-outline:hover { background:rgba(16,185,129,0.18) !im
 :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) svg { width:13px; height:13px; display:block; margin:0; flex-shrink:0; }
 body.dark :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) { color:var(--p-neutral-50); }
 body.dark :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more):hover { background:rgba(0,175,115,0.15); border-color:#10B981; color:var(--p-neutral-50); }
+/* Scans "Failed checks" row action — canonical Only-icon neutral chrome (DS §6.5 "Only icon"),
+   not the green Third/Back chrome shared by the other overflow-menu components above. */
+.check-menu-btn { background:#F8F9FA; border-color:#E2E8F0; color:#64748B; }
+.check-menu-btn:hover { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:#0F172A; }
+body.dark .check-menu-btn { background:rgba(255,255,255,0.05); border-color:#04363A; color:rgba(255,255,255,0.7); }
+body.dark .check-menu-btn:hover { background:rgba(255,255,255,0.05); border-color:rgba(16,185,129,0.30); color:#FFFFFF; }
+/* CM Groups / Credentials row action — same canonical Only-icon neutral chrome as .check-menu-btn. */
+.cm-actions-btn { background:#F8F9FA; border-color:#E2E8F0; color:#64748B; }
+.cm-actions-btn:hover { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:#0F172A; }
+body.dark .cm-actions-btn { background:rgba(255,255,255,0.05); border-color:#04363A; color:rgba(255,255,255,0.7); }
+body.dark .cm-actions-btn:hover { background:rgba(255,255,255,0.05); border-color:rgba(16,185,129,0.30); color:#FFFFFF; }
 /* ── Credential Vault ── */
 .cred-row { display:grid; grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px; min-width:900px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
 .cred-row:hover { background:var(--bg-canvas); }
@@ -24829,8 +24840,8 @@ function applySelectionConsensus(selectedNames) {
     peerView.insertBefore(banner, peerView.firstChild);
   }
   var isDark = document.body.classList.contains('dark');
-  banner.style.cssText = 'background:' + (isDark ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)') + ';border:1px solid rgba(99,102,241,0.25);border-radius:8px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;';
-  banner.innerHTML = '<span style="font-size:12px;color:#818CF8;font-weight:500;"><strong style="color:#6366F1;">' + selectedNames.length + ' nodes selected:</strong> ' + selectedNames.join(', ') + '</span>' +
+  banner.style.cssText = 'background:' + (isDark ? 'var(--bg-surface)' : '#FFFFFF') + ';border:1px solid ' + (isDark ? 'var(--border)' : '#E2E8F0') + ';border-radius:8px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;';
+  banner.innerHTML = '<span style="font-size:12px;color:var(--text-sec);font-weight:500;"><strong style="color:#6366F1;">' + selectedNames.length + ' nodes selected:</strong> ' + selectedNames.join(', ') + '</span>' +
     '<button onclick="clearSelectionConsensus()" style="font-size:11px;color:var(--text-sec);background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:4px 10px;font-family:inherit;">View all nodes ×</button>';
 
   // Update subtitle
