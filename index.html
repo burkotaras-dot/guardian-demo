@@ -658,7 +658,8 @@ body.dark .isearch:focus-within, body.dark .isearch.is-open:focus-within:hover {
 .tab-intro-title { font-size:14px; font-weight:600; color:var(--text-default); }
 .tab-intro-sub { font-size:12px; color:var(--text-muted); line-height:1.5; margin-top:2px; max-width:560px; }
 .pe-checks-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:8px; flex-wrap:wrap; }
-.pe-check-grid { display:grid; grid-template-columns:16px 20px repeat(4,minmax(0,1fr)); gap:14px; align-items:center; }
+.pe-check-grid { display:grid; grid-template-columns:16px 62px repeat(4,minmax(0,1fr)); gap:14px; align-items:center; }
+.pe-check-grid > .bdg { justify-self:start; }
 .pe-check-grid > * { min-width:0; }
 .pe-check-grid > .pe-sev-btn { width:148px; justify-self:start; }
 .pe-check-grid > .pe-edit-check-btn { justify-self:start; }
@@ -11277,7 +11278,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <!-- Column headers -->
               <div id="pe-col-header" class="pe-check-grid" style="padding:11px 20px;">
                 <input type="checkbox" id="pe-bulk-master" data-selectall="1" onchange="peSelectAll(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
-                <div></div>
+                <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Status</div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Severity</div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Classification tags</div>
@@ -11294,9 +11295,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Row 0 — Antivirus (critical / fail) -->
             <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-error);border:1.5px solid #fca5a5;display:flex;align-items:center;justify-content:center;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </div>
+              <span class="bdg bdg--dot bdg--red">Fail</span>
               <div>
                 <div style="font-size:13px;font-weight:600;color:var(--text-default);">Antivirus active and up to date</div>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
@@ -11317,9 +11316,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Row 1 — Host firewall (high / pass) -->
             <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
+              <span class="bdg bdg--dot bdg--green">Pass</span>
               <div>
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Host firewall enabled</div>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
@@ -11339,9 +11336,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Row 2 — EDR (high / pass) -->
             <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
+              <span class="bdg bdg--dot bdg--green">Pass</span>
               <div>
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">EDR agent installed</div>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
@@ -11369,9 +11364,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Row 3 — Vulnerability scanner (medium / pass) -->
             <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
+              <span class="bdg bdg--dot bdg--green">Pass</span>
               <div>
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Vulnerability scanner present</div>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
@@ -11391,9 +11384,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Row 4 — Endpoint encryption (high / pass) -->
             <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
+              <span class="bdg bdg--dot bdg--green">Pass</span>
               <div>
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Endpoint encryption enabled</div>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
@@ -11422,9 +11413,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Row 5 — Security logs (medium / pass) -->
             <div class="pe-check-grid" style="padding:13px 20px;border-bottom:1px solid var(--border);">
               <input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
-              <div style="width:16px;height:16px;border-radius:50%;background:var(--bg-success);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;">
-                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
+              <span class="bdg bdg--dot bdg--green">Pass</span>
               <div>
                 <div style="font-size:13px;font-weight:500;color:var(--p-neutral-800);">Security logs retained ≥ 90 days</div>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
