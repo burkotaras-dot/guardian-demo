@@ -619,6 +619,10 @@ body.dark .es-ico { background:var(--p-dark-border); }
 .btn-icon:disabled { opacity:.4; cursor:not-allowed; }
 body.dark .btn-icon { background:rgba(255,255,255,0.05); border-color:#04363A; color:rgba(255,255,255,0.7); }
 body.dark .btn-icon:hover:not(:disabled) { background:rgba(255,255,255,0.05); border-color:rgba(16,185,129,0.30); color:#FFFFFF; }
+.btn-icon--danger { color:#FB3C44; }
+.btn-icon--danger:hover:not(:disabled) { background:#FEF2F2; border-color:rgba(251,60,68,0.32); color:#FB3C44; }
+body.dark .btn-icon--danger { color:#E66A71; }
+body.dark .btn-icon--danger:hover:not(:disabled) { background:rgba(251,60,68,0.12); border-color:rgba(251,60,68,0.40); color:#E66A71; }
 
 /* Tooltip for a label-less control. Same chrome as #stat-float-tip, because both answer
    "what is this?" — this one is CSS-only and anchored, so it needs no script.
@@ -3693,16 +3697,25 @@ body.dark #pe-tag-pop { background: var(--bg-card) !important; box-shadow: 0 8px
 body.dark button[onclick*="peAddTagMenu"]:not(.btn-secondary) { border-color: rgba(148,163,184,0.35) !important; color: var(--text-sec) !important; }
 body.dark button[onclick*="peAddTagMenu"]:not(.btn-secondary):hover { border-color: var(--green1) !important; color: var(--green1) !important; background: rgba(16,185,129,0.08) !important; }
 /* Policy tags — all approved tags shown inline, click to toggle (no dropdown) */
-.tagpick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.tagpick-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border-default); background: var(--bg-subtle); color: var(--text-sec); cursor: pointer; user-select: none; transition: all 0.12s; }
-.tagpick-chip:hover { border-color: var(--green1); color: var(--text-default); }
-.tagpick-chip.is-on { background: rgba(16,185,129,0.12); border-color: var(--green1); color: var(--text-default); font-weight: 600; }
+.tagpick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+/* Picker chips are the canonical badge (.bdg): quiet when off, a filled category-coloured
+   pill with a dot when on. Colours come from --bdg-* tokens, so dark mode needs no override.
+   (The modal tag picker keeps its own Figma-canonical block under .gm-overlay.) */
+.tagpick-chip { display: inline-flex; align-items: center; gap: 4px; box-sizing: border-box;
+  font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; line-height: 1.4; padding: 2px 7px; border-radius: 999px;
+  border: 1px solid transparent; background: transparent; color: var(--text-muted);
+  cursor: pointer; user-select: none; transition: background-color 0.12s, border-color 0.12s, color 0.12s; }
+.tagpick-chip:hover { color: var(--bdg-gray-txt); background: var(--bdg-gray-bg); border-color: var(--bdg-gray-bd); }
+.tagpick-chip.is-on::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.tagpick-chip.is-on { color: var(--bdg-gray-txt); background: var(--bdg-gray-bg); border-color: var(--bdg-gray-bd); }
+.tagpick-chip.is-on[data-color="blue"]   { color: var(--bdg-blue-txt);   background: var(--bdg-blue-bg);   border-color: var(--bdg-blue-bd); }
+.tagpick-chip.is-on[data-color="green"]  { color: var(--bdg-green-txt);  background: var(--bdg-green-bg);  border-color: var(--bdg-green-bd); }
+.tagpick-chip.is-on[data-color="orange"] { color: var(--bdg-orange-txt); background: var(--bdg-orange-bg); border-color: var(--bdg-orange-bd); }
+.tagpick-chip.is-on[data-color="red"]    { color: var(--bdg-red-txt);    background: var(--bdg-red-bg);    border-color: var(--bdg-red-bd); }
 .tagpick-check { display: none; }
-.tagpick-chip.is-on .tagpick-check { display: inline-flex; color: var(--green1); }
-body.dark .tagpick-chip { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.18); color: var(--p-neutral-300); }
-body.dark .tagpick-chip:hover { border-color: var(--green1); color: var(--p-neutral-50); }
-body.dark .tagpick-chip.is-on { background: rgba(0,175,115,0.15); border-color: rgba(0,175,115,0.5); color: var(--p-neutral-50); }
-body.dark .tagpick-chip.is-on .tagpick-check { color: #00AF73; }
+/* Page picker signals selection with the badge dot; the modal picker keeps its checkmark. */
+.gm-overlay .tagpick-chip.is-on::before { display: none; }
 /* Compare view dark mode */
 body.dark #v-compare-nodes div.compare-thead { background: var(--table-header-bg) !important; color: #94a3b8 !important; }
 /* App-wide rule: table column-header rows use #063135 in dark (never black) */
@@ -11223,12 +11236,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <button onclick="policyEditDelete()" style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-size:12px;color:#FB3C44;padding:6px 8px;border-radius:6px;white-space:nowrap;" onmouseover="this.style.background=&#39;#fef2f2&#39;" onmouseout="this.style.background=&#39;none&#39;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
-            Delete policy
-          </button>
+          <button class="btn-icon btn-icon--danger" aria-label="Delete policy" title="Delete policy" onclick="policyEditDelete()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg></button>
           <div style="width:1px;height:22px;background:var(--border);margin:0 4px;flex-shrink:0;"></div>
-          <button class="btn-secondary" onclick="showView(&#39;policy-detail&#39;);showToast(&#39;Policy saved&#39;)">Save changes</button>
+          <button class="btn-icon" aria-label="Save changes" title="Save changes" onclick="showView(&#39;policy-detail&#39;);showToast(&#39;Policy saved&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button>
           <!-- Гліф Play — Assets/icons/new/Property 1=Play.svg, stroke="currentColor", тож іде за темою.
                Текстовий ▶ рендериться шрифтом і в кожній ОС має свій розмір та бейзлайн. -->
           <button class="btn-primary btn-primary--s" style="white-space:nowrap;" onclick="peRunSimulation(this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linejoin="round"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z"/></svg>Run simulation</button>
@@ -11434,7 +11444,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             </div>
             <!-- Add Check row -->
-            <div onclick="showView(&#39;add-check&#39;)" style="padding:13px 20px;display:flex;align-items:center;gap:10px;cursor:pointer;border:2px dashed transparent;border-radius:0 0 var(--radius-lg) var(--radius-lg);color:var(--p-neutral-500);font-size:13px;font-weight:500;transition:all 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.background=&#39;&#39;;this.style.color=&#39;var(--p-neutral-500)&#39;">
+            <div onclick="openCheck(&#39;add&#39;,&#39;policy-edit&#39;)" style="padding:13px 20px;display:flex;align-items:center;gap:10px;cursor:pointer;border:2px dashed transparent;border-radius:0 0 var(--radius-lg) var(--radius-lg);color:var(--p-neutral-500);font-size:13px;font-weight:500;transition:all 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.background=&#39;&#39;;this.style.color=&#39;var(--p-neutral-500)&#39;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
               Add Check
             </div>
@@ -11632,22 +11642,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Check name -->
             <div class="form-group">
               <label class="form-label">Check name</label>
-              <input type="text" class="form-input" placeholder="e.g. Antivirus active and up to date">
+              <input type="text" id="ac-name-input" class="form-input" placeholder="e.g. Antivirus active and up to date" oninput="if(this.value.trim()){this.style.borderColor='';this.style.boxShadow='';}">
             </div>
-            <!-- Demo state -->
+            <!-- Section -->
             <div class="form-group" style="position:relative;">
-              <label class="form-label">Demo state</label>
+              <label class="form-label">Section</label>
               <div id="ac-sec-btn" class="icx-input" onclick="acToggleSec(event)" style="display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 12px;border-radius:8px;cursor:pointer;gap:8px;user-select:none;">
                 <span id="ac-sec-label" style="font-size:12px;font-weight:600;">Select a section…</span>
                 <svg id="ac-sec-chev" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </div>
               <div id="ac-sec-pop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:50;overflow:hidden;">
-                <div onclick="acPickSec(&#39;general&#39;,&#39;General&#39;)" class="ac-sec-opt">General</div>
-                <div onclick="acPickSec(&#39;authentication&#39;,&#39;Authentication&#39;)" class="ac-sec-opt">Authentication</div>
-                <div onclick="acPickSec(&#39;network&#39;,&#39;Network&#39;)" class="ac-sec-opt">Network</div>
-                <div onclick="acPickSec(&#39;encryption&#39;,&#39;Encryption&#39;)" class="ac-sec-opt">Encryption</div>
-                <div onclick="acPickSec(&#39;logging&#39;,&#39;Logging&#39;)" class="ac-sec-opt">Logging</div>
-                <div onclick="acPickSec(&#39;monitoring&#39;,&#39;Monitoring&#39;)" class="ac-sec-opt">Monitoring</div>
+                <div onclick="acPickSec(&#39;endpoint-security&#39;,&#39;Endpoint Security&#39;)" class="ac-sec-opt">Endpoint Security</div>
+                <div onclick="acPickSec(&#39;data-protection&#39;,&#39;Data Protection&#39;)" class="ac-sec-opt">Data Protection</div>
+                <div onclick="acPickSec(&#39;compliance-logging&#39;,&#39;Compliance &amp; Logging&#39;)" class="ac-sec-opt">Compliance &amp; Logging</div>
               </div>
             </div>
             <!-- Severity pills -->
@@ -11694,7 +11701,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Attribute -->
             <div class="form-group">
               <label class="form-label">Attribute</label>
-              <input type="text" class="form-input" placeholder="e.g. av.realtime_protection" style="font-family:'DM Sans',sans-serif;font-size:12px;">
+              <input type="text" id="ac-attr-input" class="form-input" placeholder="e.g. av.realtime_protection" style="font-family:'DM Sans',sans-serif;font-size:12px;">
             </div>
             <!-- Type of check -->
             <div class="form-group" style="position:relative;">
@@ -16381,7 +16388,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var html = '';
         TAGPICK_APPROVED.forEach(function(t){
           var on = sel.indexOf(t) >= 0;
-          html += '<span class="tagpick-chip' + (on ? ' is-on' : '') + '" data-val="' + t + '" role="button" tabindex="0" aria-pressed="' + (on ? 'true' : 'false') + '" onclick="tagpickToggle(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();tagpickToggle(this)}">' +
+          html += '<span class="tagpick-chip' + (on ? ' is-on' : '') + '" data-val="' + t + '" data-color="' + pdTagColor(t) + '" role="button" tabindex="0" aria-pressed="' + (on ? 'true' : 'false') + '" onclick="tagpickToggle(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();tagpickToggle(this)}">' +
                   '<svg class="tagpick-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
                   t + '</span>';
         });
@@ -16491,14 +16498,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         backButton: { label: 'Back', onClick: function(e, close) { _acReturnContent(viewId); close(); } },
         buttons: [
           isEdit
-            ? { label: 'Save changes', kind: 'primary', onClick: function() { checkDone(); } }
-            : { label: 'Add Check', kind: 'primary', onClick: function() { checkDone(); } }
+            ? { label: 'Save changes', kind: 'primary', onClick: function() { acSubmitCheck(true); } }
+            : { label: 'Add Check', kind: 'primary', onClick: function() { acSubmitCheck(false); } }
         ],
         afterMount: function(ov) {
           var dst = document.getElementById('ac-modal-body');
           if (contentInner && dst) {
             /* Move all children into modal */
             while (contentInner.firstChild) dst.appendChild(contentInner.firstChild);
+          }
+          if (!isEdit) {
+            var sl = document.getElementById('ac-sec-label');
+            if (sl) { sl.textContent = 'Select a section…'; sl.style.color = ''; }
+            document.querySelectorAll('#ac-sec-pop .ac-sec-opt').forEach(function(o){ o.classList.remove('is-selected'); });
           }
           if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
         },
@@ -16524,6 +16536,78 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         }
       }
       else { showView('policy-edit'); }
+    }
+    /* Validate the check form, then commit: add a real row when coming from Policy Edit. */
+    function acSubmitCheck(isEdit) {
+      var nameInput = document.getElementById('ac-name-input');
+      var name = nameInput ? nameInput.value.trim() : '';
+      if (!name) {
+        if (nameInput) {
+          nameInput.style.borderColor = '#FB3C44';
+          nameInput.style.boxShadow = '0 0 0 3px rgba(251,60,68,0.15)';
+          nameInput.focus();
+        }
+        return;
+      }
+      var added = false;
+      if (!isEdit && _checkReturn === 'policy-edit') added = peAddCheckRow(name);
+      checkDone();
+      showToast(isEdit ? 'Check updated' : (added ? 'Check added' : 'Check saved'));
+    }
+    /* Build a canonical .pe-check-grid row from the modal form and append it to the last section. */
+    function peAddCheckRow(name) {
+      var sevPill = document.querySelector('.ac-sev-pill.is-selected');
+      var sev = sevPill ? sevPill.getAttribute('data-val') : 'medium';
+      var sevLbl = sev.charAt(0).toUpperCase() + sev.slice(1);
+      var attrInput = document.getElementById('ac-attr-input');
+      var attr = attrInput ? attrInput.value.trim() : '';
+      var idx = 0;
+      document.querySelectorAll('#v-policy-edit .pe-sev-btn[data-idx]').forEach(function(b){
+        var n = parseInt(b.getAttribute('data-idx'), 10);
+        if (!isNaN(n) && n >= idx) idx = n + 1;
+      });
+      var secs = Array.from(document.querySelectorAll('#v-policy-edit [id^="pe-sec-"]'));
+      var lblEl = document.getElementById('ac-sec-label');
+      var chosen = lblEl ? lblEl.textContent.trim() : '';
+      var sec = null;
+      if (chosen && chosen !== 'Select a section…') {
+        sec = secs.find(function(s){
+          var h = s.previousElementSibling;
+          var title = h ? h.querySelector('span') : null;
+          return title && title.textContent.trim() === chosen;
+        });
+      }
+      if (!sec) sec = secs[secs.length - 1];
+      if (!sec) return false;
+      if (sec.style.display === 'none') peToggleSec(sec.id.replace('pe-sec-', ''));
+      var attrHtml = attr
+        ? '<span style="font-family:\'DM Sans\',sans-serif;font-size:10.5px;color:var(--text-muted);">' + _esc(attr) + '</span><span class="bdg bdg--gray">0 rules</span>'
+        : '<span class="bdg bdg--gray">0 rules</span>';
+      var row = document.createElement('div');
+      row.className = 'pe-check-grid';
+      row.setAttribute('style', 'padding:13px 20px;border-bottom:1px solid var(--border);');
+      row.innerHTML =
+        '<input type="checkbox" onchange="peCheckRow(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">' +
+        '<span class="bdg bdg--dot bdg--gray">New</span>' +
+        '<div><div style="font-size:13px;font-weight:600;color:var(--text-default);">' + _esc(name) + '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">' + attrHtml + '</div></div>' +
+        '<button type="button" class="scan-menu-trigger pe-sev-btn" data-idx="' + idx + '" data-val="' + sev + '" onclick="peOpenSevPick(this,' + idx + ')"><span style="display:flex;align-items:center;gap:7px;min-width:0;"><span class="pe-sev-dot"></span><span class="pe-sev-lbl">' + sevLbl + '</span></span><svg class="scan-menu-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>' +
+        '<div id="pe-a-tags-' + idx + '" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:200px;"><button onclick="peAddTagMenu(this,' + idx + ')" style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px dashed var(--text-muted);background:var(--bg-surface);color:var(--p-neutral-500);cursor:pointer;">+ tag</button></div>' +
+        '<button onclick="openCheck(&#39;edit&#39;,&#39;policy-edit&#39;)" class="btn-icon pe-edit-check-btn" aria-label="Edit check" title="Edit check"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"></path></svg></button>';
+      sec.appendChild(row);
+      var header = sec.previousElementSibling;
+      if (header) {
+        var cntSpan = header.querySelector('span[style*="margin-left:auto"]');
+        var secCount = sec.querySelectorAll('.pe-check-grid').length;
+        if (cntSpan) cntSpan.textContent = secCount + (secCount === 1 ? ' check' : ' checks');
+      }
+      var heading = document.querySelector('#v-policy-edit .tab-intro-title');
+      if (heading) {
+        var total = document.querySelectorAll('#v-policy-edit .pe-check-grid:not(#pe-col-header)').length;
+        heading.textContent = 'Checks (' + total + ')';
+      }
+      if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+      return true;
     }
     function checkDelete() {
       openModal({
