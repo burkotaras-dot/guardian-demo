@@ -16108,11 +16108,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
 
     // Одна декларація ширин на шапку і на рядки: якщо колонки описати двічі, вони роз'їдуться
-    // від першої ж правки. 18px — кружечок статусу, у шапці замість нього порожня комірка
-    // тієї ж ширини, інакше всі підписи поїдуть уліво.
-    var PD_COL_MARK   = 'flex:0 0 18px;';
-    var PD_COL_CHECK  = 'flex:1;min-width:0;';
-    var PD_COL_TAGS   = 'flex:0 0 280px;';   // виміряний максимум тегів = 245px + запас
+    // від першої ж правки.
+    var PD_COL_CHECK  = 'flex:2;min-width:0;';   // 2/3 слеку — довший контент (назва + опис)
+    var PD_COL_TAGS   = 'flex:1;min-width:245px;'; // 1/3 слеку; 245px — виміряний максимум тегів
     var PD_COL_STATUS = 'flex:0 0 56px;';    // «Passed» = 51px
 
     function pdFilter(mode) {
@@ -16130,10 +16128,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       // над empty-state. .col-thead — канонічна поверхня шапки (--table-header-bg),
       // типографіка — як у .data-table th.
       var html = '<div class="col-thead" style="padding:10px 20px;display:flex;align-items:center;gap:14px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">'
-        + '<div style="'+PD_COL_MARK+'"></div>'
         + '<div style="'+PD_COL_CHECK+'">Check</div>'
-        + '<div style="'+PD_COL_TAGS+'">Tags</div>'
-        + '<div style="'+PD_COL_STATUS+'text-align:right;">Status</div>'
+        + '<div style="'+PD_COL_STATUS+'">Status</div>'
+        + '<div style="'+PD_COL_TAGS+'text-align:right;">Tags</div>'
         + '</div>';
       filtered.forEach(function(c) {
         var isFail = c.status==='fail';
@@ -16141,39 +16138,26 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var safeKey = c.name.replace(/[^a-zA-Z0-9]/g,'_');
         window._pdKeyToName[safeKey] = c.name;
         html += '<div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;">';
-        // Кружечок бере ті самі токени, що й бейдж статусу в кінці рядка (--bdg-red-*/--bdg-green-*),
-        // тож у темній темі він коректний сам по собі. Раніше тут стояли літеральні #fef2f2/#f0fdf4,
-        // і темну тему рятували правила body.dark [style*="background:#fef2f2"] — найкрихкіший
-        // механізм у файлі: досить змінити пробіл в інлайн-стилі, і рядок лишиться світлим.
-        var pdTone = isFail ? 'red' : 'green';
-        html += '<div style="width:18px;height:18px;border-radius:50%;background:var(--bdg-'+pdTone+'-bg);border:1.5px solid var(--bdg-'+pdTone+'-bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--bdg-'+pdTone+'-txt);">';
-        html += isFail ? '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' : '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
-        html += '</div>';
         // Колонка Check: назва + опис — це заголовок і підзаголовок одного обʼєкта,
         // тому вони живуть в ОДНІЙ комірці, як `Simulation result` у сусідній таблиці.
         html += '<div style="'+PD_COL_CHECK+'display:flex;align-items:center;gap:10px;">';
         html += '<div style="font-size:13px;font-weight:'+(isFail?'600':'500')+';color:'+(isFail?'var(--text-default)':'var(--text-sec)')+';white-space:nowrap;flex-shrink:0;">' + c.name + '</div>';
         html += '<div style="font-size:11px;color:var(--text-sec);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.detail + '</div>';
         html += '</div>';
-        // Теги — власна колонка фіксованої ширини. Раніше вони були всередині комірки Check
-        // і їх ліва межа гуляла на 115px від рядка до рядка (виміряно: 840…955), бо їх
-        // штовхав гумовий опис. flex-wrap — бо кількість тегів задає користувач: зайві
-        // переносяться на другий рядок, а не обрізаються.
-        html += '<div id="pd-tags-'+safeKey+'" style="'+PD_COL_TAGS+'display:flex;gap:4px;flex-wrap:wrap;align-items:center;">';
+        // Статус перевірки — канонічний .bdg--quiet за мапою severity (fail→Red, pass→Green).
+        // Dot+text, не пігулка: у рядку рівно один обʼєкт із формою (теги), статус звучить
+        // тихим маркером — той самий канон, що й у before→after значеннях (DS §12).
+        html += '<div style="'+PD_COL_STATUS+'display:flex;justify-content:flex-start;">';
+        html += '<span class="bdg bdg--quiet '+(isFail?'bdg--red':'bdg--green')+'">'+(isFail?'Failed':'Passed')+'</span>';
+        html += '</div>';
+        // Теги — власна колонка. Раніше вони були всередині комірки Check і їх ліва межа
+        // гуляла на 115px від рядка до рядка (виміряно: 840…955), бо їх штовхав гумовий опис.
+        // flex-wrap — бо кількість тегів задає користувач: зайві переносяться, а не обрізаються.
+        html += '<div id="pd-tags-'+safeKey+'" style="'+PD_COL_TAGS+'display:flex;gap:4px;flex-wrap:wrap;align-items:center;justify-content:flex-end;">';
         tags.forEach(function(t) { html += pdTagChip(t, safeKey, isCustom); });
         if(isCustom) {
           html += '<button class="bdg bdg--gray pd-tag-add" onclick="pdShowTagPicker(\''+safeKey+'\',this)">' + PD_PLUS_SVG + 'tag</button>';
         }
-        html += '</div>';
-        // Статус перевірки — канонічний .bdg--dot за мапою severity (fail→Red, pass→Green).
-        // Раніше тут був саморобний чип із літеральними #fef2f2/#FB3C44, які в темній
-        // темі лишались світлими, бо _syncInlineTheme їх не знав.
-        // Варіант Dot+text (.bdg--quiet), не пігулка: рядок уже має кольорове коло зліва,
-        // тож пігулка кодувала статус утретє (коло + крапка + заливка). Форма лишається
-        // за тегами, статус звучить тихим маркером — це той самий канон, що й у
-        // before→after значеннях (DS §12).
-        html += '<div style="'+PD_COL_STATUS+'display:flex;justify-content:flex-end;">';
-        html += '<span class="bdg bdg--quiet '+(isFail?'bdg--red':'bdg--green')+'">'+(isFail?'Failed':'Passed')+'</span>';
         html += '</div>';
         html += '</div>';
       });
