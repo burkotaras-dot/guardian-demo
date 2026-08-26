@@ -3729,13 +3729,19 @@ body.dark button[onclick*="peAddTagMenu"]:not(.btn-secondary):hover { border-col
 /* Page picker signals selection with the badge dot; the modal picker keeps its checkmark. */
 .gm-overlay .tagpick-chip.is-on::before { display: none; }
 /* Compare view dark mode */
-body.dark #v-compare-nodes div.compare-thead { background: var(--table-header-bg) !important; color: #94a3b8 !important; }
+body.dark #v-compare-nodes div.compare-thead { background: transparent !important; color: #94a3b8 !important; }
 /* App-wide rule: table column-header rows use #063135 in dark (never black) */
 body.dark .col-thead,
 body.dark .compare-thead,
 body.dark #v-policy-edit .col-thead { background: var(--table-header-bg) !important; }
-body.dark .compare-sec { border-bottom: 1px solid #1C4A50 !important; }
-body.dark #v-compare-nodes [style*="background:var(--bg-canvas)"] { background: #0F3539 !important; }
+/* Each category is its own separate card (split apart, 16px gap between them —
+   same pattern as Consensus Comparison's .peer-sec). */
+.compare-sec { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-sm); }
+.compare-sec + .compare-sec { margin-top: 16px; }
+body.dark .compare-sec-hdr { background: rgba(255,255,255,0.03) !important; }
+/* Node Comparison table header — no fill here specifically (overrides the app-wide
+   .col-thead/.compare-thead canon on purpose for this one table, per explicit request). */
+#v-compare-nodes .compare-thead { background: transparent !important; border-bottom: 0 !important; }
 /* RULE: severity SELECTs use neutral control chrome; colour lives ONLY on a small dot next to the
    always-present text label (never fill the whole field). Same dot colours light + dark. */
 .pe-sev-btn { width:100%; height:32px; padding:0 10px; justify-content:space-between; border-radius:8px; background:var(--bg-subtle); font-weight:600; }
@@ -8990,103 +8996,103 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Header -->
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
           <div style="display:flex;align-items:flex-start;gap:12px;">
-            <button class="btn-outline" onclick="showView(&#39;all-devices&#39;)" style="padding:6px 12px;font-size:12px;">← All Nodes</button>
+            <button class="back-btn" onclick="showView(&#39;all-devices&#39;)" aria-label="Back to All Nodes"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
             <div>
               <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Node Comparison</div>
               <div style="font-size:12px;color:var(--text-sec);margin-top:3px;">MACBOOK-TARAS &nbsp;vs&nbsp; SARAH-LAPTOP-01</div>
             </div>
           </div>
-          <!-- Filter pills -->
-          <div style="display:flex;gap:6px;">
-            <button onclick="setCompareFilter(&#39;all&#39;)" id="cf-all" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid #00D794;cursor:pointer;background:rgba(63,200,120,0.1);color:#15803d;font-family:inherit;">All (45)</button>
-            <button onclick="setCompareFilter(&#39;diff&#39;)" id="cf-diff" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);font-family:inherit;">Differences (27)</button>
-            <button onclick="setCompareFilter(&#39;fail&#39;)" id="cf-fail" style="padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg-surface);color:var(--text-sec);font-family:inherit;">Failing (13)</button>
+          <!-- Filter pills — canonical .seg segmented control (same component as the
+               All Nodes "State" filter), not a one-off inline-styled trio. -->
+          <div class="seg" id="compare-filter-seg" role="group" aria-label="Filter comparison rows">
+            <button onclick="setCompareFilter(&#39;all&#39;)" id="cf-all" class="seg-btn is-active" aria-pressed="true">All <span class="seg-count">45</span></button>
+            <button onclick="setCompareFilter(&#39;diff&#39;)" id="cf-diff" class="seg-btn" aria-pressed="false">Differences <span class="seg-count">27</span></button>
+            <button onclick="setCompareFilter(&#39;fail&#39;)" id="cf-fail" class="seg-btn" aria-pressed="false">Failing <span class="seg-count">13</span></button>
           </div>
         </div>
 
-        <!-- Summary banner -->
+        <!-- Summary banner — neutral surface + colour on the value only (status-box canon:
+             never fill the tile red/orange/green). -->
         <div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
-          <div style="background:rgba(251,60,68,0.06);border:1px solid rgba(251,60,68,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
             <div style="font-size:22px;font-weight:700;color:#FB3C44;">13</div>
             <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">failing attributes</div>
           </div>
-          <div style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
             <div style="font-size:22px;font-weight:700;color:#d97706;">14</div>
             <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">differ (non-failing)</div>
           </div>
-          <div style="background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
             <div style="font-size:22px;font-weight:700;color:#00AF73;">18</div>
             <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">match</div>
           </div>
-          <div style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:160px;">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:160px;">
             <div style="font-size:11px;color:var(--text-sec);margin-bottom:4px;">More deviations on</div>
             <div style="font-size:13px;font-weight:700;color:#d97706;font-family:&#39;DM Sans&#39;,sans-serif;">SARAH-LAPTOP-01</div>
           </div>
         </div>
 
-        <!-- Grouped comparison table -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+        <!-- Table header — lives OUTSIDE the table card as a plain label row, no fill,
+             no divider (explicit request: "take this outside the table, no background"). -->
+        <div class="compare-thead" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:0 20px 8px 18px;font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+          <div>Attribute</div>
+          <div>MACBOOK-TARAS</div>
+          <div>SARAH-LAPTOP-01</div>
+          <div style="text-align:center;">Status</div>
+        </div>
 
-          <!-- Table header -->
-          <div class="compare-thead" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:10px 20px 10px 26px;background:var(--bg-surface);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
-            <div>Attribute</div>
-            <div>MACBOOK-TARAS</div>
-            <div>SARAH-LAPTOP-01</div>
-            <div style="text-align:center;">Status</div>
-          </div>
+        <!-- Grouped comparison table — each category is its own separate card (.compare-sec
+             carries the border/radius/shadow now); this wrapper is just a layout container. -->
+        <div>
 
           <!-- ── SECTION 1: Endpoint Security ── -->
           <div class="compare-sec" id="cs-0">
-            <div onclick="toggleCS(0)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;cursor:pointer;user-select:none;">
-              <svg id="cs-chev-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              <span style="font-size:12px;font-weight:700;color:var(--text-default);">Endpoint Security</span>
-              <div style="display:flex;gap:4px;margin-left:8px;"><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(251,60,68,0.08);color:#FB3C44;border:1px solid rgba(251,60,68,0.25);">4 failing</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(217,119,6,0.08);color:#d97706;border:1px solid rgba(217,119,6,0.25);">2 diff</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(0,175,115,0.08);color:#00AF73;border:1px solid rgba(0,175,115,0.25);">2 match</span></div>
-              <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">8 attributes</span>
+            <div class="compare-sec-hdr" onclick="toggleCS(0)" style="display:flex;align-items:center;gap:8px;padding:9px 20px 9px 18px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;"><span style="font-size:12px;font-weight:700;color:var(--text-default);">Endpoint Security</span><div style="display:flex;gap:4px;margin-left:8px;"><span class="bdg bdg--red">4 failing</span><span class="bdg bdg--orange">2 diff</span><span class="bdg bdg--green">2 match</span></div><span style="font-size:11px;color:var(--text-sec);margin-left:auto;">8 attributes</span><svg id="cs-chev-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="cs-body-0" style="">
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Antivirus</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Defender · Enabled</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Defender · Disabled</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Disk Encryption</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Enabled (BitLocker)</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Disabled</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Firewall</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Enabled (Domain)</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Disabled</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">USB Access</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Blocked</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Allowed</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Secure Boot</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">EDR Agent</div>
                 <div style="font-size:12px;color:var(--text-sec);">CrowdStrike 7.18</div>
                 <div style="font-size:12px;color:var(--text-sec);">Not installed</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">TPM version</div>
                 <div style="font-size:12px;color:var(--text-sec);">2.0</div>
                 <div style="font-size:12px;color:var(--text-sec);">2.0</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Gatekeeper / SmartScreen</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Enabled</div>
@@ -9097,50 +9103,46 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- ── SECTION 2: Access Control ── -->
           <div class="compare-sec" id="cs-1">
-            <div onclick="toggleCS(1)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;cursor:pointer;user-select:none;">
-              <svg id="cs-chev-1" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              <span style="font-size:12px;font-weight:700;color:var(--text-default);">Access Control</span>
-              <div style="display:flex;gap:4px;margin-left:8px;"><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(251,60,68,0.08);color:#FB3C44;border:1px solid rgba(251,60,68,0.25);">4 failing</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(217,119,6,0.08);color:#d97706;border:1px solid rgba(217,119,6,0.25);">1 diff</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(0,175,115,0.08);color:#00AF73;border:1px solid rgba(0,175,115,0.25);">2 match</span></div>
-              <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">7 attributes</span>
+            <div class="compare-sec-hdr" onclick="toggleCS(1)" style="display:flex;align-items:center;gap:8px;padding:9px 20px 9px 18px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;"><span style="font-size:12px;font-weight:700;color:var(--text-default);">Access Control</span><div style="display:flex;gap:4px;margin-left:8px;"><span class="bdg bdg--red">4 failing</span><span class="bdg bdg--orange">1 diff</span><span class="bdg bdg--green">2 match</span></div><span style="font-size:11px;color:var(--text-sec);margin-left:auto;">7 attributes</span><svg id="cs-chev-1" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="cs-body-1" style="">
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Screen lock timeout</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">5 min</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">30 min</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Local admin accounts</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">1</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">3</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Remote Desktop</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Disabled</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Enabled</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Guest account</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">Disabled</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">Enabled</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Password policy</div>
                 <div style="font-size:12px;color:var(--text-sec);">≥12 chars</div>
                 <div style="font-size:12px;color:var(--text-sec);">≥8 chars</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Login banner</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Account lockout policy</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">After 5 attempts</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">After 5 attempts</div>
@@ -9151,50 +9153,46 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- ── SECTION 3: OS &amp; System ── -->
           <div class="compare-sec" id="cs-2">
-            <div onclick="toggleCS(2)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;cursor:pointer;user-select:none;">
-              <svg id="cs-chev-2" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              <span style="font-size:12px;font-weight:700;color:var(--text-default);">OS &amp; System</span>
-              <div style="display:flex;gap:4px;margin-left:8px;"><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(251,60,68,0.08);color:#FB3C44;border:1px solid rgba(251,60,68,0.25);">2 failing</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(217,119,6,0.08);color:#d97706;border:1px solid rgba(217,119,6,0.25);">3 diff</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(0,175,115,0.08);color:#00AF73;border:1px solid rgba(0,175,115,0.25);">2 match</span></div>
-              <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">7 attributes</span>
+            <div class="compare-sec-hdr" onclick="toggleCS(2)" style="display:flex;align-items:center;gap:8px;padding:9px 20px 9px 18px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;"><span style="font-size:12px;font-weight:700;color:var(--text-default);">OS &amp; System</span><div style="display:flex;gap:4px;margin-left:8px;"><span class="bdg bdg--red">2 failing</span><span class="bdg bdg--orange">3 diff</span><span class="bdg bdg--green">2 match</span></div><span style="font-size:11px;color:var(--text-sec);margin-left:auto;">7 attributes</span><svg id="cs-chev-2" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="cs-body-2" style="">
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">OS Version</div>
                 <div style="font-size:12px;color:var(--text-sec);">Windows 11 · 22H2</div>
                 <div style="font-size:12px;color:var(--text-sec);">Windows 11 Pro · 21H2</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">OS Build</div>
                 <div style="font-size:12px;color:var(--text-sec);">22621.3155</div>
                 <div style="font-size:12px;color:var(--text-sec);">22000.2245</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Auto-update</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Last patched</div>
                 <div style="font-size:12px;color:var(--text-sec);">2024-01-10</div>
                 <div style="font-size:12px;color:var(--text-sec);">2023-11-08</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Pending updates</div>
                 <div style="font-size:12px;color:var(--text-sec);">0</div>
                 <div style="font-size:12px;color:var(--text-sec);">14</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">System hostname</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">MACBOOK-TARAS</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">SARAH-LAPTOP-01</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Domain membership</div>
                 <div style="font-size:12px;color:var(--text-sec);">CORP-DOMAIN</div>
                 <div style="font-size:12px;color:var(--text-sec);">CORP-DOMAIN</div>
@@ -9205,50 +9203,46 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- ── SECTION 4: Network &amp; Ports ── -->
           <div class="compare-sec" id="cs-3">
-            <div onclick="toggleCS(3)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;cursor:pointer;user-select:none;">
-              <svg id="cs-chev-3" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              <span style="font-size:12px;font-weight:700;color:var(--text-default);">Network &amp; Ports</span>
-              <div style="display:flex;gap:4px;margin-left:8px;"><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(251,60,68,0.08);color:#FB3C44;border:1px solid rgba(251,60,68,0.25);">2 failing</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(217,119,6,0.08);color:#d97706;border:1px solid rgba(217,119,6,0.25);">3 diff</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(0,175,115,0.08);color:#00AF73;border:1px solid rgba(0,175,115,0.25);">2 match</span></div>
-              <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">7 attributes</span>
+            <div class="compare-sec-hdr" onclick="toggleCS(3)" style="display:flex;align-items:center;gap:8px;padding:9px 20px 9px 18px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;"><span style="font-size:12px;font-weight:700;color:var(--text-default);">Network &amp; Ports</span><div style="display:flex;gap:4px;margin-left:8px;"><span class="bdg bdg--red">2 failing</span><span class="bdg bdg--orange">3 diff</span><span class="bdg bdg--green">2 match</span></div><span style="font-size:11px;color:var(--text-sec);margin-left:auto;">7 attributes</span><svg id="cs-chev-3" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="cs-body-3" style="">
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Open inbound ports</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">80, 443</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">80, 443, 8080, 8443</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Remote access ports</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">None open</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">RDP 3389 open</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">DNS servers</div>
                 <div style="font-size:12px;color:var(--text-sec);">10.0.0.1, 10.0.0.2</div>
                 <div style="font-size:12px;color:var(--text-sec);">8.8.8.8, 8.8.4.4</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Network profile</div>
                 <div style="font-size:12px;color:var(--text-sec);">Domain</div>
                 <div style="font-size:12px;color:var(--text-sec);">Public</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">VPN client</div>
                 <div style="font-size:12px;color:var(--text-sec);">AnyConnect · Connected</div>
                 <div style="font-size:12px;color:var(--text-sec);">Not installed</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Firewall rules</div>
                 <div style="font-size:12px;color:var(--text-sec);">Policy compliant</div>
                 <div style="font-size:12px;color:var(--text-sec);">Policy compliant</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">IPv6</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Disabled</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Disabled</div>
@@ -9259,44 +9253,40 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- ── SECTION 5: Software &amp; Apps ── -->
           <div class="compare-sec" id="cs-4">
-            <div onclick="toggleCS(4)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #FB3C44;cursor:pointer;user-select:none;">
-              <svg id="cs-chev-4" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              <span style="font-size:12px;font-weight:700;color:var(--text-default);">Software &amp; Apps</span>
-              <div style="display:flex;gap:4px;margin-left:8px;"><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(251,60,68,0.08);color:#FB3C44;border:1px solid rgba(251,60,68,0.25);">1 failing</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(217,119,6,0.08);color:#d97706;border:1px solid rgba(217,119,6,0.25);">3 diff</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(0,175,115,0.08);color:#00AF73;border:1px solid rgba(0,175,115,0.25);">2 match</span></div>
-              <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">6 attributes</span>
+            <div class="compare-sec-hdr" onclick="toggleCS(4)" style="display:flex;align-items:center;gap:8px;padding:9px 20px 9px 18px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;"><span style="font-size:12px;font-weight:700;color:var(--text-default);">Software &amp; Apps</span><div style="display:flex;gap:4px;margin-left:8px;"><span class="bdg bdg--red">1 failing</span><span class="bdg bdg--orange">3 diff</span><span class="bdg bdg--green">2 match</span></div><span style="font-size:11px;color:var(--text-sec);margin-left:auto;">6 attributes</span><svg id="cs-chev-4" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="cs-body-4" style="">
-              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #FB3C44;">
+              <div class="compare-row" data-match="diff" data-failing="true" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Microsoft 365 version</div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">2401 (current)</span></div>
                 <div style="font-size:12px;color:var(--text-sec);"><span style="color:#FB3C44;font-weight:600;">2209 (outdated)</span></div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:#FB3C44;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Chrome version</div>
                 <div style="font-size:12px;color:var(--text-sec);">121.0.6167</div>
                 <div style="font-size:12px;color:var(--text-sec);">118.0.5993</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Slack version</div>
                 <div style="font-size:12px;color:var(--text-sec);">4.36.134</div>
                 <div style="font-size:12px;color:var(--text-sec);">4.29.149</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Zoom installed</div>
                 <div style="font-size:12px;color:var(--text-sec);">Yes · 5.17.1</div>
                 <div style="font-size:12px;color:var(--text-sec);">No</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Prohibited software</div>
                 <div style="font-size:12px;color:var(--text-sec);">None detected</div>
                 <div style="font-size:12px;color:var(--text-sec);">None detected</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Teams installed</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Yes</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Yes</div>
@@ -9307,38 +9297,34 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- ── SECTION 6: Monitoring &amp; Compliance ── -->
           <div class="compare-sec" id="cs-5">
-            <div onclick="toggleCS(5)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #d97706;cursor:pointer;user-select:none;">
-              <svg id="cs-chev-5" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;transform:rotate(-90deg);flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              <span style="font-size:12px;font-weight:700;color:var(--text-default);">Monitoring &amp; Compliance</span>
-              <div style="display:flex;gap:4px;margin-left:8px;"><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(217,119,6,0.08);color:#d97706;border:1px solid rgba(217,119,6,0.25);">1 diff</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(0,175,115,0.08);color:#00AF73;border:1px solid rgba(0,175,115,0.25);">4 match</span></div>
-              <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">5 attributes</span>
+            <div class="compare-sec-hdr" onclick="toggleCS(5)" style="display:flex;align-items:center;gap:8px;padding:9px 20px 9px 18px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;"><span style="font-size:12px;font-weight:700;color:var(--text-default);">Monitoring &amp; Compliance</span><div style="display:flex;gap:4px;margin-left:8px;"><span class="bdg bdg--orange">1 diff</span><span class="bdg bdg--green">4 match</span></div><span style="font-size:11px;color:var(--text-sec);margin-left:auto;">5 attributes</span><svg id="cs-chev-5" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;transform:rotate(-90deg);flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="cs-body-5" style="display:none;">
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Audit logging</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Screensaver lock</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">WMI service</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Running</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Running</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">PowerShell logging</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Event log retention</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">90 days</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">90 days</div>
@@ -9349,38 +9335,34 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- ── SECTION 7: Hardware &amp; Identity ── -->
           <div class="compare-sec" id="cs-6">
-            <div onclick="toggleCS(6)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid #d97706;cursor:pointer;user-select:none;">
-              <svg id="cs-chev-6" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;transform:rotate(-90deg);flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              <span style="font-size:12px;font-weight:700;color:var(--text-default);">Hardware &amp; Identity</span>
-              <div style="display:flex;gap:4px;margin-left:8px;"><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(217,119,6,0.08);color:#d97706;border:1px solid rgba(217,119,6,0.25);">1 diff</span><span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:rgba(0,175,115,0.08);color:#00AF73;border:1px solid rgba(0,175,115,0.25);">4 match</span></div>
-              <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">5 attributes</span>
+            <div class="compare-sec-hdr" onclick="toggleCS(6)" style="display:flex;align-items:center;gap:8px;padding:9px 20px 9px 18px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;"><span style="font-size:12px;font-weight:700;color:var(--text-default);">Hardware &amp; Identity</span><div style="display:flex;gap:4px;margin-left:8px;"><span class="bdg bdg--orange">1 diff</span><span class="bdg bdg--green">4 match</span></div><span style="font-size:11px;color:var(--text-sec);margin-left:auto;">5 attributes</span><svg id="cs-chev-6" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;transform:rotate(-90deg);flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div id="cs-body-6" style="display:none;">
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Manufacturer</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Dell Inc.</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Dell Inc.</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid #d97706;">
+              <div class="compare-row" data-match="diff" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">RAM</div>
                 <div style="font-size:12px;color:var(--text-sec);">16 GB</div>
                 <div style="font-size:12px;color:var(--text-sec);">8 GB</div>
                 <div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;color:#d97706;font-weight:700;">≠</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Serial number</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">A1B2C3D4</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">X9Y8Z7W6</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);">Device enrolled (MDM)</div>
                 <div style="font-size:12px;color:var(--text-sec);">Yes · Intune</div>
                 <div style="font-size:12px;color:var(--text-sec);">Yes · Intune</div>
                 <div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>
               </div>
-              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid transparent;">
+              <div class="compare-row" data-match="match" data-failing="false" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">
                 <div style="font-size:13px;font-weight:500;color:var(--text-default);opacity:0.75;">Certificate</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Corp-Device-Cert · Valid</div>
                 <div style="font-size:12px;color:var(--text-sec);opacity:0.75;">Corp-Device-Cert · Valid</div>
@@ -24960,18 +24942,11 @@ function toggleCS(n) {
 var _compareFilter = 'all';
 function setCompareFilter(f) {
   _compareFilter = f;
-  var isDark = document.body.classList.contains('dark');
-  var inactiveBg = isDark ? '#062528' : 'white';
-  var inactiveColor = isDark ? '#CBD5E1' : 'var(--text-sec)';
-  var inactiveBorder = isDark ? 'rgba(255,255,255,0.12)' : 'var(--border)';
-  var activeBg = isDark ? 'rgba(16,185,129,0.18)' : 'rgba(63,200,120,0.1)';
-  var activeColor = isDark ? '#34D399' : '#15803d';
   ['all','diff','fail'].forEach(function(id) {
     var btn = document.getElementById('cf-' + id);
     if (!btn) return;
-    btn.style.background  = id === f ? activeBg : inactiveBg;
-    btn.style.color       = id === f ? activeColor : inactiveColor;
-    btn.style.borderColor = id === f ? '#00D794' : inactiveBorder;
+    btn.classList.toggle('is-active', id === f);
+    btn.setAttribute('aria-pressed', id === f ? 'true' : 'false');
   });
   document.querySelectorAll('.compare-row').forEach(function(row) {
     var match   = row.dataset.match;
