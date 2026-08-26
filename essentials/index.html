@@ -642,19 +642,21 @@ body.dark .tip-wrap::after { background:#0f3a40; border-color:rgba(255,255,255,0
 
 /* Collapsible search — an Only icon button that grows leftward into a field.
    It grows to the LEFT because the toolbar group is right-aligned, so extra width
-   can only be taken from the free space on its left. */
-.isearch { position:relative; width:32px; overflow:hidden; transition:width .22s ease, background .12s, border-color .12s, color .12s; }
+   can only be taken from the free space on its left.
+   States map to Figma's Search component (2926:792 light / 2926:811 dark): Icon = the
+   closed .btn-icon default; Hover = .is-open (field open, not yet focused — green border
+   appears immediately, before the user clicks in); Active = :focus-within (adds the ring). */
+.isearch { position:relative; width:32px; overflow:hidden; transition:width .22s ease, border-radius .12s, background .12s, border-color .12s, color .12s; }
 .isearch-ico { position:absolute; left:7px; top:50%; transform:translateY(-50%); pointer-events:none; }
 .isearch-input { width:100%; height:100%; padding:0 10px 0 26px; border:0; background:none; outline:none;
   font-family:inherit; font-size:13px; opacity:0; transition:opacity .12s; }
 /* Text and placeholder colour come from the app-wide search rule (--search-text / --search-placeholder). */
-.isearch.is-open { width:240px; cursor:text; }
+.isearch.is-open { width:280px; border-radius:10px; cursor:text; background:var(--bg-surface); border-color:#10B981; }
 .isearch.is-open .isearch-input { opacity:1; }
-/* Once open it is a field, not a button — drop the button hover and use the canonical focus ring. */
-.isearch.is-open:hover { background:var(--bg-surface); border-color:var(--border); }
+.isearch.is-open:hover { background:var(--bg-surface); border-color:#10B981; }
 .isearch:focus-within, .isearch.is-open:focus-within:hover { background:var(--bg-surface); border-color:var(--green1); box-shadow:0 0 0 3px var(--green-dim); }
-body.dark .isearch.is-open:hover { background:rgba(255,255,255,0.05); border-color:#04363A; }
-body.dark .isearch:focus-within, body.dark .isearch.is-open:focus-within:hover { background:rgba(255,255,255,0.07); border-color:var(--green1); }
+body.dark .isearch.is-open, body.dark .isearch.is-open:hover { background:rgba(255,255,255,0.05); border-color:rgba(16,185,129,0.4); }
+body.dark .isearch:focus-within, body.dark .isearch.is-open:focus-within:hover { background:rgba(255,255,255,0.05); border-color:var(--green1); box-shadow:0 0 0 3px var(--green-dim); }
 
 /* Tab intro — name + one-line description on the left of a toolbar row, controls on the right.
    Same type scale as the empty state, one step below the page header. */
