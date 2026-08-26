@@ -3729,7 +3729,8 @@ body.dark button[onclick*="peAddTagMenu"]:not(.btn-secondary):hover { border-col
 /* Page picker signals selection with the badge dot; the modal picker keeps its checkmark. */
 .gm-overlay .tagpick-chip.is-on::before { display: none; }
 /* Compare view dark mode */
-body.dark #v-compare-nodes div.compare-thead { background: transparent !important; color: #94a3b8 !important; }
+body.dark #v-compare-nodes div.compare-thead,
+body.dark #v-compare-scans div.compare-thead { background: transparent !important; color: #94a3b8 !important; }
 /* App-wide rule: table column-header rows use #063135 in dark (never black) */
 body.dark .col-thead,
 body.dark .compare-thead,
@@ -3739,9 +3740,12 @@ body.dark #v-policy-edit .col-thead { background: var(--table-header-bg) !import
 .compare-sec { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-sm); }
 .compare-sec + .compare-sec { margin-top: 16px; }
 body.dark .compare-sec-hdr { background: rgba(255,255,255,0.03) !important; }
-/* Node Comparison table header — no fill here specifically (overrides the app-wide
-   .col-thead/.compare-thead canon on purpose for this one table, per explicit request). */
-#v-compare-nodes .compare-thead { background: transparent !important; border-bottom: 0 !important; }
+/* Node/Scan Comparison table headers — no fill here specifically (overrides the app-wide
+   .col-thead/.compare-thead canon on purpose for these two tables, per explicit request). */
+#v-compare-nodes .compare-thead,
+#v-compare-scans .compare-thead { background: transparent !important; border-bottom: 0 !important; }
+/* Scan Comparison "Comparing ... against ..." pickers — explicit request: white fill in light. */
+body:not(.dark) .sc-pick-wrap .csel-btn { background: #FFFFFF !important; }
 /* RULE: severity SELECTs use neutral control chrome; colour lives ONLY on a small dot next to the
    always-present text label (never fill the whole field). Same dot colours light + dark. */
 .pe-sev-btn { width:100%; height:32px; padding:0 10px; justify-content:space-between; border-radius:8px; background:var(--bg-subtle); font-weight:600; }
@@ -9388,10 +9392,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <div style="font-size:12px;color:var(--text-sec);margin-top:3px;">MACBOOK-TARAS · <span id="sc-sub"></span></div>
                 </div>
               </div>
-              <div style="display:flex;gap:6px;">
-                <button id="sc-fbtn-all" onclick="setScanCompareFilter('all')" style="padding:5px 12px;font-size:11px;font-weight:600;border:1px solid var(--green2);border-radius:5px;cursor:pointer;background:var(--green2);color:white;">All <span id="sc-count-all"></span></button>
-                <button id="sc-fbtn-diff" onclick="setScanCompareFilter('diff')" style="padding:5px 12px;font-size:11px;font-weight:600;border:1px solid var(--border);border-radius:5px;cursor:pointer;background:none;color:var(--text-sec);">Differences <span id="sc-count-diff"></span></button>
-                <button id="sc-fbtn-fail" onclick="setScanCompareFilter('fail')" style="padding:5px 12px;font-size:11px;font-weight:600;border:1px solid var(--border);border-radius:5px;cursor:pointer;background:none;color:var(--text-sec);">Failing <span id="sc-count-fail"></span></button>
+              <!-- Filter pills — canonical .seg segmented control (same component as the
+                   All Nodes "State" filter and Node Comparison), not a one-off inline-styled trio. -->
+              <div class="seg" id="sc-filter-seg" role="group" aria-label="Filter comparison rows">
+                <button onclick="setScanCompareFilter('all')" id="sc-fbtn-all" class="seg-btn is-active" aria-pressed="true">All <span class="seg-count" id="sc-count-all"></span></button>
+                <button onclick="setScanCompareFilter('diff')" id="sc-fbtn-diff" class="seg-btn" aria-pressed="false">Differences <span class="seg-count" id="sc-count-diff"></span></button>
+                <button onclick="setScanCompareFilter('fail')" id="sc-fbtn-fail" class="seg-btn" aria-pressed="false">Failing <span class="seg-count" id="sc-count-fail"></span></button>
               </div>
             </div>
 
@@ -9399,7 +9405,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:7px;">
                 <span style="font-size:11px;font-weight:600;color:var(--text-sec);">Comparing</span>
-                <div style="position:relative;">
+                <div class="sc-pick-wrap" style="position:relative;">
                   <select id="sc-pick-a" class="csel" onchange="renderScanCompare()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
                     <option value="now">Now · 2 min ago</option>
                     <option value="yest">Yesterday · 18:02</option>
@@ -9411,7 +9417,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
               <span style="font-size:12px;font-weight:600;color:var(--text-sec);">against</span>
               <div style="display:flex;align-items:center;gap:7px;">
-                <div style="position:relative;">
+                <div class="sc-pick-wrap" style="position:relative;">
                   <select id="sc-pick-b" class="csel" onchange="renderScanCompare()" style="font-size:12px;font-weight:600;padding:7px 30px 7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-default);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;">
                     <option value="now">Now · 2 min ago</option>
                     <option value="yest">Yesterday · 18:02</option>
@@ -9423,32 +9429,35 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
 
-            <!-- Summary banner -->
+            <!-- Summary banner — neutral surface + colour on the value only (status-box canon:
+                 never fill the tile red/orange/green), same pattern as Node Comparison. -->
             <div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
-              <div style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
-                <div id="sc-sum-diff" style="font-size:24px;font-weight:800;color:#d97706;line-height:1;">0</div>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">attributes differ</div>
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
+                <div id="sc-sum-diff" style="font-size:22px;font-weight:700;color:#d97706;">0</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">attributes differ</div>
               </div>
-              <div style="background:rgba(251,60,68,0.06);border:1px solid rgba(251,60,68,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
-                <div id="sc-sum-fail" style="font-size:24px;font-weight:800;color:#FB3C44;line-height:1;">0</div>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">failing in either scan</div>
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
+                <div id="sc-sum-fail" style="font-size:22px;font-weight:700;color:#FB3C44;">0</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">failing in either scan</div>
               </div>
-              <div style="background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.18);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
-                <div id="sc-sum-match" style="font-size:24px;font-weight:800;color:#00AF73;line-height:1;">0</div>
-                <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">unchanged</div>
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
+                <div id="sc-sum-match" style="font-size:22px;font-weight:700;color:#00AF73;">0</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">unchanged</div>
               </div>
             </div>
 
-            <!-- Compare table -->
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
-              <div class="compare-thead" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:10px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
-                <div>Attribute</div>
-                <div id="sc-head-a">Scan A</div>
-                <div id="sc-head-b">Scan B</div>
-                <div style="text-align:center;">Status</div>
-              </div>
-              <div id="sc-compare-body"></div>
+            <!-- Compare table header — lives OUTSIDE the table card as a plain label row,
+                 no fill, no divider (same pattern as Node Comparison). -->
+            <div class="compare-thead" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:0 20px 8px 18px;font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+              <div>Attribute</div>
+              <div id="sc-head-a">Scan A</div>
+              <div id="sc-head-b">Scan B</div>
+              <div style="text-align:center;">Status</div>
             </div>
+
+            <!-- Grouped comparison table — each category is its own separate card
+                 (.compare-sec carries the border/radius/shadow); this wrapper is just layout. -->
+            <div id="sc-compare-body"></div>
 
           </div>
         </div>
@@ -10289,8 +10298,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }
       return -1;
     }
-    function scPill(text, bg, color, bord) {
-      return '<span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:' + bg + ';color:' + color + ';border:1px solid ' + bord + ';">' + text + '</span>';
+    function scPill(text, color) {
+      return '<span class="bdg bdg--' + color + '">' + text + '</span>';
     }
     function scRow(n, x, y) {
       var av = x ? x.current : '—', bv = y ? y.current : '—';
@@ -10298,7 +10307,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var differ = av !== bv;
       var fail = aFail || bFail;
       var sub2 = (x && x.sub) || (y && y.sub) || '';
-      var left = !differ ? 'transparent' : (fail ? '#FB3C44' : '#d97706');
       var cell = function (v, f, present) {
         if (!present) return '<div style="font-size:12px;color:var(--text-muted);">—</div>';
         if (!differ) return '<div style="font-size:12px;color:var(--text-sec);opacity:0.75;">' + v + '</div>';
@@ -10307,7 +10315,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var status = !differ
         ? '<div style="display:flex;align-items:center;justify-content:center;opacity:0.5;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">=</span></div>'
         : '<div style="display:flex;align-items:center;justify-content:center;"><span style="font-size:15px;color:' + (fail ? '#FB3C44' : '#d97706') + ';font-weight:700;">≠</span></div>';
-      var html = '<div class="compare-row" data-match="' + (differ ? 'diff' : 'match') + '" data-failing="' + (fail ? 'true' : 'false') + '" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 26px;border-bottom:1px solid var(--border);align-items:center;border-left:3px solid ' + left + ';">'
+      var html = '<div class="compare-row" data-match="' + (differ ? 'diff' : 'match') + '" data-failing="' + (fail ? 'true' : 'false') + '" style="display:grid;grid-template-columns:2fr 2fr 2fr 100px;padding:12px 20px 12px 18px;border-bottom:1px solid var(--border);align-items:center;">'
         + '<div style="font-size:13px;font-weight:500;color:var(--text-default);">' + n + (sub2 ? '<div style="font-size:11px;font-weight:400;color:var(--text-sec);margin-top:1px;">' + sub2 + '</div>' : '') + '</div>'
         + cell(av, aFail, !!x) + cell(bv, bFail, !!y) + status + '</div>';
       return { html: html, differ: differ, fail: fail };
@@ -10341,16 +10349,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           if (r.fail) { totFail++; }
           if (r.fail) { secFail++; } else if (r.differ) { secDiff++; } else { secMatch++; }
         });
-        var sev = secFail ? '#FB3C44' : (secDiff ? '#d97706' : 'transparent');
         var pills = '';
-        if (secFail) pills += scPill(secFail + ' failing', 'rgba(251,60,68,0.08)', '#FB3C44', 'rgba(251,60,68,0.25)');
-        if (secDiff) pills += scPill(secDiff + ' diff', 'rgba(217,119,6,0.08)', '#d97706', 'rgba(217,119,6,0.25)');
-        if (secMatch) pills += scPill(secMatch + ' match', 'rgba(0,175,115,0.08)', '#00AF73', 'rgba(0,175,115,0.25)');
-        html += '<div class="sc-sec">'
-          + '<div onclick="toggleSC(' + gi + ')" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);border-left:3px solid ' + sev + ';cursor:pointer;user-select:none;">'
-          + '<svg id="sc-sec-chev-' + gi + '" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" style="flex-shrink:0;transition:transform 0.15s;transform:rotate(0deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>'
-          + '<span style="font-size:12px;font-weight:700;color:var(--text-default);flex:1;">' + g.title + '</span>'
-          + pills + '</div>'
+        if (secFail) pills += scPill(secFail + ' failing', 'red');
+        if (secDiff) pills += scPill(secDiff + ' diff', 'orange');
+        if (secMatch) pills += scPill(secMatch + ' match', 'green');
+        html += '<div class="sc-sec compare-sec" id="sc-sec-' + gi + '">'
+          + '<div class="compare-sec-hdr" onclick="toggleSC(' + gi + ')" style="display:flex;align-items:center;gap:8px;padding:9px 20px 9px 18px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">'
+          + '<span style="font-size:12px;font-weight:700;color:var(--text-default);">' + g.title + '</span>'
+          + '<div style="display:flex;gap:4px;margin-left:8px;">' + pills + '</div>'
+          + '<span style="font-size:11px;color:var(--text-sec);margin-left:auto;">' + g.names.length + (g.names.length === 1 ? ' attribute' : ' attributes') + '</span>'
+          + '<svg id="sc-sec-chev-' + gi + '" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;transform:rotate(0deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>'
+          + '</div>'
           + '<div id="sc-sec-body-' + gi + '" style="display:block;">' + rows + '</div></div>';
       });
       var body = document.getElementById('sc-compare-body');
@@ -10376,10 +10385,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       ['all', 'diff', 'fail'].forEach(function (k) {
         var btn = document.getElementById('sc-fbtn-' + k);
         if (!btn) return;
-        var on = (k === f);
-        btn.style.background = on ? 'var(--green2)' : 'none';
-        btn.style.color = on ? 'white' : 'var(--text-sec)';
-        btn.style.borderColor = on ? 'var(--green2)' : 'var(--border)';
+        btn.classList.toggle('is-active', k === f);
+        btn.setAttribute('aria-pressed', k === f ? 'true' : 'false');
       });
       document.querySelectorAll('#sc-compare-body .sc-sec').forEach(function (sec) {
         var visible = 0;
@@ -23933,6 +23940,7 @@ var _BC_MAP = {
   'report-investigation': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Needs investigation</span>`,
   'reports': `<span class="bc-link" onclick="showView('reports-list')">Reports</span><span class="bc-sep">›</span><span class="bc-cur">Compliance</span>`,
   'integration-detail': `<span class="bc-link" onclick="showView('settings-integrations')">Integrations</span><span class="bc-sep">›</span><span class="bc-cur">Details</span>`,
+  'compare-nodes': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-cur">Node Comparison</span>`,
 };
 function _updateBC(name) {
   var _nb = document.getElementById('nav-breadcrumb');
