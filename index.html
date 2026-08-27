@@ -2816,7 +2816,7 @@ body.dark .cm-last-activity { color:#96A6BD !important; }
 .drift-row[data-change-type="added"]    { --row-accent:#2563eb; }
 .drift-row[data-change-type="removed"]  { --row-accent:#a855f7; }
 .drift-row:last-child { border-bottom:none; }
-.drift-row:hover { background:var(--bg-surface); border-color:var(--border-strong); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+.drift-row:hover { background:var(--bg-surface); border-color:var(--border-strong); box-shadow:none; transform:translateY(-1px); }
 /* Drift TYPE (що змінилось) і Drift STATUS (стан реконсиляції) — канонічний блок BADGE.
    Наголос лишається на статусі: він пігулка, тип — тихий Dot+text. */
 .drift-type, .drift-stat { justify-self:start; }
@@ -3103,7 +3103,7 @@ body.dark .chg-filters-col-divider { border-left-color:var(--border); }
 .check-card.drift-handled { opacity:0.62; background:var(--bg-subtle); }
 .check-card.drift-handled:hover { opacity:0.85; }
 /* Compact single-line drift row — operational list (replaces tall diff cards) */
-.check-card.drift-row { display:grid; grid-template-columns:18px 86px minmax(140px,1fr) 168px 120px 124px 124px 18px; align-items:center; gap:12px; padding:11px 16px; }
+.check-card.drift-row { display:grid; grid-template-columns:18px 86px minmax(140px,1fr) 168px 120px 124px 124px 18px; align-items:center; gap:12px; padding:11px 16px; box-shadow:none; }
 
 /* CATEGORY TAG HIERARCHY
    Top "type" tag (Compliance Policy / Custom / etc) stays as solid colored pill (font-size:10px, font-weight:700).
@@ -3707,6 +3707,7 @@ body.dark .results-top,
 body.dark .results-scope-bar  { background:var(--bg-page); border-color:var(--border); }
 body.dark .check-card         { background: var(--bg-card); border-color: var(--border); }
 body.dark .check-card:hover   { border-color: rgba(255,255,255,0.18); box-shadow: var(--shadow-md); }
+body.dark .check-card.drift-row:hover { box-shadow: none; }
 body.dark .check-card .check-row svg { stroke: rgba(255,255,255,0.55); }
 body.dark .results-top [style*="font-size:10px;color:var(--text-sec)"] { color: var(--p-neutral-50) !important; }
 body.dark .check-title        { color: var(--p-neutral-50); }
@@ -11640,11 +11641,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </button>
             </div>
             </div>
-            <!-- Add Check row -->
-            <div onclick="openCheck(&#39;add&#39;,&#39;policy-edit&#39;)" style="padding:13px 20px;display:flex;align-items:center;gap:10px;cursor:pointer;border:2px dashed transparent;border-radius:0 0 var(--radius-lg) var(--radius-lg);color:var(--p-neutral-500);font-size:13px;font-weight:500;transition:all 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;;this.style.color=&#39;var(--green2)&#39;" onmouseout="this.style.background=&#39;&#39;;this.style.color=&#39;var(--p-neutral-500)&#39;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-              Add Check
-            </div>
+          </div>
+          <!-- Add Check — its own separate element, not part of the last category card -->
+          <div onclick="openCheck(&#39;add&#39;,&#39;policy-edit&#39;)" style="margin-top:16px;padding:13px 20px;display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--bg-surface);border:1px dashed var(--border);border-radius:var(--radius-lg);color:var(--p-neutral-500);font-size:13px;font-weight:500;transition:all 0.15s;" onmouseover="this.style.background=document.body.classList.contains(&#39;dark&#39;)?&#39;rgba(255,255,255,0.05)&#39;:&#39;#f8fafc&#39;;this.style.color=&#39;var(--green2)&#39;;this.style.borderColor=&#39;var(--green2)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;;this.style.color=&#39;var(--p-neutral-500)&#39;;this.style.borderColor=&#39;var(--border)&#39;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            Add Check
           </div>
         </div>
 
