@@ -663,14 +663,20 @@ body.dark .isearch:focus-within, body.dark .isearch.is-open:focus-within:hover {
 .tab-intro { min-width:0; }
 .tab-intro-title { font-size:14px; font-weight:600; color:var(--text-default); }
 .tab-intro-sub { font-size:12px; color:var(--text-muted); line-height:1.5; margin-top:2px; max-width:560px; }
-.pe-checks-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:8px; flex-wrap:wrap; }
+.pe-checks-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
 .pe-check-grid { display:grid; grid-template-columns:16px repeat(4,minmax(0,1fr)) 48px; gap:14px; align-items:center; }
 .pe-check-grid > .bdg { justify-self:start; order:1; }
 .pe-check-grid > * { min-width:0; }
 .pe-check-grid > .pe-sev-btn { width:148px; justify-self:start; order:2; }
 .pe-check-grid > [id^="pe-a-tags-"] { order:3; }
 .pe-check-grid > .pe-edit-check-btn { justify-self:start; order:4; }
-.pe-edit-check-btn { background:var(--bg-subtle); }
+/* Policy Edit checks table — each category is its own card, 16px gap (same pattern as
+   Consensus/Node Comparison's .peer-sec/.compare-sec split). */
+.pe-check-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+.pe-check-card + .pe-check-card { margin-top:16px; }
+body.dark .pe-sec-hdr { background:rgba(255,255,255,0.03) !important; }
+/* Last row's own border-bottom doubled up against the card's own bottom edge — drop it */
+[id^="pe-sec-"] > .pe-check-grid:last-child { border-bottom: none !important; }
 .pe-bulk-actions { align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
 .pe-bulk-count { margin-right:4px; font-size:12px; font-weight:600; color:var(--text-sec); white-space:nowrap; }
 .pe-bulk-sev { position:relative; flex-shrink:0; }
@@ -11472,21 +11478,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <button class="reset-btn-2s pe-bulk-reset" onclick="peDeselectAll()"><span class="pe-reset-icon" aria-hidden="true"></span>Reset</button>
             </div>
           </div>
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
-            <!-- Header row -->
-            <div class="col-thead" style="background:var(--bg-canvas);border-bottom:1px solid var(--border);">
-              <!-- Column headers -->
-              <div id="pe-col-header" class="pe-check-grid" style="padding:11px 20px;">
-                <input type="checkbox" id="pe-bulk-master" data-selectall="1" onchange="peSelectAll(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
-                <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
-                <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Status</div>
-                <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Severity</div>
-                <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Classification tags</div>
-                <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Action</div>
-              </div>
-            </div>
+          <!-- Header row — lives OUTSIDE the card as a plain label row, no fill (same pattern
+               as Node Comparison's ATTRIBUTE row). -->
+          <div id="pe-col-header" class="pe-check-grid" style="padding:0 20px 8px;">
+            <input type="checkbox" id="pe-bulk-master" data-selectall="1" onchange="peSelectAll(this)" style="width:14px;height:14px;accent-color:var(--green2);cursor:pointer;">
+            <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Check name</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Status</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Severity</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Classification tags</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em;">Action</div>
+          </div>
+          <div class="pe-check-card">
             <!-- Section 1: Endpoint Security -->
-            <div onclick="peToggleSec(0)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+            <div class="pe-sec-hdr" onclick="peToggleSec(0)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
               <span style="font-size:12px;font-weight:700;color:var(--p-neutral-800);">Endpoint Security</span>
               <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">3 checks</span>
               <svg id="pe-sec-chev-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -11554,8 +11558,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </button>
             </div>
             </div>
+          </div>
+          <div class="pe-check-card">
             <!-- Section 2: Data Protection -->
-            <div onclick="peToggleSec(1)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+            <div class="pe-sec-hdr" onclick="peToggleSec(1)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
               <span style="font-size:12px;font-weight:700;color:var(--p-neutral-800);">Data Protection</span>
               <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">2 checks</span>
               <svg id="pe-sec-chev-1" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -11603,8 +11609,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </button>
             </div>
             </div>
+          </div>
+          <div class="pe-check-card">
             <!-- Section 3: Compliance & Logging -->
-            <div onclick="peToggleSec(2)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:var(--bg-canvas);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+            <div class="pe-sec-hdr" onclick="peToggleSec(2)" style="display:flex;align-items:center;gap:8px;padding:9px 20px;background:#F1F5F9;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
               <span style="font-size:12px;font-weight:700;color:var(--p-neutral-800);">Compliance &amp; Logging</span>
               <span style="font-size:11px;color:var(--text-sec);margin-left:auto;">1 check</span>
               <svg id="pe-sec-chev-2" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -18390,7 +18398,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var row = document.getElementById('pe-b-row-'+i);
         if(row) row.style.background = i===idx ? '#f0fdf4' : '';
       }
-      document.getElementById('pe-b-panel-name').textContent = check.name;
+      var panelName = document.getElementById('pe-b-panel-name');
+      if (panelName) panelName.textContent = check.name;
       // Update severity radios + labels
       ['critical','high','medium','low'].forEach(function(v) {
         var lbl = document.getElementById('pe-sev-lbl-'+v);
