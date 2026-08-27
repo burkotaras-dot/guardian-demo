@@ -3712,11 +3712,13 @@ body.dark button[onclick*="peAddTagMenu"]:not(.btn-secondary):hover { border-col
 .tagpick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 /* Picker chips are the canonical badge (.bdg): quiet when off, a filled category-coloured
    pill with a dot when on. Colours come from --bdg-* tokens, so dark mode needs no override.
-   (The modal tag picker keeps its own Figma-canonical block under .gm-overlay.) */
+   Це той самий тег, що потім видно в Policy Detail і в списку політик, тому в модалці
+   Create New Policy він виглядає так само, як на сторінці — .gm-tag лишається для інших
+   модалок, де тег не є баджем. */
 .tagpick-chip { display: inline-flex; align-items: center; gap: 4px; box-sizing: border-box;
   font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1px;
   text-transform: uppercase; line-height: 1.4; padding: 2px 7px; border-radius: 999px;
-  border: 1px solid transparent; background: transparent; color: var(--text-muted);
+  border: 1px solid var(--bdg-gray-bd); background: transparent; color: var(--text-muted);
   cursor: pointer; user-select: none; transition: background-color 0.12s, border-color 0.12s, color 0.12s; }
 .tagpick-chip:hover { color: var(--bdg-gray-txt); background: var(--bdg-gray-bg); border-color: var(--bdg-gray-bd); }
 .tagpick-chip.is-on::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
@@ -3726,8 +3728,6 @@ body.dark button[onclick*="peAddTagMenu"]:not(.btn-secondary):hover { border-col
 .tagpick-chip.is-on[data-color="orange"] { color: var(--bdg-orange-txt); background: var(--bdg-orange-bg); border-color: var(--bdg-orange-bd); }
 .tagpick-chip.is-on[data-color="red"]    { color: var(--bdg-red-txt);    background: var(--bdg-red-bg);    border-color: var(--bdg-red-bd); }
 .tagpick-check { display: none; }
-/* Page picker signals selection with the badge dot; the modal picker keeps its checkmark. */
-.gm-overlay .tagpick-chip.is-on::before { display: none; }
 /* Compare view dark mode */
 body.dark #v-compare-nodes div.compare-thead,
 body.dark #v-compare-scans div.compare-thead { background: transparent !important; color: #94a3b8 !important; }
@@ -4311,8 +4311,6 @@ body.dark #nodes-peer-view [style*="background:#fff"] { background: var(--bg-car
    канонічного .col-thead-правила (index.html:737), яке інакше фарбує кожен .col-thead. */
 #nodes-peer-view .col-thead { background:transparent !important; border-bottom:none !important; }
 
-/* Peer card sections — show/hide match rows */
-.peer-card.show-all .peer-row-match { display: grid !important; }
 /* Кожна категорія (Security/Access control/…) — окрема картка (Figma 3474:53531:
    bg white, border #e2e8f0, radius 6px), не один суцільний список. 24px — той самий
    інсет, що й у ATTRIBUTE-рядка над ними; 16px — проміжок між картками (нема перед
@@ -4323,6 +4321,10 @@ body.dark #nodes-peer-view [style*="background:#fff"] { background: var(--bg-car
    (Figma 3474:53540: rgba(241,245,249,.3) поверх картки). */
 .peer-sec > div[id$="-body"] { background: rgba(241,245,249,0.3); }
 body.dark .peer-sec > div[id$="-body"] { background: rgba(255,255,255,0.02); }
+/* Нижня рамка хедера — роздільник між ним і рядками. Коли секцію згорнуто, рядків
+   немає, і ця волосина лягає впритул до рамки картки: під заголовком видно зайву
+   «паличку» з двох ліній. Згорнутий стан її прибирає. */
+.peer-sec-hdr.is-collapsed { border-bottom-color: transparent !important; }
 .peer-sec-hdr:hover { background: rgba(100,116,139,0.1) !important; }
 body.dark .peer-sec-hdr { background: rgba(255,255,255,0.03) !important; }
 body.dark .peer-sec-hdr:hover { background: rgba(255,255,255,0.06) !important; }
@@ -4499,6 +4501,31 @@ body.dark .gm-add-node-choice .add-node-option--servicenow:nth-child(n+3):hover 
 .gm-add-node-choice .gm-body { padding-top:20px; padding-bottom:24px; }
 .gm-add-node-choice .add-node-options { width:100%; }
 .gm-add-node-choice .add-node-option { height:94px; min-height:94px; padding-block:14px; }
+
+/* First-run onboarding on All Nodes — Figma 3646:20319. Four guided methods, exposed
+   directly on the page (client decision 2026-08-26 — discoverability on first run beats
+   consistency with other empty states). The cards are the SHARED .add-node-option list
+   rows, unchanged: same 550×94 geometry, variant borders and arrow as in the Add Node
+   modal. Only the page-level framing is scoped here, so the modal stays untouched. */
+/* The whole content area is the empty state: bare canvas, block centred, no panel chrome. */
+#nodes-managed-empty {
+  padding:0; min-height:calc(100vh - 150px);
+  flex-direction:column; align-items:center; justify-content:center;
+}
+#nodes-managed-empty .es-ico { display:none; }             /* Figma omits the empty-state glyph here */
+#nodes-managed-empty .es-title { font-size:18px; font-weight:700; letter-spacing:-0.3px; margin-bottom:4px; }
+#nodes-managed-empty .es-sub { color:var(--text-sec); max-width:549px; }
+#nodes-managed-empty .es-act { margin-top:19px; }
+#nodes-managed-empty .add-node-options {
+  width:550px; max-width:100%; margin:0 auto;
+  display:flex; flex-direction:column; gap:14px;
+}
+/* On the canvas the cards need to read as raised surfaces, so white instead of the
+   modal's #F8FAFC — inside a modal the card sits on white and needs the opposite. */
+#nodes-managed-empty .add-node-option { background:#fff; }
+/* The scoped light fill outranks `body.dark .add-node-option`, so the dark card surface
+   has to be restated here — otherwise the cards stay white in dark. */
+body.dark #nodes-managed-empty .add-node-option { background:#133033; }
 
 /* Add Node / detected OS — Figma component frame 3165:10694
    (reference instances 3154:27407 Light / 3154:27537 Dark).
@@ -5629,7 +5656,7 @@ body.dark .gm-overlay {
   margin-bottom:8px !important;
   letter-spacing:.5px !important;
 }
-.gm-overlay :is(.gm-tag,.tagpick-chip) {
+.gm-overlay .gm-tag {
   box-sizing:border-box;
   min-width:0;
   height:26px;
@@ -5654,45 +5681,45 @@ body.dark .gm-overlay {
   appearance:none;
   transition:background-color .12s,border-color .12s,color .12s,box-shadow .12s;
 }
-.gm-overlay :is(.gm-tag,.tagpick-chip):not(.is-active):not(.is-on):not([aria-pressed="true"]):hover {
+.gm-overlay .gm-tag:not(.is-active):not(.is-on):not([aria-pressed="true"]):hover {
   border-color:rgba(16,185,129,0.60) !important;
 }
-.gm-overlay :is(.gm-tag,.tagpick-chip):is(.is-active,.is-on,[aria-pressed="true"]) {
+.gm-overlay .gm-tag:is(.is-active,.is-on,[aria-pressed="true"]) {
   height:28px;
   background:rgba(16,185,129,0.12) !important;
   border-color:#10B981 !important;
   color:#0F172A !important;
   font-weight:600 !important;
 }
-.gm-overlay :is(.gm-tag,.tagpick-chip):focus-visible {
+.gm-overlay .gm-tag:focus-visible {
   outline:none;
   box-shadow:0 0 0 3px rgba(16,185,129,0.12);
 }
-.gm-overlay :is(.gm-tag-check,.tagpick-check) {
+.gm-overlay .gm-tag-check {
   width:12px;
   height:12px;
   display:none !important;
   flex:0 0 12px;
   color:#059669;
 }
-.gm-overlay :is(.gm-tag,.tagpick-chip):is(.is-active,.is-on,[aria-pressed="true"]) :is(.gm-tag-check,.tagpick-check) {
+.gm-overlay .gm-tag:is(.is-active,.is-on,[aria-pressed="true"]) .gm-tag-check {
   display:block !important;
 }
-body.dark .gm-overlay :is(.gm-tag,.tagpick-chip) {
+body.dark .gm-overlay .gm-tag {
   height:28px;
   background:rgba(255,255,255,0.05) !important;
   border-color:rgba(255,255,255,0.18) !important;
   color:#CBD5E1 !important;
 }
-body.dark .gm-overlay :is(.gm-tag,.tagpick-chip):not(.is-active):not(.is-on):not([aria-pressed="true"]):hover {
+body.dark .gm-overlay .gm-tag:not(.is-active):not(.is-on):not([aria-pressed="true"]):hover {
   border-color:rgba(0,175,115,0.50) !important;
 }
-body.dark .gm-overlay :is(.gm-tag,.tagpick-chip):is(.is-active,.is-on,[aria-pressed="true"]) {
+body.dark .gm-overlay .gm-tag:is(.is-active,.is-on,[aria-pressed="true"]) {
   background:rgba(0,175,115,0.15) !important;
   border-color:rgba(0,175,115,0.50) !important;
   color:#F8FAFC !important;
 }
-body.dark .gm-overlay :is(.gm-tag-check,.tagpick-check) {
+body.dark .gm-overlay .gm-tag-check {
   width:11px;
   height:11px;
   flex-basis:11px;
@@ -7823,7 +7850,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="dash-main" style="max-width:100%;">
 
         <!-- Header -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+        <div id="all-devices-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
           <div>
             <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">All Nodes</div>
             <!-- Хедер несе лише ідентичність + свіжість (скільки вузлів, коли останній скан).
@@ -8330,13 +8357,64 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Перший запуск: вузлів немає взагалі. Це НЕ той самий стан, що «фільтри нічого
              не знайшли» (#node-empty-state у filterNodes) — там дія «скинути фільтр», тут
              скидати нічого. Канонічний .es на тій самій поверхні, що й таблиця, яку він
-             замінює, щоб блок не висів на канві. CTA дублює кнопку в шапці навмисно: у
-             порожньому стані око йде в центр, а не в правий верхній кут. -->
-        <div id="nodes-managed-empty" class="es" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);">
+             замінює, щоб блок не висів на канві.
+             Клієнт (2026-08-26, Stephen/Gareth/Taras) попросив повернути явний guided
+             старт: замість одного «Add Node» показуємо всі чотири способи додати першу
+             ноду прямо на сторінці — новачок щойно ввійшов і має одразу бачити, що робити.
+             Модальний Add Node flow лишається для подальшого використання (кнопка в шапці).
+             Переюзаємо канонічні .add-node-option (ті самі, що клонує openAddDeviceModal). -->
+        <div id="nodes-managed-empty" class="es" style="display:none;">
           <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></div>
-          <div class="es-title">No nodes yet</div>
-          <div class="es-sub">Add your first node to run a scan. Score, failed checks and detected drift<br>will appear in this table.</div>
-          <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openAddDeviceModal()">Add Node</button></div>
+          <div class="es-title">Add your first node</div>
+          <div class="es-sub">Choose how to bring nodes into Guardian. Once a node is added, its<br>score, failed checks and detected drift appear in this table.</div>
+          <div class="es-act">
+            <div class="add-node-options">
+              <!-- Option 1: Add manually -->
+              <button class="add-node-option add-node-option--manual" onclick="openAddNodeWizard();">
+                <span class="add-node-icon add-node-icon--green">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+                </span>
+                <span class="add-node-copy">
+                  <span class="add-node-option-title">Add Manually</span>
+                  <span class="add-node-option-description">Deploy Guardian agent or agentless scan on Windows, Mac, or Linux</span>
+                </span>
+                <span class="add-node-card-cta" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>
+              </button>
+              <!-- Option 2: Add from Cloud -->
+              <button class="add-node-option add-node-option--cloud" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;j3-connect&#39;);">
+                <span class="add-node-icon add-node-icon--blue">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"></path></svg>
+                </span>
+                <span class="add-node-copy">
+                  <span class="add-node-option-title">Add from Cloud</span>
+                  <span class="add-node-option-description">Connect AWS or Azure to auto-discover and import EC2, ECS, EKS, RDS nodes</span>
+                </span>
+                <span class="add-node-card-cta" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>
+              </button>
+              <!-- Option 3: Bulk import from ServiceNow -->
+              <button class="add-node-option add-node-option--servicenow" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;cmdb-connect&#39;);">
+                <span class="add-node-icon add-node-icon--purple">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg>
+                </span>
+                <span class="add-node-copy">
+                  <span class="add-node-option-title">Bulk import from ServiceNow</span>
+                  <span class="add-node-option-description">Pull nodes from your ServiceNow CMDB into Detected, scanned via a Connection Manager. Needs a CM set up.</span>
+                </span>
+                <span class="add-node-card-cta" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>
+              </button>
+              <!-- Option 4: Import from CSV -->
+              <button class="add-node-option" onclick="closeModal(&#39;add-node-choice-overlay&#39;);closeAddDeviceModal();go(&#39;csv-import&#39;);">
+                <span class="add-node-icon add-node-icon--green">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg>
+                </span>
+                <span class="add-node-copy">
+                  <span class="add-node-option-title">Import from CSV</span>
+                  <span class="add-node-option-description">Upload a spreadsheet of nodes. Validated and added straight to Guardian.</span>
+                </span>
+                <span class="add-node-card-cta" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Footer hint -->
@@ -8527,8 +8605,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   </div>
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-                  <span style="font-size:11px;font-weight:600;color:#FB3C44;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.2);padding:3px 9px;border-radius:10px;">15 outliers</span>
-                  <button onclick="event.stopPropagation();toggleShowAll(&#39;win&#39;)" id="win-showall-btn" data-show-label="Show all 47 attributes" style="font-size:11px;color:var(--text-sec);background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:4px 10px;font-family:inherit;white-space:nowrap;">Show all 47 attributes</button>
+                  <span class="bdg bdg--red">15 outliers</span>
                   <svg id="win-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
               </div>
@@ -8570,17 +8647,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <div style="font-size:12px;color:var(--text-sec);">2.0</div>
                       <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LEGACYW-003</span><span style="font-size:11px;color:var(--text-sec);">1.2 (upgrade required)</span></div></div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Secure Boot</div>
                       <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Audit logging</div>
                       <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Defender definitions</div>
                       <div style="font-size:12px;color:var(--text-sec);">Current (updated daily)</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
@@ -8616,17 +8693,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
                       <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">SRV-WIN-APP-04</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">SRV-WIN-APP-17</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div></div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Password policy</div>
                       <div style="font-size:12px;color:var(--text-sec);">14 chars · complexity on</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Account lockout</div>
                       <div style="font-size:12px;color:var(--text-sec);">5 attempts</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Guest account</div>
                       <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
@@ -8657,12 +8734,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                       <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LEGACYW-003</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">LAPTOPUK-089</span><span style="font-size:11px;color:var(--text-sec);">Disabled</span></div></div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">SMB signing</div>
                       <div style="font-size:12px;color:var(--text-sec);">Required</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">IPv6</div>
                       <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
@@ -8701,22 +8778,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                         <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">SRV-WIN-APP-04</span><span style="font-size:11px;color:var(--text-muted);font-style:italic;">Null — agent not responding</span></div>
                       </div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Chrome</div>
                       <div style="font-size:12px;color:var(--text-sec);">120.0 (current)</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Slack</div>
                       <div style="font-size:12px;color:var(--text-sec);">4.35 (current)</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Teams</div>
                       <div style="font-size:12px;color:var(--text-sec);">23.4.1 (current)</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Auto-updates</div>
                       <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 120 nodes match</div>
@@ -8725,7 +8802,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
                 <div style="margin-top:20px;padding:11px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
                   <span style="font-size:13px;color:#00AF73;">✓</span>
-                  <span style="font-size:12px;color:var(--text-sec);">32 attributes match across all 120 nodes — domain membership, password policy, account lockout, Secure Boot, SMB signing, Chrome, Slack, Teams, auto-updates, IPv6 disabled, screensaver lock and 21 more</span>
+                  <span style="font-size:12px;color:var(--text-sec);">20 more attributes match across all 120 nodes — domain membership, screensaver lock and 18 more</span>
                 </div>
               </div>
             </div>
@@ -8790,8 +8867,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   </div>
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-                  <span style="font-size:11px;font-weight:600;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);padding:3px 9px;border-radius:10px;">4 outliers</span>
-                  <button onclick="event.stopPropagation();toggleShowAll(&#39;eng&#39;)" id="eng-showall-btn" data-show-label="Show all 35 attributes" style="font-size:11px;color:var(--text-sec);background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:4px 10px;font-family:inherit;white-space:nowrap;">Show all 35 attributes</button>
+                  <span class="bdg bdg--orange">4 outliers</span>
                   <svg id="eng-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
               </div>
@@ -8818,12 +8894,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <div style="font-size:12px;color:var(--text-sec);">Disabled</div>
                       <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(251,60,68,0.08);color:#FB3C44;padding:2px 8px;border-radius:8px;border:1px solid rgba(251,60,68,0.2);">PROD-SRV-LNX-01</span><span style="font-size:11px;color:var(--text-sec);">Enabled</span></div></div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Disk encryption</div>
                       <div style="font-size:12px;color:var(--text-sec);">On</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 4 nodes match</div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Firewall</div>
                       <div style="font-size:12px;color:var(--text-sec);">Enabled</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 4 nodes match</div>
@@ -8849,7 +8925,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <div style="font-size:12px;color:var(--text-sec);">AnyConnect · Connected</div>
                       <div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;font-weight:600;background:rgba(217,119,6,0.08);color:#d97706;padding:2px 8px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">JAMES-WIN-DESK</span><span style="font-size:11px;color:var(--text-sec);">Not installed</span></div></div>
                     </div>
-                    <div class="peer-row peer-row-match" style="display:none;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
+                    <div class="peer-row peer-row-match" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:11px 20px;border-bottom:1px solid var(--border);align-items:center;">
                       <div style="font-size:12px;font-weight:500;color:var(--text-default);">Password policy</div>
                       <div style="font-size:12px;color:var(--text-sec);">14 chars · complexity on</div>
                       <div style="font-size:11px;color:var(--text-muted);font-style:italic;">All 4 nodes match</div>
@@ -8858,7 +8934,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
                 <div style="margin-top:20px;padding:11px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
                   <span style="font-size:13px;color:#00AF73;">✓</span>
-                  <span style="font-size:12px;color:var(--text-sec);">31 attributes match across all nodes — firewall, disk encryption, domain, Slack, auto-updates, audit logging, Zoom, Teams and 23 more</span>
+                  <span style="font-size:12px;color:var(--text-sec);">28 more attributes match across all nodes — domain, Slack, auto-updates, audit logging, Zoom, Teams and 22 more</span>
                 </div>
               </div>
             </div>
@@ -8874,7 +8950,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   </div>
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-                  <span style="font-size:11px;font-weight:600;color:#FB3C44;background:rgba(251,60,68,0.08);border:1px solid rgba(251,60,68,0.2);padding:3px 9px;border-radius:10px;">6 outliers</span>
+                  <span class="bdg bdg--red">6 outliers</span>
                   <svg id="fin-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
               </div>
@@ -24722,8 +24798,10 @@ function setNodesTab(tab) {
 // у прототипі — сегментований перемикач у шапці (той самий патерн, що setDashState).
 // Перемикаємо ЦІЛІ блоки, а не чистимо таблицю: порожній стан — не «таблиця без рядків»,
 // а інше повідомлення, тож разом із рядками зникають шапка колонок, фільтри й підказка
-// внизу — фільтрувати й клікати нема що. Смуга AWS лишається: це другий шлях завести вузли.
+// внизу — фільтрувати й клікати нема що. Смуга AWS теж зникає: «Add from Cloud» уже стоїть
+// серед карток-входів, тож на екрані було б два різні заклики завести вузли з AWS.
 var _nodesCountsBackup = null;
+var _nodesAwsBackup = null;
 var _nodesState = 'data';
 function setNodesState(state) {
   var empty = state === 'empty';
@@ -24733,13 +24811,20 @@ function setNodesState(state) {
     if (el) el.style.display = on ? (mode || 'block') : 'none';
   }
 
+  // Перший запуск — це цілий екран онбордингу (Figma 3643:19813): на сірому полотні лише
+  // заголовок і чотири картки-входи. Тому зникає і хедер сторінки з вкладками — поки вузлів
+  // нема, ідентифікувати, фільтрувати й перемикати нема що, а картки самі є точками входу.
+  show('all-devices-header',   !empty, 'flex');
+  var tabs = document.getElementById('nodes-tabs');
+  if (tabs) tabs.style.display = empty ? 'none' : '';
+
   // Managed
   show('all-devices-sub',      !empty, 'flex');
   show('all-devices-sub-empty', empty, 'block');
   show('node-kpi-cards',       !empty, 'grid');
   show('node-filter-row',      !empty, 'flex');
   show('nodes-list-wrap',      !empty, 'block');
-  show('nodes-managed-empty',   empty, 'block');
+  show('nodes-managed-empty',   empty, 'flex');
   show('nodes-foot-hint',      !empty, 'block');
 
   // Detected
@@ -24758,6 +24843,26 @@ function setNodesState(state) {
   } else {
     var team = document.getElementById('pg-team');
     setPeerGroup(team && team.classList.contains('is-active') ? 'team' : 'os');
+  }
+
+  // Смуга AWS. Її видимість залежить від того, чи інтеграцію вже під'єднано, тому
+  // запамʼятовуємо фактичний display і повертаємо його, а не константу.
+  var awsCards = ['aws-connect-card', 'aws-connected-card'];
+  if (empty) {
+    if (!_nodesAwsBackup) {
+      _nodesAwsBackup = {};
+      awsCards.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) _nodesAwsBackup[id] = el.style.display;
+      });
+    }
+    awsCards.forEach(function(id) { show(id, false); });
+  } else if (_nodesAwsBackup) {
+    awsCards.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = _nodesAwsBackup[id] || '';
+    });
+    _nodesAwsBackup = null;
   }
 
   // Лічильники вкладок. Managed-лічильник рухає promote/dismiss, тому запамʼятовуємо
@@ -24781,7 +24886,7 @@ function setNodesState(state) {
 
 }
 
-// ── Peer card collapse / section / show-all ──────────────────────────────
+// ── Peer card collapse / section ─────────────────────────────────────────
 function showGroupNodes(groupName) {
   showView('all-devices');
   setNodesTab('managed');
@@ -24811,19 +24916,8 @@ function togglePeerSec(id) {
   var collapsed = body.style.display === 'none';
   body.style.display = collapsed ? '' : 'none';
   if (chev) chev.style.transform = collapsed ? '' : 'rotate(-90deg)';
-}
-function toggleShowAll(cardId) {
-  var card = document.getElementById('peer-card-' + cardId);
-  var btn  = document.getElementById(cardId + '-showall-btn');
-  if (!card) return;
-  var isShowAll = card.classList.contains('show-all');
-  if (isShowAll) {
-    card.classList.remove('show-all');
-    if (btn) btn.textContent = btn.dataset.showLabel || 'Show all attributes';
-  } else {
-    card.classList.add('show-all');
-    if (btn) btn.textContent = 'Show differences only';
-  }
+  var hdr = body.previousElementSibling;
+  if (hdr) hdr.classList.toggle('is-collapsed', !collapsed);
 }
 
 // ── Consensus Comparison — selection-driven mode ──
