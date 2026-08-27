@@ -911,8 +911,7 @@ body.dark .icx-demo-tab { border-right-color:#04363A; background:rgba(255,255,25
 body.dark .icx-demo-tab.is-active { background:rgba(0,175,115,.15); color:#FFF; }
 
 /* Change-detail — state-change block (two neutral cards, colour on label + CIS status) */
-.cd-sec-label { font-size:10px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
-.cd-compare { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px; margin-bottom:16px; }
+.cd-compare { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px; margin-top:16px; margin-bottom:16px; }
 .cd-card { background:var(--bg-page); border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
 .cd-card-label { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:9px; }
 .cd-card-val { font-size:26px; font-weight:800; letter-spacing:-0.5px; color:var(--text-default); margin-bottom:9px; }
@@ -933,6 +932,41 @@ body.dark .cd-card--pass .cd-card-label, body.dark .cd-card--pass .cd-card-statu
 body.dark .cd-card--fail .cd-card-label, body.dark .cd-card--fail .cd-card-status { color:var(--p-red-200); }
 body.dark .cd-card-val { color:var(--p-neutral-50); }
 body.dark .cd-risk { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); }
+
+/* Change Detail — check name + severity above the before/after compare (Figma 3660:20851) */
+.cd-check-name { font-size:16px; font-weight:700; color:var(--text-default); letter-spacing:-0.3px; margin-top:10px; }
+
+/* Change Detail — two-column layout: scrollable main + fixed "Your decision" sidebar */
+.cd-layout { flex:1; display:flex; align-items:stretch; min-height:0; overflow:hidden; }
+.cd-main { flex:1; min-width:0; overflow-y:auto; background:var(--bg-page); padding:24px; }
+.cd-side { width:380px; flex-shrink:0; background:var(--bg-surface); border-left:1px solid var(--border); box-shadow:-6px 0 16px rgba(15,23,42,0.04); display:flex; flex-direction:column; overflow-y:auto; }
+.cd-side-nav { display:flex; align-items:center; gap:12px; padding:14px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.cd-nav-btn { width:32px; height:32px; flex-shrink:0; border-radius:8px; background:#F8F9FA; border:1px solid #E2E8F0; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-default); transition:background .15s, border-color .15s; }
+.cd-nav-btn:hover:not(:disabled) { border-color:rgba(16,185,129,0.4); }
+.cd-nav-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.cd-nav-btn svg { width:12px; height:12px; display:block; }
+body.dark .cd-nav-btn { background:rgba(255,255,255,0.05); border-color:#04363A; }
+#change-progress { flex:1; text-align:center; font-size:12px; font-weight:500; color:var(--text-sec); letter-spacing:0.2px; }
+#change-progress b { font-weight:800; color:var(--text-default); }
+.cd-side-body { padding:14px; }
+.cd-side-label { font-size:11px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
+.cd-decision-card { background:var(--bg-page); border:1px solid var(--border); border-radius:10px; padding:14px; }
+.cd-decision-row { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:14px; }
+.cd-decision-row + .cd-decision-row { margin-top:10px; }
+.cd-decision-row span { color:var(--text-sec); }
+.cd-decision-row b { font-weight:500; color:var(--text-default); white-space:nowrap; }
+.cd-decision-row b.cd-dec-danger { color:#FB3C44; }
+.cd-side-actions { padding:14px; display:flex; flex-direction:column; gap:12px; }
+.cd-side-btnrow { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.cd-skip-btn { flex:1; height:32px; border-radius:10px; background:#F8F9FA; border:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#334155; cursor:pointer; transition:background .15s, border-color .15s; }
+.cd-skip-btn:hover { border-color:var(--text-muted); }
+body.dark .cd-skip-btn { background:rgba(255,255,255,0.05); border-color:#04363A; color:var(--p-neutral-50); }
+.cd-side-caption { font-size:11px; color:var(--text-sec); text-align:center; line-height:1.4; }
+
+/* Change Detail — CR-state prototype switcher, styled as real tabs (Figma 3660:20851) */
+.cd-tabs { display:flex; align-items:flex-start; padding-top:12px; margin-bottom:10px; }
+.cd-tab { font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; color:var(--text-sec); background:none; border:none; border-bottom:1px solid var(--border); padding:8px 11px; cursor:pointer; white-space:nowrap; }
+.cd-tab.active { font-weight:600; color:var(--green2); border-bottom:2px solid var(--green2); }
 @keyframes scanBar  { from{width:4%} to{width:88%} }
 @keyframes shimmer  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 @keyframes dotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)} 50%{box-shadow:0 0 0 5px rgba(16,185,129,0)} }
@@ -2588,10 +2622,6 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .issue-fix-btn:hover { background:var(--bg-canvas); border-color:var(--green1); }
 /* Dashboard "what needs action" — 2 concepts for client review */
 .dash-block-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
-.cr-demo-btn { font-family:inherit; font-size:9px; font-weight:600; color:var(--text-muted); background:transparent; border:none; padding:1px 2px; cursor:pointer; white-space:nowrap; transition:color .12s; }
-.cr-demo-btn:hover:not(.active) { color:var(--text-sec); }
-.cr-demo-btn.active { color:var(--text-sec); font-weight:700; }
-.cr-demo-sep { font-size:9px; color:var(--text-muted); opacity:.45; user-select:none; }
 .action-row { position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 16px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:10px; cursor:pointer; transition:background .15s, border-color .15s, box-shadow .15s, transform .15s; --row-accent:var(--border-strong); }
 .action-row::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--row-accent); opacity:0; transition:opacity .15s; }
 .action-row:hover::before { opacity:1; }
@@ -18885,14 +18915,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
       </div>
 
-      <!-- Content: single scrollable column -->
-      <div style="flex:1;overflow-y:auto;background:var(--bg-page);padding:24px;">
-        <div style="max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
+      <!-- Content: scrollable main column + fixed "Your decision" sidebar -->
+      <div class="cd-layout">
+        <div class="cd-main">
+        <div style="display:flex;flex-direction:column;gap:16px;">
 
           <!-- State-change block -->
           <div class="card" style="margin-bottom:0;padding:20px 22px;border-color:var(--border);box-shadow:none;">
 
-            <div class="cd-sec-label">State changed</div>
+            <span id="cd-sev-badge" class="bdg bdg--red">Critical</span>
+            <div id="cd-check-name" class="cd-check-name">Windows Defender real-time protection is disabled</div>
 
             <!-- Before → After: two neutral cards, arrow between -->
             <div class="cd-compare">
@@ -18935,18 +18967,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- Demo-only state switcher for the CR block (not part of the product UI) -->
-          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-            <span style="font-size:9px;font-weight:600;color:var(--text-muted);opacity:.7;">Prototype state:</span>
-            <button class="cr-demo-btn active" data-cr="matched" onclick="setCrState(&#39;matched&#39;)">Matched</button>
-            <span class="cr-demo-sep">·</span>
-            <button class="cr-demo-btn" data-cr="pending" onclick="setCrState(&#39;pending&#39;)">Pending</button>
-            <span class="cr-demo-sep">·</span>
-            <button class="cr-demo-btn" data-cr="multiple" onclick="setCrState(&#39;multiple&#39;)">Multiple</button>
-            <span class="cr-demo-sep">·</span>
-            <button class="cr-demo-btn" data-cr="nocr" onclick="setCrState(&#39;nocr&#39;)">No CR</button>
-            <span class="cr-demo-sep">·</span>
-            <button class="cr-demo-btn" data-cr="notconfigured" onclick="setCrState(&#39;notconfigured&#39;)">Not configured</button>
+          <div class="cd-tabs">
+            <button class="cd-tab active" data-cr="matched" onclick="setCrState(&#39;matched&#39;)">Matched</button>
+            <button class="cd-tab" data-cr="pending" onclick="setCrState(&#39;pending&#39;)">Pending</button>
+            <button class="cd-tab" data-cr="multiple" onclick="setCrState(&#39;multiple&#39;)">Multiple</button>
+            <button class="cd-tab" data-cr="nocr" onclick="setCrState(&#39;nocr&#39;)">No CR</button>
+            <button class="cd-tab" data-cr="notconfigured" onclick="setCrState(&#39;notconfigured&#39;)">Not configured</button>
           </div>
+
+          <!-- CR match / Notes / Incident — tighter 8px grouping (Figma 3660:20851 spec) -->
+          <div style="display:flex;flex-direction:column;gap:8px;">
 
           <!-- ServiceNow match (state-driven by setCrState) -->
           <div id="cd-cr-block"><div style="display:flex;align-items:center;gap:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.5" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg><div style="flex:1;"><div style="font-size:11px;color:var(--text-sec);margin-bottom:2px;">ServiceNow CR matched</div><div style="font-size:12px;font-weight:600;color:var(--text-default);">CHG0012345 — AV Software Migration</div><div style="font-size:11px;color:var(--text-sec);line-height:1.45;">Approved · 2 days ago · John Smith</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;"><span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span><span onclick="showView(&#39;cr-audit&#39;)" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">View audit →</span></div></div></div>
@@ -18984,20 +19014,36 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px;">Incident creation is controlled at organisation level and may be disabled by default.</div>
           </div>
 
-        </div>
-      </div>
+          </div>
 
-      <!-- Sticky bottom action bar -->
-      <div style="background:var(--bg-surface);border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <button style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-sec);font-family:inherit;" onmouseover="this.style.background=&#39;var(--bg-subtle)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">← Prev</button>
-          <span id="change-progress" style="font-size:12px;color:var(--text-sec);padding:0 4px;white-space:nowrap;">Change 1 of 3</span>
-          <button onclick="showView(&#39;change-detail&#39;)" style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-default);font-weight:600;font-family:inherit;" onmouseover="this.style.background=&#39;var(--bg-subtle)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">Next →</button>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <button onclick="skipChange()" style="border:1px solid var(--border);background:var(--bg-surface);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;color:var(--text-sec);font-family:inherit;" onmouseover="this.style.background=&#39;var(--bg-subtle)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">Skip</button>
-          <button onclick="showView(&#39;change-unapprove&#39;)" style="border:1px solid var(--bg-error-border);background:var(--bg-surface);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;color:#FB3C44;font-weight:600;font-family:inherit;" onmouseover="this.style.background=&#39;rgba(251,60,68,0.06)&#39;" onmouseout="this.style.background=&#39;var(--bg-surface)&#39;">Flag ↗</button>
-          <button onclick="showView(&#39;change-approve&#39;)" class="btn-primary" style="padding:6px 18px;font-size:12px;width:auto;">✓ Approve</button>
+        </div>
+
+        <!-- "Your decision" sidebar — Figma 3660:20851 -->
+        <div class="cd-side">
+          <div class="cd-side-nav">
+            <button id="cd-nav-prev" class="cd-nav-btn" onclick="changeNav(-1)" aria-label="Previous change" disabled><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
+            <span id="change-progress">Change <b>1</b> of 3</span>
+            <button id="cd-nav-next" class="cd-nav-btn" onclick="changeNav(1)" aria-label="Next change"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="cd-side-body">
+            <div class="cd-side-label">Your decision</div>
+            <div class="cd-decision-card">
+              <div class="cd-decision-row"><span>Node</span><b id="cd-dec-node">MACBOOK-TARAS</b></div>
+              <div class="cd-decision-row"><span>Control</span><b id="cd-dec-control">8.1 Malware Def.</b></div>
+              <div class="cd-decision-row"><span>Compliance</span><b id="cd-dec-compliance" class="cd-dec-danger">CIS Fail</b></div>
+              <div class="cd-decision-row"><span>Score impact</span><b id="cd-dec-scoreimpact" class="cd-dec-danger">−4 pts</b></div>
+              <div class="cd-decision-row"><span>Change Request</span><b id="cd-dec-cr">Unmatched</b></div>
+            </div>
+          </div>
+          <div class="cd-side-actions">
+            <div class="cd-side-btnrow">
+              <button onclick="showView(&#39;change-approve&#39;)" class="btn-primary btn-primary--s" style="width:100%;min-width:0;">✓ Approve</button>
+              <button onclick="showView(&#39;change-unapprove&#39;)" class="action-cta" style="width:100%;min-width:0;">Flag ↗</button>
+              <button onclick="skipChange()" class="cd-skip-btn" style="width:100%;min-width:0;">Skip</button>
+            </div>
+            <div class="cd-side-caption">Approving reconciles this drift.<br>Use ←/→ to move through the queue.</div>
+          </div>
         </div>
       </div>
 
@@ -24167,6 +24213,10 @@ let flaggedCount = 0;
 var CHANGE_DATA = [
   { // 0 — Windows Defender real-time protection
     title: 'Windows Defender — Real-time protection disabled',
+    checkName: 'Windows Defender real-time protection is disabled',
+    severity: 'critical',
+    controlShort: '8.1 Malware Def.',
+    complianceLabel: 'CIS Fail', complianceFail: true,
     node: 'MACBOOK-TARAS',
     detected: '· Detected today at 14:23 · Scheduled scan',
     recon: 'unreconciled', type: 'modified',
@@ -24183,6 +24233,10 @@ var CHANGE_DATA = [
   },
   { // 1 — Windows Defender reconciled via CHG0012345
     title: 'Windows Defender — Real-time protection reconciled',
+    checkName: 'Windows Defender real-time protection is disabled',
+    severity: 'critical',
+    controlShort: '8.1 Malware Def.',
+    complianceLabel: 'CIS Fail', complianceFail: true,
     node: 'MACBOOK-TARAS',
     detected: '· Detected today at 14:23 · Scheduled scan',
     recon: 'reconciled', type: 'modified',
@@ -24205,6 +24259,10 @@ var CHANGE_DATA = [
   },
   { // 2 — New local user account
     title: 'New local user account created',
+    checkName: 'New local user account created',
+    severity: 'medium',
+    controlShort: '5.1 Account Mgmt.',
+    complianceLabel: 'CIS Fail', complianceFail: true,
     node: 'MACBOOK-TARAS',
     detected: '· Detected today at 13:40 · Scheduled scan',
     recon: 'flagged', type: 'added',
@@ -24220,6 +24278,12 @@ var CHANGE_DATA = [
     ]
   }
 ];
+// "Your decision" sidebar — Change Request value per CR-state (colour stays default text,
+// only Compliance/Score impact get danger colour, per Figma 3660:20851)
+var CD_CR_LABEL = {
+  matched: 'Matched', pending: 'Pending', multiple: 'Multiple matches',
+  nocr: 'Unmatched', notconfigured: 'Not configured'
+};
 // Колір беруть класи .drift-type--* / .drift-stat--* із канону баджів — тут лише лейбли
 var CD_TYPE = {
   modified: { label:'Modified' },
@@ -24239,6 +24303,16 @@ function renderChangeDetail(idx) {
   set('cd-node', d.node);
   set('cd-detected', d.detected);
   set('cd-control', d.control);
+  set('cd-check-name', d.checkName || d.title);
+  const sb = document.getElementById('cd-sev-badge');
+  if (sb) { sb.textContent = (d.severity || 'critical').replace(/^./, function(c){ return c.toUpperCase(); }); sb.className = 'bdg bdg--' + (d.severity === 'critical' ? 'red' : d.severity === 'medium' || d.severity === 'high' ? 'orange' : d.severity === 'low' ? 'blue' : 'gray'); }
+  set('cd-dec-node', d.node);
+  set('cd-dec-control', d.controlShort || '');
+  const dc = document.getElementById('cd-dec-compliance');
+  if (dc) { dc.textContent = d.complianceLabel || ''; dc.className = d.complianceFail ? 'cd-dec-danger' : ''; }
+  const ds = document.getElementById('cd-dec-scoreimpact');
+  if (ds) { ds.textContent = d.score.delta; ds.className = /−/.test(d.score.delta || '') ? 'cd-dec-danger' : ''; }
+  set('cd-dec-cr', CD_CR_LABEL[d.cr] || 'Unmatched');
   set('cd-before-val', d.before.val); set('cd-before-status', d.before.status); set('cd-before-sub', d.before.sub);
   set('cd-after-val', d.after.val); set('cd-after-status', d.after.status); set('cd-after-sub', d.after.sub);
   // Colour keys off pass/fail STATE (✓ = pass), NOT before/after position
@@ -24287,9 +24361,17 @@ function renderChangeDetail(idx) {
 }
 function openChange(idx) {
   currentChangeIdx = idx;
-  document.getElementById('change-progress').textContent = 'Change ' + (idx + 1) + ' of 3';
+  document.getElementById('change-progress').innerHTML = 'Change <b>' + (idx + 1) + '</b> of ' + CHANGE_DATA.length;
+  var prevBtn = document.getElementById('cd-nav-prev'), nextBtn = document.getElementById('cd-nav-next');
+  if (prevBtn) prevBtn.disabled = idx <= 0;
+  if (nextBtn) nextBtn.disabled = idx >= CHANGE_DATA.length - 1;
   showView('change-detail');
   renderChangeDetail(idx);
+}
+function changeNav(delta) {
+  var next = currentChangeIdx + delta;
+  if (next < 0 || next >= CHANGE_DATA.length) return;
+  openChange(next);
 }
 
 // ── Remediation rescan flow ──
@@ -25606,7 +25688,7 @@ function setCrState(state) {
       + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">' + s.right + '</div>'
       + '</div>';
   }
-  document.querySelectorAll('.cr-demo-btn').forEach(function(b) {
+  document.querySelectorAll('.cd-tab').forEach(function(b) {
     b.classList.toggle('active', b.dataset.cr === state);
   });
 }
@@ -28446,6 +28528,14 @@ function filterSearch(q) {
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
   if (e.key === 'Escape') closeSearch();
+  var cdView = document.getElementById('v-change-detail');
+  if (cdView && cdView.style.display !== 'none') {
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); changeNav(-1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); changeNav(1); }
+    }
+  }
 });
 
 // ── AUTH FUNCTIONS ──
