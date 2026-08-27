@@ -959,9 +959,11 @@ body.dark .cd-decision-card { background:rgba(255,255,255,0.03); border-color:rg
 .cd-decision-row b.cd-dec-danger { color:#FB3C44; }
 .cd-side-actions { padding:14px; display:flex; flex-direction:column; gap:12px; }
 .cd-side-btnrow { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-.cd-skip-btn { flex:1; height:32px; border-radius:10px; background:#F8F9FA; border:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#334155; cursor:pointer; transition:background .15s, border-color .15s; }
-.cd-skip-btn:hover { border-color:var(--text-muted); }
+.cd-skip-btn { flex:1; height:32px; border-radius:10px; background:#F8F9FA; border:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#334155; cursor:pointer; transition:background .15s, border-color .15s, color .15s; }
+.cd-skip-btn:hover:not(:disabled) { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); }
+.cd-skip-btn:disabled { opacity:0.4; cursor:not-allowed; }
 body.dark .cd-skip-btn { background:rgba(255,255,255,0.05); border-color:#04363A; color:var(--p-neutral-50); }
+body.dark .cd-skip-btn:hover:not(:disabled) { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); }
 .cd-side-caption { font-size:11px; color:var(--text-sec); text-align:center; line-height:1.4; }
 
 /* Approve Change — neutral summary boxes, explicit dark request (Approve Change page) */
@@ -5989,6 +5991,15 @@ body.dark #export-modal .export-file-card { background:#133033 !important; borde
   padding:10px 24px 12px; margin-top:8px;
   border-top:1px solid #E2E8F0;
 }
+/* Create incident modal — single right-aligned action, 12px from the card edge (not the 24px default) */
+#incident-modal .gm-foot { padding-right:12px; }
+/* Flag for Investigation modal — destructive action keeps the red accent instead of the canon green */
+#flag-modal .gm-btn-primary { background:linear-gradient(135deg,#FB3C44,#FB3C44) !important; box-shadow:0 4px 14px rgba(251,60,68,0.3) !important; }
+#flag-modal .gm-btn-primary:hover { background:linear-gradient(135deg,#dc2626,#dc2626) !important; }
+/* Severity .csel must match the Node field's height exactly (both sit in the same grid row) */
+#incident-modal .csel-wrap, #incident-modal .csel-btn { width:100%; }
+body.dark #incident-modal .csel-btn { background:rgba(255,255,255,0.05) !important; border-color:rgba(255,255,255,0.10) !important; }
+#incident-modal .csel-btn { height:38px; box-sizing:border-box; }
 .gm-foot-left { display:flex; align-items:center; gap:8px; min-width:0; }
 .gm-foot-right { display:flex; align-items:center; gap:8px; margin-left:auto; }
 .gm-btn {
@@ -19042,8 +19053,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
           <div class="cd-side-actions">
             <div class="cd-side-btnrow">
-              <button onclick="showView(&#39;change-approve&#39;)" class="btn-primary btn-primary--s" style="width:100%;min-width:0;">✓ Approve</button>
-              <button onclick="showView(&#39;change-unapprove&#39;)" class="action-cta" style="width:100%;min-width:0;">Flag ↗</button>
+              <button onclick="openApproveModal()" class="btn-primary btn-primary--s" style="width:100%;min-width:0;">✓ Approve</button>
+              <button onclick="openFlagModal()" class="action-cta" style="width:100%;min-width:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>Flag</button>
               <button onclick="skipChange()" class="cd-skip-btn" style="width:100%;min-width:0;">Skip</button>
             </div>
             <div class="cd-side-caption">Approving reconciles this drift.<br>Use ←/→ to move through the queue.</div>
@@ -19152,115 +19163,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════
-         S14: APPROVE CHANGE
-    ═══════════════════════════════════════ -->
-    <div class="view" id="v-change-approve" style="display: none;">
-      <div class="page-header">
-        <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
-          <div>
-            <div class="page-title">Approve Change</div>
-            <div class="page-sub">Windows Defender — Real-time protection</div>
-          </div>
-        </div>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;align-items:center;display:flex;flex-direction:column;">
-        <div style="width:100%;max-width:560px;">
-          <div class="card" style="margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Approving this change</div>
-            <div style="font-size:12px;color:var(--text-sec);margin-bottom:16px;">Confirm that this change was expected or authorised</div>
-
-            <div class="ca-neutral-box" style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;margin-bottom:20px;border:1px solid var(--border);">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                <span class="badge bdg--orange">Modified</span>
-                <span style="font-size:12px;font-weight:600;color:var(--text-default);">Windows Defender real-time protection</span>
-              </div>
-              <div style="font-size:11px;color:var(--text-sec);">Enabled → Disabled · Control 8.1</div>
-            </div>
-
-            <!-- Change request ref -->
-            <div style="margin-bottom:16px;">
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Change Request reference <span style="color:var(--text-sec);font-weight:400;">(optional)</span></div>
-              <div class="ca-neutral-box" style="border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;font-size:13px;color:var(--text-sec);background:var(--bg-page);">CHG0012345</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:5px;">Enter your ServiceNow or ticketing system reference</div>
-            </div>
-
-            <!-- Free-form reason -->
-            <div style="margin-bottom:20px;">
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Reason / justification <span style="color:#FB3C44;">*</span></div>
-              <div class="ca-neutral-box" style="border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;font-size:13px;color:var(--text-default);background:var(--bg-page);min-height:80px;">Temporarily disabled for AV software migration. Will be re-enabled by end of day.</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:5px;">This will be recorded in the audit trail</div>
-            </div>
-
-            <div class="ca-neutral-box" style="background:var(--bg-page);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-size:12px;color:#15803d;font-weight:500;">Score after approval</span>
-              <span style="font-size:13px;font-weight:700;color:#15803d;">78 → <span style="color:#15803d;">82</span>/100 <span style="font-size:11px;font-weight:400;">(+4 pts)</span></span>
-            </div>
-
-            <button class="btn-primary" onclick="approveChange()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Confirm Approval
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════
-         S15: UNAPPROVE / FLAG CHANGE
-    ═══════════════════════════════════════ -->
-    <div class="view" id="v-change-unapprove" style="display: none;">
-      <div class="page-header">
-        <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
-          <div>
-            <div class="page-title">Flag for Investigation</div>
-            <div class="page-sub">Windows Defender — Real-time protection</div>
-          </div>
-        </div>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;min-width:0;display:flex;flex-direction:column;align-items:center;">
-        <div style="width:100%;max-width:560px;">
-          <div class="card" style="margin-bottom:14px;border-color:rgba(251,60,68,0.2);">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-              <div style="font-size:14px;font-weight:700;color:#FB3C44;">Flagging this change</div>
-            </div>
-            <div style="font-size:12px;color:var(--text-sec);margin-bottom:16px;">This change will be marked as unapproved and flagged for investigation</div>
-
-            <div style="background:var(--bg-error);border-radius:var(--radius-md);padding:12px;margin-bottom:20px;border:1px solid var(--bg-error-border);">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                <span class="badge bdg--orange">Modified</span>
-                <span style="font-size:12px;font-weight:600;color:var(--text-default);">Windows Defender real-time protection</span>
-              </div>
-              <div style="font-size:11px;color:var(--text-sec);">Enabled → Disabled · Control 8.1</div>
-            </div>
-
-            <!-- Mandatory reason -->
-            <div style="margin-bottom:20px;">
-              <div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Reason for flagging <span style="color:#FB3C44;">* Required</span></div>
-              <div style="border:1.5px solid #fca5a5;border-radius:var(--radius-md);padding:10px 14px;font-size:13px;color:var(--text-default);background:var(--bg-surface);min-height:80px;">This change was not authorised. No change request was raised for this modification.</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:5px;">Mandatory — will be recorded in audit trail and flagged for review</div>
-            </div>
-
-            <div style="background:var(--bg-warning);border:1px solid var(--bg-warning-border);border-radius:var(--radius-md);padding:12px;margin-bottom:20px;font-size:12px;color:#78350f;">
-              <strong>⚠ This will:</strong> Mark the change as unapproved · Add to investigation queue · Notify the security team
-            </div>
-
-            <div style="background:#fef9ec;border:1px solid var(--bg-warning-border);border-radius:var(--radius-md);padding:12px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-size:12px;color:#78350f;font-weight:500;">Score after flagging</span>
-              <span style="font-size:13px;font-weight:700;color:#FB3C44;">78/100 <span style="font-size:11px;font-weight:400;color:#78350f;">(requires investigation)</span></span>
-            </div>
-
-            <button class="btn-primary" style="background:linear-gradient(135deg,#FB3C44,#FB3C44);box-shadow:0 4px 14px rgba(251,60,68,0.3);" onclick="flagChange()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-              Confirm Flag for Investigation
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- ═══════════════════════════════════════
          S16: ALL CHANGES RECONCILED
@@ -23637,7 +23539,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 <!-- incident-modal migrated to unified openModal shell (see openIncidentModal) -->
 
 <script>
-const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','change-approve','change-unapprove','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','report-changed','report-baseline','report-investigation','reports','cm-list','cm-detail','credentials'];
+const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','report-changed','report-baseline','report-investigation','reports','cm-list','cm-detail','credentials'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Node',
   s05:'s05 · Install Agent',
@@ -23652,8 +23554,6 @@ const LABELS = {
   dashboard:'s11 · Dashboard',
   changes:'s12 · Detected Drift Summary',
   'change-detail':'s13 · Change Detail',
-  'change-approve':'s14 · Approve Change',
-  'change-unapprove':'s15 · Unapprove Change',
   'cr-audit':'Change Request Audit',
   'changes-done':'s16 · All Reconciled',
   'all-devices':'s10 · All Nodes',
@@ -23937,8 +23837,8 @@ function go(key) {
   if (!isOnboarding) {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
     const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
-      changes:'sb-changes','change-detail':'sb-changes','change-approve':'sb-changes',
-      'change-unapprove':'sb-changes','cr-audit':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
+      changes:'sb-changes','change-detail':'sb-changes',
+      'cr-audit':'sb-changes','changes-done':'sb-changes','all-devices':'sb-all-devices',
       'node-detail':'sb-all-devices','j3-connect-failed':'sb-all-devices','scan-failed':'sb-all-devices','reports-list':'sb-reports','report-changed':'sb-reports','report-baseline':'sb-reports','report-investigation':'sb-reports','reports':'sb-reports',
       'policies':'sb-policies','policy-create':'sb-policies','policy-detail':'sb-policies','policy-edit':'sb-policies',
       'policy-assign':'sb-policies','add-check':'sb-policies','edit-check':'sb-policies',
@@ -23993,9 +23893,7 @@ var _BC_MAP = {
   'add-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">{policy}</span><span class="bc-sep">›</span><span class="bc-cur">Add Check</span>`,
   'edit-check': `<span class="bc-link" onclick="showView('policies')">Policies</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('policy-edit')">{policy}</span><span class="bc-sep">›</span><span class="bc-cur">Edit Check</span>`,
   'change-detail': `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">Windows Defender — Real-time protection</span>`,
-  'change-approve': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Approve Change</span>`,
   'cr-audit': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">CHG0012345 Audit</span>`,
-  'change-unapprove': `<span class="bc-link" onclick="showView('changes')">Detected Drift</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('change-detail')">Windows Defender — Real-time protection</span><span class="bc-sep">›</span><span class="bc-cur">Unapprove Change</span>`,
   'remediation': `<span class="bc-link" onclick="showView('results')">Results</span><span class="bc-sep">›</span><span class="bc-cur">Remediation</span>`,
   'compare-scans': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('node-detail')">MACBOOK-TARAS</span><span class="bc-sep">›</span><span class="bc-cur">Scan Comparison</span>`,
   'scan-failed': `<span class="bc-link" onclick="showView('all-devices')">All Nodes</span><span class="bc-sep">›</span><span class="bc-link" onclick="showView('node-detail')">MACBOOK-TARAS</span><span class="bc-sep">›</span><span class="bc-cur">Scan Failed</span>`,
@@ -24061,8 +23959,8 @@ function showView(name) {
   _updateBC(name);
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   const map = { results:'sb-results', dashboard:'sb-dashboard', remediation:'sb-results',
-    changes:'sb-changes', 'change-detail':'sb-changes', 'change-approve':'sb-changes',
-    'change-unapprove':'sb-changes', 'cr-audit':'sb-changes', 'changes-done':'sb-changes', 'all-devices':'sb-all-devices',
+    changes:'sb-changes', 'change-detail':'sb-changes',
+    'cr-audit':'sb-changes', 'changes-done':'sb-changes', 'all-devices':'sb-all-devices',
     'j3-no-resources':'sb-all-devices', 'j3-manual-match':'sb-all-devices', 'j3-scan-failed':'sb-all-devices', 'scan-failed':'sb-all-devices',
     'policies':'sb-policies', 'policy-create':'sb-policies', 'policy-detail':'sb-policies', 'policy-edit':'sb-policies',
     'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies', 'reports-list':'sb-reports', 'report-changed':'sb-reports', 'report-baseline':'sb-reports', 'report-investigation':'sb-reports', 'reports':'sb-reports',
@@ -25335,25 +25233,25 @@ function skipChange() {
 function openIncidentModal() {
   const body = ''
     + '<div style="margin-bottom:14px;">'
-    +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Title</div>'
+    +   '<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Title</div>'
     +   '<input id="incident-title" class="form-input" type="text" value="Windows Defender real-time protection disabled on MACBOOK-TARAS">'
     + '</div>'
     + '<div style="margin-bottom:14px;">'
-    +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Description</div>'
+    +   '<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Description</div>'
     +   '<textarea id="incident-desc" class="form-input" rows="3" style="resize:vertical;">Real-time protection was disabled on MACBOOK-TARAS, breaking CIS control 8.1. Detected in the latest scan with no matching change request.</textarea>'
     + '</div>'
     + '<div style="margin-bottom:14px;">'
-    +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Linked drift event</div>'
-    +   '<div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">Windows Defender — Real-time protection · Control 8.1</div>'
+    +   '<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Linked drift event</div>'
+    +   '<div class="ca-neutral-box" style="height:38px;box-sizing:border-box;display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius-md);padding:0 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">Windows Defender — Real-time protection · Control 8.1</div>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
     +   '<div>'
-    +     '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Node</div>'
-    +     '<div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">MACBOOK-TARAS</div>'
+    +     '<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Node</div>'
+    +     '<div class="ca-neutral-box" style="height:38px;box-sizing:border-box;display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius-md);padding:0 12px;font-size:12px;color:var(--text-sec);background:var(--bg-subtle);">MACBOOK-TARAS</div>'
     +   '</div>'
     +   '<div>'
-    +     '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Severity</div>'
-    +     '<select id="incident-severity" class="form-input" style="cursor:pointer;"><option>Critical</option><option selected="">High</option><option>Medium</option><option>Low</option></select>'
+    +     '<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Severity</div>'
+    +     '<select id="incident-severity" class="csel"><option>Critical</option><option selected="">High</option><option>Medium</option><option>Low</option></select>'
     +   '</div>'
     + '</div>';
   openModal({
@@ -25363,10 +25261,10 @@ function openIncidentModal() {
     subtitle: 'Create an incident for this unreconciled drift event.',
     bodyHtml: body,
     buttons: [
-      { label: 'Cancel', kind: 'secondary', onClick: function(e, close){ close(); } },
       { label: 'Create incident', kind: 'primary', onClick: function(){ createIncident(); } }
     ]
   });
+  enhanceSelect(document.getElementById('incident-severity'));
 }
 function closeIncidentModal() {
   closeModal('incident-modal');
@@ -25711,6 +25609,43 @@ function approveChange() {
   else { showView('changes'); }
 }
 
+// Approve Change (#14) — overlay modal via openModal(), same canon as every other decision flow
+function openApproveModal() {
+  const body = ''
+    + '<div style="font-size:12px;color:var(--text-sec);margin-bottom:16px;">Confirm that this change was expected or authorised</div>'
+    + '<div class="ca-neutral-box" style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;margin-bottom:20px;border:1px solid var(--border);">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+        + '<span class="badge bdg--orange">Modified</span>'
+        + '<span style="font-size:12px;font-weight:600;color:var(--text-default);">Windows Defender real-time protection</span>'
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text-sec);">Enabled → Disabled · Control 8.1</div>'
+    + '</div>'
+    + '<div style="margin-bottom:16px;">'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Change Request reference <span style="color:var(--text-sec);font-weight:400;">(optional)</span></div>'
+      + '<div class="ca-neutral-box" style="border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;font-size:13px;color:var(--text-sec);background:var(--bg-page);">CHG0012345</div>'
+      + '<div style="font-size:11px;color:var(--text-sec);margin-top:5px;">Enter your ServiceNow or ticketing system reference</div>'
+    + '</div>'
+    + '<div style="margin-bottom:20px;">'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Reason / justification <span style="color:#FB3C44;">*</span></div>'
+      + '<div class="ca-neutral-box" style="border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;font-size:13px;color:var(--text-default);background:var(--bg-page);min-height:80px;">Temporarily disabled for AV software migration. Will be re-enabled by end of day.</div>'
+      + '<div style="font-size:11px;color:var(--text-sec);margin-top:5px;">This will be recorded in the audit trail</div>'
+    + '</div>'
+    + '<div class="ca-neutral-box" style="background:var(--bg-page);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;display:flex;align-items:center;justify-content:space-between;">'
+      + '<span style="font-size:12px;color:#15803d;font-weight:500;">Score after approval</span>'
+      + '<span style="font-size:13px;font-weight:700;color:#15803d;">78 → <span style="color:#15803d;">82</span>/100 <span style="font-size:11px;font-weight:400;">(+4 pts)</span></span>'
+    + '</div>';
+  openModal({
+    id: 'approve-modal',
+    size: 'md',
+    title: 'Approve Change',
+    subtitle: 'Windows Defender — Real-time protection',
+    bodyHtml: body,
+    buttons: [
+      { label: 'Confirm Approval', kind: 'primary', onClick: function(e, close){ approveChange(); close(); } }
+    ]
+  });
+}
+
 function flagChange() {
   changeStatuses[currentChangeIdx] = 'flagged';
   flaggedCount++;
@@ -25718,6 +25653,46 @@ function flagChange() {
   const pending = changeStatuses.filter(s => s === 'pending').length;
   if (pending === 0) { updateDoneScreen(); showView('changes-done'); }
   else { showView('changes'); }
+}
+
+// Flag for Investigation (#15) — overlay modal via openModal(), same canon as Approve Change
+function openFlagModal() {
+  const body = ''
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+      + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
+      + '<div style="font-size:14px;font-weight:700;color:#FB3C44;">Flagging this change</div>'
+    + '</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);margin-bottom:16px;">This change will be marked as unapproved and flagged for investigation</div>'
+    + '<div class="ca-neutral-box" style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;margin-bottom:20px;border:1px solid var(--border);">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+        + '<span class="badge bdg--orange">Modified</span>'
+        + '<span style="font-size:12px;font-weight:600;color:var(--text-default);">Windows Defender real-time protection</span>'
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text-sec);">Enabled → Disabled · Control 8.1</div>'
+    + '</div>'
+    + '<div style="margin-bottom:20px;">'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text-default);margin-bottom:6px;">Reason for flagging <span style="color:#FB3C44;">* Required</span></div>'
+      + '<div class="ca-neutral-box" style="border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;font-size:13px;color:var(--text-default);background:var(--bg-page);min-height:80px;">This change was not authorised. No change request was raised for this modification.</div>'
+      + '<div style="font-size:11px;color:var(--text-sec);margin-top:5px;">Mandatory — will be recorded in audit trail and flagged for review</div>'
+    + '</div>'
+    + '<div class="ca-neutral-box" style="display:flex;align-items:flex-start;gap:8px;background:var(--bg-page);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;margin-bottom:20px;font-size:12px;color:var(--text-sec);">'
+      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;color:#78350F;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+      + '<span><strong style="color:#78350F;">This will:</strong> Mark the change as unapproved · Add to investigation queue · Notify the security team</span>'
+    + '</div>'
+    + '<div class="ca-neutral-box" style="background:var(--bg-page);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;display:flex;align-items:center;justify-content:space-between;">'
+      + '<span style="font-size:12px;color:#78350f;font-weight:500;">Score after flagging</span>'
+      + '<span style="font-size:13px;font-weight:700;color:#FB3C44;">78/100 <span style="font-size:11px;font-weight:400;color:#78350f;">(requires investigation)</span></span>'
+    + '</div>';
+  openModal({
+    id: 'flag-modal',
+    size: 'md',
+    title: 'Flag for Investigation',
+    subtitle: 'Windows Defender — Real-time protection',
+    bodyHtml: body,
+    buttons: [
+      { label: 'Confirm Flag for Investigation', kind: 'primary', onClick: function(e, close){ flagChange(); close(); } }
+    ]
+  });
 }
 
 function searchChanges(query) {
