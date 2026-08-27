@@ -6018,7 +6018,6 @@ body.dark #cmdb-modal .cmdb-note { background:#123033; }
 /* Хедер колонок у dark — загальноприкладне правило: фон #063135, текст #94A3B8. */
 body.dark #cmdb-modal .cmdb-cls-head > div { background:#063135; }
 #cmdb-modal .cmdb-cls-row:not(.cmdb-cls-head) > div { height:49px; }
-#cmdb-modal .cmdb-cls-row.is-open > div { background:rgba(16,185,129,0.06); }
 #cmdb-modal .cmdb-cls-name { display:flex; align-items:center; gap:16px; }
 #cmdb-modal .cmdb-cls-id { display:flex; align-items:center; gap:10px; min-width:0; }
 #cmdb-modal .cmdb-cls-ico { width:32px; height:32px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
@@ -6032,11 +6031,36 @@ body.dark #cmdb-modal .cmdb-cls-head > div { background:#063135; }
 /* Клікабельний чип «Select all» — геометрія баджа з макета, але це КОНТРОЛ, не .bdg (DS §13). */
 #cmdb-modal .cmdb-selall { font:700 9px/normal 'DM Sans',sans-serif; letter-spacing:1px; text-transform:uppercase; color:var(--bdg-green-txt); background:var(--bdg-green-bg); border:1px solid var(--bdg-green-bd); border-radius:999px; padding:2px 7px; cursor:pointer; white-space:nowrap; transition:background .15s; }
 #cmdb-modal .cmdb-selall:hover { background:rgba(16,185,129,0.14); }
-/* Expand/Collapse — канонічний Text button (DS §6.5). */
+/* Browse — канонічний Text button (DS §6.5). */
 #cmdb-modal .cmdb-expand { display:flex; align-items:center; gap:6px; background:none; border:0; padding:0; font:600 12px/normal 'DM Sans',sans-serif; color:var(--bdg-green-txt); cursor:pointer; }
-#cmdb-modal .cmdb-expand svg { transition:transform .2s; }
-#cmdb-modal .cmdb-cls-row.is-open .cmdb-expand svg { transform:rotate(180deg); }
 #cmdb-modal .cmdb-cls-total { padding:10px 24px 0; text-align:center; font-size:12px; color:var(--text-sec); }
+/* Список вузлів класу — це ДРУГИЙ рівень навігації, тому він замінює вміст body-слота, а не
+   розкривається всередині списку класів. Оболонка модалки та сама (DS §14) → висота вікна стала,
+   скрол один, немає таблиці в таблиці й дубльованих контролів вибору. Назад — крихта вгорі слота. */
+#cmdb-modal .cmdb-nv-crumb { display:flex; align-items:center; gap:10px; min-width:0; padding-bottom:12px; }
+#cmdb-modal .cmdb-nv-sep { width:1px; height:14px; background:var(--border); flex-shrink:0; }
+#cmdb-modal .cmdb-nv-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+#cmdb-modal .cmdb-nv-name { font-size:13px; font-weight:700; color:var(--text-default); flex-shrink:0; }
+#cmdb-modal .cmdb-nv-tbl { font:400 11px/16px 'DM Sans',sans-serif; color:var(--text-sec); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* Підсумок вибору живе в рядку навігації — він описує КЛАС, а не поточну сторінку таблиці. */
+#cmdb-modal .cmdb-nv-count { margin-left:auto; font-size:12px; font-weight:600; color:var(--text-default); white-space:nowrap; flex-shrink:0; }
+/* Контроли списку — окремий рядок НАД карткою: пошук і дії керують таблицею, тому в неї не входять. */
+#cmdb-modal .cmdb-nv-bar { display:flex; align-items:center; gap:12px; padding-bottom:12px; flex-wrap:wrap; }
+#cmdb-modal .cmdb-nv-searchwrap { position:relative; width:186px; flex:0 0 186px; }
+#cmdb-modal .cmdb-nv-searchico { position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--text-muted); }
+#cmdb-modal .cmdb-nv-showing { font-size:11px; color:var(--text-sec); white-space:nowrap; flex-shrink:0; }
+#cmdb-modal .cmdb-nv-card { border:1px solid var(--border); border-radius:10px; overflow:hidden; background:var(--bg-surface); }
+/* Рядки скролить сама картка — інакше вікно росло б із 578 до 890px і знову зʼявився б другий скрол. */
+#cmdb-modal .cmdb-nv-scroll { max-height:250px; overflow-y:auto; }
+#cmdb-modal .cmdb-nv-scroll thead th { position:sticky; top:0; z-index:1; }
+/* Пагінація — підвал картки, тому бере ту саму заливку, що й шапка таблиці нагорі:
+   у dark це канонічний #063135 (CLAUDE.md §3), а не чорний. Клас, не інлайн — інакше
+   _syncInlineTheme перезапише фон. */
+#cmdb-modal .cmdb-nv-pager { background:#F1F5F9; }
+body.dark #cmdb-modal .cmdb-nv-pager { background:#063135; }
+/* Пошук — канонічний .form-input (заливка, рамка, focus-ring і темна тема приходять із нього).
+   Локально: висота 30px замість дефолтних 39 і місце під іконку-лупу зліва. */
+#cmdb-modal .cmdb-nv-search { height:30px; padding:0 12px 0 34px; font-size:12px; }
 /* Credential pickers are custom selects, never a native <select> popup (DS §6.1). */
 #cmdb-modal .csel-wrap, #cmdb-modal .csel-btn { display:flex; width:100%; box-sizing:border-box; }
 #cmdb-modal .csel-btn { padding:10px 28px 10px 14px; font-size:13px; font-weight:400; border-radius:var(--radius-md); background:var(--bg-subtle); }
@@ -22840,7 +22864,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
                 <div><div><div class="cmdb-cls-rec"><b>2,341</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-linux">0 selected</div></div></div>
                 <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Linux Servers&#39;,2341)">Select all 2,341</button></div>
-                <div><button type="button" class="cmdb-expand" id="browse-btn-linux" onclick="toggleCMDBAccordion(&#39;Linux Servers&#39;,&#39;linux&#39;,2341,&#39;cmdb_ci_linux_server&#39;,&#39;#3FC878&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-linux" onclick="cmdbOpenClass(&#39;Linux Servers&#39;,&#39;linux&#39;,2341,&#39;cmdb_ci_linux_server&#39;,&#39;#3FC878&#39;)"><span>Browse</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Windows Servers -->
@@ -22856,7 +22880,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
                 <div><div><div class="cmdb-cls-rec"><b>1,120</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-windows">0 selected</div></div></div>
                 <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Windows Servers&#39;,1120)">Select all 1,120</button></div>
-                <div><button type="button" class="cmdb-expand" id="browse-btn-windows" onclick="toggleCMDBAccordion(&#39;Windows Servers&#39;,&#39;windows&#39;,1120,&#39;cmdb_ci_win_server&#39;,&#39;#3B82F6&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-windows" onclick="cmdbOpenClass(&#39;Windows Servers&#39;,&#39;windows&#39;,1120,&#39;cmdb_ci_win_server&#39;,&#39;#3B82F6&#39;)"><span>Browse</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Network Devices -->
@@ -22872,7 +22896,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
                 <div><div><div class="cmdb-cls-rec"><b>847</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-network">0 selected</div></div></div>
                 <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Network Devices&#39;,847)">Select all 847</button></div>
-                <div><button type="button" class="cmdb-expand" id="browse-btn-network" onclick="toggleCMDBAccordion(&#39;Network Devices&#39;,&#39;network&#39;,847,&#39;cmdb_ci_netgear&#39;,&#39;#F59E0B&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-network" onclick="cmdbOpenClass(&#39;Network Devices&#39;,&#39;network&#39;,847,&#39;cmdb_ci_netgear&#39;,&#39;#F59E0B&#39;)"><span>Browse</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Virtual Machines -->
@@ -22888,7 +22912,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
                 <div><div><div class="cmdb-cls-rec"><b>523</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-vm">0 selected</div></div></div>
                 <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Virtual Machines&#39;,523)">Select all 523</button></div>
-                <div><button type="button" class="cmdb-expand" id="browse-btn-vm" onclick="toggleCMDBAccordion(&#39;Virtual Machines&#39;,&#39;vm&#39;,523,&#39;cmdb_ci_vmware_instance&#39;,&#39;#8B5CF6&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-vm" onclick="cmdbOpenClass(&#39;Virtual Machines&#39;,&#39;vm&#39;,523,&#39;cmdb_ci_vmware_instance&#39;,&#39;#8B5CF6&#39;)"><span>Browse</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Storage Devices -->
@@ -22904,7 +22928,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
                 <div><div><div class="cmdb-cls-rec"><b>201</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-storage">0 selected</div></div></div>
                 <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Storage Devices&#39;,201)">Select all 201</button></div>
-                <div><button type="button" class="cmdb-expand" id="browse-btn-storage" onclick="toggleCMDBAccordion(&#39;Storage Devices&#39;,&#39;storage&#39;,201,&#39;cmdb_ci_storage_server&#39;,&#39;#EC4899&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-storage" onclick="cmdbOpenClass(&#39;Storage Devices&#39;,&#39;storage&#39;,201,&#39;cmdb_ci_storage_server&#39;,&#39;#EC4899&#39;)"><span>Browse</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
               <!-- Databases -->
@@ -22920,38 +22944,44 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </div>
                 <div><div><div class="cmdb-cls-rec"><b>89</b><span>records</span></div><div class="cmdb-cls-sel" id="sel-db">0 selected</div></div></div>
                 <div><button type="button" class="cmdb-selall" onclick="cmdbSelectAllClass(&#39;Databases&#39;,89)">Select all 89</button></div>
-                <div><button type="button" class="cmdb-expand" id="browse-btn-db" onclick="toggleCMDBAccordion(&#39;Databases&#39;,&#39;db&#39;,89,&#39;cmdb_ci_database&#39;,&#39;#14B8A6&#39;)"><span>Expand</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1V7M1.2 4.2L4 7L6.8 4.2" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
+                <div><button type="button" class="cmdb-expand" id="browse-btn-db" onclick="cmdbOpenClass(&#39;Databases&#39;,&#39;db&#39;,89,&#39;cmdb_ci_database&#39;,&#39;#14B8A6&#39;)"><span>Browse</span><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></button></div>
               </div>
 
-              <!-- SHARED ACCORDION PANEL — JS moves this after the active row -->
-              <div id="cmdb-accordion-panel" style="display:none;">
-                <div style="background:var(--bg-surface);border:1px solid var(--border);border-top:none;border-left:3px solid var(--green1);border-radius:0 0 6px 6px;box-shadow:0 4px 12px rgba(0,0,0,0.06);position:relative;">
-                  <!-- Header: class label + search + count -->
-                  <div style="padding:10px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-wrap:wrap;">
-                    <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
-                      <span id="accord-cls-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3FC878;flex-shrink:0;"></span>
-                      <span id="accord-cls-name" style="font-size:12px;font-weight:700;color:var(--text-default);">Linux Servers</span>
-                      <span id="accord-cls-table" style="font-size:10px;color:var(--text-sec);font-family:'DM Sans',sans-serif;">cmdb_ci_linux_server</span>
-                    </div>
-                    <div style="flex:1;position:relative;min-width:140px;">
-                      <svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-                      <input type="text" placeholder="Search by name, IP, OS…" style="width:100%;border:1px solid var(--border);border-radius:var(--radius-md);padding:5px 10px 5px 27px;font-size:11px;font-family:inherit;outline:none;color:var(--text-default);background:var(--bg-surface);">
-                    </div>
-                    <span id="accord-showing" style="font-size:11px;color:var(--text-sec);white-space:nowrap;flex-shrink:0;">Showing 1–10 of 2,341</span>
-                  </div>
-                  <!-- Bulk actions bar -->
-                  <div style="padding:6px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
-                    <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-default);cursor:pointer;font-weight:500;padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:var(--bg-surface);white-space:nowrap;">
-                      <input type="checkbox" id="accord-page-cb" style="accent-color:var(--green2);" onchange="accordSelectPage(this)"> Select page (8)
-                    </label>
-                    <button id="accord-select-all-btn" onclick="accordSelectAllInClass()" style="font-size:11px;color:var(--green1);cursor:pointer;font-weight:500;padding:3px 8px;border-radius:5px;border:1px solid rgba(63,200,120,0.3);background:rgba(63,200,120,0.06);white-space:nowrap;">Select all 2,341 in class</button>
-                    <button onclick="accordClear()" style="font-size:11px;color:#FB3C44;cursor:pointer;font-weight:500;padding:3px 8px;border-radius:5px;border:1px solid rgba(251,60,68,0.2);background:rgba(251,60,68,0.04);white-space:nowrap;">Clear</button>
-                    <span id="accord-sel-count" style="margin-left:auto;font-size:11px;font-weight:600;color:var(--text-default);white-space:nowrap;">0 selected</span>
-                  </div>
-                  <!-- Node table -->
+            </div><!-- /cmdb-cls-tbl -->
+
+            <div class="cmdb-cls-total" id="cmdb-total-selected-label">0 nodes selected across all classes</div>
+
+          </div><!-- /cmdb-class-view -->
+
+          <!-- CLASS DRILL-DOWN — вузли одного класу. Другий рівень навігації замінює перший
+               у тому ж слоті: список класів ховається, назад веде крихта «All classes». -->
+          <div id="cmdb-node-view" style="display:none;">
+            <!-- Рядок 1 — навігація: канонічний Back (DS §6.5 Third) + де ми зараз + підсумок вибору. -->
+            <div class="cmdb-nv-crumb">
+              <button type="button" class="btn-third" onclick="backToCMDBClasses()"><span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>All classes</button>
+              <span class="cmdb-nv-sep"></span>
+              <span id="accord-cls-dot" class="cmdb-nv-dot" style="background:#3FC878;"></span>
+              <span id="accord-cls-name" class="cmdb-nv-name">Linux Servers</span>
+              <span id="accord-cls-table" class="cmdb-nv-tbl">cmdb_ci_linux_server</span>
+              <span id="accord-sel-count" class="cmdb-nv-count">0 selected</span>
+            </div>
+            <!-- Рядок 2 — робота зі списком: пошук, скільки видно, дії над вибором.
+                 Живе НАД карткою: це контроли списку, а не його вміст. -->
+            <div class="cmdb-nv-bar">
+              <div class="cmdb-nv-searchwrap">
+                <svg class="cmdb-nv-searchico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                <input type="text" class="form-input cmdb-nv-search" placeholder="Search by name, IP, OS…">
+              </div>
+              <span id="accord-showing" class="cmdb-nv-showing">Showing 1–10 of 2,341</span>
+              <button id="accord-select-all-btn" class="link-cta" onclick="accordSelectAllInClass()" style="margin-left:auto;">Select all 2,341 in class</button>
+              <button id="accord-clear-btn" class="reset-btn-2s" onclick="accordClear()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;white-space:nowrap;">Clear</button>
+            </div>
+            <div class="cmdb-nv-card">
+                  <!-- Node table — скролиться всередині картки, щоб висота вікна не стрибала -->
+                  <div class="cmdb-nv-scroll">
                   <table class="data-table" style="width:100%;">
                     <thead>
-                      <tr><th style="width:32px;"></th><th>NAME</th><th>IP ADDRESS</th><th>OS</th><th>GUARDIAN STATUS</th></tr>
+                      <tr><th style="width:32px;"><input type="checkbox" id="accord-page-cb" onchange="accordSelectPage(this)" style="cursor:pointer;accent-color:var(--green2);"></th><th>NAME</th><th>IP ADDRESS</th><th>OS</th><th>GUARDIAN STATUS</th></tr>
                     </thead>
                     <tbody id="accord-tbody">
                       <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="accordUpdateCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);" id="accord-r1">prod-web-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.11</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
@@ -22966,8 +22996,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <tr style="opacity:0.4;pointer-events:none;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:var(--text-muted);">legacy-srv-03</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.3</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
                     </tbody>
                   </table>
-                  <!-- Pagination + collapse -->
-                  <div style="padding:8px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg-surface);">
+                  </div>
+                  <!-- Pagination -->
+                  <div class="cmdb-nv-pager" style="padding:8px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
                     <span id="accord-page-info" style="font-size:11px;color:var(--text-sec);">Page 1 of <span id="accord-total-pages">94</span> · <span style="color:#6b7280;">2 rows skipped (already monitored)</span></span>
                     <div style="display:flex;gap:3px;align-items:center;">
                       <button style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;background:var(--bg-surface);color:var(--text-muted);cursor:not-allowed;">← Prev</button>
@@ -22977,127 +23008,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                       <span style="font-size:10px;color:var(--text-sec);">…</span>
                       <button id="accord-last-page" style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">94</button>
                       <button style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Next →</button>
-                      <div style="width:1px;height:16px;background:var(--border);margin:0 6px;"></div>
-                      <button onclick="closeCMDBAccordion()" style="font-size:11px;color:var(--green2);background:rgba(63,200,120,0.06);border:1px solid rgba(63,200,120,0.35);border-radius:5px;padding:4px 11px;cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:600;">Collapse <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
                     </div>
                   </div>
-                </div>
-              </div>
-
-            </div>
-
-            <div class="cmdb-cls-total" id="cmdb-total-selected-label">0 nodes selected across all classes</div>
-
-          </div>
-
-          <!-- NODE LIST VIEW (removed — now accordion inline) -->
-          <div id="cmdb-node-view" style="display:none;">
-
-            <!-- Header row -->
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-              <button onclick="backToCMDBClasses()" style="background:none;border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 12px;font-size:12px;cursor:pointer;color:var(--text-default);display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg> All classes
-              </button>
-              <div style="font-size:13px;font-weight:700;color:var(--text-default);" id="cmdb-class-title">Linux Servers</div>
-              <span style="font-size:11px;color:var(--text-sec);" id="cmdb-class-subtitle">cmdb_ci_linux_server · 2,341 records</span>
-              <span style="margin-left:auto;font-size:12px;font-weight:600;color:var(--green1);" id="cmdb-global-sel-header"></span>
-            </div>
-
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);margin-bottom:12px;display:flex;flex-direction:column;flex:1;">
-
-              <!-- Search bar -->
-              <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;">
-                <div style="position:relative;flex:1;">
-                  <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-                  <input type="text" placeholder="Search by name, IP, OS…" style="width:100%;border:1px solid var(--border);border-radius:var(--radius-md);padding:7px 10px 7px 30px;font-size:12px;font-family:inherit;outline:none;color:var(--text-default);box-sizing:border-box;">
-                </div>
-                <span style="font-size:11px;color:var(--text-sec);white-space:nowrap;" id="cmdb-showing-label">Showing 1–25 of 2,341</span>
-              </div>
-
-              <!-- Bulk selection bar -->
-              <div style="padding:8px 16px;background:var(--bg-canvas);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0;flex-shrink:0;flex-wrap:wrap;gap:4px;">
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-default);cursor:pointer;font-weight:500;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-surface);margin-right:6px;">
-                  <input type="checkbox" id="cmdb-select-all-cb" style="accent-color:var(--green2);" onchange="cmdbSelectAll(this)"> Select page (25)
-                </label>
-                <button onclick="cmdbSelectAllInClass()" style="font-size:12px;color:var(--green1);cursor:pointer;font-weight:500;padding:4px 10px;border-radius:6px;border:1px solid rgba(63,200,120,0.3);background:rgba(63,200,120,0.06);margin-right:6px;" id="cmdb-select-all-btn">Select all in class</button>
-                <button onclick="cmdbSelectFiltered()" style="font-size:12px;color:#2563eb;cursor:pointer;font-weight:500;padding:4px 10px;border-radius:6px;border:1px solid rgba(59,130,246,0.3);background:rgba(59,130,246,0.05);margin-right:6px;">Select filtered</button>
-                <button onclick="cmdbClearSelection()" style="font-size:12px;color:#FB3C44;cursor:pointer;font-weight:500;padding:4px 10px;border-radius:6px;border:1px solid rgba(251,60,68,0.2);background:rgba(251,60,68,0.04);">Clear</button>
-                <span style="margin-left:auto;font-size:12px;font-weight:600;color:var(--text-default);" id="cmdb-node-sel-count">0 selected in this class</span>
-              </div>
-
-              <!-- Node table -->
-              <div style="flex:1;">
-                <table class="data-table" style="width:100%;">
-                  <thead style="position:sticky;top:0;z-index:2;background:var(--bg-surface);">
-                    <tr>
-                      <th style="width:32px;"></th>
-                      <th>NAME</th>
-                      <th>IP ADDRESS</th>
-                      <th>OS</th>
-                      <th>GUARDIAN STATUS</th>
-                    </tr>
-                  </thead>
-                  <tbody id="cmdb-node-tbody">
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-web-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.11</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-web-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.1.12</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.2.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 8</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">dev-linux-05</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.4.50</td><td style="font-size:11px;color:var(--text-sec);">Debian 12</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-12</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.30</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-13</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.31</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">app-srv-14</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.6.32</td><td style="font-size:11px;color:var(--text-sec);">CentOS 8</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">db-replica-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.8.10</td><td style="font-size:11px;color:var(--text-sec);">RHEL 9</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">db-replica-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.8.11</td><td style="font-size:11px;color:var(--text-sec);">RHEL 9</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.9.20</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">cache-node-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.9.21</td><td style="font-size:11px;color:var(--text-sec);">Debian 11</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">build-srv-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.0.5</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">monitor-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.1.10</td><td style="font-size:11px;color:var(--text-sec);">Ubuntu 20.04</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">log-aggregator-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.2.5</td><td style="font-size:11px;color:var(--text-sec);">CentOS 7</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td><td style="font-size:12px;font-weight:600;color:var(--text-default);">mail-relay-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.3.8</td><td style="font-size:11px;color:var(--text-sec);">Debian 12</td><td><span class="bdg bdg--green bdg--dot">New</span></td></tr>
-                    <!-- Partial match -->
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td>
-                      <td style="font-size:12px;font-weight:600;color:var(--text-default);">win-app-01<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: WIN-APP-01</div></td>
-                      <td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.3.20<div style="font-size:10px;color:#d97706;">Guardian: 10.0.3.21</div></td>
-                      <td style="font-size:11px;color:var(--text-sec);">Windows Server 2022</td>
-                      <td><span style="font-size:10px;background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2);border-radius:4px;padding:2px 7px;font-weight:600;" title="IP differs — will update existing record">◑ Partial match</span><div style="font-size:10px;color:#6b7280;margin-top:2px;">IP differs — will update existing record</div></td>
-                    </tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td>
-                      <td style="font-size:12px;font-weight:600;color:var(--text-default);">prod-db-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: PROD-DB-02</div></td>
-                      <td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.0.2.11<div style="font-size:10px;color:#d97706;">Guardian: 10.0.2.15</div></td>
-                      <td style="font-size:11px;color:var(--text-sec);">RHEL 8</td>
-                      <td><span style="font-size:10px;background:rgba(59,130,246,0.08);color:#2563eb;border:1px solid rgba(59,130,246,0.2);border-radius:4px;padding:2px 7px;font-weight:600;" title="IP differs — will update existing record">◑ Partial match</span><div style="font-size:10px;color:#6b7280;margin-top:2px;">IP differs — will update existing record</div></td>
-                    </tr>
-                    <tr><td><input type="checkbox" style="accent-color:var(--green2);" onchange="updateCMDBNodeCount()"></td>
-                      <td style="font-size:12px;font-weight:600;color:var(--text-default);">api-gateway-02<div style="font-size:10px;font-weight:400;color:var(--text-sec);">Guardian has: API-GW-02</div></td>
-                      <td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-default);">10.1.4.20<div style="font-size:10px;color:#d97706;">Guardian: 10.1.4.22</div></td>
-                      <td style="font-size:11px;color:var(--text-sec);">Ubuntu 22.04</td>
-                      <td><span class="bdg bdg--blue bdg--dot">Partial match</span><div style="font-size:10px;color:#6b7280;margin-top:2px;">IP differs — will update existing record</div></td>
-                    </tr>
-                    <!-- Already monitored — disabled -->
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">infra-node-08</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.5.22</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 20.04</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-01</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.7.14</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">prod-api-02</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.0.7.15</td><td style="font-size:11px;color:var(--text-muted);">Ubuntu 22.04</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-03</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.3</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
-                    <tr style="opacity:0.45;pointer-events:none;background:#fafafa;"><td><input type="checkbox" disabled=""></td><td style="font-size:12px;font-weight:600;color:#6b7280;">legacy-srv-04</td><td style="font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-muted);">10.2.0.4</td><td style="font-size:11px;color:var(--text-muted);">CentOS 6</td><td><span class="bdg bdg--gray">Already monitored</span></td></tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Pagination -->
-              <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-                <span style="font-size:11px;color:var(--text-sec);">Page 1 of 94 · <span style="color:#6b7280;">2 rows skipped (already monitored)</span></span>
-                <div style="display:flex;gap:4px;">
-                  <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:var(--text-muted);cursor:not-allowed;">← Prev</button>
-                  <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--green1);color:white;font-weight:600;cursor:default;">1</button>
-                  <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">2</button>
-                  <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">3</button>
-                  <span style="padding:5px 4px;font-size:11px;color:var(--text-sec);">…</span>
-                  <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">94</button>
-                  <button style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;background:var(--bg-surface);color:var(--text-default);cursor:pointer;">Next →</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
+            </div><!-- /cmdb-nv-card -->
+          </div><!-- /cmdb-node-view -->
 
         </div>
       </div>
@@ -27062,6 +26976,8 @@ function cmdbShowPanel(key) {
   if (!ov) return;
   ov.style.display = 'flex';
   ov.querySelectorAll('.cmdbm-panel').forEach(function(p){ p.style.display = (p.id === 'v-' + key) ? '' : 'none'; });
+  // Крок Select nodes завжди відкривається на списку класів, а не на вузлах відкритого раніше класу.
+  if (key === 'cmdb-browse') backToCMDBClasses();
   var meta = CMDB_META[key];
   if (meta) {
     var t = document.getElementById('cmdb-modal-title'); if (t) t.textContent = meta[0];
@@ -27200,16 +27116,11 @@ function updateCMDBClassLabel(cls) {
   el.classList.toggle('is-on', n > 0);
 }
 
-// ── Accordion (inline Browse) ──────────────────────────────────────
-let cmdbOpenKey = null;
-
-function toggleCMDBAccordion(cls, key, total, table, color) {
-  if (cmdbOpenKey === key) { closeCMDBAccordion(); return; }
-  // Close previous
-  if (cmdbOpenKey) _cmdbResetBtn(cmdbOpenKey);
-  cmdbOpenKey = key;
+// ── Drill-down у клас ──────────────────────────────────────────────
+// Список вузлів — другий рівень навігації, тому він ЗАМІНЮЄ список класів у тому ж слоті
+// модалки, а не розкривається всередині нього. Оболонка (header · stepper · footer) не рухається.
+function cmdbOpenClass(cls, key, total, table, color) {
   cmdbCurrentClass = cls;
-  // Update panel header
   const pages = Math.ceil(total / 10);
   document.getElementById('accord-cls-name').textContent = cls;
   document.getElementById('accord-cls-table').textContent = table;
@@ -27222,39 +27133,33 @@ function toggleCMDBAccordion(cls, key, total, table, color) {
   document.querySelectorAll('#accord-tbody input[type=checkbox]:not(:disabled)').forEach(r => r.checked = false);
   document.getElementById('accord-page-cb').checked = false;
   document.getElementById('accord-sel-count').textContent = '0 selected';
-  // Move panel after this row
-  const row = document.getElementById('cls-' + key);
-  const panel = document.getElementById('cmdb-accordion-panel');
-  row.parentNode.insertBefore(panel, row.nextSibling);
-  panel.style.display = 'block';
-  // Стан рядка — класом (.is-open підсвічує рядок і обертає шеврон); інлайн-bg ламає _syncInlineTheme.
-  row.classList.add('is-open');
-  const lbl = document.querySelector('#browse-btn-' + key + ' span');
-  if (lbl) lbl.textContent = 'Collapse';
-  // Scroll panel into view
-  setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+  accordSyncClear(false);
+  document.getElementById('cmdb-class-view').style.display = 'none';
+  document.getElementById('cmdb-node-view').style.display = 'block';
+  const body = document.querySelector('#cmdb-modal .gm-body');
+  if (body) body.scrollTop = 0;
 }
 
-function _cmdbResetBtn(key) {
-  const row = document.getElementById('cls-' + key);
-  if (row) row.classList.remove('is-open');
-  const lbl = document.querySelector('#browse-btn-' + key + ' span');
-  if (lbl) lbl.textContent = 'Expand';
-}
-
-function closeCMDBAccordion() {
-  if (!cmdbOpenKey) return;
-  _cmdbResetBtn(cmdbOpenKey);
-  document.getElementById('cmdb-accordion-panel').style.display = 'none';
-  cmdbOpenKey = null;
+function backToCMDBClasses() {
+  document.getElementById('cmdb-node-view').style.display = 'none';
+  document.getElementById('cmdb-class-view').style.display = 'block';
+  const body = document.querySelector('#cmdb-modal .gm-body');
+  if (body) body.scrollTop = 0;
 }
 
 function accordUpdateCount() {
   const checked = document.querySelectorAll('#accord-tbody input[type=checkbox]:checked').length;
   if (cmdbCurrentClass) cmdbSelectedByClass[cmdbCurrentClass] = checked;
   document.getElementById('accord-sel-count').textContent = checked > 0 ? checked + ' selected' : '0 selected';
+  accordSyncClear(checked > 0);
   updateCMDBClassLabel(cmdbCurrentClass);
   updateCMDBTotalSelected();
+}
+
+// Clear — канонічний двостановий Reset (.reset-btn-2s): сірий, поки скидати нічого.
+function accordSyncClear(active) {
+  const b = document.getElementById('accord-clear-btn');
+  if (b) b.classList.toggle('is-active', !!active);
 }
 
 function accordSelectPage(cb) {
@@ -27269,6 +27174,7 @@ function accordSelectAllInClass() {
   document.querySelectorAll('#accord-tbody input[type=checkbox]:not(:disabled)').forEach(r => r.checked = true);
   document.getElementById('accord-page-cb').checked = true;
   document.getElementById('accord-sel-count').textContent = total.toLocaleString() + ' selected (all)';
+  accordSyncClear(true);
   updateCMDBClassLabel(cmdbCurrentClass);
   updateCMDBTotalSelected();
 }
@@ -27291,11 +27197,6 @@ function updateCMDBTotalSelected() {
     importBtn.disabled = total === 0;
   }
 }
-
-// legacy stubs (kept for safety)
-function showCMDBClass() {}
-function backToCMDBClasses() {}
-function confirmCMDBClassSelection() {}
 
 function goToDashboardFromJ4() {
   j4Done = true;
