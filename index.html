@@ -6081,11 +6081,26 @@ body.dark #csv-modal .csv-cols { border-top-color:rgba(255,255,255,0.06); }
 #csv-modal .csv-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 #csv-modal .csv-kpi { height:70px; background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
 body.dark #csv-modal .csv-kpi { background:#133033; }
-#csv-modal .csv-kpi-num { font-size:22px; font-weight:800; line-height:29px; }
+#csv-modal .csv-kpi-num { font-size:22px; font-weight:800; line-height:29px; color:var(--text-default); }
 #csv-modal .csv-kpi-num--green { color:#10B981; }
 #csv-modal .csv-kpi-num--blue  { color:#2563EB; }
 #csv-modal .csv-kpi-num--red   { color:#FB3C44; }
 #csv-modal .csv-kpi-lbl { padding-top:2px; font-size:10px; font-weight:600; text-transform:uppercase; color:var(--text-sec); }
+
+/* STEP 4 · Import complete — Figma 3655:21470 (light) / 3655:21471 (dark).
+   Той самий блок результату, що й наприкінці CMDB-імпорту: коло-галочка → заголовок
+   → підпис → три лічильники. Картки — ті самі .csv-kpi, що на кроці Review, лише
+   геометрія макета: ряд 440px (600 − 2×80), 140px картка, 10px проміжок, висота 68. */
+#csv-modal .csv-done { display:flex; flex-direction:column; gap:20px; padding:20px 0; }
+#csv-modal .csv-done-head { padding-top:20px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+#csv-modal .csv-done-ico { width:56px; height:56px; border-radius:28px; background:rgba(37,167,96,0.1); display:flex; align-items:center; justify-content:center; }
+#csv-modal .csv-done-title { padding-top:20px; font-size:20px; font-weight:800; color:var(--text-default); }
+#csv-modal .csv-done-sub { padding-top:8px; width:410px; max-width:100%; font:400 14px/21px 'DM Sans',sans-serif; color:var(--text-sec); }
+#csv-modal .csv-done-kpis { padding:0 80px 20px; }
+#csv-modal .csv-done .csv-kpi-row { gap:10px; }
+#csv-modal .csv-done .csv-kpi { height:68px; }
+/* У темній картка тримається лише фоном — у макеті рамки немає. */
+body.dark #csv-modal .csv-done .csv-kpi { border-color:transparent; }
 /* Таблиця виїжджає до правого краю картки — тільки лівий паддінг, ширина 550. */
 #csv-modal .csv-rev-tbl { padding-left:24px; }
 #csv-modal .csv-rev-tbl-in { width:550px; border-top:1px solid var(--border); }
@@ -23361,29 +23376,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <div class="csv-imp-hint"></div>
       </div><!-- /csvm-panel csv-importing -->
 
-    <!-- STEP 3 · Complete -->
-    <div class="csvm-panel" id="v-csv-complete" style="display:none;">
-      <div style="padding:40px 24px;display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;max-width:440px;width:100%;">
-          <div style="width:56px;height:56px;border-radius:50%;background:rgba(37,167,96,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          </div>
-          <div style="font-size:20px;font-weight:800;color:var(--text-default);margin-bottom:6px;">22 nodes imported ✓</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-bottom:24px;">Imported from CSV and now monitored in Guardian. Assign credentials to any that need them from All Nodes. 2 rows with errors were skipped.</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px;">
-            <div style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;text-align:center;">
-              <div style="font-size:22px;font-weight:800;color:var(--text-default);">22</div>
-              <div style="font-size:10px;color:var(--text-sec);font-weight:600;margin-top:2px;">ADDED</div>
-            </div>
-            <div style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;text-align:center;">
-              <div style="font-size:22px;font-weight:800;color:#2563eb;">3</div>
-              <div style="font-size:10px;color:var(--text-sec);font-weight:600;margin-top:2px;">UPDATED</div>
-            </div>
-            <div style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;text-align:center;">
-              <div style="font-size:22px;font-weight:800;color:#FB3C44;">2</div>
-              <div style="font-size:10px;color:var(--text-sec);font-weight:600;margin-top:2px;">SKIPPED</div>
-            </div>
-          </div>
+    <!-- STEP 3 · Import complete — Figma 3655:21470 (light) / 3655:21471 (dark) -->
+    <div class="csvm-panel csv-done" id="v-csv-complete" style="display:none;">
+      <div class="csv-done-head">
+        <div class="csv-done-ico">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="csv-done-title">22 nodes imported</div>
+        <div class="csv-done-sub">Imported from CSV and now monitored in Guardian. Assign credentials to any that need them from All Nodes. 2 rows with errors were skipped.</div>
+      </div>
+      <div class="csv-done-kpis">
+        <div class="csv-kpi-row">
+          <div class="csv-kpi"><div class="csv-kpi-num">22</div><div class="csv-kpi-lbl">Added</div></div>
+          <div class="csv-kpi"><div class="csv-kpi-num csv-kpi-num--blue">3</div><div class="csv-kpi-lbl">Updated</div></div>
+          <div class="csv-kpi"><div class="csv-kpi-num csv-kpi-num--red">2</div><div class="csv-kpi-lbl">Skipped</div></div>
         </div>
       </div>
       </div><!-- /csvm-panel csv-complete -->
