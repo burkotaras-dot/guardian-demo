@@ -2735,8 +2735,12 @@ body.dark .action-cta.action-cta--neutral:hover { background:rgba(255,255,255,0.
 .ai-cta:hover { color:#4F46E5; }
 .ai-cta:hover .ai-cta-ico { background:rgba(99,102,241,0.06); border-color:rgba(99,102,241,0.4); }
 .ai-cta:disabled { opacity:0.5; cursor:not-allowed; }
-.ai-cta-ico { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:var(--bg-surface); flex-shrink:0; transition:background .15s, border-color .15s; }
+.ai-cta-ico { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:#F8F9FA; flex-shrink:0; transition:background .15s, border-color .15s; }
 .ai-cta-ico svg { color:#6366F1; flex-shrink:0; }
+/* Contrast flips with what's behind the button: on a white card the chip is grey (default above);
+   on a grey page surface (Dashboard block header sits directly on --bg-page, not a white card)
+   the chip flips to white so it still reads as a distinct tile instead of blending in. */
+body:not(.dark) #dash-ai-btn .ai-cta-ico { background:var(--bg-surface); }
 body.dark .ai-cta { color:#818CF8; }
 body.dark .ai-cta:hover { color:#A5B4FC; }
 body.dark .ai-cta-ico { background:var(--bg-subtle); border-color:var(--border); }
@@ -15917,6 +15921,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryLabel: 'Open Secret Server',
         tertiaryAct: "go('secret-server-config')",
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 FAILED\n[2026-07-03 09:14:03] error: credentials rejected by server (0x8009030E)\n[2026-07-03 09:14:03] scan aborted \u2014 0 attributes collected',
+        aiHelp: 'The credential was accepted for the WinRM handshake but rejected at authentication (0x8009030E) \u2014 that pattern usually means the password rotated in Secret Server without the scan credential being updated to match, rather than a network or permission problem. Since connectivity still passes and the last successful scan was only 2 days ago, start with the credential itself before touching firewall or account settings.',
         steps: [
           { title: 'Update the credential', desc: 'Check the credential in Secret Server is current and not expired.', linkLabel: 'Open Secret Server', linkAct: "go('secret-server-config')", status: 'needs' },
           { title: 'Verify the account status', desc: 'Confirm the account isn\u2019t locked out or disabled on the target node.', status: 'notchecked' },
@@ -15937,6 +15942,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryLabel: '',
         tertiaryAct: '',
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 FAILED\n[2026-07-03 09:14:32] error: connection timed out after 30s (WSAETIMEDOUT)\n[2026-07-03 09:14:32] scan aborted \u2014 target unreachable',
+        aiHelp: 'The scan never reached the authentication stage \u2014 the connection attempt to 10.4.12.31 timed out after 30s, which points to the node being offline, moved to a different address, or blocked by a firewall rule rather than a credential issue. Because the last successful scan was 2 days ago, check whether the node\u2019s IP changed or it\u2019s powered down before assuming a Guardian configuration problem.',
         steps: [
           { title: 'Confirm the node is reachable', desc: 'Verify the node is powered on and reachable from your network.', status: 'needs' },
           { title: 'Check firewall ports', desc: 'Port 5985 (WinRM HTTP) or 5986 (HTTPS) must be open on the target.', status: 'notchecked' },
@@ -15957,6 +15963,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryLabel: '',
         tertiaryAct: '',
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:03] collecting attributes \u2026 47/96\n[2026-07-03 09:19:03] error: scan exceeded 300s limit (timeout)\n[2026-07-03 09:19:03] scan aborted \u2014 partial collection discarded',
+        aiHelp: 'Guardian authenticated successfully and started collecting attributes, but only reached 47 of 96 before hitting the 300s limit \u2014 that\u2019s a partial-progress timeout, not a connectivity or credential failure. This usually means the node is under heavy load or the scan scope is larger than the timeout allows; increasing the limit or narrowing the policy scope is more likely to fix it than retrying immediately.',
         steps: [
           { title: 'Check node load', desc: 'A node under heavy load can respond too slowly and cause timeouts.', status: 'needs' },
           { title: 'Review the scan scope', desc: 'Reduce the number of policies or checks if the node has many attributes.', status: 'notchecked' },
@@ -15977,6 +15984,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryLabel: 'Open Secret Server',
         tertiaryAct: "go('secret-server-config')",
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:04] reading registry HKLM\\SOFTWARE\\Policies \u2026 ACCESS DENIED\n[2026-07-03 09:14:04] error: insufficient privileges (0x80070005)\n[2026-07-03 09:14:04] scan aborted \u2014 3 of 12 attributes inaccessible',
+        aiHelp: 'Authentication succeeded, but the account was denied while reading a specific registry path (HKLM\\SOFTWARE\\Policies) \u2014 narrower than a full permissions failure, since 9 of 12 attributes were read successfully. The most likely cause is the scan account has standard access but not local administrator rights, which most policy checks under this path require.',
         steps: [
           { title: 'Grant local administrator', desc: 'Verify the scan account has local admin privileges on the target node.', status: 'needs' },
           { title: 'Check group policy', desc: 'Ensure GPO allows WinRM remote access for the account.', status: 'notchecked' },
@@ -15985,9 +15993,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         ]
       }
     };
+    var sfCurrentType = 'auth';
     function setScanFailType(type) {
       var d = SCAN_FAIL_TYPES[type];
       if (!d) return;
+      sfCurrentType = type;
+      if (typeof sfAiDismiss === 'function') sfAiDismiss(); // AI text is per-type — don't leave stale content open across a demo toggle
       document.getElementById('sf-category').textContent = d.category;
       var hl = document.getElementById('sf-headline'); if (hl) hl.textContent = d.headline;
       document.getElementById('sf-title').textContent = d.title;
@@ -20749,14 +20760,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div style="display:flex;flex-direction:column;gap:14px;width:100%;max-width:780px;margin:0 auto;box-sizing:border-box;">
 
           <!-- Error summary — two columns: fault (left ~66%) + metadata (right ~34%) -->
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-left:3px solid #FB3C44;border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow-sm);">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow-sm);">
             <div style="display:flex;gap:20px;">
               <div style="flex:1 1 66%;min-width:0;display:flex;gap:13px;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                 <div style="flex:1;min-width:0;">
                   <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px;flex-wrap:wrap;">
+                    <span id="sf-headline" style="font-size:15px;font-weight:700;color:var(--bdg-red-txt);">Authentication failed</span>
                     <span id="sf-category" class="bdg bdg--red">Authentication</span>
-                    <span id="sf-headline" style="font-size:15px;font-weight:700;color:var(--text-default);">Authentication failed</span>
                   </div>
                   <div id="sf-title" style="font-size:13px;font-weight:600;color:var(--text-default);">Credential rejected by the target</div>
                   <div id="sf-desc" style="font-size:12px;color:var(--text-sec);line-height:1.5;margin-top:2px;">Guardian reached the node, but the stored credential was rejected during authentication.</div>
@@ -20783,7 +20794,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- How to fix (compact checklist) -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;box-shadow:var(--shadow-sm);">
-            <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:8px;">How to fix</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
+              <div style="font-size:13px;font-weight:700;color:var(--text-default);">How to fix</div>
+              <!-- AI surfacing (Week 3, Пн) — "Failed Scan → Help me troubleshoot" from the plan.
+                   The checklist below is always-on generic guidance; this explains the LIKELY CAUSE
+                   for this specific failure signature, tailored to the demo type. Supplementary to
+                   the checklist and to the Update credential/Retry scan primary actions above. -->
+              <div class="ai-dropdown">
+                <button type="button" class="ai-cta" id="sf-ai-btn" onclick="sfAiTroubleshoot()">Help me troubleshoot<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
+                <div class="ai-panel" id="sf-ai-panel">
+                  <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Troubleshooting<button type="button" class="ai-panel-close" onclick="sfAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                  <div id="sf-ai-body"></div>
+                </div>
+              </div>
+            </div>
             <div id="sf-steps"></div>
           </div>
 
@@ -24133,6 +24157,32 @@ function cdAiExplain() {
 
 function cdAiDismiss() {
   var panel = document.getElementById('cd-ai-panel');
+  if (panel) panel.classList.remove('is-open');
+}
+
+// AI surfacing (Week 3, Пн) — Failed Scan "Help me troubleshoot". Explains the LIKELY CAUSE behind
+// this failure signature (per SCAN_FAIL_TYPES[sfCurrentType].aiHelp); supplementary to the always-on
+// "How to fix" checklist and to the Update credential/Retry scan primary actions above it.
+function sfAiTroubleshoot() {
+  var btn = document.getElementById('sf-ai-btn');
+  var panel = document.getElementById('sf-ai-panel');
+  var body = document.getElementById('sf-ai-body');
+  if (!btn || !panel || !body) return;
+  btn.disabled = true;
+  panel.classList.add('is-open');
+  _aiBindOutsideClose('sf-ai-panel', btn, sfAiDismiss);
+  body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Diagnosing the failure…</div>';
+  setTimeout(function () {
+    var d = SCAN_FAIL_TYPES[sfCurrentType] || SCAN_FAIL_TYPES.auth;
+    body.innerHTML =
+      '<div>' + d.aiHelp + '</div>' +
+      '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
+    btn.disabled = false;
+  }, 900);
+}
+
+function sfAiDismiss() {
+  var panel = document.getElementById('sf-ai-panel');
   if (panel) panel.classList.remove('is-open');
 }
 
