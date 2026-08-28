@@ -928,7 +928,7 @@ body.dark .icx-demo-tab.is-active { background:rgba(0,175,115,.15); color:#FFF; 
 /* Colour = pass/fail STATE (label + CIS status), not before/after position */
 .cd-card--pass .cd-card-label, .cd-card--pass .cd-card-status { color:#15803d; }
 .cd-card--fail .cd-card-label, .cd-card--fail .cd-card-status { color:#FB3C44; }
-.cd-meta { display:flex; align-items:center; flex-wrap:wrap; gap:8px 28px; font-size:13px; color:var(--text-sec); margin-bottom:14px; }
+.cd-meta { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 28px; font-size:13px; color:var(--text-sec); margin-bottom:14px; }
 .cd-meta b { font-weight:700; color:var(--text-default); }
 .cd-risk { display:flex; align-items:center; gap:8px; padding:11px 16px; border:1px solid var(--border); border-radius:10px; font-size:13px; color:var(--text-sec); }
 .cd-risk-label { font-weight:700; color:#FB3C44; flex-shrink:0; }
@@ -16368,7 +16368,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     var PD_COL_CHECK  = 'flex:2;min-width:0;';   // 2/3 слеку — довший контент (назва + опис)
     var PD_COL_TAGS   = 'flex:1;min-width:200px;'; // звужено з 245px, щоб звільнити місце під AI
     var PD_COL_STATUS = 'flex:0 0 56px;';    // «Passed» = 51px
-    var PD_COL_AI     = 'flex:0 0 170px;';   // «Explain with AI» + icon-chip, вимірено в preview
+    var PD_COL_AI     = 'flex:0 0 113px;';   // тільки icon-chip 32px, підпис живе в шапці (Figma 3716:17936)
 
     function pdFilter(mode) {
       var checks = window._pdChecks || [];
@@ -16388,7 +16388,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + '<div style="'+PD_COL_CHECK+'">Check</div>'
         + '<div style="'+PD_COL_STATUS+'">Status</div>'
         + '<div style="'+PD_COL_TAGS+'text-align:right;">Tags</div>'
-        + '<div style="'+PD_COL_AI+'text-align:right;">AI</div>'
+        + '<div style="'+PD_COL_AI+'text-align:right;">Explain with AI</div>'
         + '</div>';
       filtered.forEach(function(c) {
         var isFail = c.status==='fail';
@@ -16423,7 +16423,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         // комірку порожньою, щоб решта колонок не зʼїжджала.
         html += '<div style="'+PD_COL_AI+'display:flex;justify-content:flex-end;">';
         if (isFail) {
-          html += '<button type="button" class="ai-cta" id="pd-ai-btn-'+safeKey+'" onclick="pdAiExplain(\''+safeKey+'\')">Explain with AI<span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>';
+          html += '<button type="button" class="ai-cta" id="pd-ai-btn-'+safeKey+'" title="Explain with AI" aria-label="Explain with AI" onclick="pdAiExplain(\''+safeKey+'\')"><span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>';
         }
         html += '</div>';
         html += '</div>'; // close row flex
@@ -19060,19 +19060,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <!-- State-change block -->
           <div class="card" style="margin-bottom:0;padding:20px 22px;border-color:var(--border);box-shadow:none;">
 
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-              <span id="cd-sev-badge" class="bdg bdg--red">Critical</span>
-              <!-- AI surfacing demo (Week 3, Пн) — "Explain why this change matters". Supplementary
-                   to the Risk callout below, never replaces the Approve/Flag/Skip decision panel.
-                   Floating dropdown anchored to the button, not an inline block. -->
-              <div class="ai-dropdown">
-                <button type="button" class="ai-cta" id="cd-ai-btn" onclick="cdAiExplain()">Explain with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
-                <div class="ai-panel" id="cd-ai-panel">
-                  <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/></svg></span>AI Explanation<button type="button" class="ai-panel-close" onclick="cdAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-                  <div id="cd-ai-body"></div>
-                </div>
-              </div>
-            </div>
+            <span id="cd-sev-badge" class="bdg bdg--red">Critical</span>
             <div id="cd-check-name" class="cd-check-name">Windows Defender real-time protection is disabled</div>
 
             <!-- Before → After: two neutral cards, arrow between -->
@@ -19090,22 +19078,34 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
 
-            <!-- Metadata: score + attribution (plain row) -->
+            <!-- Metadata: score + attribution (left) · Explain with AI (right) — Figma 3716:17714 -->
             <div class="cd-meta">
-              <span style="display:inline-flex;align-items:baseline;gap:6px;">
-                <b>Score</b>
-                <span id="cd-score-from" style="font-weight:700;color:var(--text-default);">78</span>
-                <span style="color:#94a3b8;">→</span>
-                <span id="cd-score-to" style="font-weight:700;color:#FB3C44;">74</span>
-                <span style="color:var(--text-muted);">·</span>
-                <span id="cd-score-delta" style="color:#FB3C44;font-weight:600;">−4 pts</span>
-              </span>
-              <span style="display:inline-flex;align-items:baseline;gap:6px;">
-                <b>Detected by</b>
-                <span id="cd-detby-method" style="font-weight:600;color:var(--text-default);">Scheduled scan</span>
-                <span style="color:var(--text-muted);">·</span>
-                <span id="cd-detby-detail">Today 14:23 · Process: MsMpSvc</span>
-              </span>
+              <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 28px;">
+                <span style="display:inline-flex;align-items:baseline;gap:6px;">
+                  <b>Score</b>
+                  <span id="cd-score-from" style="font-weight:700;color:var(--text-default);">78</span>
+                  <span style="color:#94a3b8;">→</span>
+                  <span id="cd-score-to" style="font-weight:700;color:#FB3C44;">74</span>
+                  <span style="color:var(--text-muted);">·</span>
+                  <span id="cd-score-delta" style="color:#FB3C44;font-weight:600;">−4 pts</span>
+                </span>
+                <span style="display:inline-flex;align-items:baseline;gap:6px;">
+                  <b>Detected by</b>
+                  <span id="cd-detby-method" style="font-weight:600;color:var(--text-default);">Scheduled scan</span>
+                  <span style="color:var(--text-muted);">·</span>
+                  <span id="cd-detby-detail">Today 14:23 · Process: MsMpSvc</span>
+                </span>
+              </div>
+              <!-- AI surfacing demo (Week 3, Пн) — "Explain why this change matters". Sits right
+                   before the Risk callout it elaborates on (Figma 3716:17918), not at the top of
+                   the card — supplementary to Risk, never replaces the Approve/Flag/Skip panel. -->
+              <div class="ai-dropdown">
+                <button type="button" class="ai-cta" id="cd-ai-btn" onclick="cdAiExplain()">Explain with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
+                <div class="ai-panel" id="cd-ai-panel">
+                  <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/></svg></span>AI Explanation<button type="button" class="ai-panel-close" onclick="cdAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                  <div id="cd-ai-body"></div>
+                </div>
+              </div>
             </div>
 
             <!-- Risk — bordered callout -->
@@ -19115,8 +19115,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
           </div>
 
-          <!-- Tabs + CR match / Notes / Incident — tighter 8px grouping (Figma 3660:20851 spec) -->
-          <div style="display:flex;flex-direction:column;gap:8px;">
+          <!-- Tabs + CR match / Notes / Incident — 10px grouping -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
 
           <!-- Demo-only state switcher for the CR block (not part of the product UI) -->
           <div class="cd-tabs">
@@ -24468,6 +24468,9 @@ function renderChangeDetail(idx) {
     } else {
       crList.innerHTML = '';
     }
+    // Empty <div> still eats a flex `gap` on both sides — hide it so the tabs→cr-block→notes
+    // rhythm stays a single 10px, not 20px when there's no multi-CR content to show.
+    crList.style.display = crList.innerHTML ? '' : 'none';
   }
   changeNotes = (d.notes || []).map(function(n) { return { author:n.author, time:n.time, text:n.text }; });
   renderChangeNotes();
