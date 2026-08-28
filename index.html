@@ -2726,6 +2726,48 @@ body.dark .action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba
 .action-cta.action-cta--neutral:hover { background:#F1F5F9; border-color:#CBD5E1; }
 body.dark .action-cta.action-cta--neutral { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.10); color:var(--p-neutral-50); }
 body.dark .action-cta.action-cta--neutral:hover { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.3); color:var(--p-neutral-50); }
+/* AI surfacing (Week 3, Пн) — deliberately its own accent, NOT green (= primary Guardian action)
+   and NOT one of the 6 badge colours (orange/purple/red/green/gray/blue already carry severity/
+   category meaning). Indigo is unused as a semantic accent elsewhere, so it reads unambiguously
+   as "this came from AI", never confusable with a system value. Geometry mirrors .action-cta on
+   purpose — same button language, different colour channel. */
+.ai-cta { display:inline-flex; align-items:center; gap:7px; height:32px; padding:0; border:none; background:none; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:#6366F1; cursor:pointer; flex-shrink:0; white-space:nowrap; transition:color .15s; }
+.ai-cta:hover { color:#4F46E5; }
+.ai-cta:hover .ai-cta-ico { background:rgba(99,102,241,0.06); border-color:rgba(99,102,241,0.4); }
+.ai-cta:disabled { opacity:0.5; cursor:not-allowed; }
+.ai-cta-ico { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:var(--bg-surface); flex-shrink:0; transition:background .15s, border-color .15s; }
+.ai-cta-ico svg { color:#6366F1; flex-shrink:0; }
+body.dark .ai-cta { color:#818CF8; }
+body.dark .ai-cta:hover { color:#A5B4FC; }
+body.dark .ai-cta-ico { background:var(--bg-subtle); border-color:var(--border); }
+body.dark .ai-cta:hover .ai-cta-ico { background:rgba(99,102,241,0.15); border-color:rgba(99,102,241,0.4); }
+body.dark .ai-cta-ico svg { color:#818CF8; }
+/* AI result surface — a floating DROPDOWN anchored to its trigger button, not an inline block that
+   pushes page content down. `.ai-dropdown` is the position:relative wrapper around trigger+panel for
+   contexts with no clipping ancestor (Dashboard, Detected Drift). Policy Detail's checks list sits
+   inside an `overflow:hidden` card, so its panel uses `.ai-panel--fixed` (position:fixed, top/left
+   computed in JS from the trigger's getBoundingClientRect — same escape-hatch as #pd-tag-picker)
+   instead. Thin gradient strip + circular gradient icon badge keep the "AI card" identity; footer
+   disclaimer keeps the content honestly labelled as AI-generated. */
+@keyframes aiPanelIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+.ai-dropdown { position:relative; display:inline-flex; }
+.ai-panel { display:none; position:absolute; z-index:60; top:calc(100% + 8px); right:0; width:320px; max-width:calc(100vw - 24px); box-sizing:border-box; overflow:hidden; padding:16px; border:1px solid rgba(99,102,241,0.16); border-radius:12px; background:var(--bg-surface); box-shadow:0 8px 20px rgba(15,23,42,0.12); font-size:12.5px; line-height:1.65; color:var(--text-default); }
+.ai-panel.ai-panel--fixed { position:fixed; top:0; right:auto; left:0; }
+.ai-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#6366F1,#8B5CF6); }
+.ai-panel.is-open { display:block; animation:aiPanelIn .16s ease-out; }
+.ai-panel-head { display:flex; align-items:center; gap:8px; margin:2px 0 9px; font-size:11px; font-weight:700; letter-spacing:0.3px; color:#6366F1; }
+.ai-panel-ico { display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#6366F1,#8B5CF6); color:#fff; flex-shrink:0; }
+.ai-panel-close { margin-left:auto; cursor:pointer; color:var(--text-muted); background:none; border:none; padding:2px; border-radius:5px; display:flex; transition:color .15s, background .15s; }
+.ai-panel-close:hover { color:var(--text-default); background:rgba(99,102,241,0.10); }
+.ai-panel-loading { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-sec); }
+.ai-panel-foot { display:flex; align-items:center; gap:5px; margin-top:11px; padding-top:9px; border-top:1px solid var(--border); font-size:10px; color:var(--text-muted); }
+body.dark .ai-panel { border-color:rgba(99,102,241,0.28); box-shadow:0 10px 32px rgba(0,0,0,0.5); }
+body.dark .ai-panel-head { color:#A5B4FC; }
+body.dark .ai-panel-close:hover { background:rgba(99,102,241,0.18); }
+body.dark .ai-panel-foot { border-top-color:rgba(255,255,255,0.08); }
+.ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6366F1; background:none; border:none; cursor:pointer; padding:0; }
+.ai-inline-cta:hover { text-decoration:underline; }
+body.dark .ai-inline-cta { color:#818CF8; }
 .search-filter-action { min-width:0; padding:0; }
 /* Detected Drift export — DS §6.5 "Secondary" on a .btn-outline element (no arrow). */
 .drift-export-cta.btn-outline { height:32px; box-sizing:border-box; border-radius:10px; background:rgba(0,175,115,0.05); border-color:#9DE0C9; color:#334155; }
@@ -7720,6 +7762,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div class="issues-card">
           <div class="dash-block-head">
             <div style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</div>
+            <!-- AI surfacing demo (Week 3, Пн) — block-level summary, not per-row: this is the
+                 "Dashboard → Summarise what needs my attention" example from the plan. Trigger →
+                 Processing → AI result → dismiss, as a floating dropdown anchored to the button
+                 (not an inline block). Doesn't touch the Review/Reconcile primary CTAs below. -->
+            <div class="ai-dropdown">
+              <button type="button" class="ai-cta" id="dash-ai-btn" onclick="dashAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
+              <div class="ai-panel" id="dash-ai-panel">
+                <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="dashAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                <div id="dash-ai-body"></div>
+              </div>
+            </div>
           </div>
 
           <!-- Needs your attention — mixed, prioritised action queue -->
@@ -16190,6 +16243,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // Гліф «плюс» із канонічного набору Assets/icons/Property 1=Plus.svg — 8×8 viewBox,
     // stroke="currentColor", тож колір бере з кнопки й сам іде за темою і за hover.
     var PD_PLUS_SVG = '<svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"/><path d="M0.628906 4H7.36965"/></svg>';
+    // AI surfacing (Week 3, Пн) — "Explain why this check failed", inline per-row on FAILED
+    // checks only. Same sparkle glyph as the Dashboard/Detected Drift AI triggers.
+    var PD_AI_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/></svg>';
+    // Same icon-chip glyph as .ai-cta on Dashboard/Detected Drift (mingcute:ai-line, Figma 3704:25546).
+    var PD_AI_ICO_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>';
 
     // Колір — властивість САМОГО тега, а не місця рендеру: один тег мусить виглядати
     // однаково і в шапці політики, і в колонці Tags, і в попапі вибору.
@@ -16308,8 +16366,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // Одна декларація ширин на шапку і на рядки: якщо колонки описати двічі, вони роз'їдуться
     // від першої ж правки.
     var PD_COL_CHECK  = 'flex:2;min-width:0;';   // 2/3 слеку — довший контент (назва + опис)
-    var PD_COL_TAGS   = 'flex:1;min-width:245px;'; // 1/3 слеку; 245px — виміряний максимум тегів
+    var PD_COL_TAGS   = 'flex:1;min-width:200px;'; // звужено з 245px, щоб звільнити місце під AI
     var PD_COL_STATUS = 'flex:0 0 56px;';    // «Passed» = 51px
+    var PD_COL_AI     = 'flex:0 0 170px;';   // «Explain with AI» + icon-chip, вимірено в preview
 
     function pdFilter(mode) {
       var checks = window._pdChecks || [];
@@ -16329,13 +16388,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + '<div style="'+PD_COL_CHECK+'">Check</div>'
         + '<div style="'+PD_COL_STATUS+'">Status</div>'
         + '<div style="'+PD_COL_TAGS+'text-align:right;">Tags</div>'
+        + '<div style="'+PD_COL_AI+'text-align:right;">AI</div>'
         + '</div>';
       filtered.forEach(function(c) {
         var isFail = c.status==='fail';
         var tags = _pdTagMap[c.name] || [];
         var safeKey = c.name.replace(/[^a-zA-Z0-9]/g,'_');
         window._pdKeyToName[safeKey] = c.name;
-        html += '<div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;">';
+        html += '<div style="border-bottom:1px solid var(--border);">';
+        html += '<div style="padding:10px 20px;display:flex;align-items:center;gap:14px;">';
         // Колонка Check: назва + опис — це заголовок і підзаголовок одного обʼєкта,
         // тому вони живуть в ОДНІЙ комірці, як `Simulation result` у сусідній таблиці.
         html += '<div style="'+PD_COL_CHECK+'display:flex;align-items:center;gap:10px;">';
@@ -16357,7 +16418,26 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           html += '<button class="bdg bdg--gray pd-tag-add" onclick="pdShowTagPicker(\''+safeKey+'\',this)">' + PD_PLUS_SVG + 'tag</button>';
         }
         html += '</div>';
+        // AI — власна остання колонка. Тригер живе тут тільки на FAILED-рядках (AI з'являється
+        // в контексті конкретної проблеми, не на кожному чеку підряд); PASSED-рядки лишають
+        // комірку порожньою, щоб решта колонок не зʼїжджала.
+        html += '<div style="'+PD_COL_AI+'display:flex;justify-content:flex-end;">';
+        if (isFail) {
+          html += '<button type="button" class="ai-cta" id="pd-ai-btn-'+safeKey+'" onclick="pdAiExplain(\''+safeKey+'\')">Explain with AI<span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>';
+        }
         html += '</div>';
+        html += '</div>'; // close row flex
+        if (isFail) {
+          // The checks-list card has overflow:hidden (so long rows don't blow out its rounded
+          // corners), which would clip a nested position:absolute dropdown — so this panel uses
+          // .ai-panel--fixed (position:fixed, top/left computed in JS from the button's rect,
+          // same escape-hatch as #pd-tag-picker) instead of the .ai-dropdown wrapper pattern.
+          html += '<div class="ai-panel ai-panel--fixed" id="pd-ai-panel-'+safeKey+'">';
+          html += '<div class="ai-panel-head"><span class="ai-panel-ico">' + PD_AI_SVG + '</span>AI Explanation<button type="button" class="ai-panel-close" onclick="pdAiDismiss(\''+safeKey+'\')" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>';
+          html += '<div id="pd-ai-body-'+safeKey+'"></div>';
+          html += '</div>';
+        }
+        html += '</div>'; // close outer row wrapper
       });
       if(filtered.length===0) {
         // Канонічний empty-state (коло 44 + 14/600 + 12px + дія скинути фільтр),
@@ -16375,6 +16455,38 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var total = checks.length;
         cc.textContent = filtered.length < total ? 'Showing ' + filtered.length + ' of ' + total : total + ' checks';
       }
+    }
+
+    // AI surfacing (Week 3, Пн) — "Explain why this check failed", per failed check row.
+    function pdAiExplain(safeKey) {
+      var panel = document.getElementById('pd-ai-panel-' + safeKey);
+      var body = document.getElementById('pd-ai-body-' + safeKey);
+      var btn = document.getElementById('pd-ai-btn-' + safeKey);
+      if (!panel || !body) return;
+      var name = window._pdKeyToName[safeKey] || 'this check';
+      if (btn) {
+        var r = btn.getBoundingClientRect();
+        var w = 320;
+        var left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
+        panel.style.left = left + 'px';
+        panel.style.top = (r.bottom + 8) + 'px';
+      }
+      panel.classList.add('is-open');
+      _aiBindOutsideClose('pd-ai-panel-' + safeKey, btn, function () { pdAiDismiss(safeKey); });
+      body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Analysing failed check…</div>';
+      setTimeout(function () {
+        body.innerHTML =
+          '<div><strong>' + name + '</strong> failed because the current node configuration does not ' +
+          'meet the value this check expects. This lowers the compliance score for the assigned policy ' +
+          'and will keep failing on every future scan until the setting is brought back in line with ' +
+          'the check\'s requirement.</div>' +
+          '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
+      }, 900);
+    }
+
+    function pdAiDismiss(safeKey) {
+      var panel = document.getElementById('pd-ai-panel-' + safeKey);
+      if (panel) panel.classList.remove('is-open');
     }
 
     function pdToggleFilter(btn) {
@@ -18948,7 +19060,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <!-- State-change block -->
           <div class="card" style="margin-bottom:0;padding:20px 22px;border-color:var(--border);box-shadow:none;">
 
-            <span id="cd-sev-badge" class="bdg bdg--red">Critical</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+              <span id="cd-sev-badge" class="bdg bdg--red">Critical</span>
+              <!-- AI surfacing demo (Week 3, Пн) — "Explain why this change matters". Supplementary
+                   to the Risk callout below, never replaces the Approve/Flag/Skip decision panel.
+                   Floating dropdown anchored to the button, not an inline block. -->
+              <div class="ai-dropdown">
+                <button type="button" class="ai-cta" id="cd-ai-btn" onclick="cdAiExplain()">Explain with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
+                <div class="ai-panel" id="cd-ai-panel">
+                  <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/></svg></span>AI Explanation<button type="button" class="ai-panel-close" onclick="cdAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                  <div id="cd-ai-body"></div>
+                </div>
+              </div>
+            </div>
             <div id="cd-check-name" class="cd-check-name">Windows Defender real-time protection is disabled</div>
 
             <!-- Before → After: two neutral cards, arrow between -->
@@ -23932,6 +24056,79 @@ function _updateBC(name) {
     _bc = _bc.split('{policy}').join(window._pdCurrentName || 'Policy');
   }
   if (_bc) { _nb.innerHTML = _bc; _nb.style.display = 'flex'; } else { _nb.style.display = 'none'; }
+}
+
+// AI dropdown panels close on outside click, like every other .scan-menu-panel dropdown in the
+// app — on top of the explicit X (dismiss) button. `dismissFn` is called once on the first click
+// that lands outside both the panel and its trigger; the listener then removes itself.
+function _aiBindOutsideClose(panelId, triggerEl, dismissFn) {
+  setTimeout(function () {
+    document.addEventListener('click', function h(e) {
+      var panel = document.getElementById(panelId);
+      if (!panel) { document.removeEventListener('click', h); return; }
+      var outside = !panel.contains(e.target) && (!triggerEl || !triggerEl.contains(e.target));
+      if (outside) dismissFn();
+      if (outside || !panel.classList.contains('is-open')) document.removeEventListener('click', h);
+    });
+  }, 10);
+}
+
+// AI surfacing (Week 3, Пн) — Dashboard "Summarise what needs my attention" pattern.
+// Trigger -> Processing -> AI result -> dismiss. Never touches the Review/Reconcile
+// primary CTAs in the rows below; this is a supplementary summary, not a replacement action.
+function dashAiSummarize() {
+  var btn = document.getElementById('dash-ai-btn');
+  var panel = document.getElementById('dash-ai-panel');
+  var body = document.getElementById('dash-ai-body');
+  if (!btn || !panel || !body) return;
+  btn.disabled = true;
+  panel.classList.add('is-open');
+  _aiBindOutsideClose('dash-ai-panel', btn, dashAiDismiss);
+  body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Summarising open items…</div>';
+  setTimeout(function () {
+    body.innerHTML =
+      '<div>3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
+      'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
+      'flagged on a policy check. The drift is the highest priority — it touches a node outside its ' +
+      'expected baseline and has been open the longest.</div>' +
+      '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
+    btn.disabled = false;
+  }, 900);
+}
+
+function dashAiDismiss() {
+  var panel = document.getElementById('dash-ai-panel');
+  if (panel) panel.classList.remove('is-open');
+}
+
+// AI surfacing (Week 3, Пн) — Detected Drift "Explain why this change matters". Supplementary
+// to the Risk callout; the Approve/Flag/Skip decision panel stays the primary action.
+function cdAiExplain() {
+  var btn = document.getElementById('cd-ai-btn');
+  var panel = document.getElementById('cd-ai-panel');
+  var body = document.getElementById('cd-ai-body');
+  if (!btn || !panel || !body) return;
+  btn.disabled = true;
+  panel.classList.add('is-open');
+  _aiBindOutsideClose('cd-ai-panel', btn, cdAiDismiss);
+  body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Analysing this change…</div>';
+  setTimeout(function () {
+    var impactEl = document.getElementById('cd-impact');
+    var impact = impactEl ? impactEl.textContent : '';
+    body.innerHTML =
+      '<div>This change disabled real-time protection, which is the control that would normally ' +
+      'stop malware before it runs. ' + (impact ? impact + ' ' : '') +
+      'It matters most on this node because it sits outside the expected baseline for its group — ' +
+      'similar nodes still have the setting enabled, which suggests this is a local change rather ' +
+      'than a policy-driven one.</div>' +
+      '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
+    btn.disabled = false;
+  }, 900);
+}
+
+function cdAiDismiss() {
+  var panel = document.getElementById('cd-ai-panel');
+  if (panel) panel.classList.remove('is-open');
 }
 
 function showView(name) {
