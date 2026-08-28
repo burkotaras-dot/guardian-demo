@@ -723,8 +723,6 @@ body.dark .id-kv-label { background:#063135; }
 .id-cap-group-count { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:var(--bg-subtle); border:1px solid var(--border); font-size:11px; font-weight:600; color:var(--text-sec); }
 /* Capability overflow menu (Enable/Disable) */
 .id-cap-menu { position:relative; flex-shrink:0; }
-.id-cap-menu-btn { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:7px; border:1px solid transparent; background:transparent; color:var(--text-muted); cursor:pointer; transition:background .15s, border-color .15s, color .15s; }
-.id-cap-menu-btn:hover { background:var(--bg-subtle); border-color:var(--border); color:var(--text-default); }
 .id-cap-menu-pop { position:absolute; top:33px; right:0; min-width:186px; background:var(--bg-surface); border:1px solid var(--border); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.14); padding:6px; z-index:40; display:none; }
 .id-cap-menu-pop.open { display:block; }
 .id-cap-menu-item { display:flex; align-items:center; gap:9px; width:100%; padding:8px 10px; border:none; background:transparent; border-radius:7px; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-default); cursor:pointer; text-align:left; transition:background .12s; }
@@ -4033,8 +4031,6 @@ body.dark .cmd-mono { background:rgba(255,255,255,0.07) !important;border-color:
 .cm-attn-body { flex:1; min-width:0; }
 .cm-attn-title { font-size:13px; font-weight:600; color:var(--text-default); }
 .cm-attn-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
-.cm-attn-cta { flex-shrink:0; font-size:11px; font-weight:600; padding:5px 14px; border-radius:6px; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-default); cursor:pointer; }
-.cm-attn-cta:hover { border-color:var(--green1); color:var(--green1); }
 /* .cm-status — див. канонічний блок BADGE */
 #cmd-actions { display:flex; align-items:center; gap:4px; }
 #cmd-actions .btn-outline { background:var(--bg-surface); border-color:var(--border); box-shadow:0 1px 2px rgba(0,0,0,0.06); }
@@ -4060,6 +4056,11 @@ body.dark .check-menu-btn:hover { background:rgba(255,255,255,0.05); border-colo
 .cm-actions-btn:hover { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:#0F172A; }
 body.dark .cm-actions-btn { background:rgba(255,255,255,0.05); border-color:#04363A; color:rgba(255,255,255,0.7); }
 body.dark .cm-actions-btn:hover { background:rgba(255,255,255,0.05); border-color:rgba(16,185,129,0.30); color:#FFFFFF; }
+/* Integration Detail capability row menu — same canonical Only-icon neutral chrome as .check-menu-btn. */
+.id-cap-menu-btn { background:#F8F9FA; border-color:#E2E8F0; color:#64748B; }
+.id-cap-menu-btn:hover { background:#F3FAF6; border-color:rgba(16,185,129,0.32); color:#0F172A; }
+body.dark .id-cap-menu-btn { background:rgba(255,255,255,0.05); border-color:#04363A; color:rgba(255,255,255,0.7); }
+body.dark .id-cap-menu-btn:hover { background:rgba(255,255,255,0.05); border-color:rgba(16,185,129,0.30); color:#FFFFFF; }
 /* ── Credential Vault ── */
 .cred-row { display:grid; grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px; min-width:900px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
 .cred-row:hover { background:var(--bg-canvas); }
@@ -11381,10 +11382,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <button class="btn-icon" aria-label="Run simulation" title="Run simulation" onclick="pdRunSimulation()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linejoin="round"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z"/></svg></button>
           <div style="position:relative;">
             <button class="btn-icon" aria-label="Export" title="Export" onclick="var d=document.getElementById('pd-export-drop');d.style.display=d.style.display==='block'?'none':'block';"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
-            <div id="pd-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
-              <button onclick="pdExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">CSV spreadsheet</button>
-              <button onclick="pdExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">PDF report</button>
+            <div id="pd-export-drop" class="scan-menu-panel" style="display:none;">
+              <div class="scan-menu-section">Export as</div>
+              <button class="scan-menu-option" onclick="pdExport('csv')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>CSV spreadsheet</button>
+              <button class="scan-menu-option" onclick="pdExport('pdf')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>PDF report</button>
             </div>
           </div>
           <button class="btn-secondary" onclick="showView(&#39;policy-assign&#39;);">Manage assignment</button>
@@ -14803,7 +14804,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               return '<div class="cm-attn" onclick="showCMDetail(\''+a.id+'\')">'
                 + '<div class="cm-attn-icon '+a.kind+'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="'+(a.kind==='warn'?'#D97706':'#64748B')+'" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>'
                 + '<div class="cm-attn-body"><div class="cm-attn-title">'+a.title+'</div><div class="cm-attn-sub">'+a.sub+'</div></div>'
-                + '<button class="cm-attn-cta" onclick="event.stopPropagation();showCMDetail(\''+a.id+'\')">'+a.cta+'</button>'
+                + '<button class="action-cta" onclick="event.stopPropagation();showCMDetail(\''+a.id+'\')">'+a.cta+'</button>'
                 + '</div>';
             }).join('');
         } else {
@@ -14865,8 +14866,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           ? 'Try adjusting your search or filters'
           : 'Create your first Connection Manager group to start managing nodes';
         var emptyCta = groups.length
-          ? '<button onclick="cmResetFilters()" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:1px solid var(--border);border-radius:6px;padding:7px 14px;cursor:pointer;">↺ Reset filters</button>'
-          : '<button class="btn btn-primary" style="font-size:12px;padding:7px 20px;display:inline-block;width:auto;" onclick="openCmSetup(\'cm-list\')">+ Create Group</button>';
+          ? '<button class="btn-outline" style="width:auto;padding:0 14px;" onclick="cmResetFilters()">Reset filters</button>'
+          : '<button class="btn-primary" style="font-size:12px;padding:7px 20px;display:inline-block;width:auto;" onclick="openCmSetup(\'cm-list\')">+ Create Group</button>';
         rows.innerHTML = '<div style="text-align:center;padding:48px 18px;">'
           + '<div class="es-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="var(--text-muted)" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="var(--text-muted)" stroke="none"></circle></svg></div>'
           + '<div style="font-size:14px;font-weight:600;color:var(--text-default);margin-bottom:4px;">'+emptyMsg+'</div>'
@@ -15454,8 +15455,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var emptyTitle = q ? 'No credentials match your search' : 'No credentials yet';
         var emptySub   = q ? 'Try a different name, type, or username.' : 'Add a reusable scan credential — stored encrypted and used by Connection Managers at scan time.';
         var emptyBtn   = q
-          ? '<button onclick="isearchReset(\'cred-search\');renderCredentials();" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:1px solid var(--border);border-radius:6px;padding:7px 14px;cursor:pointer;">↺ Clear search</button>'
-          : '<button class="btn btn-primary" onclick="credOpenEditor(null)" style="font-size:12px;padding:7px 20px;display:inline-block;width:auto;">+ New credential</button>';
+          ? '<button class="btn-outline" style="width:auto;padding:0 14px;" onclick="isearchReset(\'cred-search\');renderCredentials();">Clear search</button>'
+          : '<button class="btn-primary" onclick="credOpenEditor(null)" style="font-size:12px;padding:7px 20px;display:inline-block;width:auto;">+ New credential</button>';
         rows.innerHTML = '<div style="padding:48px 18px;text-align:center;">'
           + '<div class="es-ico">'+emptyIcon+'</div>'
           + '<div style="font-size:14px;font-weight:600;color:var(--text-default);margin-bottom:4px;">'+emptyTitle+'</div>'
@@ -18990,9 +18991,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="drift-bulk-bar" style="display:none;align-items:center;gap:12px;margin-left:auto;padding-right:4px;">
             <span id="drift-bulk-count" style="font-size:12px;font-weight:600;color:var(--text-default);">0 selected</span>
             <div style="width:1px;height:16px;background:var(--border);"></div>
-            <button onclick="driftBulkAction(&#39;approve&#39;)" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;">Approve</button>
-            <button onclick="driftBulkAction(&#39;unapprove&#39;)" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;">Unapprove</button>
-            <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;">Clear selection</button>
+            <button onclick="driftBulkAction(&#39;approve&#39;)" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">Approve</button>
+            <button onclick="driftBulkAction(&#39;unapprove&#39;)" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-sec)&#39;">Unapprove</button>
+            <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-muted)&#39;">Clear selection</button>
           </div>
         </div>
 
@@ -20887,11 +20888,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <span id="rpt-sel-count" class="rpt-bulk-count" style="display:none;">0 selected</span>
             <button id="rpt-bulk-cancel" class="btn-secondary" style="display:none;" onclick="reportsBulkCancel()">Cancel</button>
             <div id="rpt-bulk-exp-wrap" style="display:none;position:relative;">
-              <button id="rpt-bulk-export" class="btn-primary btn-primary--s" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;user-select:none;" disabled onclick="reportsBulkMenu()"><span>↓ Export Selected (<span id="rpt-bulk-n">0</span>)</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-              <div id="rpt-bulk-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-                <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
-                <button onclick="reportsBulkExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
-                <button onclick="reportsBulkExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+              <button id="rpt-bulk-export" class="btn-primary btn-primary--s" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;user-select:none;" disabled onclick="reportsBulkMenu()"><span>Export Selected (<span id="rpt-bulk-n">0</span>)</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+              <div id="rpt-bulk-drop" class="scan-menu-panel" style="display:none;">
+                <div class="scan-menu-section">Export as</div>
+                <button class="scan-menu-option" onclick="reportsBulkExport('csv')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>CSV spreadsheet</button>
+                <button class="scan-menu-option" onclick="reportsBulkExport('pdf')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>PDF report</button>
               </div>
             </div>
           </div>
@@ -21014,11 +21015,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <div style="position:relative;">
-            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rc-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-            <div id="rc-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
-              <button onclick="document.getElementById('rc-export-drop').style.display='none';openReportExport('changed','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
-              <button onclick="document.getElementById('rc-export-drop').style.display='none';openReportExport('changed','pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rc-export-drop');d.style.display=d.style.display==='block'?'none':'block';">Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div id="rc-export-drop" class="scan-menu-panel" style="display:none;">
+              <div class="scan-menu-section">Export as</div>
+              <button class="scan-menu-option" onclick="document.getElementById('rc-export-drop').style.display='none';openReportExport('changed','csv')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>CSV spreadsheet</button>
+              <button class="scan-menu-option" onclick="document.getElementById('rc-export-drop').style.display='none';openReportExport('changed','pdf')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>PDF report</button>
             </div>
           </div>
         </div>
@@ -21271,11 +21272,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <div style="position:relative;">
-            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rb-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-            <div id="rb-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
-              <button onclick="document.getElementById('rb-export-drop').style.display='none';openReportExport('baseline','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
-              <button onclick="document.getElementById('rb-export-drop').style.display='none';openReportExport('baseline','pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rb-export-drop');d.style.display=d.style.display==='block'?'none':'block';">Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div id="rb-export-drop" class="scan-menu-panel" style="display:none;">
+              <div class="scan-menu-section">Export as</div>
+              <button class="scan-menu-option" onclick="document.getElementById('rb-export-drop').style.display='none';openReportExport('baseline','csv')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>CSV spreadsheet</button>
+              <button class="scan-menu-option" onclick="document.getElementById('rb-export-drop').style.display='none';openReportExport('baseline','pdf')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>PDF report</button>
             </div>
           </div>
         </div>
@@ -21530,11 +21531,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <div style="position:relative;">
-            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('ri-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-            <div id="ri-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
-              <button onclick="document.getElementById('ri-export-drop').style.display='none';openReportExport('investigation','csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
-              <button onclick="document.getElementById('ri-export-drop').style.display='none';openReportExport('investigation','pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('ri-export-drop');d.style.display=d.style.display==='block'?'none':'block';">Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div id="ri-export-drop" class="scan-menu-panel" style="display:none;">
+              <div class="scan-menu-section">Export as</div>
+              <button class="scan-menu-option" onclick="document.getElementById('ri-export-drop').style.display='none';openReportExport('investigation','csv')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>CSV spreadsheet</button>
+              <button class="scan-menu-option" onclick="document.getElementById('ri-export-drop').style.display='none';openReportExport('investigation','pdf')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>PDF report</button>
             </div>
           </div>
         </div>
@@ -21795,11 +21796,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
           <div style="width:1px;height:26px;background:var(--border);"></div>
           <div style="position:relative;">
-            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rep-export-drop');d.style.display=d.style.display==='block'?'none':'block';">↓ Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-            <div id="rep-export-drop" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:200px;box-shadow:var(--shadow-md);z-index:100;">
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Export as</div>
-              <button onclick="document.getElementById('rep-export-drop').style.display='none';openExport('csv')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;margin-bottom:8px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ CSV spreadsheet</button>
-              <button onclick="document.getElementById('rep-export-drop').style.display='none';openExport('pdf')" style="display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:none;font-family:inherit;font-size:13px;color:var(--text-default);cursor:pointer;" onmouseover="this.style.color='var(--green1)'" onmouseout="this.style.color='var(--text-default)'">↓ PDF report</button>
+            <button class="btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:12px;white-space:nowrap;user-select:none;" onclick="var d=document.getElementById('rep-export-drop');d.style.display=d.style.display==='block'?'none':'block';">Export <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+            <div id="rep-export-drop" class="scan-menu-panel" style="display:none;">
+              <div class="scan-menu-section">Export as</div>
+              <button class="scan-menu-option" onclick="document.getElementById('rep-export-drop').style.display='none';openExport('csv')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>CSV spreadsheet</button>
+              <button class="scan-menu-option" onclick="document.getElementById('rep-export-drop').style.display='none';openExport('pdf')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>PDF report</button>
             </div>
           </div>
         </div>
@@ -22413,7 +22414,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <span class="id-sm-sep">·</span><span>142 nodes imported</span>
               <span class="id-sm-sep">·</span><span>38 open CRs</span>
             </div>
-            <button class="id-summary-more" aria-label="Integration options" onclick="showToast('Integration options')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
           </div>
 
           <!-- Section 1: Base configuration (Connection + Credentials merged) -->
@@ -25740,7 +25740,7 @@ function renderSchedules() {
       + '<div class="es-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5V12l3 2"></path></svg></div>'
       + '<div style="font-size:14px;font-weight:600;color:var(--text-default);margin-bottom:4px;">No ' + (isEnv ? 'environments' : 'node groups') + ' to schedule</div>'
       + '<div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">' + (isEnv ? 'Assign nodes to environments, then set a scan cadence per environment here.' : 'Create a node group first, then set its scan cadence here.') + '</div>'
-      + (isEnv ? '' : '<button onclick="showView(\'cm-list\')" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:1px solid var(--border);border-radius:6px;padding:7px 14px;cursor:pointer;">Go to CM Groups →</button>')
+      + (isEnv ? '' : '<button class="btn-outline" style="width:auto;padding:0 14px;" onclick="showView(\'cm-list\')">Go to CM Groups ' + actionArrow + '</button>')
       + '</div>';
     return;
   }
