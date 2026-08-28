@@ -2747,22 +2747,22 @@ body.dark .ai-cta-ico svg { color:#818CF8; }
    contexts with no clipping ancestor (Dashboard, Detected Drift). Policy Detail's checks list sits
    inside an `overflow:hidden` card, so its panel uses `.ai-panel--fixed` (position:fixed, top/left
    computed in JS from the trigger's getBoundingClientRect — same escape-hatch as #pd-tag-picker)
-   instead. Thin gradient strip + circular gradient icon badge keep the "AI card" identity; footer
-   disclaimer keeps the content honestly labelled as AI-generated. */
+   instead. Left accent bar + plain sparkle glyph keep the "AI card" identity (Figma 3724:40400);
+   footer disclaimer keeps the content honestly labelled as AI-generated. */
 @keyframes aiPanelIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 .ai-dropdown { position:relative; display:inline-flex; }
-.ai-panel { display:none; position:absolute; z-index:60; top:calc(100% + 8px); right:0; width:320px; max-width:calc(100vw - 24px); box-sizing:border-box; overflow:hidden; padding:16px; border:1px solid rgba(99,102,241,0.16); border-radius:12px; background:var(--bg-surface); box-shadow:0 8px 20px rgba(15,23,42,0.12); font-size:12.5px; line-height:1.65; color:var(--text-default); }
+.ai-panel { display:none; position:absolute; z-index:60; top:calc(100% + 8px); right:0; width:320px; max-width:calc(100vw - 24px); box-sizing:border-box; overflow:hidden; padding:20px 24px; border-left:3px solid #6366F1; border-radius:12px; background:var(--bg-surface); box-shadow:0 2px 5px rgba(0,0,0,0.14); font-size:13px; line-height:1.5; color:var(--text-sec); }
 .ai-panel.ai-panel--fixed { position:fixed; top:0; right:auto; left:0; }
-.ai-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#6366F1,#8B5CF6); }
 .ai-panel.is-open { display:block; animation:aiPanelIn .16s ease-out; }
-.ai-panel-head { display:flex; align-items:center; gap:8px; margin:2px 0 9px; font-size:11px; font-weight:700; letter-spacing:0.3px; color:#6366F1; }
-.ai-panel-ico { display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#6366F1,#8B5CF6); color:#fff; flex-shrink:0; }
+.ai-panel-head { display:flex; align-items:center; gap:6px; margin:0 0 6px; font-size:14px; font-weight:500; color:#6366F1; }
+.ai-panel-ico { display:flex; align-items:center; justify-content:center; color:#6366F1; flex-shrink:0; }
 .ai-panel-close { margin-left:auto; cursor:pointer; color:var(--text-muted); background:none; border:none; padding:2px; border-radius:5px; display:flex; transition:color .15s, background .15s; }
 .ai-panel-close:hover { color:var(--text-default); background:rgba(99,102,241,0.10); }
 .ai-panel-loading { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-sec); }
-.ai-panel-foot { display:flex; align-items:center; gap:5px; margin-top:11px; padding-top:9px; border-top:1px solid var(--border); font-size:10px; color:var(--text-muted); }
-body.dark .ai-panel { border-color:rgba(99,102,241,0.28); box-shadow:0 10px 32px rgba(0,0,0,0.5); }
+.ai-panel-foot { display:flex; align-items:center; gap:5px; margin-top:9px; padding-top:10px; border-top:1px solid rgba(226,232,240,0.5); font-size:11px; color:var(--text-muted); }
+body.dark .ai-panel { border-left-color:#A5B4FC; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
 body.dark .ai-panel-head { color:#A5B4FC; }
+body.dark .ai-panel-ico { color:#A5B4FC; }
 body.dark .ai-panel-close:hover { background:rgba(99,102,241,0.18); }
 body.dark .ai-panel-foot { border-top-color:rgba(255,255,255,0.08); }
 .ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6366F1; background:none; border:none; cursor:pointer; padding:0; }
@@ -7769,7 +7769,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div class="ai-dropdown">
               <button type="button" class="ai-cta" id="dash-ai-btn" onclick="dashAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
               <div class="ai-panel" id="dash-ai-panel">
-                <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="dashAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="dashAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
                 <div id="dash-ai-body"></div>
               </div>
             </div>
@@ -8254,7 +8254,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div><!-- end filter row -->
 
         <!-- Device list -->
-        <div id="nodes-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+        <div id="nodes-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
 
           <!-- Table header -->
           <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
@@ -8622,7 +8622,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
 
           <!-- Detected table -->
-          <div id="detected-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+          <div id="detected-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
 
             <!-- Table header -->
             <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 260px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
@@ -11392,7 +11392,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Checks list -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
           <div id="pd-checks-list"></div>
         </div>
 
@@ -11415,7 +11415,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
           </div>
           <!-- Table: Node / Simulation result / Status -->
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
             <!-- .col-thead — канонічна поверхня шапки колонок (--table-header-bg: light #F1F5F9,
                  dark #063135). Це div-таблиця, тож глобальне правило `table thead th` її не ловить;
                  клас — саме той гак, який для таких випадків і заведено. Типографіка — як у
@@ -16245,7 +16245,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     var PD_PLUS_SVG = '<svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"/><path d="M0.628906 4H7.36965"/></svg>';
     // AI surfacing (Week 3, Пн) — "Explain why this check failed", inline per-row on FAILED
     // checks only. Same sparkle glyph as the Dashboard/Detected Drift AI triggers.
-    var PD_AI_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/></svg>';
+    var PD_AI_SVG = '<svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>';
     // Same icon-chip glyph as .ai-cta on Dashboard/Detected Drift (mingcute:ai-line, Figma 3704:25546).
     var PD_AI_ICO_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>';
 
@@ -19102,7 +19102,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div class="ai-dropdown">
                 <button type="button" class="ai-cta" id="cd-ai-btn" onclick="cdAiExplain()">Explain with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
                 <div class="ai-panel" id="cd-ai-panel">
-                  <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/></svg></span>AI Explanation<button type="button" class="ai-panel-close" onclick="cdAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                  <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Explanation<button type="button" class="ai-panel-close" onclick="cdAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
                   <div id="cd-ai-body"></div>
                 </div>
               </div>
@@ -21915,7 +21915,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Schedule table -->
-        <div id="sched-table-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+        <div id="sched-table-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
           <div class="col-thead" style="display:grid;grid-template-columns:minmax(260px,2fr) repeat(5,minmax(120px,1fr)) 84px;column-gap:24px;padding:10px 20px;background:var(--table-header-bg);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
             <!-- Лише Node group і Time мають надійний, завжди-однаковий формат значення —
                  стабільно сортуються. Status/Frequency лишаються без стрілки (категорійні,
@@ -22139,7 +22139,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
 
       <!-- Table -->
-      <div id="cred-table-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;">
+      <div id="cred-table-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
         <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px;min-width:900px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
           <!-- Лише Name і Used by — стабільно порівнювані значення (ім'я, число вузлів).
                Type/Status/Source — категорійні (як STATUS у Managed Nodes), Username — довільний
