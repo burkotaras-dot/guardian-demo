@@ -2867,7 +2867,7 @@ body.dark .cm-last-activity { color:#96A6BD !important; }
 .drift-row[data-change-type="added"]    { --row-accent:#2563eb; }
 .drift-row[data-change-type="removed"]  { --row-accent:#a855f7; }
 .drift-row:last-child { border-bottom:none; }
-.drift-row:hover { background:var(--bg-surface); border-color:var(--border-strong); box-shadow:none; transform:translateY(-1px); }
+.drift-row:hover { background:var(--bg-surface); border-color:var(--border-strong); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
 /* Drift TYPE (що змінилось) і Drift STATUS (стан реконсиляції) — канонічний блок BADGE.
    Наголос лишається на статусі: він пігулка, тип — тихий Dot+text. */
 .drift-type, .drift-stat { justify-self:start; }
@@ -3155,6 +3155,7 @@ body.dark .chg-filters-col-divider { border-left-color:var(--border); }
 .check-card.drift-handled:hover { opacity:0.85; }
 /* Compact single-line drift row — operational list (replaces tall diff cards) */
 .check-card.drift-row { display:grid; grid-template-columns:18px 86px minmax(140px,1fr) 168px 120px 124px 124px 18px; align-items:center; gap:12px; padding:11px 16px; box-shadow:none; }
+.check-card.drift-row:hover { box-shadow:var(--shadow-sm); }
 
 /* CATEGORY TAG HIERARCHY
    Top "type" tag (Compliance Policy / Custom / etc) stays as solid colored pill (font-size:10px, font-weight:700).
@@ -3775,7 +3776,7 @@ body.dark .results-top,
 body.dark .results-scope-bar  { background:var(--bg-page); border-color:var(--border); }
 body.dark .check-card         { background: var(--bg-card); border-color: var(--border); }
 body.dark .check-card:hover   { border-color: rgba(255,255,255,0.18); box-shadow: var(--shadow-md); }
-body.dark .check-card.drift-row:hover { box-shadow: none; }
+body.dark .check-card.drift-row:hover { box-shadow: var(--shadow-sm); }
 body.dark .check-card .check-row svg { stroke: rgba(255,255,255,0.55); }
 body.dark .results-top [style*="font-size:10px;color:var(--text-sec)"] { color: var(--p-neutral-50) !important; }
 body.dark .check-title        { color: var(--p-neutral-50); }
@@ -6395,13 +6396,15 @@ body.dark #csv-modal .csv-imp-bar { background:rgba(255,255,255,0.08); }
   .cred-row,
   .rc-row,
   .rep-row-link,
-  .schedule-table-row,
-  .drift-row
+  .schedule-table-row
 ):not(.cm-row-dim):not([aria-disabled="true"]):hover {
   background:var(--table-row-hover) !important;
 }
 /* Theme-scoped form intentionally repeats the selector so it outranks legacy
-   body.dark component rules until those implementations are fully migrated. */
+   body.dark component rules until those implementations are fully migrated.
+   .drift-row is deliberately excluded from this shared list — it mirrors the
+   dashboard .action-row look (accent stripe + lift + shadow) instead of the
+   plain data-table hover, per its own rules above. */
 body.dark :is(
   .table-row,
   .node-row,
@@ -6416,8 +6419,7 @@ body.dark :is(
   .cred-row,
   .rc-row,
   .rep-row-link,
-  .schedule-table-row,
-  .drift-row
+  .schedule-table-row
 ):not(.cm-row-dim):not([aria-disabled="true"]):hover {
   background:var(--table-row-hover) !important;
 }
