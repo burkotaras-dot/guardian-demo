@@ -16538,21 +16538,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }
       panel.classList.add('is-open');
       _aiBindOutsideClose('pd-ai-panel-' + safeKey, btn, function () { pdAiDismiss(safeKey); });
-      body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Analysing failed check…</div>';
-      setTimeout(function () {
-        // Week 3, Середа — internal "Jupiter" concept (policy intelligence): cause + impact on
-        // the policy + a concrete recommendation, not just the failure reason. window._pdKeyToDetail
-        // carries the check's own description (often "Current value: X. Required: Y") so the cause
-        // is specific to THIS check, not a generic sentence.
-        var detail = window._pdKeyToDetail && window._pdKeyToDetail[safeKey];
-        body.innerHTML =
-          '<div><strong>' + name + '</strong> failed' + (detail ? ' (' + detail + ')' : '') + ' \u2014 the current ' +
-          'node configuration does not meet what this check requires. This lowers the compliance score for the ' +
-          'assigned policy and will keep failing on every future scan until it\u2019s resolved. ' +
-          '<strong>Recommendation:</strong> bring the setting back in line with the requirement above, or open the ' +
-          'related change if this was recent drift, then rerun the scan to confirm it passes.</div>' +
-          '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
-      }, 900);
+      _aiRunPanel(btn, body, 'Analysing failed check…', function (success) {
+        setTimeout(function () {
+          // Week 3, Середа — internal "Jupiter" concept (policy intelligence): cause + impact on
+          // the policy + a concrete recommendation, not just the failure reason. window._pdKeyToDetail
+          // carries the check's own description (often "Current value: X. Required: Y") so the cause
+          // is specific to THIS check, not a generic sentence.
+          var detail = window._pdKeyToDetail && window._pdKeyToDetail[safeKey];
+          success(
+            '<div><strong>' + name + '</strong> failed' + (detail ? ' (' + detail + ')' : '') + ' \u2014 the current ' +
+            'node configuration does not meet what this check requires. This lowers the compliance score for the ' +
+            'assigned policy and will keep failing on every future scan until it\u2019s resolved. ' +
+            '<strong>Recommendation:</strong> bring the setting back in line with the requirement above, or open the ' +
+            'related change if this was recent drift, then rerun the scan to confirm it passes.</div>'
+          );
+        }, 900);
+      });
     }
 
     function pdAiDismiss(safeKey) {
@@ -24153,6 +24154,32 @@ function _aiBindOutsideClose(panelId, triggerEl, dismissFn) {
   }, 10);
 }
 
+// AI Interaction Standard (Week 3, Чт) — shared Trigger -> Loading -> Result/Error -> Retry state
+// shape for every AI panel that doesn't need its own demo-state selector (Node Detail keeps its
+// own implementation since it demonstrates all 4 outcomes on demand for review purposes). Dashboard/
+// Detected Drift/Failed Scan/Policy Detail have no real backend to fail against yet, so `run` always
+// resolves success today — but they go through the exact same success/fail code path a real API call
+// would, so wiring one in later needs no new UI. `run(success, fail)`: call success(html) with the
+// result body (the "AI-generated" disclaimer footer is added here, not by the caller); call fail()
+// to render the same error+Retry chrome Node Detail uses.
+function _aiRunPanel(btn, body, loadingText, run) {
+  if (btn) btn.disabled = true;
+  body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>' + loadingText + '</div>';
+  run(
+    function success(html) {
+      if (btn) btn.disabled = false;
+      body.innerHTML = html + '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
+    },
+    function fail() {
+      if (btn) btn.disabled = false;
+      body.innerHTML = '<div style="color:var(--bdg-red-txt);">Couldn\u2019t generate this right now.</div>' +
+        '<button type="button" class="ai-inline-cta" style="margin-top:10px;">Retry</button>';
+      var retryBtn = body.querySelector('.ai-inline-cta');
+      if (retryBtn) retryBtn.onclick = function () { _aiRunPanel(btn, body, loadingText, run); };
+    }
+  );
+}
+
 // AI surfacing (Week 3, Пн) — Dashboard "Summarise what needs my attention" pattern.
 // Trigger -> Processing -> AI result -> dismiss. Never touches the Review/Reconcile
 // primary CTAs in the rows below; this is a supplementary summary, not a replacement action.
@@ -24161,19 +24188,18 @@ function dashAiSummarize() {
   var panel = document.getElementById('dash-ai-panel');
   var body = document.getElementById('dash-ai-body');
   if (!btn || !panel || !body) return;
-  btn.disabled = true;
   panel.classList.add('is-open');
   _aiBindOutsideClose('dash-ai-panel', btn, dashAiDismiss);
-  body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Summarising open items…</div>';
-  setTimeout(function () {
-    body.innerHTML =
-      '<div>3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
-      'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
-      'flagged on a policy check. The drift is the highest priority — it touches a node outside its ' +
-      'expected baseline and has been open the longest.</div>' +
-      '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
-    btn.disabled = false;
-  }, 900);
+  _aiRunPanel(btn, body, 'Summarising open items…', function (success) {
+    setTimeout(function () {
+      success(
+        '<div>3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
+        'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
+        'flagged on a policy check. The drift is the highest priority — it touches a node outside its ' +
+        'expected baseline and has been open the longest.</div>'
+      );
+    }, 900);
+  });
 }
 
 function dashAiDismiss() {
@@ -24188,22 +24214,21 @@ function cdAiExplain() {
   var panel = document.getElementById('cd-ai-panel');
   var body = document.getElementById('cd-ai-body');
   if (!btn || !panel || !body) return;
-  btn.disabled = true;
   panel.classList.add('is-open');
   _aiBindOutsideClose('cd-ai-panel', btn, cdAiDismiss);
-  body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Analysing this change…</div>';
-  setTimeout(function () {
-    var impactEl = document.getElementById('cd-impact');
-    var impact = impactEl ? impactEl.textContent : '';
-    body.innerHTML =
-      '<div>This change disabled real-time protection, which is the control that would normally ' +
-      'stop malware before it runs. ' + (impact ? impact + ' ' : '') +
-      'It matters most on this node because it sits outside the expected baseline for its group — ' +
-      'similar nodes still have the setting enabled, which suggests this is a local change rather ' +
-      'than a policy-driven one.</div>' +
-      '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
-    btn.disabled = false;
-  }, 900);
+  _aiRunPanel(btn, body, 'Analysing this change…', function (success) {
+    setTimeout(function () {
+      var impactEl = document.getElementById('cd-impact');
+      var impact = impactEl ? impactEl.textContent : '';
+      success(
+        '<div>This change disabled real-time protection, which is the control that would normally ' +
+        'stop malware before it runs. ' + (impact ? impact + ' ' : '') +
+        'It matters most on this node because it sits outside the expected baseline for its group — ' +
+        'similar nodes still have the setting enabled, which suggests this is a local change rather ' +
+        'than a policy-driven one.</div>'
+      );
+    }, 900);
+  });
 }
 
 function cdAiDismiss() {
@@ -24219,17 +24244,14 @@ function sfAiTroubleshoot() {
   var panel = document.getElementById('sf-ai-panel');
   var body = document.getElementById('sf-ai-body');
   if (!btn || !panel || !body) return;
-  btn.disabled = true;
   panel.classList.add('is-open');
   _aiBindOutsideClose('sf-ai-panel', btn, sfAiDismiss);
-  body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Diagnosing the failure…</div>';
-  setTimeout(function () {
-    var d = SCAN_FAIL_TYPES[sfCurrentType] || SCAN_FAIL_TYPES.auth;
-    body.innerHTML =
-      '<div>' + d.aiHelp + '</div>' +
-      '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
-    btn.disabled = false;
-  }, 900);
+  _aiRunPanel(btn, body, 'Diagnosing the failure…', function (success) {
+    setTimeout(function () {
+      var d = SCAN_FAIL_TYPES[sfCurrentType] || SCAN_FAIL_TYPES.auth;
+      success('<div>' + d.aiHelp + '</div>');
+    }, 900);
+  });
 }
 
 function sfAiDismiss() {
