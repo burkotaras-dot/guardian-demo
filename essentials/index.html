@@ -3258,6 +3258,9 @@ body:not(.dark) .ss-brand-sub { color:#657387; }
 body.dark .ss-brand-sub { color:var(--text-sec); }
 body:not(.dark) #v-secret-server-config .form-input::placeholder { color:#657387; }
 body:not(.dark) #v-secret-server-config #ss-folder-list .form-input { background:#fff; }
+body.dark #ss-folder-list .form-input { background:#062528 !important; border-color:rgba(255,255,255,0.10) !important; }
+.ss-folder-section { background:var(--bg-canvas); }
+body.dark .ss-folder-section { background:#133033; }
 /* Agentless form inputs share the same flat dark fill as the CM cards. */
 body.dark #v-s-agentless .form-input { background:#0C2123 !important; }
 .mapping-select { border:1px solid var(--border);border-radius:4px;padding:6px 36px 6px 10px;font-size:11px;color:var(--text-default);appearance:none;-webkit-appearance:none;background-color:var(--bg-surface);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer; }
@@ -3682,7 +3685,7 @@ body.dark .j3-table td        { color: var(--p-neutral-300); }
 body.dark .data-table td      { color: var(--p-neutral-300); }
 body.dark .collapsible-header { color: var(--p-neutral-50); background: var(--bg-card); }
 body.dark .perm-item          { color: var(--p-neutral-300); }
-body.dark .form-input         { color: var(--p-neutral-50) !important; background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.2) !important; }
+body.dark .form-input         { color: var(--p-neutral-50) !important; background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.10) !important; }
 body.dark .form-input:focus   { border-color: var(--green1) !important; }
 body.dark .mapping-select     { color: var(--p-neutral-50) !important; background-color: var(--bg-card) !important; border-color: var(--p-dark-border) !important; }
 
@@ -3848,7 +3851,8 @@ body.dark .compare-thead,
 body.dark #v-policy-edit .col-thead { background: var(--table-header-bg) !important; }
 /* Each category is its own separate card (split apart, 16px gap between them —
    same pattern as Consensus Comparison's .peer-sec). */
-.compare-sec { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-sm); }
+.compare-sec { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+.compare-row:last-child { border-bottom:none !important; }
 .compare-sec + .compare-sec { margin-top: 16px; }
 body.dark .compare-sec-hdr { background: rgba(255,255,255,0.03) !important; }
 /* Node/Scan Comparison table headers — no fill here specifically (overrides the app-wide
@@ -3970,7 +3974,7 @@ body.dark .node-scan[data-state="never"]  { color:#64748B; }
    це норма, а вузол, мертвий тижнями, — проблема. Тому Offline завжди йде з «for 3 days»:
    без тривалості губиться саме те, з чого Adem почав («10 of them offline for days»).
    Пігулки немає: у рядку вже є Score / Issues / Detected Drift (DS §12). */
-.node-status { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; }
+.node-status { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:400; }
 .node-status::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
 .node-status[data-net="online"]       { color:#059669; }
 .node-status[data-net="offline"]      { color:var(--text-muted); }
@@ -4430,6 +4434,7 @@ body.dark #nodes-peer-view [style*="background:#fff"] { background: var(--bg-car
    інсет, що й у ATTRIBUTE-рядка над ними; 16px — проміжок між картками (нема перед
    першою — вона впритул до заголовка колонок, як у макеті). */
 .peer-sec { background:var(--bg-surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; margin:0 24px; }
+.peer-row:last-child { border-bottom:none !important; }
 .peer-sec + .peer-sec { margin-top:16px; }
 /* Рядки під кольоровим заголовком категорії — не білі, а на легкому #F1F5F9-підкладі
    (Figma 3474:53540: rgba(241,245,249,.3) поверх картки). */
@@ -4779,8 +4784,8 @@ body.dark .add-node-method-card:hover { background:rgba(16,185,129,.10); border-
   height:auto;
   max-height:calc(100vh - 40px);
 }
-.gm-agentless-setup .gm-head { flex:0 0 74px; height:74px; box-sizing:border-box; }
-.gm-agentless-setup .gm-stepper { flex:0 0 54px; height:54px; box-sizing:border-box; }
+.gm-agentless-setup .gm-head { flex:0 0 82px; height:82px; padding-bottom:0; box-sizing:border-box; }
+.gm-agentless-setup .gm-stepper { flex:0 0 58px; height:58px; padding-top:20px; box-sizing:border-box; }
 .gm-agentless-setup .gm-body { padding:20px 0 10px; }
 .aws-sync-banner { background:#F8FAFC; }
 body.dark .aws-sync-banner { background:rgba(255,255,255,0.05); }
@@ -8298,14 +8303,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:9px;">
-              <span style="font-size:16px;font-weight:700;color:#00AF73;">78</span>
+              <span style="font-size:16px;font-weight:400;color:#00AF73;">78</span>
               <div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:78%;height:100%;background:#00AF73;border-radius:99px;"></div></div>
             </div>
             <div>
-              <span style="font-size:12px;font-weight:600;color:#FB3C44;">9 Critical</span>
+              <span style="font-size:12px;font-weight:400;color:#FB3C44;">9 Critical</span>
               <div style="font-size:11px;color:var(--text-sec);">27 total</div>
             </div>
-            <div><span style="font-size:12px;font-weight:600;color:#d97706;">3 changes</span></div>
+            <div><span style="font-size:12px;font-weight:400;color:#d97706;">3 changes</span></div>
             <div><span class="node-status" data-net="online">Online</span></div>
             <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>2 min ago</div>
             <div><button class="action-cta" style="width:100%;min-width:0;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Fix now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
@@ -8324,14 +8329,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:9px;">
-              <span style="font-size:16px;font-weight:700;color:#FB3C44;">54</span>
+              <span style="font-size:16px;font-weight:400;color:#FB3C44;">54</span>
               <div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:54%;height:100%;background:#FB3C44;border-radius:99px;"></div></div>
             </div>
             <div>
-              <span style="font-size:12px;font-weight:600;color:#FB3C44;">14 Critical</span>
+              <span style="font-size:12px;font-weight:400;color:#FB3C44;">14 Critical</span>
               <div style="font-size:11px;color:var(--text-sec);">36 total</div>
             </div>
-            <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 change</span></div>
+            <div><span style="font-size:12px;font-weight:400;color:#d97706;">1 change</span></div>
             <div><span class="node-status" data-net="online">Online</span></div>
             <div class="node-scan" data-state="idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>1 hour ago</div>
             <div><button class="action-cta" style="width:100%;min-width:0;" onclick="event.stopPropagation();showView(&#39;node-detail&#39;);">Fix now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button></div>
@@ -8350,11 +8355,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:9px;">
-              <span style="font-size:16px;font-weight:700;color:#00AF73;">91</span>
+              <span style="font-size:16px;font-weight:400;color:#00AF73;">91</span>
               <div style="width:60px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;"><div style="width:91%;height:100%;background:#00AF73;border-radius:99px;"></div></div>
             </div>
             <div>
-              <span style="font-size:12px;font-weight:600;color:var(--text-default);">0 Critical</span>
+              <span style="font-size:12px;font-weight:400;color:var(--text-default);">0 Critical</span>
               <div style="font-size:11px;color:var(--text-sec);">6 total</div>
             </div>
             <div><span style="font-size:12px;color:var(--text-sec);">None</span></div>
@@ -8377,7 +8382,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
             <div><span style="font-size:12px;color:var(--text-sec);">—</span></div>
-            <div><span style="font-size:12px;font-weight:600;color:#d97706;">1 change</span></div>
+            <div><span style="font-size:12px;font-weight:400;color:#d97706;">1 change</span></div>
             <div><span class="node-status" data-net="online">Online</span></div>
             <div class="node-scan" data-state="running"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.22-8.56"></path></svg>Scanning…</div>
             <div><button class="action-cta action-cta--neutral" style="width:100%;min-width:0;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Scanning…</button></div>
@@ -9257,13 +9262,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="font-size:12px;color:var(--text-sec);margin-top:3px;">MACBOOK-TARAS &nbsp;vs&nbsp; SARAH-LAPTOP-01</div>
             </div>
           </div>
-          <!-- Filter pills — canonical .seg segmented control (same component as the
-               All Nodes "State" filter), not a one-off inline-styled trio. -->
-          <div class="seg" id="compare-filter-seg" role="group" aria-label="Filter comparison rows">
-            <button onclick="setCompareFilter(&#39;all&#39;)" id="cf-all" class="seg-btn is-active" aria-pressed="true">All <span class="seg-count">45</span></button>
-            <button onclick="setCompareFilter(&#39;diff&#39;)" id="cf-diff" class="seg-btn" aria-pressed="false">Differences <span class="seg-count">27</span></button>
-            <button onclick="setCompareFilter(&#39;fail&#39;)" id="cf-fail" class="seg-btn" aria-pressed="false">Failing <span class="seg-count">13</span></button>
-          </div>
+        </div>
+
+        <!-- Filter tabs — canonical .policies-tabs component (same as the
+             All Nodes Managed/Detected tabs), not a one-off segmented control. -->
+        <div class="policies-tabs" id="compare-filter-seg" role="group" aria-label="Filter comparison rows" style="margin-bottom:22px;">
+          <button onclick="setCompareFilter(&#39;all&#39;)" id="cf-all" class="pol-tab pol-tab-active" aria-pressed="true">All <span class="pol-tab-count">45</span></button>
+          <button onclick="setCompareFilter(&#39;diff&#39;)" id="cf-diff" class="pol-tab" aria-pressed="false">Differences <span class="pol-tab-count">27</span></button>
+          <button onclick="setCompareFilter(&#39;fail&#39;)" id="cf-fail" class="pol-tab" aria-pressed="false">Failing <span class="pol-tab-count">13</span></button>
         </div>
 
         <!-- Summary banner — neutral surface + colour on the value only (status-box canon:
@@ -13077,7 +13083,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         return '<div style="display:flex;gap:8px;margin-bottom:8px;">'
           + '<input class="form-input" type="text" value="' + (val || '').replace(/"/g, '&quot;') + '" placeholder="\\Personal Folders\\Guardian" oninput="ssFolders[' + i + ']=this.value" style="flex:1;">'
           + (ssFolders.length > 1
-              ? '<button onclick="ssRemoveFolder(' + i + ')" class="btn-icon btn-icon--danger" title="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg></button>'
+              ? '<button onclick="ssRemoveFolder(' + i + ')" class="btn-icon btn-icon--danger" style="width:39px;height:39px;" title="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg></button>'
               : '')
           + '</div>';
       }).join('');
@@ -14917,7 +14923,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           + '<div><span class="cm-status" data-s="'+st+'"><span class="cm-dot"></span> '+stLabel+'</span></div>'
           + '<div style="font-size:11px;">'+healthHtml+'</div>'
           + '<div style="color:var(--text-sec);font-size:11px;">'+(g.location || '—')+'</div>'
-          + '<div style="font-weight:700;color:var(--text-default);">'+nodes+'</div>'
+          + '<div style="font-weight:400;color:var(--text-default);">'+nodes+'</div>'
           + '<div class="cm-last-activity" style="font-size:11px;color:var(--text-muted);">'+lastAct+'</div>'
           + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="event.stopPropagation();cmRowMenu(this,\''+g.id+'\')">⋯</button></div>'
           + '</div>';
@@ -17440,10 +17446,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       return '<div class="rep-prow rep-row-link" data-pol="' + p.pol + '" onclick="repOpenPolicy(&#39;' + p.pol + '&#39;)" ' +
         'style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);font-size:12px;">' +
         '<div style="font-weight:600;color:var(--text-default);display:flex;align-items:center;gap:6px;">' + (REP_POL_ICO[p.pol] || '') + REP_POL_NAMES[p.pol] + '</div>' +
-        '<div style="color:var(--text-sec);"><span style="color:#00AF73;font-weight:600;">' + p.pass + '</span> / <span style="color:' + (p.fail > 0 ? '#FB3C44' : 'var(--text-muted)') + ';font-weight:600;">' + p.fail + '</span></div>' +
+        '<div style="color:var(--text-sec);"><span style="color:#00AF73;font-weight:400;">' + p.pass + '</span> / <span style="color:' + (p.fail > 0 ? '#FB3C44' : 'var(--text-muted)') + ';font-weight:400;">' + p.fail + '</span></div>' +
         '<div>' + _repSevChips(p) + '</div>' +
         '<div style="color:var(--text-sec);">' + (p.nodes || '—') + '</div>' +
-        '<div style="font-weight:700;color:' + scoreColor + ';">' + score + '%</div>' +
+        '<div style="font-weight:400;color:' + scoreColor + ';">' + score + '%</div>' +
         '</div>';
     }
     function _repFailRow(f, dim) {
@@ -22658,7 +22664,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="border-top:1px solid var(--border);"></div>
 
             <!-- Secret folders -->
-            <div style="padding:20px 24px;background:var(--bg-canvas);">
+            <div class="ss-folder-section" style="padding:20px 24px;">
               <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Secret folder paths</div>
               <div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;">Full path of the folder(s) that hold the secrets Guardian may use — e.g. <code>\Personal Folders\Guardian</code>. Secrets in these folders appear when you pick a credential for a node.</div>
               <div id="ss-folder-list"></div>
@@ -25348,7 +25354,7 @@ function setCompareFilter(f) {
   ['all','diff','fail'].forEach(function(id) {
     var btn = document.getElementById('cf-' + id);
     if (!btn) return;
-    btn.classList.toggle('is-active', id === f);
+    btn.classList.toggle('pol-tab-active', id === f);
     btn.setAttribute('aria-pressed', id === f ? 'true' : 'false');
   });
   document.querySelectorAll('.compare-row').forEach(function(row) {
