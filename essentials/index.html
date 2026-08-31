@@ -16442,6 +16442,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       // Індекс перебудовується щоразу, але запис політики має пережити перемальовку —
       // інакше після зміни фільтра «Add tag» у шапці перестала б знаходити свій обʼєкт.
       window._pdKeyToName = {};
+      window._pdKeyToDetail = {};
       if (window._pdPolicyTagKey) window._pdKeyToName[PD_POLICY_SAFEKEY] = window._pdPolicyTagKey;
       // Шапка колонок. Живе всередині html, а не окремим блоком над списком, бо
       // порожній стан переприсвоює html цілком — інакше підписи колонок висіли б
@@ -16458,6 +16459,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var tags = _pdTagMap[c.name] || [];
         var safeKey = c.name.replace(/[^a-zA-Z0-9]/g,'_');
         window._pdKeyToName[safeKey] = c.name;
+        window._pdKeyToDetail[safeKey] = c.detail;
         html += '<div style="border-bottom:1px solid var(--border);">';
         html += '<div style="padding:10px 20px;display:flex;align-items:center;gap:14px;">';
         // Колонка Check: назва + опис — це заголовок і підзаголовок одного обʼєкта,
@@ -16538,11 +16540,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       _aiBindOutsideClose('pd-ai-panel-' + safeKey, btn, function () { pdAiDismiss(safeKey); });
       body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Analysing failed check…</div>';
       setTimeout(function () {
+        // Week 3, Середа — internal "Jupiter" concept (policy intelligence): cause + impact on
+        // the policy + a concrete recommendation, not just the failure reason. window._pdKeyToDetail
+        // carries the check's own description (often "Current value: X. Required: Y") so the cause
+        // is specific to THIS check, not a generic sentence.
+        var detail = window._pdKeyToDetail && window._pdKeyToDetail[safeKey];
         body.innerHTML =
-          '<div><strong>' + name + '</strong> failed because the current node configuration does not ' +
-          'meet the value this check expects. This lowers the compliance score for the assigned policy ' +
-          'and will keep failing on every future scan until the setting is brought back in line with ' +
-          'the check\'s requirement.</div>' +
+          '<div><strong>' + name + '</strong> failed' + (detail ? ' (' + detail + ')' : '') + ' \u2014 the current ' +
+          'node configuration does not meet what this check requires. This lowers the compliance score for the ' +
+          'assigned policy and will keep failing on every future scan until it\u2019s resolved. ' +
+          '<strong>Recommendation:</strong> bring the setting back in line with the requirement above, or open the ' +
+          'related change if this was recent drift, then rerun the scan to confirm it passes.</div>' +
           '<div class="ai-panel-foot">AI-generated — verify before acting on it</div>';
       }, 900);
     }
