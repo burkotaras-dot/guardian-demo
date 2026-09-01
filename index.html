@@ -4448,7 +4448,7 @@ body.dark #ci-chips span[style] { background: rgba(139,92,246,0.2) !important; b
 body.dark #ci-chips span span { color: #C4B5FD !important; }
 body.dark #ci-chips span button { color: #A78BFA !important; }
 body.dark #ci-add-btn { border-color: rgba(139,92,246,0.5) !important; color: #A78BFA !important; }
-body.dark #v-j4-connect [style*="background:var(--bg-canvas)"] { background: rgba(255,255,255,0.03) !important; }
+body.dark .gm-j4-connect [style*="background:var(--bg-canvas)"] { background: rgba(255,255,255,0.03) !important; }
 body.dark #ci-pop { background: #0e3535 !important; border-color: var(--p-dark-border-strong) !important; box-shadow: 0 8px 32px rgba(0,0,0,0.55) !important; }
 body.dark #ci-search { background:#062528 !important;border-color:var(--p-dark-border) !important;color:var(--search-text) !important; }
 body.dark #ci-list { scrollbar-color: rgba(255,255,255,0.25) transparent; scrollbar-width: thin; color-scheme: dark; }
@@ -5685,6 +5685,18 @@ body.dark .add-node-close { color:#CBD5E1; }
 body.dark .gm-x:hover,
 body.dark .add-node-close:hover { background:rgba(255,255,255,.06); color:#F8FAFC; }
 .gm-body { padding: 14px 24px 4px; overflow-y: auto; flex: 1 1 auto; }
+.gm-j4-connect .gm-body { padding: 16px 0 0; }
+.gm-j4-connect .gm-foot { margin-top:0; }
+.gm-j4-connect-failed .gm-body { padding: 16px 0 18px; }
+.gm-j4-connect-failed .gm-foot { margin-top:0; }
+.j4c-err-row { background:#F8FAFC; }
+body.dark .j4c-err-row { background:rgba(255,255,255,0.05); }
+.j4s-ci-box { background:var(--bg-canvas); border:1px solid var(--border); }
+body.dark .j4s-ci-box { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.10); }
+.gm-j4-connected .gm-body { padding: 0; }
+.gm-j4-connected .gm-foot { margin-top:0; }
+.gm-j4-connecting .gm-body { padding: 0; }
+.gm-j4-syncing .gm-body { padding: 40px 0 30px; }
 /* ── Canonical modal inputs ────────────────────────────────────────────────
    Figma 3023:4716 — Input / Description, White + Dark.
    Covers every text-like field inside the shared modal shell. Dropdowns,
@@ -23344,205 +23356,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
          J4: ServiceNow Change Reconciliation
     ═══════════════════════════════════════════════════ -->
 
-    <!-- J4-CONNECT -->
-    <div class="view" id="v-j4-connect" style="display: none;">
-      <div class="page-header">
-        <div style="display:flex;align-items:flex-start;gap:12px;">
-          <button onclick="showView(&#39;changes&#39;)" style="background:none;border:none;cursor:pointer;color:var(--text-sec);display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:6px;transition:background 0.12s;" onmouseover="this.style.background=&#39;var(--bg-subtle)&#39;" onmouseout="this.style.background=&#39;none&#39;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          </button>
-          <div>
-            <div class="page-title">Reconcile Drift with ServiceNow</div>
-            <div class="page-sub">Step 1 of 3 — Connect your instance to match detected changes against approved Change Requests</div>
-          </div>
-        </div>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
-        <div style="max-width:680px;margin:0 auto;">
-
-          <!-- Connection form -->
-          <div class="card" style="margin-bottom:0;padding:0;overflow:hidden;">
-
-            <!-- Brand header -->
-            <div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
-              <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAxIiBoZWlnaHQ9IjU5IiB2aWV3Qm94PSIwIDAgNDAxIDU5IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfNjAwXzE4KSI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNOTcuNTU3MiAxOC4wMTE3QzkzLjI0ODcgMTguMDExNyA4OS41NTU3IDE5LjUzODMgODYuNDc4MiAyMS45ODA4VjE4LjYyMjRINzYuMDE0NlY1OC4wMDgzSDg2Ljc4NTlWMzIuOTcyM0M4OC4zMjQ3IDMwLjgzNSA5Mi4wMTc3IDI4LjA4NzIgOTYuNjM0IDI4LjA4NzJDOTguMTcyNyAyOC4wODcyIDk5LjcxMTUgMjguMzkyNSAxMDAuOTQzIDI4LjY5NzhWMTguNjIyNEM5OS43MTE1IDE4LjMxNyA5OC40ODA1IDE4LjAxMTcgOTcuNTU3MiAxOC4wMTE3WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00LjkyNDAyIDQ1Ljc4ODRDNy42OTM3OCA0OC4yMzEgMTIuMDAyMyA0OS43NTc1IDE1LjY5NTMgNDkuNzU3NUMxOC40NjUxIDQ5Ljc1NzUgMjAuOTI3MSA0OC4yMzEgMjAuOTI3MSA0Ni4zOTkxQzIwLjkyNzEgNDAuMjkyNyAxLjUzODc2IDQyLjQyOTkgMS41Mzg3NiAyOS45MTE5QzEuNTM4NzYgMjIuMjc5IDguOTI0NzkgMTcuNjk5MiAxNi42MTg2IDE3LjY5OTJDMjEuODUwMyAxNy42OTkyIDI3LjM4OTkgMTkuNTMxMSAzMC4xNTk2IDIxLjY2ODNMMjUuMjM1NiAyOS4zMDEzQzIzLjA4MTQgMjguMDggMjAuNjE5MyAyNi41NTM0IDE3LjU0MTggMjYuNTUzNEMxNC40NjQzIDI2LjU1MzQgMTIuMzEwMSAyNy43NzQ3IDEyLjMxMDEgMjkuOTExOUMxMi4zMTAxIDM1LjEwMjMgMzEuNjk4NCAzMi45NjUxIDMxLjY5ODQgNDYuNzA0NEMzMS42OTg0IDU0LjMzNzMgMjQuMzEyNCA1OC45MTcxIDE2LjAwMzEgNTguOTE3MUMxMC40NjM1IDU4LjkxNzEgNC42MTYyNyA1Ny4wODUyIDAgNTMuNzI2N0w0LjkyNDAyIDQ1Ljc4ODRaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTcxLjM5ODUgMzcuODUwMkM3MS4zOTg1IDI2Ljg1ODcgNjMuNzA0NyAxNy42OTkyIDUyLjYyNTYgMTcuNjk5MkM0MC45MzExIDE3LjY5OTIgMzMuMjM3MyAyNy40Njk0IDMzLjIzNzMgMzguMTU1NUMzMy4yMzczIDUwLjY3MzUgNDIuMTYyMSA1OC42MTE4IDUzLjg1NjYgNTguNjExOEM2MC4wMTE3IDU4LjYxMTggNjYuMTY2NyA1Ni4xNjkyIDcwLjE2NzUgNTEuNTg5NUw2NC4wMTI0IDQ1LjQ4MzFDNjIuMTY1OSA0Ny42MjAzIDU4LjQ3MjkgNTAuMDYyOSA1NC4xNjQ0IDUwLjA2MjlDNDguNjI0OSA1MC4wNjI5IDQ0LjAwODYgNDYuMDkzNyA0My4zOTMxIDQwLjU5OEg3MC43ODNDNzEuMzk4NSAzOS45ODc0IDcxLjM5ODUgMzkuMDcxNCA3MS4zOTg1IDM3Ljg1MDJaTTQ0LjMxNjQgMzMuMjcwNEM0NC45MzE5IDI5LjYwNjYgNDguNjI0OSAyNi4yNDgxIDUyLjkzMzQgMjYuMjQ4MUM1Ny4yNDE5IDI2LjI0ODEgNjAuMzE5NCAyOS42MDY2IDYwLjkzNDkgMzMuMjcwNEg0NC4zMTY0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNDcuNzIxIDE4LjYyM0wxMjkuNTYzIDU4LjAwOUgxMjIuMTc3TDEwNC4wMiAxOC42MjNIMTE0Ljc5MUwxMjUuODcgNDIuNzQzMUwxMzYuNjQyIDE4LjYyM0gxNDcuNzIxWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNTYuNjQ2IC0wLjAwMTk1MzEyQzE2MC42NDYgLTAuMDAxOTUzMTIgMTYzLjcyNCAzLjA1MTIyIDE2My43MjQgNi43MTUwM0MxNjMuNzI0IDEwLjY4NDIgMTYwLjY0NiAxMy40MzIgMTU2LjY0NiAxMy40MzJDMTUyLjY0NSAxMy40MzIgMTQ5Ljg3NSAxMC4zNzg4IDE0OS44NzUgNi43MTUwM0MxNDkuODc1IDIuNzQ1OSAxNTIuNjQ1IC0wLjAwMTk1MzEyIDE1Ni42NDYgLTAuMDAxOTUzMTJaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMTYyLjE4NSAxOC42MjExSDE1MS40MTRWNTguMDA3SDE2Mi4xODVWMTguNjIxMVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjA1Ljg4NiA0OS43NTc1QzIwMS4yNjkgNTUuODYzOSAxOTUuNDIyIDU4LjYxMTggMTg4LjAzNiA1OC42MTE4QzE3NS43MjYgNTguNjExOCAxNjYuODAxIDQ5LjQ1MjIgMTY2LjgwMSAzOC4xNTU1QzE2Ni44MDEgMjYuNTUzNCAxNzYuMDM0IDE3LjY5OTIgMTg4LjAzNiAxNy42OTkyQzE5NS4xMTQgMTcuNjk5MiAyMDAuOTYyIDIxLjA1NzcgMjA0LjY1NSAyNS42Mzc1TDE5Ny41NzYgMzIuMDQ5MUMxOTUuNDIyIDI5LjMwMTMgMTkyLjM0NSAyNy40Njk0IDE4OC42NTIgMjcuNDY5NEMxODIuNDk3IDI3LjQ2OTQgMTc3Ljg4IDMyLjM1NDUgMTc3Ljg4IDM4LjE1NTVDMTc3Ljg4IDQ0LjI2MTggMTgyLjE4OSA0OC44NDE2IDE4OC42NTIgNDguODQxNkMxOTIuOTYgNDguODQxNiAxOTYuMzQ1IDQ2LjM5OTEgMTk4LjE5MiA0My42NTEyTDIwNS44ODYgNDkuNzU3NVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjQ0LjM1NCA1MS41ODk1QzI0MC4zNTQgNTYuMTY5MiAyMzQuMTk5IDU4LjYxMTggMjI4LjA0NCA1OC42MTE4QzIxNi4zNDkgNTguNjExOCAyMDcuNDI0IDUwLjY3MzUgMjA3LjQyNCAzOC4xNTU1QzIwNy40MjQgMjcuMTY0MSAyMTQuODEgMTcuNjk5MiAyMjYuODEzIDE3LjY5OTJDMjM3LjU4NCAxNy42OTkyIDI0NS41ODUgMjYuODU4NyAyNDUuNTg1IDM3Ljg1MDJDMjQ1LjU4NSAzOS4wNzE0IDI0NS41ODUgMzkuOTg3NCAyNDUuMjc4IDQwLjkwMzNIMjE3LjU4QzIxOC4xOTYgNDYuMzk5MSAyMjIuODEyIDUwLjM2ODIgMjI4LjM1MSA1MC4zNjgyQzIzMi42NiA1MC4zNjgyIDIzNi4zNTMgNDcuOTI1NiAyMzguMTk5IDQ1Ljc4ODRMMjQ0LjM1NCA1MS41ODk1Wk0yMzQuNTA2IDMzLjI3MDRDMjM0LjE5OSAyOS45MTE5IDIzMS4xMjEgMjYuMjQ4MSAyMjYuNTA1IDI2LjI0ODFDMjIyLjE5NiAyNi4yNDgxIDIxOC41MDMgMjkuNjA2NiAyMTcuODg4IDMzLjI3MDRIMjM0LjUwNloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjQ5LjU4NiA1OC4wMDI0VjE4LjYxNjVIMjU5Ljc0MlYyMS45NzVDMjYyLjgyIDE5LjUzMjQgMjY2LjUxMyAxOC4wMDU5IDI3MC44MjEgMTguMDA1OUMyNzYuMzYxIDE4LjAwNTkgMjgxLjI4NSAyMC40NDg0IDI4NC42NyAyNC40MTc1QzI4Ny4xMzIgMjcuNDcwNyAyODguOTc5IDMxLjQzOTggMjg4Ljk3OSAzOC4xNTY4VjU4LjMwNzdIMjc4LjIwN1YzNy4yNDA5QzI3OC4yMDcgMzMuMjcxNyAyNzcuMjg0IDMxLjEzNDUgMjc1Ljc0NSAyOS45MTMyQzI3NC4yMDcgMjguMzg2NyAyNzIuMzYgMjcuNDcwNyAyNjkuNTkgMjcuNDcwN0MyNjUuMjgyIDI3LjQ3MDcgMjYxLjU4OSAzMC4yMTg2IDI1OS43NDIgMzIuMzU1OFY1OC4wMDI0SDI0OS41ODZaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTMxNi4zNjggMTcuNzA1MUMzMDMuNDQzIDE3LjcwNTEgMjkzLjI4NyAyNy43ODA2IDI5My4yODcgNDAuNjAzOUMyOTMuMjg3IDQ3LjMyMDkgMjk2LjA1NyA1My40MjcyIDMwMC4zNjUgNTcuNzAxN0MzMDEuOTA0IDU5LjIyODIgMzA0LjY3NCA1OS4yMjgyIDMwNi41MiA1OC4wMDdDMzA4Ljk4MiA1NS44Njk4IDMxMi42NzUgNTQuNjQ4NSAzMTYuMzY4IDU0LjY0ODVDMzIwLjM2OSA1NC42NDg1IDMyMy40NDcgNTUuODY5OCAzMjYuMjE2IDU4LjAwN0MzMjguMDYzIDU5LjUzMzYgMzMwLjUyNSA1OS4yMjgyIDMzMi4zNzIgNTcuMzk2M0MzMzYuNjggNTMuMTIxOSAzMzkuNDUgNDcuMzIwOSAzMzkuNDUgNDAuNjAzOUMzMzkuMTQyIDI4LjA4NTkgMzI4Ljk4NiAxNy43MDUxIDMxNi4zNjggMTcuNzA1MVpNMzE2LjA2MSA1Mi41MTEzQzMwOC45ODIgNTIuNTExMyAzMDQuMzY2IDQ3LjMyMDkgMzA0LjM2NiA0MC45MDkyQzMwNC4zNjYgMzQuNDk3NSAzMDguOTgyIDI5LjMwNzEgMzE2LjA2MSAyOS4zMDcxQzMyMy4xMzkgMjkuMzA3MSAzMjcuNzU1IDM0LjQ5NzUgMzI3Ljc1NSA0MC45MDkyQzMyNy43NTUgNDcuMzIwOSAzMjMuMTM5IDUyLjUxMTMgMzE2LjA2MSA1Mi41MTEzWiIgZmlsbD0iIzYyRDg0RSIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTMzNi42OCAxOC42MjNIMzQ3LjE0M0wzNTUuNzYgNDEuMjE2NUwzNjQuMzc3IDE4LjYyM0gzNzMuMzAyTDM4MS42MTEgNDEuMjE2NUwzOTAuMjI4IDE4LjYyM0g0MDFMMzg1LjMwNCA1OC4wMDlIMzc3LjMwM0wzNjguNjg2IDM1LjcyMDhMMzYwLjM3NyA1OC4wMDlIMzUyLjM3NUwzMzYuNjggMTguNjIzWiIgZmlsbD0iYmxhY2siLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF82MDBfMTgiPgo8cmVjdCB3aWR0aD0iNDAxIiBoZWlnaHQ9IjU5IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=" class="sn-logo" style="height:22px;width:auto;display:block;" alt="ServiceNow">
-              <span style="font-size:11px;color:var(--text-sec);">CMDB Integration</span>
-            </div>
-
-            <!-- Section 1: Connection -->
-            <div style="padding:20px 24px 20px;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                <div style="width:20px;height:20px;border-radius:50%;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                </div>
-                <span style="font-size:13px;font-weight:700;color:var(--text-default);">Connection</span>
-              </div>
-              <div style="font-size:11px;color:var(--text-sec);margin-bottom:16px;margin-left:28px;">Your ServiceNow instance credentials</div>
-              <div class="form-group">
-                <label class="form-label">SERVICENOW INSTANCE URL</label>
-                <input class="form-input" type="text" value="https://company.service-now.com" placeholder="https://yourinstance.service-now.com">
-              </div>
-              <div class="form-group">
-                <label class="form-label">AUTHENTICATION METHOD</label>
-                <div class="toggle-group">
-                  <button class="toggle-btn active" onclick="this.parentNode.querySelectorAll(&#39;.toggle-btn&#39;).forEach(b=&gt;b.classList.remove(&#39;active&#39;));this.classList.add(&#39;active&#39;);">OAuth 2.0</button>
-                  <button class="toggle-btn" onclick="this.parentNode.querySelectorAll(&#39;.toggle-btn&#39;).forEach(b=&gt;b.classList.remove(&#39;active&#39;));this.classList.add(&#39;active&#39;);">Basic Auth</button>
-                </div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label">CLIENT ID</label>
-                  <input class="form-input" type="text" value="guardian-accelerator-client">
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label">CLIENT SECRET</label>
-                  <input class="form-input" type="password" value="••••••••••••••••">
-                </div>
-              </div>
-            </div>
-
-            <!-- Divider -->
-            <div style="border-top:1px solid var(--border);"></div>
-
-            <!-- Section 2: Sync Scope -->
-            <div style="padding:20px 24px;background:var(--bg-canvas);">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                <div style="width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
-                <span style="font-size:13px;font-weight:700;color:var(--text-default);">Sync Scope</span>
-              </div>
-              <div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;margin-left:30px;">CI classes Guardian will import from your CMDB</div>
-              <!-- Selected chips -->
-              <div id="ci-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:28px;"></div>
-              <!-- Add CI type button + popover -->
-              <div style="position:relative;display:inline-block;">
-                <button id="ci-add-btn" onclick="ciTogglePop()" style="background:none;border:1px dashed rgba(139,92,246,0.4);border-radius:6px;font-size:11px;color:#8B5CF6;cursor:pointer;padding:5px 12px;display:flex;align-items:center;gap:5px;transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.background=&#39;rgba(139,92,246,0.06)&#39;" onmouseout="this.style.background=&#39;none&#39;">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  Add CI class
-                </button>
-                <div id="ci-pop" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;width:340px;background:var(--bg-surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:200;overflow:hidden;">
-                  <div style="padding:8px;">
-                    <div style="position:relative;">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                      <input id="ci-search" type="text" placeholder="Search CI classes…" oninput="ciFilterList()" style="width:100%;padding:7px 8px 7px 28px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text-default);background:var(--bg-page);outline:none;box-sizing:border-box;">
-                    </div>
-                  </div>
-                  <div id="ci-list" style="max-height:200px;overflow-y:auto;border-top:1px solid var(--border);"></div>
-                  <div style="padding:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-                    <span id="ci-count" style="font-size:11px;color:var(--text-sec);"></span>
-                    <button onclick="document.getElementById(&#39;ci-pop&#39;).style.display=&#39;none&#39;" style="background:#10B981;border:none;border-radius:6px;font-size:12px;color:#fff;cursor:pointer;padding:6px 16px;font-weight:500;">Done</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Footer -->
-            <div style="border-top:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-              <div style="display:flex;align-items:center;gap:12px;">
-                <div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Credentials stored securely</div>
-                <button style="background:none;border:none;font-size:11px;color:#FB3C44;cursor:pointer;white-space:nowrap;" onclick="go(&#39;j4-connect-failed&#39;)">↗ Error state</button>
-              </div>
-              <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="go(&#39;j4-connecting&#39;)">Connect &amp; Sync CRs →</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- J4-CONNECTING -->
-    <div class="view" id="v-j4-connecting" style="display: none;">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Connecting to ServiceNow…</div>
-          <div class="page-sub">Validating credentials and checking permissions</div>
-        </div>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;display:flex;align-items:center;justify-content:center;">
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px 48px;box-shadow:var(--shadow-sm);text-align:center;max-width:400px;width:100%;">
-          <div class="connecting-ring" style="margin:0 auto 20px;"></div>
-          <div style="font-size:15px;font-weight:700;color:var(--text-default);margin-bottom:6px;">Connecting to ServiceNow…</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-bottom:16px;">Validating credentials · Checking change_request.read permission</div>
-          <div class="progress-dots"><span></span><span></span><span></span></div>
-          <button class="btn-primary" onclick="go(&#39;j4-connected&#39;)" style="width:100%;padding:12px;margin-top:20px;">Continue →</button>
-          <button onclick="go(&#39;j4-connect&#39;)" style="background:none;border:none;font-size:11px;color:var(--text-sec);cursor:pointer;margin-top:10px;">← Cancel and go back</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- J4-CONNECTED -->
-    <div class="view" id="v-j4-connected" style="display: none;">
-      <div class="page-header">
-        <div>
-          <div class="page-title">ServiceNow Connected ✓</div>
-          <div class="page-sub">Instance validated — ready to sync Change Requests</div>
-        </div>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;display:flex;align-items:center;justify-content:center;">
-        <div style="max-width:480px;width:100%;">
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;box-shadow:var(--shadow-sm);text-align:center;margin-bottom:16px;">
-            <div style="width:52px;height:52px;border-radius:50%;background:rgba(37,167,96,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <div style="font-size:18px;font-weight:800;color:var(--text-default);margin-bottom:4px;">Connected successfully</div>
-            <div style="font-size:12px;color:var(--text-sec);margin-bottom:20px;">All permissions confirmed · Ready to pull Change Requests</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;text-align:left;margin-bottom:20px;">
-              <div style="padding:10px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);">Instance</div>
-              <div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-default);font-weight:600;">company.service-now.com</div>
-              <div style="padding:10px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-sec);">Auth</div>
-              <div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-default);font-weight:600;">OAuth 2.0</div>
-              <div style="padding:10px 14px;border-right:1px solid var(--border);font-size:11px;color:var(--text-sec);">Permissions</div>
-              <div style="padding:10px 14px;font-size:11px;color:#00AF73;font-weight:600;">change_request.read ✓ · sys_user.read ✓</div>
-            </div>
-            <button class="btn-primary" style="width:100%;padding:12px;" onclick="go(&#39;j4-syncing&#39;)">Next: Match Nodes →</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- J4-SYNCING -->
-    <div class="view" id="v-j4-syncing" style="display: none;">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Detecting Nodes from ServiceNow…</div>
-          <div class="page-sub">Syncing CI records — match results will appear automatically once complete</div>
-        </div>
-      </div>
-      <div style="flex:1;background:var(--bg-page);padding:24px;display:flex;align-items:center;justify-content:center;">
-        <div style="max-width:480px;width:100%;">
-          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;box-shadow:var(--shadow-sm);">
-            <div style="font-size:15px;font-weight:700;color:var(--text-default);margin-bottom:6px;">Syncing nodes from ServiceNow</div>
-            <div style="font-size:12px;color:var(--text-sec);margin-bottom:24px;">Guardian is pulling CI records from your CMDB. This may take a moment.</div>
-            <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;">
-              <div id="j4s-step1" style="display:flex;align-items:center;gap:12px;">
-                <div style="width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,0.12);border:1.5px solid #10B981;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <span style="font-size:13px;font-weight:600;color:#10B981;">Syncing ServiceNow nodes</span>
-              </div>
-              <div id="j4s-step2" style="display:flex;align-items:center;gap:12px;">
-                <div style="width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,0.1);border:1.5px solid #10B981;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <div class="progress-dots" style="transform:scale(0.5);margin:0;gap:2px;"><span style="background:#10B981;width:5px;height:5px;"></span><span style="background:#10B981;width:5px;height:5px;"></span><span style="background:#10B981;width:5px;height:5px;"></span></div>
-                </div>
-                <span style="font-size:13px;font-weight:600;color:#10B981;">Detecting CI records…</span>
-              </div>
-              <!-- Per-CI-type progress -->
-              <div id="j4s-ci-progress" style="margin-left:34px;padding:12px;background:var(--bg-canvas);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;gap:10px;"></div>
-              <div id="j4s-step3" style="display:flex;align-items:center;gap:12px;opacity:0.55;">
-                <div style="width:22px;height:22px;border-radius:50%;background:transparent;border:1.5px solid rgba(255,255,255,0.3);flex-shrink:0;"></div>
-                <span style="font-size:13px;color:var(--text-sec);">Looking for possible matches</span>
-              </div>
-            </div>
-            <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:10px 14px;font-size:11px;color:var(--text-sec);line-height:1.5;">
-              Manual match options will be available once the CI sync completes
-            </div>
-            <button class="btn-outline" style="width:100%;margin-top:16px;font-size:12px;" onclick="go(&#39;j4-match&#39;)">Skip — show results →</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- J4-MATCH — converted to modal, see openJ4MatchModal() (Figma 3447:65027) -->
 
     <!-- CMDB-CONNECT -->
@@ -24182,46 +23995,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <button class="link-cta" onclick="go(&#39;changes&#39;)">Manual Review (J2) →</button>
           <button class="btn-outline" onclick="showToast(&#39;Reconciliation history coming soon&#39;)">Reconciliation History</button>
           <button class="link-cta" onclick="showView(&#39;changes&#39;)">View Detected Drift →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- J4-CONNECT-FAILED -->
-    <div class="view" id="v-j4-connect-failed" style="display: none;">
-      <div class="two-col">
-        <div class="left-panel">
-          <div style="margin:auto 0;">
-            <div class="step-badge" style="background:rgba(251,60,68,0.1);color:#FB3C44;border-color:rgba(251,60,68,0.2);">Step 1 of 3 — Connect ServiceNow</div>
-            <div class="left-h1">Connection<br>failed</div>
-            <div class="left-sub">We couldn't connect to your ServiceNow instance. Check the errors and try again.</div>
-          </div>
-        </div>
-        <div class="right-panel">
-          <div class="back-link" onclick="go(&#39;j4-connect&#39;)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg> Back</div>
-          <div class="panel-title">Connection Failed</div>
-          <div class="panel-sub">Fix the issues below and try again</div>
-          <div class="card" style="margin-bottom:0;">
-            <div style="background:var(--bg-error);border:1px solid var(--bg-error-border);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                <span style="font-size:13px;font-weight:700;color:#FB3C44;">2 errors found</span>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:8px;">
-                <div style="font-size:12px;color:#7f1d1d;background:var(--bg-surface);border:1px solid var(--bg-error-border);border-radius:6px;padding:10px 12px;">
-                  <div style="font-weight:700;margin-bottom:2px;">❌ Instance URL unreachable</div>
-                  <div style="color:#991b1b;">Check that your ServiceNow instance URL is correct and accessible</div>
-                </div>
-                <div style="font-size:12px;color:#7f1d1d;background:var(--bg-surface);border:1px solid var(--bg-error-border);border-radius:6px;padding:10px 12px;">
-                  <div style="font-weight:700;margin-bottom:2px;">❌ OAuth token invalid</div>
-                  <div style="color:#991b1b;">Client ID or Secret may be incorrect. Re-generate credentials in ServiceNow</div>
-                </div>
-              </div>
-            </div>
-            <div style="display:flex;gap:10px;justify-content:flex-end;">
-              <button class="link-cta" onclick="showView(&#39;dashboard&#39;)"><span class="lc-txt">Contact admin</span> <span class="arr">→</span></button>
-              <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="go(&#39;j4-connect&#39;)">Try again →</button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -27676,20 +27449,8 @@ go = function(key) {
   if (key === 'j3-syncing') { openAwsSyncingModal(); return; }
   if (key === 'j3-inventory') { openAwsInventoryModal(); return; }
   if (key === 'j3-scan-config') { openAwsScanConfigModal(); return; }
-  _origGo(key);
-  if (key === 'j4-connect') {
-    // Reset CI types to defaults and close popover on every visit
-    _ciSelected = ['cmdb_ci_server','cmdb_ci_computer'];
-    var pop = document.getElementById('ci-pop');
-    if (pop) pop.style.display = 'none';
-    setTimeout(ciRenderChips, 50);
-  }
-  if (key === 'j4-connecting') {
-    setTimeout(() => go('j4-connected'), 2000);
-  }
-  if (key === 'j4-syncing') {
-    j4SyncStart();
-  }
+  if (key === 'j4-connect') { openJ4ConnectModal(); return; }
+  if (key === 'j4-connect-failed') { openJ4ConnectFailedModal(); return; }
   if (key === 'j4-connected') {
     // Connection confirmed — flip Settings + Dashboard + update Detected Drift banner
     const sc = document.getElementById('settings-sn-connect-card');
@@ -27700,7 +27461,25 @@ go = function(key) {
     const dashSummary = document.getElementById('dash-sn-summary');
     if (dashConnect) dashConnect.style.display = 'none';
     if (dashSummary) dashSummary.style.display = 'flex';
+    openJ4ConnectedModal();
+    return;
   }
+  if (key === 'j4-connecting') {
+    openJ4ConnectingModal();
+    setTimeout(() => {
+      // Guard against a stale timer firing after the user already advanced manually.
+      if (!document.getElementById('j4-connecting-modal')) return;
+      closeModal('j4-connecting-modal');
+      go('j4-connected');
+    }, 2000);
+    return;
+  }
+  if (key === 'j4-syncing') {
+    openJ4SyncingModal();
+    j4SyncStart();
+    return;
+  }
+  _origGo(key);
 };
 
 // ── CI type selector (j4-connect Sync Scope) ──
@@ -27791,6 +27570,185 @@ function ciToggleItem(val) {
 }
 function ciAdd(val) { ciToggleItem(val); }
 
+// ── Reconcile Drift with ServiceNow — Connection modal, Figma 3838:19640 ──
+function j4cBodyHtml() {
+  var snLogo = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAxIiBoZWlnaHQ9IjU5IiB2aWV3Qm94PSIwIDAgNDAxIDU5IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfNjAwXzE4KSI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNOTcuNTU3MiAxOC4wMTE3QzkzLjI0ODcgMTguMDExNyA4OS41NTU3IDE5LjUzODMgODYuNDc4MiAyMS45ODA4VjE4LjYyMjRINzYuMDE0NlY1OC4wMDgzSDg2Ljc4NTlWMzIuOTcyM0M4OC4zMjQ3IDMwLjgzNSA5Mi4wMTc3IDI4LjA4NzIgOTYuNjM0IDI4LjA4NzJDOTguMTcyNyAyOC4wODcyIDk5LjcxMTUgMjguMzkyNSAxMDAuOTQzIDI4LjY5NzhWMTguNjIyNEM5OS43MTE1IDE4LjMxNyA5OC40ODA1IDE4LjAxMTcgOTcuNTU3MiAxOC4wMTE3WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00LjkyNDAyIDQ1Ljc4ODRDNy42OTM3OCA0OC4yMzEgMTIuMDAyMyA0OS43NTc1IDE1LjY5NTMgNDkuNzU3NUMxOC40NjUxIDQ5Ljc1NzUgMjAuOTI3MSA0OC4yMzEgMjAuOTI3MSA0Ni4zOTkxQzIwLjkyNzEgNDAuMjkyNyAxLjUzODc2IDQyLjQyOTkgMS41Mzg3NiAyOS45MTE5QzEuNTM4NzYgMjIuMjc5IDguOTI0NzkgMTcuNjk5MiAxNi42MTg2IDE3LjY5OTJDMjEuODUwMyAxNy42OTkyIDI3LjM4OTkgMTkuNTMxMSAzMC4xNTk2IDIxLjY2ODNMMjUuMjM1NiAyOS4zMDEzQzIzLjA4MTQgMjguMDggMjAuNjE5MyAyNi41NTM0IDE3LjU0MTggMjYuNTUzNEMxNC40NjQzIDI2LjU1MzQgMTIuMzEwMSAyNy43NzQ3IDEyLjMxMDEgMjkuOTExOUMxMi4zMTAxIDM1LjEwMjMgMzEuNjk4NCAzMi45NjUxIDMxLjY5ODQgNDYuNzA0NEMzMS42OTg0IDU0LjMzNzMgMjQuMzEyNCA1OC45MTcxIDE2LjAwMzEgNTguOTE3MUMxMC40NjM1IDU4LjkxNzEgNC42MTYyNyA1Ny4wODUyIDAgNTMuNzI2N0w0LjkyNDAyIDQ1Ljc4ODRaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTcxLjM5ODUgMzcuODUwMkM3MS4zOTg1IDI2Ljg1ODcgNjMuNzA0NyAxNy42OTkyIDUyLjYyNTYgMTcuNjk5MkM0MC45MzExIDE3LjY5OTIgMzMuMjM3MyAyNy40Njk0IDMzLjIzNzMgMzguMTU1NUMzMy4yMzczIDUwLjY3MzUgNDIuMTYyMSA1OC42MTE4IDUzLjg1NjYgNTguNjExOEM2MC4wMTE3IDU4LjYxMTggNjYuMTY2NyA1Ni4xNjkyIDcwLjE2NzUgNTEuNTg5NUw2NC4wMTI0IDQ1LjQ4MzFDNjIuMTY1OSA0Ny42MjAzIDU4LjQ3MjkgNTAuMDYyOSA1NC4xNjQ0IDUwLjA2MjlDNDguNjI0OSA1MC4wNjI5IDQ0LjAwODYgNDYuMDkzNyA0My4zOTMxIDQwLjU5OEg3MC43ODNDNzEuMzk4NSAzOS45ODc0IDcxLjM5ODUgMzkuMDcxNCA3MS4zOTg1IDM3Ljg1MDJaTTQ0LjMxNjQgMzMuMjcwNEM0NC45MzE5IDI5LjYwNjYgNDguNjI0OSAyNi4yNDgxIDUyLjkzMzQgMjYuMjQ4MUM1Ny4yNDE5IDI2LjI0ODEgNjAuMzE5NCAyOS42MDY2IDYwLjkzNDkgMzMuMjcwNEg0NC4zMTY0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNDcuNzIxIDE4LjYyM0wxMjkuNTYzIDU4LjAwOUgxMjIuMTc3TDEwNC4wMiAxOC42MjNIMTE0Ljc5MUwxMjUuODcgNDIuNzQzMUwxMzYuNjQyIDE4LjYyM0gxNDcuNzIxWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNTYuNjQ2IC0wLjAwMTk1MzEyQzE2MC42NDYgLTAuMDAxOTUzMTIgMTYzLjcyNCAzLjA1MTIyIDE2My43MjQgNi43MTUwM0MxNjMuNzI0IDEwLjY4NDIgMTYwLjY0NiAxMy40MzIgMTU2LjY0NiAxMy40MzJDMTUyLjY0NSAxMy40MzIgMTQ5Ljg3NSAxMC4zNzg4IDE0OS44NzUgNi43MTUwM0MxNDkuODc1IDIuNzQ1OSAxNTIuNjQ1IC0wLjAwMTk1MzEyIDE1Ni42NDYgLTAuMDAxOTUzMTIiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik0xNjIuMTg1IDE4LjYyMTFIMTUxLjQxNFY1OC4wMDdIMTYyLjE4NVYxOC42MjExWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMDUuODg2IDQ5Ljc1NzVDMjAxLjI2OSA1NS44NjM5IDE5NS40MjIgNTguNjExOCAxODguMDM2IDU4LjYxMThDMTc1LjcyNiA1OC42MTE4IDE2Ni44MDEgNDkuNDUyMiAxNjYuODAxIDM4LjE1NTVDMTY2LjgwMSAyNi41NTM0IDE3Ni4wMzQgMTcuNjk5MiAxODguMDM2IDE3LjY5OTJDMTk1LjExNCAxNy42OTkyIDIwMC45NjIgMjEuMDU3NyAyMDQuNjU1IDI1LjYzNzVMMTk3LjU3NiAzMi4wNDkxQzE5NS40MjIgMjkuMzAxMyAxOTIuMzQ1IDI3LjQ2OTQgMTg4LjY1MiAyNy40Njk0QzE4Mi40OTcgMjcuNDY5NCAxNzcuODggMzIuMzU0NSAxNzcuODggMzguMTU1NUMxNzcuODggNDQuMjYxOCAxODIuMTg5IDQ4Ljg0MTYgMTg4LjY1MiA0OC44NDE2QzE5Mi45NiA0OC44NDE2IDE5Ni4zNDUgNDYuMzk5MSAxOTguMTkyIDQzLjY1MTJMMjA1Ljg4NiA0OS43NTc1WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yNDQuMzU0IDUxLjU4OTVDMjQwLjM1NCA1Ni4xNjkyIDIzNC4xOTkgNTguNjExOCAyMjguMDQ0IDU4LjYxMThDMjE2LjM0OSA1OC42MTE4IDIwNy40MjQgNTAuNjczNSAyMDcuNDI0IDM4LjE1NTVDMjA3LjQyNCAyNy4xNjQxIDIxNC44MSAxNy42OTkyIDIyNi44MTMgMTcuNjk5MkMyMzcuNTg0IDE3LjY5OTIgMjQ1LjU4NSAyNi44NTg3IDI0NS41ODUgMzcuODUwMkMyNDUuNTg1IDM5LjA3MTQgMjQ1LjU4NSAzOS45ODc0IDI0NS4yNzggNDAuOTAzM0gyMTcuNThDMjE4LjE5NiA0Ni4zOTkxIDIyMi44MTIgNTAuMzY4MiAyMjguMzUxIDUwLjM2ODJDMjMyLjY2IDUwLjM2ODIgMjM2LjM1MyA0Ny45MjU2IDIzOC4xOTkgNDUuNzg4NEwyNDQuMzU0IDUxLjU4OTVaTTIzNC41MDYgMzMuMjcwNEMyMzQuMTk5IDI5LjkxMTkgMjMxLjEyMSAyNi4yNDgxIDIyNi41MDUgMjYuMjQ4MUMyMjIuMTk2IDI2LjI0ODEgMjE4LjUwMyAyOS42MDY2IDIxNy44ODggMzMuMjcwNEgyMzQuNTA2WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yNDkuNTg2IDU4LjAwMjRWMTguNjE2NUgyNTkuNzQyVjIxLjk3NUMyNjIuODIgMTkuNTMyNCAyNjYuNTEzIDE4LjAwNTkgMjcwLjgyMSAxOC4wMDU5QzI3Ni4zNjEgMTguMDA1OSAyODEuMjg1IDIwLjQ0ODQgMjg0LjY3IDI0LjQxNzVDMjg3LjEzMiAyNy40NzA3IDI4OC45NzkgMzEuNDM5OCAyODguOTc5IDM4LjE1NjhWNTguMzA3N0gyNzguMjA3VjM3LjI0MDlDMjc4LjIwNyAzMy4yNzE3IDI3Ny4yODQgMzEuMTM0NSAyNzUuNzQ1IDI5LjkxMzJDMjc0LjIwNyAyOC4zODY3IDI3Mi4zNiAyNy40NzA3IDI2OS41OSAyNy40NzA3QzI2NS4yODIgMjcuNDcwNyAyNjEuNTg5IDMwLjIxODYgMjU5Ljc0MiAzMi4zNTU4VjU4LjAwMjRIMjQ5LjU4NloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMzE2LjM2OCAxNy43MDUxQzMwMy40NDMgMTcuNzA1MSAyOTMuMjg3IDI3Ljc4MDYgMjkzLjI4NyA0MC42MDM5QzI5My4yODcgNDcuMzIwOSAyOTYuMDU3IDUzLjQyNzIgMzAwLjM2NSA1Ny43MDE3QzMwMS45MDQgNTkuMjI4MiAzMDQuNjc0IDU5LjIyODIgMzA2LjUyIDU4LjAwN0MzMDguOTgyIDU1Ljg2OTggMzEyLjY3NSA1NC42NDg1IDMxNi4zNjggNTQuNjQ4NUMzMjAuMzY5IDU0LjY0ODUgMzIzLjQ0NyA1NS44Njk4IDMyNi4yMTYgNTguMDA3QzMyOC4wNjMgNTkuNTMzNiAzMzAuNTI1IDU5LjIyODIgMzMyLjM3MiA1Ny4zOTYzQzMzNi42OCA1My4xMjE5IDMzOS40NSA0Ny4zMjA5IDMzOS40NSA0MC42MDM5QzMzOS4xNDIgMjguMDg1OSAzMjguOTg2IDE3LjcwNTEgMzE2LjM2OCAxNy43MDUxWk0zMTYuMDYxIDUyLjUxMTNDMzA4Ljk4MiA1Mi41MTEzIDMwNC4zNjYgNDcuMzIwOSAzMDQuMzY2IDQwLjkwOTJDMzA0LjM2NiAzNC40OTc1IDMwOC45ODIgMjkuMzA3MSAzMTYuMDYxIDI5LjMwNzFDMzIzLjEzOSAyOS4zMDcxIDMyNy43NTUgMzQuNDk3NSAzMjcuNzU1IDQwLjkwOTJDMzI3Ljc1NSA0Ny4zMjA5IDMyMy4xMzkgNTIuNTExMyAzMTYuMDYxIDUyLjUxMTNaIiBmaWxsPSIjNjJEODRFIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMzM2LjY4IDE4LjYyM0gzNDcuMTQzTDM1NS43NiA0MS4yMTY1TDM2NC4zNzcgMTguNjIzSDM3My4zMDJMMzgxLjYxMSA0MS4yMTY1TDM5MC4yMjggMTguNjIzSDQwMUwzODUuMzA0IDU4LjAwOUgzNzcuMzAzTDM2OC42ODYgMzUuNzIwOEwzNjAuMzc3IDU4LjAwOUgzNTIuMzc1TDMzNi42OCAxOC42MjNaIiBmaWxsPSJibGFjayIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzYwMF8xOCI+CjxyZWN0IHdpZHRoPSI0MDEiIGhlaWdodD0iNTkiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==';
+  var html = '';
+  html += '<div style="padding:0 24px;">'
+    + '<div style="display:flex;align-items:center;gap:12px;background:#F1F5F9;border:1px solid var(--border);border-radius:10px;padding:12px 14px;">'
+    +   '<img src="' + snLogo + '" class="sn-logo" style="height:18px;width:auto;display:block;" alt="ServiceNow">'
+    +   '<span style="flex:1;font-size:11px;color:var(--text-sec);">CMDB Integration</span>'
+    +   '<span class="bdg bdg--dot bdg--green">Connected</span>'
+    + '</div></div>';
+  html += '<div style="padding:20px 24px 0;">'
+    +   '<div class="form-group">'
+    +     '<label class="form-label">SERVICENOW INSTANCE URL</label>'
+    +     '<input class="form-input" type="text" value="https://company.service-now.com" placeholder="https://yourinstance.service-now.com">'
+    +   '</div>'
+    +   '<div class="form-group">'
+    +     '<label class="form-label">AUTHENTICATION METHOD</label>'
+    +     '<div class="toggle-group">'
+    +       '<button class="toggle-btn active" onclick="this.parentNode.querySelectorAll(\'.toggle-btn\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\');">OAuth 2.0</button>'
+    +       '<button class="toggle-btn" onclick="this.parentNode.querySelectorAll(\'.toggle-btn\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\');">Basic Auth</button>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    +     '<div class="form-group" style="margin-bottom:0;"><label class="form-label">CLIENT ID</label><input class="form-input" type="text" value="guardian-accelerator-client"></div>'
+    +     '<div class="form-group" style="margin-bottom:0;"><label class="form-label">CLIENT SECRET</label><input class="form-input" type="password" value="••••••••••••••••"></div>'
+    +   '</div>'
+    + '</div>';
+  html += '<div style="background:var(--bg-canvas);padding:20px 24px;margin-top:20px;">'
+    +   '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+    +     '<div style="width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+    +       '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>'
+    +     '</div>'
+    +     '<span style="font-size:13px;font-weight:700;color:var(--text-default);">Sync Scope</span>'
+    +   '</div>'
+    +   '<div style="font-size:11px;color:var(--text-sec);margin-bottom:14px;margin-left:30px;">CI classes Guardian will import from your CMDB</div>'
+    +   '<div id="ci-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:28px;"></div>'
+    +   '<div style="position:relative;display:inline-block;">'
+    +     '<button id="ci-add-btn" onclick="ciTogglePop()" style="background:none;border:1px dashed rgba(139,92,246,0.4);border-radius:6px;font-size:11px;color:#8B5CF6;cursor:pointer;padding:5px 12px;display:flex;align-items:center;gap:5px;transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.background=\'rgba(139,92,246,0.06)\'" onmouseout="this.style.background=\'none\'">'
+    +       '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>'
+    +       'Add CI class'
+    +     '</button>'
+    +     '<div id="ci-pop" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;width:340px;background:var(--bg-surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:200;overflow:hidden;">'
+    +       '<div style="padding:8px;"><div style="position:relative;">'
+    +         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>'
+    +         '<input id="ci-search" type="text" placeholder="Search CI classes…" oninput="ciFilterList()" style="width:100%;padding:7px 8px 7px 28px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text-default);background:var(--bg-page);outline:none;box-sizing:border-box;">'
+    +       '</div></div>'
+    +       '<div id="ci-list" style="max-height:200px;overflow-y:auto;border-top:1px solid var(--border);"></div>'
+    +       '<div style="padding:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">'
+    +         '<span id="ci-count" style="font-size:11px;color:var(--text-sec);"></span>'
+    +         '<button onclick="document.getElementById(\'ci-pop\').style.display=\'none\'" style="background:#10B981;border:none;border-radius:6px;font-size:12px;color:#fff;cursor:pointer;padding:6px 16px;font-weight:500;">Done</button>'
+    +       '</div>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>';
+  return html;
+}
+function openJ4ConnectModal() {
+  openModal({
+    id: 'j4-connect-modal',
+    size: 'lg',
+    title: 'Reconcile Drift with ServiceNow',
+    subtitle: 'Step 1 of 3 — Connect your instance to match detected changes against approved Change Requests',
+    confirmDirty: true,
+    steps: [ { label: 'Connection' }, { label: 'Match Nodes' }, { label: 'Recon Active' } ],
+    bodyHtml: j4cBodyHtml(),
+    footerLeftHtml: '<div style="font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Credentials stored securely</div>'
+      + '<button type="button" style="background:none;border:none;font-size:11px;color:#FB3C44;cursor:pointer;white-space:nowrap;margin-left:12px;" onclick="closeModal(\'j4-connect-modal\');go(\'j4-connect-failed\');">↗ Error state</button>',
+    buttons: [
+      { label: 'Test connection', kind: 'primary', onClick: function(e, close) { close(); go('j4-connecting'); } }
+    ],
+    afterMount: function(ov) {
+      ov.querySelector('.gm-card').classList.add('gm-j4-connect');
+      // Reset CI types to defaults and close popover on every visit
+      _ciSelected = ['cmdb_ci_server','cmdb_ci_computer'];
+      ciRenderChips();
+    }
+  });
+}
+
+// ── Reconcile Drift with ServiceNow — Connection Failed modal, Figma 3838:20778 ──
+function _j4cErrorRow(title, desc) {
+  return '<div class="j4c-err-row" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;">'
+    + '<div style="display:flex;align-items:center;gap:6px;">'
+    +   '<span style="width:22px;height:22px;border-radius:11px;background:rgba(251,60,68,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+    +     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
+    +   '</span>'
+    +   '<span style="font-size:12px;font-weight:700;color:#FB3C44;">' + title + '</span>'
+    + '</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);padding-left:28px;margin-top:4px;">' + desc + '</div>'
+    + '</div>';
+}
+function openJ4ConnectFailedModal() {
+  var body = '<div style="padding:0 24px;">'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+    +   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
+    +   '<span style="font-size:13px;font-weight:700;color:#FB3C44;">2 errors found</span>'
+    + '</div>'
+    + '<div style="display:flex;flex-direction:column;gap:8px;">'
+    +   _j4cErrorRow('Instance URL unreachable', 'Check that your ServiceNow instance URL is correct and accessible')
+    +   _j4cErrorRow('OAuth token invalid', 'Client ID or Secret may be incorrect. Re-generate credentials in ServiceNow')
+    + '</div>'
+    + '</div>';
+  openModal({
+    id: 'j4-connect-failed-modal',
+    size: 'lg',
+    title: 'Connection Failed',
+    subtitle: 'Fix the issues below and try again',
+    steps: [ { label: 'Connection' }, { label: 'Match Nodes' }, { label: 'Recon Active' } ],
+    bodyHtml: body,
+    backButton: { label: 'Back', onClick: function(e, close) { close(); go('j4-connect'); } },
+    buttons: [
+      { label: 'Try again', kind: 'primary', onClick: function(e, close) { close(); go('j4-connect'); } }
+    ],
+    afterMount: function(ov) {
+      ov.querySelector('.gm-card').classList.add('gm-j4-connect-failed');
+      var right = ov.querySelector('.gm-foot-right');
+      if (right) right.insertAdjacentHTML('afterbegin', '<button type="button" class="link-cta" onclick="closeModal(\'j4-connect-failed-modal\');showView(\'dashboard\');"><span class="lc-txt">Contact admin</span> <span class="arr">→</span></button>');
+    }
+  });
+}
+
+// ── ServiceNow Connected modal, Figma 3838:22682 ──
+function _j4cnRow(label, value, valueColor, withBorder) {
+  return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;' + (withBorder ? 'border-bottom:1px solid var(--border);' : '') + '">'
+    + '<span style="font-size:13px;color:var(--text-sec);">' + label + '</span>'
+    + '<span style="font-size:13px;font-weight:600;color:' + (valueColor || 'var(--text-default)') + ';">' + value + '</span>'
+    + '</div>';
+}
+function openJ4ConnectingModal() {
+  var body = '<div style="display:flex;flex-direction:column;align-items:center;padding:40px 24px;">'
+    + '<div class="connecting-ring"></div>'
+    + '<div style="font-size:15px;font-weight:700;color:var(--text-default);margin-top:4px;">Connecting to ServiceNow…</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;text-align:center;">Validating credentials · Checking change_request.read permission</div>'
+    + '<div class="progress-dots"><span></span><span></span><span></span></div>'
+    + '</div>';
+  openModal({
+    id: 'j4-connecting-modal',
+    size: 'lg',
+    title: 'Connecting to ServiceNow…',
+    subtitle: 'Validating credentials and checking permissions',
+    steps: [ { label: 'Connection' }, { label: 'Match Nodes' }, { label: 'Recon Active' } ],
+    bodyHtml: body,
+    backButton: { label: 'Cancel and go back', onClick: function(e, close) { close(); go('j4-connect'); } },
+    buttons: [
+      { label: 'Continue', kind: 'primary', onClick: function(e, close) { close(); go('j4-connected'); } }
+    ],
+    afterMount: function(ov) { ov.querySelector('.gm-card').classList.add('gm-j4-connecting'); }
+  });
+}
+function openJ4ConnectedModal() {
+  var body = '<div style="display:flex;flex-direction:column;align-items:center;padding:40px 24px 0;">'
+    + '<div style="width:56px;height:56px;border-radius:28px;background:rgba(37,167,96,0.1);display:flex;align-items:center;justify-content:center;">'
+    +   '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#25A760" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+    + '</div>'
+    + '<div style="font-size:20px;font-weight:800;color:var(--text-default);margin-top:20px;">Connected successfully</div>'
+    + '<div style="font-size:14px;color:var(--text-sec);margin-top:8px;text-align:center;">All permissions confirmed · Ready to pull Change Requests</div>'
+    + '</div>'
+    + '<div style="padding:20px 60px 40px;">'
+    +   '<div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;">'
+    +     _j4cnRow('Instance', 'company.service-now.com', null, true)
+    +     _j4cnRow('Auth', 'OAuth 2.0', null, true)
+    +     _j4cnRow('Permissions', 'change_request.read ✓ · sys_user.read ✓', '#10B981', false)
+    +   '</div>'
+    + '</div>';
+  openModal({
+    id: 'j4-connected-modal',
+    size: 'lg',
+    title: 'ServiceNow Connected',
+    subtitle: 'Instance validated — ready to sync Change Requests',
+    steps: [ { label: 'Connection' }, { label: 'Match Nodes' }, { label: 'Recon Active' } ],
+    bodyHtml: body,
+    backButton: { label: 'Back', onClick: function(e, close) { close(); go('j4-connect'); } },
+    buttons: [
+      { label: 'Next: Match Nodes', kind: 'primary', onClick: function(e, close) { close(); go('j4-syncing'); } }
+    ],
+    afterMount: function(ov) { ov.querySelector('.gm-card').classList.add('gm-j4-connected'); }
+  });
+}
+
 // J4 sync per-CI-type progress animation
 var _j4SyncInterval = null;
 var _j4SyncData = [];
@@ -27810,6 +27768,9 @@ function j4SyncStart() {
   var stepsPerCI = 10;
   var interval = Math.max(60, Math.floor(totalDuration / (_j4SyncData.length * stepsPerCI)));
   _j4SyncInterval = setInterval(function() {
+    // Stop if the user already left this step (e.g. clicked Skip) — a stale
+    // tick must not reopen j4-match on top of whatever the user navigated to.
+    if (!document.getElementById('j4-syncing-modal')) { clearInterval(_j4SyncInterval); return; }
     if (ciIdx >= _j4SyncData.length) { clearInterval(_j4SyncInterval); return; }
     var ci = _j4SyncData[ciIdx];
     ci.current = Math.min(ci.current + Math.ceil(ci.total / stepsPerCI), ci.total);
@@ -27819,7 +27780,10 @@ function j4SyncStart() {
       clearInterval(_j4SyncInterval);
       var s3 = document.getElementById('j4s-step3');
       if (s3) s3.style.opacity = '1';
-      setTimeout(function() { go('j4-match'); }, 700);
+      setTimeout(function() {
+        if (!document.getElementById('j4-syncing-modal')) return;
+        closeModal('j4-syncing-modal'); go('j4-match');
+      }, 700);
     }
   }, interval);
 }
@@ -27840,6 +27804,42 @@ function j4SyncRender() {
       '</div>' +
     '</div>';
   }).join('');
+}
+function openJ4SyncingModal() {
+  var body = '<div style="padding:0 24px;">'
+    + '<div style="font-size:15px;font-weight:700;color:var(--text-default);">Syncing nodes from ServiceNow</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);margin-top:6px;">Guardian is pulling CI records from your CMDB. This may take a moment.</div>'
+    + '</div>'
+    + '<div style="padding:20px 24px 0;">'
+    +   '<div id="j4s-step1" style="display:flex;align-items:center;gap:12px;padding:9px 0;">'
+    +     '<div style="width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,0.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+    +       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+    +     '</div>'
+    +     '<span style="font-size:12.5px;color:#334155;">Syncing ServiceNow nodes</span>'
+    +   '</div>'
+    +   '<div id="j4s-step2" style="display:flex;align-items:center;gap:12px;padding:9px 0;">'
+    +     '<div style="width:20px;height:20px;border-radius:10px;border:1px solid #10B981;box-shadow:0 0 6px rgba(63,200,120,0.3);flex-shrink:0;"></div>'
+    +     '<span style="font-size:12.5px;font-weight:500;color:var(--text-default);">Detecting CI records…</span>'
+    +   '</div>'
+    + '</div>'
+    + '<div style="padding:20px 24px 0;">'
+    +   '<div id="j4s-ci-progress" class="j4s-ci-box" style="border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:20px;"></div>'
+    + '</div>'
+    + '<div style="padding:20px 24px 0;">'
+    +   '<span id="j4s-step3" style="font-size:13px;color:var(--text-sec);opacity:0.55;">Looking for possible matches</span>'
+    + '</div>';
+  openModal({
+    id: 'j4-syncing-modal',
+    size: 'lg',
+    title: 'Detecting Nodes from ServiceNow…',
+    subtitle: 'Syncing CI records — match results will appear automatically once complete',
+    steps: [ { label: 'Match Nodes' }, { label: 'Recon Active' } ],
+    bodyHtml: body,
+    buttons: [
+      { label: 'Skip — show results', kind: 'secondary', onClick: function(e, close) { close(); go('j4-match'); } }
+    ],
+    afterMount: function(ov) { ov.querySelector('.gm-card').classList.add('gm-j4-syncing'); }
+  });
 }
 
 // ── Match Guardian Nodes to ServiceNow CIs — modal, Figma 3447:65027 ──
