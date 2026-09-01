@@ -8235,9 +8235,23 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Tab intro on the left, all controls on the right -->
         <div id="node-filter-row" style="display:flex;gap:16px;margin-bottom:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-          <div class="tab-intro">
-            <div class="tab-intro-title">Managed nodes</div>
-            <div class="tab-intro-sub">Scanned, scored and tracked</div>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div class="tab-intro">
+              <div class="tab-intro-title">Managed nodes</div>
+              <div class="tab-intro-sub">Scanned, scored and tracked</div>
+            </div>
+            <!-- AI surfacing — fleet-wide "Summarise with AI" for Managed nodes only (scoped
+                 to this tab, not Detected Drift / Consensus — a fleet rollup makes sense only
+                 for the managed set). Complements the per-node summary on Node Detail rather
+                 than duplicating it: reads the live table rows (same data-sort-* attributes
+                 sortNodes() already uses), not a separate hardcoded data model. -->
+            <div class="ai-dropdown">
+              <button type="button" class="ai-cta ai-cta--on-page" id="fleet-ai-btn" onclick="fleetAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
+              <div class="ai-panel" id="fleet-ai-panel">
+                <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="fleetAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                <div id="fleet-ai-body"></div>
+              </div>
+            </div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
           <div id="node-search-wrap" class="btn-icon isearch" role="search" onclick="isearchOpen(this)">
@@ -13394,6 +13408,44 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var sbBadge = document.querySelector('#sb-integrations span');
       if (sbBadge) sbBadge.textContent = connected.length;
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+    }
+    // AI surfacing — Integrations "Summarise with AI". Reads INTG_PROVIDERS live (the exact
+    // array renderIntegrations() renders from), so connected/available/attention counts and the
+    // first-run empty state can never drift out of sync with what's on screen.
+    function intgAiSummarize() {
+      var btn = document.getElementById('intg-ai-btn');
+      var panel = document.getElementById('intg-ai-panel');
+      var body = document.getElementById('intg-ai-body');
+      if (!btn || !panel || !body) return;
+      panel.classList.add('is-open');
+      _aiBindOutsideClose('intg-ai-panel', btn, intgAiDismiss);
+      _aiRunPanel(btn, body, 'Summarising integrations…', function (success) {
+        setTimeout(function () {
+          var view = document.getElementById('v-settings-integrations');
+          var firstRun = !!(view && view.classList.contains('is-firstrun'));
+          var connected = firstRun ? [] : INTG_PROVIDERS.filter(function (p) { return p.status === 'connected' || p.status === 'attention' || p.status === 'error'; });
+          if (!connected.length) {
+            success('<div>No integrations are connected yet — connect a cloud account, ITSM or credential vault to start importing nodes and reconciling changes automatically.</div>');
+            return;
+          }
+          var attention = connected.filter(function (p) { return p.status === 'attention' || p.status === 'error'; });
+          var available = firstRun ? [] : INTG_PROVIDERS.filter(function (p) { return p.status === 'notset'; });
+          var caps = {};
+          connected.forEach(function (p) { (p.caps || []).forEach(function (c) { caps[c] = 1; }); });
+          var capList = Object.keys(caps);
+          var html = connected.length + ' integration' + (connected.length === 1 ? '' : 's') + ' connected (' + connected.map(function (p) { return p.name; }).join(', ') + ')';
+          html += capList.length ? ', covering ' + capList.join(', ') + '.' : '.';
+          if (attention.length) html += ' <strong>' + attention.length + '</strong> need' + (attention.length === 1 ? 's' : '') + ' attention: ' + attention.map(function (p) { return p.name; }).join(', ') + '.';
+          if (available.length) html += ' ' + available.length + ' more provider' + (available.length === 1 ? '' : 's') + ' ' + (available.length === 1 ? 'is' : 'are') + ' available but not connected (' + available.map(function (p) { return p.name; }).join(', ') + ').';
+          html += ' <strong>Recommendation:</strong> ' + (attention.length ? 'resolve ' + attention[0].name + ' first — it\'s already connected but not healthy' : (available.length ? 'connect ' + available[0].name + ' next — it adds ' + (available[0].caps && available[0].caps[0] ? available[0].caps[0] : (available[0].purpose || 'more automated coverage')) : 'everything you need is already connected — no action needed'));
+          html += '.';
+          success('<div>' + html + '</div>');
+        }, 900);
+      });
+    }
+    function intgAiDismiss() {
+      var panel = document.getElementById('intg-ai-panel');
+      if (panel) panel.classList.remove('is-open');
     }
     // ── Capability data per provider (keyed by provider id) ──
     var INTG_CAPS = {
@@ -22805,7 +22857,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div class="page-sub" id="intg-sub-data">Manage connections used across Guardian workflows.</div>
           <div class="page-sub" id="intg-sub-firstrun">Connect a cloud account, CMDB or credential vault — Guardian imports nodes and reconciles changes from them.</div>
         </div>
-        <button class="btn-primary" style="white-space:nowrap;padding:8px 16px;font-size:12px;width:auto;flex-shrink:0;" onclick="openIntegrationSetup()">Add connection</button>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+          <!-- AI surfacing — Integrations "Summarise with AI". Reads live INTG_PROVIDERS state
+               (same array renderIntegrations() renders from) rather than a separate model, so it
+               reflects connected/available/attention exactly as shown on the page, including the
+               first-run state where nothing is connected yet. -->
+          <div class="ai-dropdown">
+            <button type="button" class="ai-cta ai-cta--on-page" id="intg-ai-btn" onclick="intgAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
+            <div class="ai-panel" id="intg-ai-panel">
+              <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="intgAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+              <div id="intg-ai-body"></div>
+            </div>
+          </div>
+          <button class="btn-primary" style="white-space:nowrap;padding:8px 16px;font-size:12px;width:auto;flex-shrink:0;" onclick="openIntegrationSetup()">Add connection</button>
+        </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
         <div id="intg-list"></div>
@@ -24446,6 +24511,62 @@ function sortNodes(col) {
   });
   var awsSection = document.getElementById('aws-device-rows');
   rows.forEach(function(row) { wrap.insertBefore(row, awsSection || null); });
+}
+
+// AI surfacing — All Nodes (Managed tab) "Summarise with AI". A fleet-wide rollup, complementing
+// (not duplicating) Node Detail's per-node summary. Reads the live table rows directly — same
+// data-sort-* attributes sortNodes() already relies on — rather than a separate data model, so it
+// can never drift out of sync with what's on screen. Sentinel scores (999 scanning / 1000 never
+// scanned) are excluded from the score math the same way the KPI cards' "—" display excludes them.
+function fleetAiSummarize() {
+  var btn = document.getElementById('fleet-ai-btn');
+  var panel = document.getElementById('fleet-ai-panel');
+  var body = document.getElementById('fleet-ai-body');
+  if (!btn || !panel || !body) return;
+  panel.classList.add('is-open');
+  _aiBindOutsideClose('fleet-ai-panel', btn, fleetAiDismiss);
+  _aiRunPanel(btn, body, 'Summarising fleet health…', function (success) {
+    setTimeout(function () {
+      var wrap = document.getElementById('nodes-list-wrap');
+      var rows = wrap ? Array.from(wrap.querySelectorAll(':scope > .node-row')) : [];
+      if (!rows.length) { success('<div>No managed nodes yet — add a node to start scanning.</div>'); return; }
+      var scored = [], totalCrit = 0, driftCount = 0, offline = 0, unscanned = 0;
+      rows.forEach(function (row) {
+        var score = parseFloat(row.dataset.sortScore);
+        if (!isNaN(score) && score <= 100) scored.push({ name: (row.dataset.name || '').split(' ')[0], score: score });
+        var crit = parseFloat(row.dataset.sortIssues);
+        if (!isNaN(crit)) totalCrit += crit;
+        var drift = parseFloat(row.dataset.sortDrift);
+        if (drift > 0) driftCount++;
+        var statusEl = row.querySelector('.node-status');
+        if (statusEl && (statusEl.dataset.net || '').indexOf('offline') === 0) offline++;
+        var scanEl = row.querySelector('.node-scan');
+        if (scanEl && scanEl.dataset.state === 'never') unscanned++;
+      });
+      var lead;
+      if (scored.length) {
+        scored.sort(function (a, b) { return a.score - b.score; });
+        var avg = Math.round(scored.reduce(function (s, n) { return s + n.score; }, 0) / scored.length);
+        lead = 'Across ' + rows.length + ' managed node' + (rows.length === 1 ? '' : 's') + ', the average score is <strong>' + avg + '</strong>, with <strong>' + scored[0].name + '</strong> the weakest at ' + scored[0].score + '.';
+      } else {
+        lead = 'Across ' + rows.length + ' managed node' + (rows.length === 1 ? '' : 's') + ', none have a completed score yet.';
+      }
+      var parts = [];
+      if (totalCrit > 0) parts.push('<strong>' + totalCrit + '</strong> critical issue' + (totalCrit === 1 ? '' : 's') + ' open fleet-wide');
+      if (driftCount > 0) parts.push('<strong>' + driftCount + '</strong> node' + (driftCount === 1 ? '' : 's') + ' with unreviewed drift');
+      if (offline > 0) parts.push('<strong>' + offline + '</strong> offline');
+      if (unscanned > 0) parts.push('<strong>' + unscanned + '</strong> never scanned');
+      var html = lead;
+      if (parts.length) html += ' ' + parts.join(', ') + '.';
+      if (scored.length && scored[0].score < 100) html += ' <strong>Start with ' + scored[0].name + '</strong> — it carries the most risk right now.';
+      success('<div>' + html + '</div>');
+    }, 900);
+  });
+}
+
+function fleetAiDismiss() {
+  var panel = document.getElementById('fleet-ai-panel');
+  if (panel) panel.classList.remove('is-open');
 }
 
 // Source, group and environment share one menu, so the trigger has to say what is selected.
