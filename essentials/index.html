@@ -794,6 +794,7 @@ table thead th {
   border-bottom:1px solid var(--border) !important;
 }
 table thead tr { border-bottom:0 !important; }
+.schedule-table-row:first-child { border-top:none !important; }
 .fm-table { width:100%; border-collapse:collapse; font-size:12px; }
 .fm-table th { text-align:left; font-size:10px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; padding:8px 10px; border-bottom:1px solid var(--border); background:var(--bg-canvas); }
 .fm-table td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:middle; color:var(--text-default); }
@@ -4003,26 +4004,6 @@ body.dark .nd-history-row:hover { background:rgba(255,255,255,.05) !important; }
 #nd-tab-policies .nd-pol-row { grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
 .nd-policies-controls,
 .nd-attributes-controls { display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap; }
-.nd-policy-filter-group,
-.nd-attribute-filter-group { display:flex;align-items:center;gap:8px; }
-.nd-pfbtn,
-.nd-afbtn {
-  height:34px;min-width:72px;box-sizing:border-box;padding:0 14px;
-  border:1px solid var(--border);border-radius:10px;background:var(--bg-surface);
-  color:var(--text-sec);font-family:inherit;font-size:12px;font-weight:600;
-  line-height:1;white-space:nowrap;cursor:pointer;
-  transition:background .15s,border-color .15s,color .15s;
-}
-.nd-pfbtn:hover:not(.is-active),
-.nd-afbtn:hover:not(.is-active) { background:#EDF9F4;border-color:rgba(0,175,115,.32);color:var(--text-default); }
-.nd-pfbtn.is-active,
-.nd-afbtn.is-active { background:rgba(0,175,115,.10);border-color:var(--green1);color:#15803D; }
-body.dark .nd-pfbtn,
-body.dark .nd-afbtn { background:#133033;border-color:#42595C; }
-body.dark .nd-pfbtn:hover:not(.is-active),
-body.dark .nd-afbtn:hover:not(.is-active) { background:#063135;border-color:rgba(0,175,115,.45);color:var(--p-neutral-50); }
-body.dark .nd-pfbtn.is-active,
-body.dark .nd-afbtn.is-active { background:rgba(0,175,115,.18);border-color:var(--green1);color:#34D399; }
 .nd-attr-primary { display:flex;align-items:center;gap:10px;min-width:0; }
 .nd-attr-primary-copy { min-width:0;font-size:12px;font-weight:600;color:var(--text-default); }
 .nd-attr-primary-copy > div { margin-top:2px;font-size:10px;font-weight:400;color:var(--text-sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
@@ -4056,10 +4037,6 @@ body.dark .cmd-mono { background:rgba(255,255,255,0.07) !important;border-color:
 .cm-attn-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
 /* .cm-status — див. канонічний блок BADGE */
 #cmd-actions { display:flex; align-items:center; gap:4px; }
-#cmd-actions .btn-outline { background:var(--bg-surface); border-color:var(--border); box-shadow:0 1px 2px rgba(0,0,0,0.06); }
-#cmd-actions .btn-outline:hover { border-color:rgba(16,185,129,0.7); color:var(--green1); }
-body.dark #cmd-actions .btn-outline { background:rgba(16,185,129,0.10) !important; border-color:rgba(16,185,129,0.40) !important; color:var(--text-default) !important; }
-body.dark #cmd-actions .btn-outline:hover { background:rgba(16,185,129,0.18) !important; border-color:var(--green1) !important; color:#fff !important; }
 /* Shared overflow action — DS §6.5 "Back": the only canonical icon-only square (32×32, r10,
    no label). Same box as .btn-third .bt-ico, so an overflow ⋯ and a back arrow are one shape. */
 :is(.overflow-menu-btn, .check-menu-btn, .cm-actions-btn, .id-cap-menu-btn, .id-summary-more) { width:32px; height:32px; min-width:32px; box-sizing:border-box; padding:0; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid rgba(0,175,115,0.35); border-radius:10px; background:rgba(0,175,115,0.05); color:var(--text-default); cursor:pointer; box-shadow:none; font-family:inherit; line-height:1; transition:background .15s, border-color .15s, color .15s; }
@@ -9722,7 +9699,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
 
             <!-- Header -->
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
+            <div style="display:flex;align-items:flex-start;margin-bottom:22px;flex-wrap:wrap;gap:10px;">
               <div style="display:flex;align-items:flex-start;gap:12px;">
                 <button class="back-btn" onclick="navBack()" aria-label="Back"><svg viewBox="0 0 8 8" fill="none"><path d="M7 4L1 4M3.8 1L1 4L3.8 7" stroke="currentColor" stroke-linecap="round"/></svg></button>
                 <div>
@@ -9730,17 +9707,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <div style="font-size:12px;color:var(--text-sec);margin-top:3px;">MACBOOK-TARAS · <span id="sc-sub"></span></div>
                 </div>
               </div>
-              <!-- Filter pills — canonical .seg segmented control (same component as the
-                   All Nodes "State" filter and Node Comparison), not a one-off inline-styled trio. -->
-              <div class="seg" id="sc-filter-seg" role="group" aria-label="Filter comparison rows">
-                <button onclick="setScanCompareFilter('all')" id="sc-fbtn-all" class="seg-btn is-active" aria-pressed="true">All <span class="seg-count" id="sc-count-all"></span></button>
-                <button onclick="setScanCompareFilter('diff')" id="sc-fbtn-diff" class="seg-btn" aria-pressed="false">Differences <span class="seg-count" id="sc-count-diff"></span></button>
-                <button onclick="setScanCompareFilter('fail')" id="sc-fbtn-fail" class="seg-btn" aria-pressed="false">Failing <span class="seg-count" id="sc-count-fail"></span></button>
-              </div>
             </div>
 
-            <!-- Scan pickers -->
-            <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
+            <!-- Filter tabs + scan pickers — same row: tabs on the left, pickers on the right. -->
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+              <!-- Filter tabs — canonical .policies-tabs component (same as Node Comparison
+                   and the All Nodes Managed/Detected tabs), not a one-off segmented control. -->
+              <div class="policies-tabs" id="sc-filter-seg" role="group" aria-label="Filter comparison rows">
+                <button onclick="setScanCompareFilter('all')" id="sc-fbtn-all" class="pol-tab pol-tab-active" aria-pressed="true">All <span class="pol-tab-count" id="sc-count-all"></span></button>
+                <button onclick="setScanCompareFilter('diff')" id="sc-fbtn-diff" class="pol-tab" aria-pressed="false">Differences <span class="pol-tab-count" id="sc-count-diff"></span></button>
+                <button onclick="setScanCompareFilter('fail')" id="sc-fbtn-fail" class="pol-tab" aria-pressed="false">Failing <span class="pol-tab-count" id="sc-count-fail"></span></button>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:7px;">
                 <span style="font-size:11px;font-weight:600;color:var(--text-sec);">Comparing</span>
                 <div class="sc-pick-wrap" style="position:relative;">
@@ -9765,6 +9743,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   </select>
                 </div>
               </div>
+              </div>
             </div>
 
             <!-- Summary banner — neutral surface + colour on the value only (status-box canon:
@@ -9781,6 +9760,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;">
                 <div id="sc-sum-match" style="font-size:22px;font-weight:700;color:#00AF73;">0</div>
                 <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">unchanged</div>
+              </div>
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex:1;min-width:140px;" title="Same failing value in both scans — not a new regression, but still unresolved.">
+                <div id="sc-sum-persist" style="font-size:22px;font-weight:700;color:#FB3C44;">0</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">still failing, unresolved</div>
               </div>
             </div>
 
@@ -10058,10 +10041,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <svg class="isearch-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
                   <input id="nd-attr-search" class="isearch-input" type="text" placeholder="Search attributes…" aria-label="Search attributes" oninput="ndFilterAttrs()" onblur="isearchClose(this)" onkeydown="if(event.key==='Escape'){this.value='';ndFilterAttrs();this.blur();}">
                 </div>
-                <div class="nd-attribute-filter-group" role="group" aria-label="Filter monitored attributes by status">
-                  <button onclick="ndAttrFilter(&#39;all&#39;,this)" class="nd-afbtn is-active" data-active="all" aria-pressed="true">All <span>12</span></button>
-                  <button onclick="ndAttrFilter(&#39;changed&#39;,this)" class="nd-afbtn" aria-pressed="false">Changed <span>3</span></button>
-                  <button onclick="ndAttrFilter(&#39;ok&#39;,this)" class="nd-afbtn" aria-pressed="false">OK <span>9</span></button>
+                <div class="seg" id="nd-attr-filter-seg" role="group" aria-label="Filter monitored attributes by status">
+                  <button onclick="ndAttrFilter(&#39;all&#39;,this)" class="seg-btn is-active" data-active="all" aria-pressed="true">All <span class="seg-count">12</span></button>
+                  <button onclick="ndAttrFilter(&#39;changed&#39;,this)" class="seg-btn" aria-pressed="false">Changed <span class="seg-count">3</span></button>
+                  <button onclick="ndAttrFilter(&#39;ok&#39;,this)" class="seg-btn" aria-pressed="false">OK <span class="seg-count">9</span></button>
                 </div>
               </div>
             </div>
@@ -10231,10 +10214,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <svg class="isearch-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
                 <input id="nd-pol-search" class="isearch-input" type="text" placeholder="Search policies…" aria-label="Search assigned policies" oninput="ndFilterPolicies()" onblur="isearchClose(this)" onkeydown="if(event.key==='Escape'){this.value='';ndFilterPolicies();this.blur();}">
               </div>
-              <div class="nd-policy-filter-group" role="group" aria-label="Filter assigned policies by status">
-                <button onclick="ndPolFilter(&#39;all&#39;,this)" class="nd-pfbtn is-active" data-active="all" aria-pressed="true">All <span>4</span></button>
-                <button onclick="ndPolFilter(&#39;failing&#39;,this)" class="nd-pfbtn" aria-pressed="false">Failing <span>2</span></button>
-                <button onclick="ndPolFilter(&#39;passing&#39;,this)" class="nd-pfbtn" aria-pressed="false">Passing <span>2</span></button>
+              <div class="seg" id="nd-pol-filter-seg" role="group" aria-label="Filter assigned policies by status">
+                <button onclick="ndPolFilter(&#39;all&#39;,this)" class="seg-btn is-active" data-active="all" aria-pressed="true">All <span class="seg-count">4</span></button>
+                <button onclick="ndPolFilter(&#39;failing&#39;,this)" class="seg-btn" aria-pressed="false">Failing <span class="seg-count">2</span></button>
+                <button onclick="ndPolFilter(&#39;passing&#39;,this)" class="seg-btn" aria-pressed="false">Passing <span class="seg-count">2</span></button>
               </div>
               </div>
             </div>
@@ -10706,7 +10689,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         (ci === -1 ? other : groups[ci]).names.push(n);
       });
       if (other.names.length) groups.push(other);
-      var totDiff = 0, totFail = 0, totMatch = 0, html = '';
+      var totDiff = 0, totFail = 0, totMatch = 0, totPersist = 0, html = '';
       groups.forEach(function (g, gi) {
         if (!g.names.length) return;
         var secFail = 0, secDiff = 0, secMatch = 0, rows = '';
@@ -10714,7 +10697,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           var r = scRow(n, find(aa, n), find(ba, n));
           rows += r.html;
           if (r.differ) { totDiff++; } else { totMatch++; }
-          if (r.fail) { totFail++; }
+          if (r.fail) { totFail++; if (!r.differ) totPersist++; }
           if (r.fail) { secFail++; } else if (r.differ) { secDiff++; } else { secMatch++; }
         });
         var pills = '';
@@ -10739,6 +10722,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       set('sc-sum-diff', totDiff);
       set('sc-sum-fail', totFail);
       set('sc-sum-match', totMatch);
+      set('sc-sum-persist', totPersist);
       setScanCompareFilter('all');
     }
     function toggleSC(i) {
@@ -10753,7 +10737,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       ['all', 'diff', 'fail'].forEach(function (k) {
         var btn = document.getElementById('sc-fbtn-' + k);
         if (!btn) return;
-        btn.classList.toggle('is-active', k === f);
+        btn.classList.toggle('pol-tab-active', k === f);
         btn.setAttribute('aria-pressed', k === f ? 'true' : 'false');
       });
       document.querySelectorAll('#sc-compare-body .sc-sec').forEach(function (sec) {
@@ -10885,7 +10869,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
     function ndFilterAttrs() {
       var q = document.getElementById('nd-attr-search').value.toLowerCase();
-      var activeFilter = document.querySelector('.nd-afbtn[data-active]');
+      var activeFilter = document.querySelector('#nd-attr-filter-seg .seg-btn[data-active]');
       var status = activeFilter ? activeFilter.getAttribute('data-active') : 'all';
       var isFiltering = status !== 'all' || q.length > 0;
       var totalVisible = 0;
@@ -10920,7 +10904,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       document.getElementById('nd-attrs-empty').style.display = totalVisible === 0 ? 'block' : 'none';
     }
     function ndAttrFilter(status, btn) {
-      document.querySelectorAll('.nd-afbtn').forEach(function(b) {
+      document.querySelectorAll('#nd-attr-filter-seg .seg-btn').forEach(function(b) {
         b.removeAttribute('data-active');
         b.classList.remove('is-active');
         b.setAttribute('aria-pressed', 'false');
@@ -10932,17 +10916,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
     function ndResetAttrFilters() {
       isearchReset('nd-attr-search');
-      var all = document.querySelector('.nd-afbtn');
+      var all = document.querySelector('#nd-attr-filter-seg .seg-btn');
       if (all) ndAttrFilter('all', all); else ndFilterAttrs();
     }
     function ndResetPolFilters() {
       isearchReset('nd-pol-search');
-      var all = document.querySelector('.nd-pfbtn');
+      var all = document.querySelector('#nd-pol-filter-seg .seg-btn');
       if (all) ndPolFilter('all', all); else ndFilterPolicies();
     }
     function ndFilterPolicies() {
       var q = document.getElementById('nd-pol-search').value.toLowerCase();
-      var activeFilter = document.querySelector('.nd-pfbtn[data-active]');
+      var activeFilter = document.querySelector('#nd-pol-filter-seg .seg-btn[data-active]');
       var status = activeFilter ? activeFilter.getAttribute('data-active') : 'all';
       var rows = document.querySelectorAll('.nd-pol-row');
       var visible = 0;
@@ -10956,7 +10940,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       document.getElementById('nd-policies-empty').style.display = visible === 0 ? 'block' : 'none';
     }
     function ndPolFilter(status, btn) {
-      document.querySelectorAll('.nd-pfbtn').forEach(function(b) {
+      document.querySelectorAll('#nd-pol-filter-seg .seg-btn').forEach(function(b) {
         b.removeAttribute('data-active');
         b.classList.remove('is-active');
         b.setAttribute('aria-pressed', 'false');
@@ -15961,9 +15945,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       document.getElementById('cmd-sub').innerHTML = cm.location + ' · ' + statusBadge;
 
       // Action buttons
-      var acts = '<button id="cmd-test-btn" class="btn-outline" onclick="cmTestConnection()" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test connection</button>';
-      acts += '<button class="btn-outline" onclick="cmAction(\'edit\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Edit group</button>';
-      acts += '<button class="btn-outline" onclick="openCmSetup(\'cm-detail\')" style="width:auto;padding:7px 14px;font-size:12px;font-weight:600;">Add CM to this group</button>';
+      var acts = '<button id="cmd-test-btn" class="action-cta" style="width:auto;padding:0 20px;" onclick="cmTestConnection()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test connection</button>';
+      acts += '<button class="action-cta" style="width:auto;padding:0 20px;" onclick="cmAction(\'edit\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg>Edit group</button>';
+      acts += '<button class="action-cta" style="width:auto;padding:0 20px;" onclick="openCmSetup(\'cm-detail\')"><svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"></path><path d="M0.628906 4H7.36965"></path></svg>Add CM to this group</button>';
       acts += '<button class="cm-actions-btn" onclick="cmDetailMenu(this)" style="margin-left:4px;">⋯</button>';
       document.getElementById('cmd-actions').innerHTML = acts;
 
@@ -16128,10 +16112,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
 
     function cmDetailMenu(btn) {
-      cmRowMenu(btn, _currentCM ? _currentCM.id : '');
+      cmRowMenu(btn, _currentCM ? _currentCM.id : '', true);
     }
 
-    function cmRowMenu(btn, id) {
+    function cmRowMenu(btn, id, onDetailPage) {
       // Close any existing menu
       var old = document.getElementById('cm-ctx-menu');
       if (old) old.remove();
@@ -16139,10 +16123,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var cm = CM_GROUPS.filter(function(g){ return g.id === id; })[0];
       if (!cm) return;
 
-      var items = [
-        { label:'View details', action:"showCMDetail('"+id+"')" },
-        { label:'Edit group', action:"cmAction('edit')" }
-      ];
+      var items = [];
+      // On the group's own detail page "View details" would just reload the page
+      // you're already looking at — only offer it from the list, where it navigates.
+      if (!onDetailPage) items.push({ label:'View details', action:"showCMDetail('"+id+"')" });
+      items.push({ label:'Edit group', action:"cmAction('edit')" });
       if (cm.state === 'active') {
         items.push({ sep:true });
         items.push({ label:'Disable group', action:"cmConfirmDisable('"+id+"')" });
@@ -22528,7 +22513,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Info cards row -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px;">
           <!-- CM Instances -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;">
             <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor"></circle><circle cx="6" cy="18" r="1" fill="currentColor"></circle></svg>CM Instances</div>
@@ -22551,13 +22536,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Assigned Nodes -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:20px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);">
-            <div style="display:flex;align-items:center;gap:14px;">
-              <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Assigned Nodes <span id="cmd-node-count" style="font-weight:800;color:var(--text-default);"></span></div>
-              <div id="cmd-node-summary" style="font-size:11px;color:var(--text-muted);"></div>
-            </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Assigned Nodes <span id="cmd-node-count" style="font-weight:800;color:var(--text-default);"></span></div>
+            <div id="cmd-node-summary" style="font-size:11px;color:var(--text-muted);"></div>
           </div>
+        </div>
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:30px;">
           <div id="cmd-nodes"></div>
           <div id="cmd-nodes-empty" class="es" style="display:none;">
             <div class="es-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></div>
@@ -22568,10 +22553,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Recent Activity -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Recent Activity</div>
+        </div>
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:20px;">
-          <div style="padding:14px 22px;border-bottom:1px solid var(--border);">
-            <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Recent Activity</div>
-          </div>
           <div id="cmd-activity" style="padding:0;"></div>
         </div>
       </div>
@@ -22881,9 +22866,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 Base configuration
               </div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="showToast('Edit connection settings')">Edit connection</button>
-                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="showToast('Update credentials')">Update credentials</button>
-                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="idTestConnection()">Test connection</button>
+                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="showToast('Edit connection settings')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg>Edit connection</button>
+                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="showToast('Update credentials')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path></svg>Update credentials</button>
+                <button class="action-cta" style="width:auto;padding:0 12px;" onclick="idTestConnection()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Test connection</button>
               </div>
             </div>
             <div class="id-kv" id="id-base-kv">
