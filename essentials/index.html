@@ -2792,19 +2792,21 @@ body.dark .sf-ai-strip { background:rgba(99,102,241,0.14); }
 body.dark .sf-ai-strip strong { color:#A5B4FC; }
 body.dark .sf-ai-strip svg { color:#A5B4FC; }
 
-/* Jupiter (Policy Detail) — differentiated from Einstein's on-demand button+dropdown (one object,
+/* Jupiter mechanism — differentiated from Einstein's on-demand button+dropdown (one object,
    click to reveal) and Bertha's inline strip (always-on but nested inside one row): a standalone
-   BLOCK that stands on its own above the checks list, summarising the whole policy, present the
-   moment the policy has a failure. */
-.pd-ai-block { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; padding:14px 18px; background:var(--bg-surface); border:1px solid var(--border); border-left:3px solid #6366F1; border-radius:var(--radius-lg); box-shadow:0 1px 2px rgba(15,23,42,0.04); }
-.pd-ai-block svg { flex-shrink:0; margin-top:1px; color:#6366F1; }
-.pd-ai-block-label { color:#6366F1; }
-.pd-ai-block-body { font-size:12px; line-height:1.6; color:var(--text-sec); }
-.pd-ai-block-body strong { color:#6366F1; font-weight:700; }
-body.dark .pd-ai-block { border-left-color:#A5B4FC; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
-body.dark .pd-ai-block svg { color:#A5B4FC; }
-body.dark .pd-ai-block-label { color:#A5B4FC; }
-body.dark .pd-ai-block-body strong { color:#A5B4FC; }
+   BLOCK that stands on its own above the list/table it summarises, present without being asked.
+   Shared by every page-level "broad overview + recommendation" AI spot (Policy Detail, Dashboard,
+   Node Detail, Reports, Scan Schedules, Integrations) — same purpose class as Jupiter, so same
+   mechanism, not a per-page reinvention. */
+.ai-block { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; padding:14px 18px; background:var(--bg-surface); border:1px solid var(--border); border-left:3px solid #6366F1; border-radius:var(--radius-lg); box-shadow:0 1px 2px rgba(15,23,42,0.04); }
+.ai-block svg { flex-shrink:0; margin-top:1px; color:#6366F1; }
+.ai-block-label { color:#6366F1; }
+.ai-block-body { font-size:12px; line-height:1.6; color:var(--text-sec); }
+.ai-block-body strong { color:#6366F1; font-weight:700; }
+body.dark .ai-block { border-left-color:#A5B4FC; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+body.dark .ai-block svg { color:#A5B4FC; }
+body.dark .ai-block-label { color:#A5B4FC; }
+body.dark .ai-block-body strong { color:#A5B4FC; }
 .ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6366F1; background:none; border:none; cursor:pointer; padding:0; }
 .ai-inline-cta:hover { text-decoration:underline; }
 body.dark .ai-inline-cta { color:#818CF8; }
@@ -7873,16 +7875,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div class="issues-card">
           <div class="dash-block-head">
             <div style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</div>
-            <!-- AI surfacing demo (Week 3, Пн) — block-level summary, not per-row: this is the
-                 "Dashboard → Summarise what needs my attention" example from the plan. Trigger →
-                 Processing → AI result → dismiss, as a floating dropdown anchored to the button
-                 (not an inline block). Doesn't touch the Review/Reconcile primary CTAs below. -->
-            <div class="ai-dropdown">
-              <button type="button" class="ai-cta ai-cta--on-page" id="dash-ai-btn" onclick="dashAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
-              <div class="ai-panel" id="dash-ai-panel">
-                <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="dashAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-                <div id="dash-ai-body"></div>
-              </div>
+          </div>
+
+          <!-- Jupiter mechanism — always-on block, no trigger, above the list it summarises.
+               Doesn't touch the Review/Reconcile primary CTAs below. Populated by dashRenderAiBlock(). -->
+          <div id="dash-ai-block" class="ai-block" style="margin:0 0 12px;">
+            <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+            <div>
+              <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
+              <div id="dash-ai-block-body" class="ai-block-body"></div>
             </div>
           </div>
 
@@ -9910,35 +9911,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span id="nd-sum-monitored" style="display:none;">12</span>
           <button class="link-cta nd-compliance-action" onclick="openReportFromBaseline()" title="Open a Baseline deviation report scoped to this node"><span class="lc-txt">View baseline deviations</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
           <div class="nd-sum-div"></div>
-          <!-- AI surfacing (Week 3, Вт) — "Summarise the current security posture of this node"
-               (Tuesday's Node use case from the plan). Flagship scenario for the full interaction-state
-               set: the Demo state dropdown lets a reviewer step through success/no-result/error/unavailable
-               without needing real data to trigger each one — same "Demo state" convention as
-               .icx-demo-tabs (L14160). Doesn't touch Run Scan Now / Compare scans above. -->
-          <div class="ai-dropdown" id="nd-ai-dropdown">
-            <button type="button" class="ai-cta ai-cta--on-page" id="nd-ai-btn" onclick="ndAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
-            <div class="ai-panel" id="nd-ai-panel">
-              <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="ndAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                <span style="font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;">Demo state</span>
-                <div style="position:relative;">
-                  <button type="button" class="scan-menu-trigger" id="nd-ai-demo-trigger" data-state="success" style="height:22px;padding:3px 8px;font-size:10px;gap:4px;" onclick="ndAiToggleDemoPanel(this)"><span id="nd-ai-demo-label">Success</span><svg class="scan-menu-chevron" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-                  <!-- position:fixed, not the default .scan-menu-panel absolute — .ai-panel has
-                       overflow:hidden (rounded-card clipping) and this list is taller than the
-                       remaining space inside it, so an absolute child gets sliced off. Same
-                       escape-hatch as .ai-panel--fixed (Policy Detail): JS computes top/left off
-                       the trigger's rect in ndAiToggleDemoPanel(). -->
-                  <div id="nd-ai-demo-panel" class="scan-menu-panel" style="display:none;position:fixed;width:160px;padding:6px;">
-                    <button type="button" class="scan-menu-option" onclick="ndAiSetDemoState('success')">Success</button>
-                    <button type="button" class="scan-menu-option" onclick="ndAiSetDemoState('none')">No notable findings</button>
-                    <button type="button" class="scan-menu-option" onclick="ndAiSetDemoState('error')">Error</button>
-                    <button type="button" class="scan-menu-option" onclick="ndAiSetDemoState('unavailable')">Insufficient data</button>
-                  </div>
-                </div>
-              </div>
-              <div id="nd-ai-body"></div>
-            </div>
-          </div>
+          <!-- Viewing control sits ON the compliance-score row, level with the score it
+               scopes — not stacked below the AI block, which is a separate always-on
+               component and pushed everything under it onto a second flex-wrap line. -->
           <div class="nd-scan-control">
             <span class="nd-scan-control-label">Viewing:</span>
             <div>
@@ -9949,6 +9924,31 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <option value="28may">28 May · 11:30</option>
               </select>
             </div>
+          </div>
+        </div>
+
+        <!-- Jupiter mechanism — always-on block, no trigger, above the checks it summarises.
+             Demo state selector lets a reviewer step through success/no-result/error/unavailable
+             without needing real data to trigger each one — same "Demo state" convention as
+             .icx-demo-tabs (L14160). Doesn't touch Run Scan Now / Compare scans above. Its own
+             row below the compliance-score strip, not a flex item inside it — its body text
+             is long enough to force everything after it onto a wrapped second line. -->
+        <div id="nd-ai-block" class="ai-block">
+          <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">
+              <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;">AI Insight</div>
+              <div style="position:relative;">
+                <button type="button" class="scan-menu-trigger" id="nd-ai-demo-trigger" data-state="success" style="height:22px;padding:3px 8px;font-size:10px;gap:4px;" onclick="ndAiToggleDemoPanel(this)"><span id="nd-ai-demo-label">Success</span><svg class="scan-menu-chevron" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+                <div id="nd-ai-demo-panel" class="scan-menu-panel" style="display:none;position:fixed;width:160px;padding:6px;">
+                  <button type="button" class="scan-menu-option" onclick="ndAiSetDemoState('success')">Success</button>
+                  <button type="button" class="scan-menu-option" onclick="ndAiSetDemoState('none')">No notable findings</button>
+                  <button type="button" class="scan-menu-option" onclick="ndAiSetDemoState('error')">Error</button>
+                  <button type="button" class="scan-menu-option" onclick="ndAiSetDemoState('unavailable')">Insufficient data</button>
+                </div>
+              </div>
+            </div>
+            <div id="nd-ai-block-body" class="ai-block-body"></div>
           </div>
         </div>
 
@@ -11528,11 +11528,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
              (one object, click to reveal) and Bertha's inline strip (always-on but nested inside
              one row): this is a standalone section, present the moment the policy has a failure,
              not attached to any single check. Populated by pdRenderAiBlock(). -->
-        <div id="pd-ai-block" class="pd-ai-block" style="display:none;">
+        <div id="pd-ai-block" class="ai-block" style="display:none;">
           <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
           <div>
-            <div class="pd-ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
-            <div id="pd-ai-block-body" class="pd-ai-block-body"></div>
+            <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
+            <div id="pd-ai-block-body" class="ai-block-body"></div>
           </div>
         </div>
 
@@ -13440,44 +13440,34 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var sbBadge = document.querySelector('#sb-integrations span');
       if (sbBadge) sbBadge.textContent = connected.length;
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
+      intgRenderAiBlock();
     }
-    // AI surfacing — Integrations "Summarise with AI". Reads INTG_PROVIDERS live (the exact
-    // array renderIntegrations() renders from), so connected/available/attention counts and the
-    // first-run empty state can never drift out of sync with what's on screen.
-    function intgAiSummarize() {
-      var btn = document.getElementById('intg-ai-btn');
-      var panel = document.getElementById('intg-ai-panel');
-      var body = document.getElementById('intg-ai-body');
-      if (!btn || !panel || !body) return;
-      panel.classList.add('is-open');
-      _aiBindOutsideClose('intg-ai-panel', btn, intgAiDismiss);
-      _aiRunPanel(btn, body, 'Summarising integrations…', function (success) {
-        setTimeout(function () {
-          var view = document.getElementById('v-settings-integrations');
-          var firstRun = !!(view && view.classList.contains('is-firstrun'));
-          var connected = firstRun ? [] : INTG_PROVIDERS.filter(function (p) { return p.status === 'connected' || p.status === 'attention' || p.status === 'error'; });
-          if (!connected.length) {
-            success('<div>No integrations are connected yet — connect a cloud account, ITSM or credential vault to start importing nodes and reconciling changes automatically.</div>');
-            return;
-          }
-          var attention = connected.filter(function (p) { return p.status === 'attention' || p.status === 'error'; });
-          var available = firstRun ? [] : INTG_PROVIDERS.filter(function (p) { return p.status === 'notset'; });
-          var caps = {};
-          connected.forEach(function (p) { (p.caps || []).forEach(function (c) { caps[c] = 1; }); });
-          var capList = Object.keys(caps);
-          var html = connected.length + ' integration' + (connected.length === 1 ? '' : 's') + ' connected (' + connected.map(function (p) { return p.name; }).join(', ') + ')';
-          html += capList.length ? ', covering ' + capList.join(', ') + '.' : '.';
-          if (attention.length) html += ' <strong>' + attention.length + '</strong> need' + (attention.length === 1 ? 's' : '') + ' attention: ' + attention.map(function (p) { return p.name; }).join(', ') + '.';
-          if (available.length) html += ' ' + available.length + ' more provider' + (available.length === 1 ? '' : 's') + ' ' + (available.length === 1 ? 'is' : 'are') + ' available but not connected (' + available.map(function (p) { return p.name; }).join(', ') + ').';
-          html += ' <strong>Recommendation:</strong> ' + (attention.length ? 'resolve ' + attention[0].name + ' first — it\'s already connected but not healthy' : (available.length ? 'connect ' + available[0].name + ' next — it adds ' + (available[0].caps && available[0].caps[0] ? available[0].caps[0] : (available[0].purpose || 'more automated coverage')) : 'everything you need is already connected — no action needed'));
-          html += '.';
-          success('<div>' + html + '</div>');
-        }, 900);
-      });
-    }
-    function intgAiDismiss() {
-      var panel = document.getElementById('intg-ai-panel');
-      if (panel) panel.classList.remove('is-open');
+    // Jupiter mechanism — Integrations rollup. Always-on block, no trigger, no loading state:
+    // reads INTG_PROVIDERS live (the exact array renderIntegrations() renders from), so
+    // connected/available/attention counts and the first-run empty state can never drift out of
+    // sync with what's on screen. Called at the end of renderIntegrations().
+    function intgRenderAiBlock() {
+      var body = document.getElementById('intg-ai-block-body');
+      if (!body) return;
+      var view = document.getElementById('v-settings-integrations');
+      var firstRun = !!(view && view.classList.contains('is-firstrun'));
+      var connected = firstRun ? [] : INTG_PROVIDERS.filter(function (p) { return p.status === 'connected' || p.status === 'attention' || p.status === 'error'; });
+      if (!connected.length) {
+        body.innerHTML = '<div>No integrations are connected yet — connect a cloud account, ITSM or credential vault to start importing nodes and reconciling changes automatically.</div>';
+        return;
+      }
+      var attention = connected.filter(function (p) { return p.status === 'attention' || p.status === 'error'; });
+      var available = firstRun ? [] : INTG_PROVIDERS.filter(function (p) { return p.status === 'notset'; });
+      var caps = {};
+      connected.forEach(function (p) { (p.caps || []).forEach(function (c) { caps[c] = 1; }); });
+      var capList = Object.keys(caps);
+      var html = connected.length + ' integration' + (connected.length === 1 ? '' : 's') + ' connected (' + connected.map(function (p) { return p.name; }).join(', ') + ')';
+      html += capList.length ? ', covering ' + capList.join(', ') + '.' : '.';
+      if (attention.length) html += ' <strong>' + attention.length + '</strong> need' + (attention.length === 1 ? 's' : '') + ' attention: ' + attention.map(function (p) { return p.name; }).join(', ') + '.';
+      if (available.length) html += ' ' + available.length + ' more provider' + (available.length === 1 ? '' : 's') + ' ' + (available.length === 1 ? 'is' : 'are') + ' available but not connected (' + available.map(function (p) { return p.name; }).join(', ') + ').';
+      html += ' <strong>Recommendation:</strong> ' + (attention.length ? 'resolve ' + attention[0].name + ' first — it\'s already connected but not healthy' : (available.length ? 'connect ' + available[0].name + ' next — it adds ' + (available[0].caps && available[0].caps[0] ? available[0].caps[0] : (available[0].purpose || 'more automated coverage')) : 'everything you need is already connected — no action needed'));
+      html += '.';
+      body.innerHTML = '<div>' + html + '</div>';
     }
     // ── Capability data per provider (keyed by provider id) ──
     var INTG_CAPS = {
@@ -15961,8 +15951,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
 
     function roleApply() {
-      // Node Detail — Summarise with AI: hidden, не сіре.
-      var ndAi = document.getElementById('nd-ai-dropdown');
+      // Node Detail — AI Insight block: hidden, не сіре.
+      var ndAi = document.getElementById('nd-ai-block');
       if (ndAi) ndAi.style.display = (_currentRole === 'viewer') ? 'none' : '';
 
       // Detected Drift — Approve/Flag/Skip: disabled + explanation, лишається видимим.
@@ -18454,6 +18444,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         if (bo) bo.textContent = 'No scanned nodes match ' + scopeBits.join(' · ') + '. Adjust the scope filters, or run a scan on nodes in this scope first.';
         if (sc) sc.style.display = '';
         updateResetVisibility();
+        reportRenderAiBlock(null);
         return;
       }
       // Aggregate KPIs from the policy rows (single source of truth → numbers always tie out).
@@ -18484,6 +18475,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (successEl) successEl.style.display = data.failed.length === 0 ? '' : 'none';
       // Apply local table filters (Policy / Severity) on top of the freshly rendered rows.
       reportApplyFilters();
+      reportRenderAiBlock(data, passed, failed, score);
     }
     function updateResetVisibility() {
       var btn = document.getElementById('rep-reset');
@@ -22349,17 +22341,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
         </div>
         <div id="rep-head-actions" style="display:flex;gap:12px;align-items:center;">
-          <!-- AI surfacing — Reports "Summarise with AI", same block-level pattern as Dashboard's
-               "Summarise with AI" but data-driven off the live report scope, not static placeholder
-               text. Sits on the grey page canvas (not a white card), so it needs .ai-cta--on-page. -->
-          <div class="ai-dropdown">
-            <button type="button" class="ai-cta ai-cta--on-page" id="rep-ai-btn" onclick="reportAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
-            <div class="ai-panel" id="rep-ai-panel">
-              <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="reportAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-              <div id="rep-ai-body"></div>
-            </div>
-          </div>
-          <div style="width:1px;height:26px;background:var(--border);"></div>
           <div class="demo-wrap" title="Prototype only — simulate export success or failure. Not shown in the live product.">
             <span class="demo-lbl">Demo</span>
             <div class="demo-seg-group">
@@ -22417,6 +22398,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Report results (summary + tables) -->
         <div id="report-results">
+
+        <!-- Jupiter mechanism — always-on block, no trigger, above the KPI band it summarises.
+             Populated by reportRenderAiBlock(), called from _repRenderNow() so it stays in sync
+             with scope/filter changes without needing a manual click. -->
+        <div id="rep-ai-block" class="ai-block">
+          <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+          <div>
+            <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
+            <div id="rep-ai-block-body" class="ai-block-body"></div>
+          </div>
+        </div>
 
         <!-- Summary band — KPI donut cards rendered by _repRenderKpis() -->
         <div id="rep-summary-band" class="stat-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px;"></div>
@@ -22541,24 +22533,25 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Scan Schedules</div>
             <div id="sched-sub" style="font-size:12px;color:var(--text-sec);margin-top:3px;">Automated scan cadence per node group · times in UTC</div>
           </div>
-          <!-- AI surfacing — Scan Schedules "Summarise with AI". No per-row failure state exists
-               here (Active/Paused/Not scheduled only, no error/drift data) so a per-row "Explain"
-               trigger would be decorative. A block-level coverage-gap summary is the honest fit:
-               which groups/environments have no schedule or a paused one, driven by the live
-               schedSet() for whichever scope tab (group/env) is active. -->
-          <div class="ai-dropdown">
-            <button type="button" class="ai-cta ai-cta--on-page" id="sched-ai-btn" onclick="schedAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
-            <div class="ai-panel" id="sched-ai-panel">
-              <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="schedAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-              <div id="sched-ai-body"></div>
-            </div>
-          </div>
         </div>
 
         <!-- Scope tabs: shared Policies tab component -->
         <div id="sched-scope-tabs" class="policies-tabs" style="margin-bottom:22px;">
           <button id="ss-group" class="pol-tab pol-tab-active" onclick="setSchedScope(&#39;group&#39;)" style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--green2);background:none;border:none;border-bottom:2px solid var(--green2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Node groups <span class="pol-tab-count">6</span></button>
           <button id="ss-env" class="pol-tab" onclick="setSchedScope(&#39;env&#39;)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Environments <span class="pol-tab-count">3</span></button>
+        </div>
+
+        <!-- Jupiter mechanism — always-on block, no trigger, above the schedule table it
+             summarises. No per-row failure state exists here (Active/Paused/Not scheduled only,
+             no error/drift data), so a coverage-gap summary is the honest fit: which groups/
+             environments have no schedule or a paused one. Populated by schedRenderAiBlock(),
+             called from renderSchedules() so it stays in sync with the active scope tab. -->
+        <div id="sched-ai-block" class="ai-block">
+          <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+          <div>
+            <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
+            <div id="sched-ai-block-body" class="ai-block-body"></div>
+          </div>
         </div>
 
         <!-- Schedule table -->
@@ -22860,21 +22853,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div class="page-sub" id="intg-sub-firstrun">Connect a cloud account, CMDB or credential vault — Guardian imports nodes and reconciles changes from them.</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-          <!-- AI surfacing — Integrations "Summarise with AI". Reads live INTG_PROVIDERS state
-               (same array renderIntegrations() renders from) rather than a separate model, so it
-               reflects connected/available/attention exactly as shown on the page, including the
-               first-run state where nothing is connected yet. -->
-          <div class="ai-dropdown">
-            <button type="button" class="ai-cta ai-cta--on-page" id="intg-ai-btn" onclick="intgAiSummarize()">Summarise with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
-            <div class="ai-panel" id="intg-ai-panel">
-              <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Summary<button type="button" class="ai-panel-close" onclick="intgAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-              <div id="intg-ai-body"></div>
-            </div>
-          </div>
           <button class="btn-primary" style="white-space:nowrap;padding:8px 16px;font-size:12px;width:auto;flex-shrink:0;" onclick="openIntegrationSetup()">Add connection</button>
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
+        <!-- Jupiter mechanism — always-on block, no trigger, above the provider list it
+             summarises. Reads live INTG_PROVIDERS state (same array renderIntegrations() renders
+             from), so it reflects connected/available/attention exactly as shown on the page,
+             including the first-run state where nothing is connected yet. Populated by
+             intgRenderAiBlock(), called from renderIntegrations(). -->
+        <div id="intg-ai-block" class="ai-block">
+          <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+          <div>
+            <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
+            <div id="intg-ai-block-body" class="ai-block-body"></div>
+          </div>
+        </div>
         <div id="intg-list"></div>
         <!-- Смуга запиту нової інтеграції — не картка каталогу, а підсумковий рядок
              сторінки: сусід #intg-list, тягнеться на всю ширину контенту, кнопка
@@ -24676,6 +24670,10 @@ function go(key) {
     const sb = document.getElementById(map[key]);
     if (sb) sb.classList.add('active');
   }
+  // go() is a second, parallel routing entry point (used by auth "Skip to prototype" etc.) that
+  // never calls showView() — so the Jupiter always-on AI blocks, which are hooked into
+  // showView(), stay empty if navigation happens via go() only. Same fix as the showView() hook.
+  if (key === 'dashboard' && typeof dashRenderAiBlock === 'function') dashRenderAiBlock();
   _currentView = key;
 }
 
@@ -24795,71 +24793,41 @@ function _aiRunPanel(btn, body, loadingText, run) {
   );
 }
 
-// AI surfacing (Week 3, Пн) — Dashboard "Summarise what needs my attention" pattern.
-// Trigger -> Processing -> AI result -> dismiss. Never touches the Review/Reconcile
-// primary CTAs in the rows below; this is a supplementary summary, not a replacement action.
-function dashAiSummarize() {
-  var btn = document.getElementById('dash-ai-btn');
-  var panel = document.getElementById('dash-ai-panel');
-  var body = document.getElementById('dash-ai-body');
-  if (!btn || !panel || !body) return;
-  panel.classList.add('is-open');
-  _aiBindOutsideClose('dash-ai-panel', btn, dashAiDismiss);
-  _aiRunPanel(btn, body, 'Summarising open items…', function (success) {
-    setTimeout(function () {
-      success(
-        '<div>3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
-        'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
-        'flagged on a policy check. The drift is the highest priority — it touches a node outside its ' +
-        'expected baseline and has been open the longest.</div>'
-      );
-    }, 900);
-  });
+// Jupiter mechanism — Dashboard "what needs my attention" rollup. Always-on block, no trigger,
+// no loading state: rendered directly whenever the dashboard is shown. Never touches the
+// Review/Reconcile primary CTAs in the rows below; supplementary summary, not a replacement action.
+function dashRenderAiBlock() {
+  var body = document.getElementById('dash-ai-block-body');
+  if (!body) return;
+  body.innerHTML =
+    '3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
+    'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
+    'flagged on a policy check. The drift is the highest priority — it touches a node outside its ' +
+    'expected baseline and has been open the longest.';
 }
 
-function dashAiDismiss() {
-  var panel = document.getElementById('dash-ai-panel');
-  if (panel) panel.classList.remove('is-open');
-}
-
-// AI surfacing — Reports "Summarise with AI". Same block-level pattern as Dashboard, but the text
-// is genuinely data-driven off the live report scope (_repResolveScope) rather than static copy:
-// compliance score, worst-performing policy, most common failure severity, affected node count,
-// ending on a pointer to whichever table is the highest-leverage next step.
-function reportAiSummarize() {
-  var btn = document.getElementById('rep-ai-btn');
-  var panel = document.getElementById('rep-ai-panel');
-  var body = document.getElementById('rep-ai-body');
-  if (!btn || !panel || !body) return;
-  panel.classList.add('is-open');
-  _aiBindOutsideClose('rep-ai-panel', btn, reportAiDismiss);
-  _aiRunPanel(btn, body, 'Summarising this report…', function (success) {
-    setTimeout(function () {
-      var data = _repResolveScope();
-      if (!data.nodes) { success('<div>There is nothing scanned in the current scope yet, so there is nothing to summarise — adjust the scope filters or scan a node first.</div>'); return; }
-      var passed = 0, failed = 0;
-      data.policies.forEach(function (p) { passed += p.pass; failed += p.fail; });
-      var score = Math.round(passed / (passed + failed) * 100);
-      if (!failed) { success('<div>Every check in this scope is passing (<strong>100%</strong> across ' + data.policies.length + ' polic' + (data.policies.length === 1 ? 'y' : 'ies') + ', ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ') — nothing here needs attention right now.</div>'); return; }
-      var worst = null;
-      data.policies.forEach(function (p) { if (p.fail > 0) { var s = Math.round(p.pass / (p.pass + p.fail) * 100); if (!worst || s < worst.score) worst = { p: p, score: s }; } });
-      var sevCount = { critical: 0, high: 0, medium: 0, low: 0 };
-      data.failed.forEach(function (f) { sevCount[f.sev] = (sevCount[f.sev] || 0) + 1; });
-      var topSev = Object.keys(sevCount).sort(function (a, b) { return sevCount[b] - sevCount[a]; })[0];
-      var affected = {}; data.failed.forEach(function (f) { affected[f.node] = 1; });
-      var nAff = Object.keys(affected).length;
-      var worstName = worst ? (REP_POL_NAMES[worst.p.pol] || worst.p.pol) : null;
-      var html = 'This scope is passing <strong>' + score + '%</strong> (' + passed + ' of ' + (passed + failed) + ' checks) across ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ', with ' + nAff + ' node' + (nAff === 1 ? '' : 's') + ' affected by at least one failure. Most of the failures are <strong>' + topSev + '</strong> severity';
-      if (worstName) html += ', and <strong>' + worstName + '</strong> is the weakest policy in scope at ' + worst.score + '%';
-      html += '. <strong>Start with ' + (worstName || 'the failed checks table') + '</strong> — fixing its most common failure will move the score the most.';
-      success('<div>' + html + '</div>');
-    }, 900);
-  });
-}
-
-function reportAiDismiss() {
-  var panel = document.getElementById('rep-ai-panel');
-  if (panel) panel.classList.remove('is-open');
+// Jupiter mechanism — Reports summary rollup. Always-on block, no trigger, no loading state:
+// renders directly off the already-resolved scope (_repRenderNow passes its own data/passed/
+// failed/score so the numbers can never drift from the KPI band above). Text is genuinely
+// data-driven: compliance score, worst-performing policy, most common failure severity, affected
+// node count, ending on a pointer to whichever table is the highest-leverage next step.
+function reportRenderAiBlock(data, passed, failed, score) {
+  var body = document.getElementById('rep-ai-block-body');
+  if (!body) return;
+  if (!data || !data.nodes) { body.innerHTML = '<div>There is nothing scanned in the current scope yet, so there is nothing to summarise — adjust the scope filters or scan a node first.</div>'; return; }
+  if (!failed) { body.innerHTML = '<div>Every check in this scope is passing (<strong>100%</strong> across ' + data.policies.length + ' polic' + (data.policies.length === 1 ? 'y' : 'ies') + ', ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ') — nothing here needs attention right now.</div>'; return; }
+  var worst = null;
+  data.policies.forEach(function (p) { if (p.fail > 0) { var s = Math.round(p.pass / (p.pass + p.fail) * 100); if (!worst || s < worst.score) worst = { p: p, score: s }; } });
+  var sevCount = { critical: 0, high: 0, medium: 0, low: 0 };
+  data.failed.forEach(function (f) { sevCount[f.sev] = (sevCount[f.sev] || 0) + 1; });
+  var topSev = Object.keys(sevCount).sort(function (a, b) { return sevCount[b] - sevCount[a]; })[0];
+  var affected = {}; data.failed.forEach(function (f) { affected[f.node] = 1; });
+  var nAff = Object.keys(affected).length;
+  var worstName = worst ? (REP_POL_NAMES[worst.p.pol] || worst.p.pol) : null;
+  var html = 'This scope is passing <strong>' + score + '%</strong> (' + passed + ' of ' + (passed + failed) + ' checks) across ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ', with ' + nAff + ' node' + (nAff === 1 ? '' : 's') + ' affected by at least one failure. Most of the failures are <strong>' + topSev + '</strong> severity';
+  if (worstName) html += ', and <strong>' + worstName + '</strong> is the weakest policy in scope at ' + worst.score + '%';
+  html += '. <strong>Start with ' + (worstName || 'the failed checks table') + '</strong> — fixing its most common failure will move the score the most.';
+  body.innerHTML = '<div>' + html + '</div>';
 }
 
 // AI surfacing (Week 3, Пн) — Detected Drift "Explain why this change matters". Supplementary
@@ -24942,41 +24910,27 @@ function ndAiSetDemoState(state) {
   var label = document.getElementById('nd-ai-demo-label');
   if (label) label.textContent = ND_AI_DEMO_LABELS[state] || state;
   closeScanDropdown('nd-ai-demo-panel');
-  ndAiSummarize();
+  ndRenderAiBlock();
 }
 
-function ndAiSummarize() {
-  var btn = document.getElementById('nd-ai-btn');
-  var panel = document.getElementById('nd-ai-panel');
-  var body = document.getElementById('nd-ai-body');
+// Jupiter mechanism — Node Detail "current security posture" rollup. Always-on block, no
+// trigger, no loading state: renders directly off the demo-state selector (success/no-result/
+// error/unavailable), same states real scan data would drive.
+function ndRenderAiBlock() {
+  var body = document.getElementById('nd-ai-block-body');
   var trigger = document.getElementById('nd-ai-demo-trigger');
-  if (!btn || !panel || !body) return;
+  if (!body) return;
   var state = (trigger && trigger.dataset.state) || 'success';
-  btn.disabled = true;
-  if (trigger) trigger.disabled = true;
-  panel.classList.add('is-open');
-  _aiBindOutsideClose('nd-ai-panel', btn, ndAiDismiss);
-  body.innerHTML = '<div class="ai-panel-loading"><svg class="spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Analyzing security posture\u2026</div>';
-  setTimeout(function () {
-    btn.disabled = false;
-    if (trigger) trigger.disabled = false;
-    if (state === 'error') {
-      body.innerHTML = '<div style="color:var(--bdg-red-txt);">' + ND_AI_TEXT.error + '</div>' +
-        '<button type="button" class="ai-inline-cta" style="margin-top:10px;" onclick="ndAiSummarize()">Retry</button>';
-      return;
-    }
-    if (state === 'unavailable') {
-      body.innerHTML = '<div style="color:var(--text-muted);">' + ND_AI_TEXT.unavailable + '</div>';
-      return;
-    }
-    var foot = state === 'success' ? '<div class="ai-panel-foot">AI-generated \u2014 verify before acting on it</div>' : '';
-    body.innerHTML = '<div>' + ND_AI_TEXT[state] + '</div>' + foot;
-  }, 900);
-}
-
-function ndAiDismiss() {
-  var panel = document.getElementById('nd-ai-panel');
-  if (panel) panel.classList.remove('is-open');
+  if (state === 'error') {
+    body.innerHTML = '<div style="color:var(--bdg-red-txt);">' + ND_AI_TEXT.error + '</div>' +
+      '<button type="button" class="ai-inline-cta" style="margin-top:10px;" onclick="ndRenderAiBlock()">Retry</button>';
+    return;
+  }
+  if (state === 'unavailable') {
+    body.innerHTML = '<div style="color:var(--text-muted);">' + ND_AI_TEXT.unavailable + '</div>';
+    return;
+  }
+  body.innerHTML = ND_AI_TEXT[state];
 }
 
 function showView(name) {
@@ -25008,6 +24962,8 @@ function showView(name) {
     var MAIN_VIEWS = ['dashboard','all-devices','results','changes','policies','reports-list','scan-schedule','cm-list','credentials','settings-integrations'];
     _seg.style.display = MAIN_VIEWS.indexOf(name) !== -1 ? 'inline-flex' : 'none';
   }
+  if (name === 'dashboard' && typeof dashRenderAiBlock === 'function') dashRenderAiBlock();
+  if (name === 'node-detail' && typeof ndRenderAiBlock === 'function') ndRenderAiBlock();
   if (name === 'settings-integrations' && typeof renderIntegrations === 'function') renderIntegrations();
   if (name === 'all-devices' && typeof resumeNodeScans === 'function') resumeNodeScans();
   if (name === 'all-devices' && typeof updateNodeStateCounts === 'function') updateNodeStateCounts();
@@ -26438,6 +26394,7 @@ function renderSchedules() {
   const tb = document.getElementById('schedule-tbody');
   if (!tb) return;
   const set = schedSet(), counts = schedCounts();
+  schedRenderAiBlock(set);
   const grid = 'display:grid;grid-template-columns:minmax(260px,2fr) repeat(5,minmax(120px,1fr)) 84px;column-gap:24px;padding:14px 20px;border-top:1px solid var(--border);align-items:center;';
   const actionArrow = '<span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>';
   let keys = Object.keys(set);
@@ -26491,42 +26448,30 @@ function renderSchedules() {
       + '</div>';
   }).join('');
 }
-// AI surfacing — Scan Schedules "Summarise with AI". Coverage-gap rollup: which groups/
-// environments (whichever scope tab is active) have no schedule at all or a paused one, since
-// those are the only two states that actually change what the user should do next.
-function schedAiSummarize() {
-  var btn = document.getElementById('sched-ai-btn');
-  var panel = document.getElementById('sched-ai-panel');
-  var body = document.getElementById('sched-ai-body');
-  if (!btn || !panel || !body) return;
-  panel.classList.add('is-open');
-  _aiBindOutsideClose('sched-ai-panel', btn, schedAiDismiss);
-  _aiRunPanel(btn, body, 'Summarising schedule coverage…', function (success) {
-    setTimeout(function () {
-      var set = schedSet();
-      var isEnv = _schedScope === 'env';
-      var noun = isEnv ? 'environment' : 'node group';
-      var nounPlural = isEnv ? 'environments' : 'node groups';
-      var keys = Object.keys(set);
-      var unscheduled = keys.filter(function (k) { return !set[k].set; });
-      var paused = keys.filter(function (k) { return set[k].set && !set[k].enabled; });
-      var active = keys.length - unscheduled.length - paused.length;
-      if (!unscheduled.length && !paused.length) {
-        success('<div>Every ' + noun + ' has an active schedule (' + keys.length + ' total) — full automated coverage right now.</div>');
-        return;
-      }
-      var parts = [];
-      if (unscheduled.length) parts.push('<strong>' + unscheduled.length + '</strong> ' + (unscheduled.length === 1 ? noun : nounPlural) + ' with no schedule at all (' + unscheduled.join(', ') + ') — those nodes only scan on demand');
-      if (paused.length) parts.push('<strong>' + paused.length + '</strong> paused (' + paused.join(', ') + ') — scans won\'t run until resumed');
-      var html = 'Of ' + keys.length + ' ' + nounPlural + ', ' + active + ' ha' + (active === 1 ? 's' : 've') + ' an active schedule. ' + parts.join('; ') + '. <strong>Recommendation:</strong> ' + (unscheduled.length ? 'set a cadence for ' + unscheduled[0] : 'resume ' + paused[0]) + ' first — it currently has zero automated coverage' + (unscheduled.length ? '' : ' while paused') + '.';
-      success('<div>' + html + '</div>');
-    }, 900);
-  });
-}
-
-function schedAiDismiss() {
-  var panel = document.getElementById('sched-ai-panel');
-  if (panel) panel.classList.remove('is-open');
+// Jupiter mechanism — Scan Schedules coverage-gap rollup. Always-on block, no trigger, no
+// loading state: renders directly off schedSet() for whichever scope tab (group/env) is active,
+// called from renderSchedules() so it never drifts from the table below.
+function schedRenderAiBlock(set) {
+  var body = document.getElementById('sched-ai-block-body');
+  if (!body) return;
+  set = set || schedSet();
+  var isEnv = _schedScope === 'env';
+  var noun = isEnv ? 'environment' : 'node group';
+  var nounPlural = isEnv ? 'environments' : 'node groups';
+  var keys = Object.keys(set);
+  var unscheduled = keys.filter(function (k) { return !set[k].set; });
+  var paused = keys.filter(function (k) { return set[k].set && !set[k].enabled; });
+  var active = keys.length - unscheduled.length - paused.length;
+  if (!keys.length) { body.innerHTML = '<div>There are no ' + nounPlural + ' yet — create one first, then set its scan cadence here.</div>'; return; }
+  if (!unscheduled.length && !paused.length) {
+    body.innerHTML = '<div>Every ' + noun + ' has an active schedule (' + keys.length + ' total) — full automated coverage right now.</div>';
+    return;
+  }
+  var parts = [];
+  if (unscheduled.length) parts.push('<strong>' + unscheduled.length + '</strong> ' + (unscheduled.length === 1 ? noun : nounPlural) + ' with no schedule at all (' + unscheduled.join(', ') + ') — those nodes only scan on demand');
+  if (paused.length) parts.push('<strong>' + paused.length + '</strong> paused (' + paused.join(', ') + ') — scans won\'t run until resumed');
+  var html = 'Of ' + keys.length + ' ' + nounPlural + ', ' + active + ' ha' + (active === 1 ? 's' : 've') + ' an active schedule. ' + parts.join('; ') + '. <strong>Recommendation:</strong> ' + (unscheduled.length ? 'set a cadence for ' + unscheduled[0] : 'resume ' + paused[0]) + ' first — it currently has zero automated coverage' + (unscheduled.length ? '' : ' while paused') + '.';
+  body.innerHTML = '<div>' + html + '</div>';
 }
 
 function onScheduleFreqChange() {
