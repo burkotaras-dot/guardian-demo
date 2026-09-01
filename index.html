@@ -15021,6 +15021,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       'cannot-connect': { label:'Cannot connect',            dot:'#FB3C44' },
       'insufficient':   { label:'Insufficient permissions',  dot:'#F97316' }
     };
+    // AI surfacing — "Explain" per failing credential row. Cause + recommendation keyed by
+    // CRED_STATUS, same shape as SCAN_FAIL_TYPES[*].aiHelp (Failed Scan / Bertha): each status
+    // gets its own distinct cause, not a generic "this credential failed" sentence.
+    var CRED_AI_HELP = {
+      invalid: function(c) { return 'The secret stored for <strong>' + c.name + '</strong> was rejected the last time it was used (' + c.lastVal + ') \u2014 that pattern usually means the password or token was rotated or revoked at the source without the stored credential being updated to match, rather than a network or permission problem. <strong>Recommendation:</strong> re-enter the current secret in the credential editor and re-test it before it\u2019s assigned to another Connection Manager.'; },
+      expired: function(c) { return '<strong>' + c.name + '</strong> is a secret with a validity window, and it lapsed on its own schedule (' + c.lastVal + ') rather than being rejected by the target \u2014 the credential itself is otherwise correctly configured. <strong>Recommendation:</strong> issue or renew the secret and update it here; nothing else about this credential needs to change.'; },
+      'cannot-connect': function(c) { return 'Guardian couldn\u2019t reach the target using <strong>' + c.name + '</strong> (' + c.lastVal + ') \u2014 the failure happened before authentication was attempted, which points to the node or its Connection Manager path being unreachable rather than the credential being wrong. <strong>Recommendation:</strong> check the node is online and reachable from its Connection Manager group before touching this credential.'; },
+      insufficient: function(c) { return '<strong>' + c.name + '</strong> authenticates successfully, but the account doesn\u2019t hold the permissions a scan needs on the target \u2014 that\u2019s a narrower problem than a bad password. <strong>Recommendation:</strong> grant the account local administrator (Windows) or the required sudo/read access (Linux) on the target, then re-test rather than replacing the credential.'; }
+    };
     // ── Credential types & editor (step 2: Add / Edit) ──
     var CRED_TYPES = [
       { val:'Windows / WinRM', secretLabel:'Password',        secretKind:'password', userLabel:'Username',           userPh:'e.g. Administrator or DOMAIN\\svc-scan' },
@@ -15561,6 +15570,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var srcCell = c.source === 'secret-server'
           ? '<span class="cred-src"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Secret Server</span>'
           : '<span class="cred-src"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green1)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Guardian Vault</span>';
+        // AI trigger only on rows with a concrete, explainable failure — 'not-tested' has no
+        // outcome yet and 'valid' has nothing to diagnose, same rule as Bertha (Failed Scan)
+        // and Jupiter (Policy Detail): AI appears next to a specific problem, not on every row.
+        var hasAiHelp = !!CRED_AI_HELP[c.status];
+        var aiBtn = hasAiHelp
+          ? '<button type="button" class="ai-cta" id="cred-ai-btn-'+c.id+'" title="Explain with AI" aria-label="Explain with AI" onclick="event.stopPropagation();credAiExplain(\''+c.id+'\')"><span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>'
+          : '';
+        var aiPanel = hasAiHelp
+          ? '<div class="ai-panel ai-panel--fixed" id="cred-ai-panel-'+c.id+'">'
+            + '<div class="ai-panel-head"><span class="ai-panel-ico">' + PD_AI_SVG + '</span>AI Explanation<button type="button" class="ai-panel-close" onclick="event.stopPropagation();credAiDismiss(\''+c.id+'\')" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>'
+            + '<div id="cred-ai-body-'+c.id+'"></div>'
+            + '</div>'
+          : '';
         return '<div class="cred-row" onclick="credOpenEditor(\''+c.id+'\')">'
           + '<div style="display:flex;align-items:center;gap:11px;min-width:0;">'
           +   '<div class="cm-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#25A768" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path></svg></div>'
@@ -15575,9 +15597,42 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           + '<div style="color:var(--text-sec);font-size:11px;">'+c.lastVal+'</div>'
           + '<div>'+usedByCell+'</div>'
           + '<div>'+srcCell+'</div>'
-          + '<div style="text-align:right;"><button class="cm-actions-btn" onclick="credRowMenu(\''+c.id+'\',event)">⋯</button></div>'
-          + '</div>';
+          + '<div style="text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:4px;">'+aiBtn+'<button class="cm-actions-btn" onclick="credRowMenu(\''+c.id+'\',event)">⋯</button></div>'
+          + '</div>'
+          + aiPanel;
       }).join('');
+    }
+
+    // AI surfacing — "Explain" per failing credential row (extends the Bertha/Failed Scan
+    // pattern to Credentials: CRED_STATUS's failure taxonomy mirrors SCAN_FAIL_TYPES). The
+    // table card scrolls horizontally (overflow-x:auto), so the panel uses .ai-panel--fixed
+    // with its position computed from the trigger's own rect, same escape-hatch as pdAiExplain.
+    function credAiExplain(id) {
+      var c = _credById(id);
+      var panel = document.getElementById('cred-ai-panel-' + id);
+      var body = document.getElementById('cred-ai-body-' + id);
+      var btn = document.getElementById('cred-ai-btn-' + id);
+      if (!c || !panel || !body) return;
+      if (btn) {
+        var r = btn.getBoundingClientRect();
+        var w = 320;
+        var left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
+        panel.style.left = left + 'px';
+        panel.style.top = (r.bottom + 8) + 'px';
+      }
+      panel.classList.add('is-open');
+      _aiBindOutsideClose('cred-ai-panel-' + id, btn, function () { credAiDismiss(id); });
+      _aiRunPanel(btn, body, 'Diagnosing this credential…', function (success) {
+        setTimeout(function () {
+          var fn = CRED_AI_HELP[c.status];
+          success('<div>' + (fn ? fn(c) : 'No specific diagnosis available for this status.') + '</div>');
+        }, 900);
+      });
+    }
+
+    function credAiDismiss(id) {
+      var panel = document.getElementById('cred-ai-panel-' + id);
+      if (panel) panel.classList.remove('is-open');
     }
 
     // ── Roles & Permissions (Week 3, Workstream 5) ──────────────────────
