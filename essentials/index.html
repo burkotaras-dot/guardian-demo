@@ -14781,6 +14781,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // CM instance status colours
     var CM_INST_LABEL = { connected:'Connected', offline:'Offline', registered_not_connected:'Registered, not connected' };
     var CM_INST_DOT   = { connected:'#10B981', offline:'#94a3b8', registered_not_connected:'#F59E0B' };
+
+    // AI surfacing — "Explain" per problem CM instance (extends the Bertha/Credentials pattern to
+    // CM Detail). Only 'offline' and 'registered_not_connected' are diagnosable problems; 'connected'
+    // has nothing to explain. Distinguishes the two causes explicitly: offline = it WAS talking and
+    // stopped, registered_not_connected = it has NEVER established a connection at all.
+    var CM_INST_AI_HELP = {
+      offline: function(inst, cm) { return '<strong>' + inst.reportedName + '</strong> last checked in ' + inst.lastContact + ' and hasn\'t reported back since — it successfully connected before, so this points to the CM host or its agent process going down (host offline, service stopped, network path lost) rather than a configuration problem with the group or its credentials. Nodes assigned through this instance will show stale or failed scans purely as a side effect. <strong>Recommendation:</strong> verify the host at ' + inst.host + ' is up and the CM service is running before troubleshooting any individual node in ' + cm.name + '.'; },
+      registered_not_connected: function(inst, cm) {
+        var hasHost = inst.host && inst.host !== '\u2014';
+        var whereText = hasHost ? (' on ' + inst.host) : '';
+        return '<strong>' + inst.reportedName + '</strong> was added to ' + cm.name + ' but has never connected — that\'s different from going offline, since it never established a session in the first place. That usually means the CM software isn\'t installed or running yet' + whereText + ', or outbound connectivity to Guardian is blocked' + (hasHost ? '' : ' — and since no host has ever checked in, there isn\'t even a reported address to start from yet') + '. <strong>Recommendation:</strong> confirm the agent is installed on the intended host and that Guardian has network access to it before assigning any nodes to it.';
+      }
+    };
     // Backward compat aliases (used by detail page for now)
     var CM_STATUS_LABEL = { connected:'Connected', offline:'Offline', disabled:'Disabled', registered_not_connected:'Registered, not connected' };
     var CM_STATUS_DOT = { connected:'#10B981', offline:'#94a3b8', disabled:'#64748b', registered_not_connected:'#F59E0B' };
@@ -16010,11 +16023,23 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var instHTML = cm.instances.map(function(inst) {
         var iDot = CM_INST_DOT[inst.status] || '#94a3b8';
         var iLabel = CM_INST_LABEL[inst.status] || inst.status;
+        // AI trigger only on instances with a concrete, explainable problem — same rule as
+        // Credentials and Failed Scan: no trigger on a healthy 'connected' instance.
+        var hasAiHelp = !!CM_INST_AI_HELP[inst.status];
+        var aiBtn = hasAiHelp
+          ? '<div class="ai-dropdown">'
+            + '<button type="button" class="ai-cta" id="cmi-ai-btn-'+inst.id+'" title="Explain with AI" aria-label="Explain with AI" onclick="event.stopPropagation();cmInstAiExplain(\''+inst.id+'\')"><span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>'
+            + '<div class="ai-panel" id="cmi-ai-panel-'+inst.id+'">'
+            + '<div class="ai-panel-head"><span class="ai-panel-ico">' + PD_AI_SVG + '</span>AI Explanation<button type="button" class="ai-panel-close" onclick="event.stopPropagation();cmInstAiDismiss(\''+inst.id+'\')" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>'
+            + '<div id="cmi-ai-body-'+inst.id+'"></div>'
+            + '</div></div>'
+          : '';
         return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">'
           + '<div style="flex:1;"><div style="font-weight:600;font-size:12px;color:var(--text-default);">'+inst.reportedName+'</div>'
           + '<div style="font-size:10px;color:var(--text-sec);margin-top:2px;">'+inst.host+' · '+inst.protocols.join(', ')+'</div></div>'
           + '<div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+iDot+';"></span><span style="font-size:11px;color:var(--text-sec);">'+iLabel+'</span></div>'
           + '<div style="font-size:10px;color:var(--text-muted);white-space:nowrap;">'+inst.lastContact+'</div>'
+          + aiBtn
           + '</div>';
       }).join('');
       if (!cm.instances.length) instHTML = '<div style="padding:12px 0;font-size:12px;color:var(--text-muted);font-style:italic;">No CM instances registered yet</div>';
@@ -16104,6 +16129,31 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           + '</div>';
       }
       document.getElementById('cmd-activity').innerHTML = actHTML;
+    }
+
+    // AI surfacing — "Explain" per problem CM instance. The CM Instances card isn't a scrolling
+    // table (unlike Credentials/Policy Detail), so this uses the plain .ai-dropdown + .ai-panel
+    // (position:absolute) wrapper, same as Failed Scan/Node Detail — no fixed-position math needed.
+    function cmInstAiExplain(id) {
+      if (!_currentCM) return;
+      var inst = _currentCM.instances.filter(function(x){ return x.id === id; })[0];
+      var panel = document.getElementById('cmi-ai-panel-' + id);
+      var body = document.getElementById('cmi-ai-body-' + id);
+      var btn = document.getElementById('cmi-ai-btn-' + id);
+      if (!inst || !panel || !body) return;
+      panel.classList.add('is-open');
+      _aiBindOutsideClose('cmi-ai-panel-' + id, btn, function () { cmInstAiDismiss(id); });
+      _aiRunPanel(btn, body, 'Diagnosing this CM instance…', function (success) {
+        setTimeout(function () {
+          var fn = CM_INST_AI_HELP[inst.status];
+          success('<div>' + (fn ? fn(inst, _currentCM) : 'No specific diagnosis available for this status.') + '</div>');
+        }, 900);
+      });
+    }
+
+    function cmInstAiDismiss(id) {
+      var panel = document.getElementById('cmi-ai-panel-' + id);
+      if (panel) panel.classList.remove('is-open');
     }
 
     function _cmdRow(label, val) {
