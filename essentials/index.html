@@ -4104,11 +4104,17 @@ body.dark .role-user-row:hover { background:#012F32; }
 .role-user-name { display:flex; align-items:center; gap:8px; }
 .role-user-email { display:flex; align-items:center; gap:6px; color:var(--text-sec); overflow:hidden; }
 .role-user-email svg { flex-shrink:0; color:var(--text-muted); }
-.role-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; box-shadow:0 1px 2px rgba(15,23,42,0.04); display:flex; flex-direction:column; gap:10px; }
-.role-card-title { font-size:14px; font-weight:700; color:var(--text-default); }
-.role-card-desc { font-size:11.5px; color:var(--text-sec); line-height:1.5; }
-.role-card-meta { font-size:11px; color:var(--text-muted); }
-.role-card-foot { margin-top:auto; padding-top:10px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.role-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; box-shadow:0 1px 1px rgba(15,23,42,0.04); display:flex; flex-direction:column; gap:10px; }
+.role-card-desc { display:flex; align-items:flex-start; gap:4px; font-size:11.5px; color:var(--text-sec); line-height:1.5; }
+.role-card-desc svg { flex-shrink:0; margin-top:2px; }
+.role-card-people { display:flex; align-items:center; gap:8px; min-height:24px; }
+.role-card-avatars { display:flex; align-items:center; flex-shrink:0; }
+.role-card-avatars .role-user-avatar { border:1.5px solid var(--bg-surface); box-sizing:content-box; }
+.role-card-avatars .role-user-avatar + .role-user-avatar { margin-left:-8px; }
+.role-card-people-names { font-size:10px; font-weight:600; color:var(--text-sec); letter-spacing:0.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.role-card-people-more { flex-shrink:0; background:rgba(100,116,139,0.12); color:var(--text-muted); font-size:10px; font-weight:600; padding:2px 7px; border-radius:8px; white-space:nowrap; border:none; cursor:pointer; font-family:inherit; }
+.role-card-people-more:hover { background:rgba(100,116,139,0.22); color:var(--text-sec); }
+.role-card-foot { margin-top:auto; padding-top:10px; border-top:1px solid var(--border); display:flex; align-items:center; }
 .role-audit-link { background:none; border:none; padding:0; font:600 11px 'DM Sans',sans-serif; color:var(--green2); cursor:pointer; }
 .role-audit-link:hover { text-decoration:underline; }
 
@@ -15592,11 +15598,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // flow і access-state UX на реальних прикладах, не збудувати повний rbac-рушій (Пʼятниця
     // 31.08 свідомо не проєктувала іменовані ролі — тепер вони існують тут, мінімально).
     var ROLES = [
-      { id:'admin', name:'Admin', desc:'Full access to every page and action, including credentials, scan schedules and role management.',
+      { id:'admin', name:'Admin', desc:'Can do anything in Guardian — including managing credentials, scan schedules and other people’s roles.',
         perms:{ policies:'full', drift:'full', nodes:'full', credentials:'full', schedules:'full' } },
-      { id:'analyst', name:'Analyst', desc:'Can investigate drift, edit policies and run scans, but cannot manage credentials or delete scan schedules.',
+      { id:'analyst', name:'Analyst', desc:'Can investigate drift, edit policies and run scans — but can’t manage credentials or delete scan schedules.',
         perms:{ policies:'full', drift:'full', nodes:'full', credentials:'readonly', schedules:'readonly' } },
-      { id:'viewer', name:'Viewer', desc:'Read-only access across Guardian — can review findings, but cannot make changes.',
+      { id:'viewer', name:'Viewer', desc:'Can review findings across Guardian — but can’t change anything.',
         perms:{ policies:'readonly', drift:'readonly', nodes:'readonly', credentials:'restricted', schedules:'restricted' } }
     ];
     var PERM_PAGES = [
@@ -15665,11 +15671,27 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var wrap = document.getElementById('role-cards-grid');
       if (!wrap) return;
       wrap.innerHTML = ROLES.map(function(r) {
-        var count = USERS.filter(function(u){ return u.role === r.id; }).length;
+        var members = USERS.filter(function(u){ return u.role === r.id; });
+        var shown = members.slice(0, 3);
+        var overflow = members.length - shown.length;
+        var peopleHtml;
+        if (!members.length) {
+          peopleHtml = '<span class="role-card-people-names" style="color:var(--text-muted);">No users assigned</span>';
+        } else {
+          var avatarsHtml = shown.map(function(u) {
+            var initials = u.name.split(' ').map(function(p){ return p[0]; }).join('').slice(0, 2).toUpperCase();
+            var title = u.name + (u.status === 'invited' ? ' — invited' : '');
+            return '<div class="role-user-avatar" title="' + title + '">' + initials + '</div>';
+          }).join('');
+          peopleHtml = '<div class="role-card-avatars">' + avatarsHtml + '</div>'
+            + (overflow > 0
+                ? '<button type="button" class="role-card-people-more" onclick="event.stopPropagation();openRoleAudit(\'' + r.id + '\')">+' + overflow + ' more</button>'
+                : '<span class="role-card-people-names">' + shown.map(function(u){ return u.name; }).join(', ') + '</span>');
+        }
         return '<div class="role-card">'
           + '<div><span class="bdg bdg--' + ROLE_COLOR[r.id] + '">' + r.name + '</span></div>'
-          + '<div class="role-card-desc">' + r.desc + '</div>'
-          + '<div class="role-card-meta">' + count + ' user' + (count !== 1 ? 's' : '') + ' assigned</div>'
+          + '<div class="role-card-desc"><svg width="12" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>' + r.desc + '</span></div>'
+          + '<div class="role-card-people">' + peopleHtml + '</div>'
           + '<div class="role-card-foot">'
           +   '<button class="role-audit-link" onclick="openRoleAudit(\'' + r.id + '\')">Who has access? Why?</button>'
           + '</div>'
@@ -15703,7 +15725,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         subtitle: u.name + ' · ' + u.email,
         bodyHtml: body,
         buttons: [
-          { kind:'secondary', id:'ar-cancel', label:'Cancel', onClick:function(e, close){ close(); } },
           { kind:'primary', id:'ar-confirm', label:'Apply role', onClick:function(e, close){ arConfirm(u.id); close(); } }
         ],
         afterMount: function() { arPreviewImpact(u.id, u.role); }
@@ -15860,7 +15881,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         title: 'Access restricted',
         bodyHtml: body,
         buttons: [
-          { kind:'secondary', id:'rf-cancel', label:'Cancel', onClick:function(e, close){ close(); } },
           { kind:'primary', id:'rf-request', label:'Request access', onClick:function(){ rfShowConfirmation(); } }
         ]
       });
