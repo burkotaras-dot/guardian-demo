@@ -4499,6 +4499,8 @@ body.dark #nodes-peer-view [style*="background:#fff"] { background: var(--bg-car
    інсет, що й у ATTRIBUTE-рядка над ними; 16px — проміжок між картками (нема перед
    першою — вона впритул до заголовка колонок, як у макеті). */
 .peer-sec { background:var(--bg-surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; margin:0 24px; }
+.peer-card { transition:border-color .15s, box-shadow .15s, transform .15s; }
+.peer-card:hover { border-color:var(--border-strong) !important; box-shadow:var(--shadow-sm); transform:translateY(-1px); }
 .peer-row:last-child { border-bottom:none !important; }
 .peer-sec + .peer-sec { margin-top:16px; }
 /* Рядки під кольоровим заголовком категорії — не білі, а на легкому #F1F5F9-підкладі
@@ -4509,6 +4511,7 @@ body.dark .peer-sec > div[id$="-body"] { background: rgba(255,255,255,0.02); }
    немає, і ця волосина лягає впритул до рамки картки: під заголовком видно зайву
    «паличку» з двох ліній. Згорнутий стан її прибирає. */
 .peer-sec-hdr.is-collapsed { border-bottom-color: transparent !important; }
+.peer-card-hdr.is-collapsed { border-bottom-color: transparent !important; }
 .peer-sec-hdr:hover { background: rgba(100,116,139,0.1) !important; }
 body.dark .peer-sec-hdr { background: rgba(255,255,255,0.03) !important; }
 body.dark .peer-sec-hdr:hover { background: rgba(255,255,255,0.06) !important; }
@@ -8842,8 +8845,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="peer-os-view">
 
             <!-- Group: Windows 11 (67 nodes) -->
-            <div class="peer-card" id="peer-card-win" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div onclick="togglePeerCard(&#39;win&#39;)" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+            <div class="peer-card" id="peer-card-win" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
+              <div onclick="togglePeerCard(&#39;win&#39;)" class="peer-card-hdr" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
                   <div style="width:28px;height:28px;border-radius:7px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></div>
                   <div style="min-width:0;overflow:hidden;">
@@ -9055,8 +9058,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
 
             <!-- Group: macOS (2 nodes) -->
-            <div class="peer-card" id="peer-card-mac" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div onclick="togglePeerCard(&#39;mac&#39;)" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+            <div class="peer-card" id="peer-card-mac" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
+              <div onclick="togglePeerCard(&#39;mac&#39;)" class="peer-card-hdr" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
                   <div style="width:28px;height:28px;border-radius:7px;background:rgba(63,200,120,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3FC878" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></div>
                   <div style="min-width:0;overflow:hidden;">
@@ -9077,8 +9080,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
 
             <!-- Group: Linux (2 nodes) -->
-            <div class="peer-card" id="peer-card-lnx" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div onclick="togglePeerCard(&#39;lnx&#39;)" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+            <div class="peer-card" id="peer-card-lnx" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
+              <div onclick="togglePeerCard(&#39;lnx&#39;)" class="peer-card-hdr" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
                   <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></div>
                   <div style="min-width:0;overflow:hidden;">
@@ -9104,8 +9107,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="peer-team-view" style="display:none;">
 
             <!-- Engineering (4 nodes) -->
-            <div class="peer-card" id="peer-card-eng" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div onclick="togglePeerCard(&#39;eng&#39;)" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+            <div class="peer-card" id="peer-card-eng" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
+              <div onclick="togglePeerCard(&#39;eng&#39;)" class="peer-card-hdr" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
                   <div style="width:28px;height:28px;border-radius:7px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
                   <div style="min-width:0;overflow:hidden;">
@@ -9187,8 +9190,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
 
             <!-- Finance (3 nodes) -->
-            <div class="peer-card" id="peer-card-fin" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
-              <div onclick="togglePeerCard(&#39;fin&#39;)" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+            <div class="peer-card" id="peer-card-fin" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
+              <div onclick="togglePeerCard(&#39;fin&#39;)" class="peer-card-hdr" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
                   <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,158,11,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
                   <div style="min-width:0;overflow:hidden;">
@@ -9243,8 +9246,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
 
             <!-- DevOps (2 nodes) -->
-            <div class="peer-card" id="peer-card-devops" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
-              <div onclick="togglePeerCard(&#39;devops&#39;)" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+            <div class="peer-card" id="peer-card-devops" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+              <div onclick="togglePeerCard(&#39;devops&#39;)" class="peer-card-hdr" style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
                   <div style="width:28px;height:28px;border-radius:7px;background:rgba(16,185,129,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
                   <div style="min-width:0;overflow:hidden;">
@@ -20284,7 +20287,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Table -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
           <table class="data-table">
             <thead>
               <tr>
@@ -20398,7 +20401,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Table -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
           <table class="data-table">
             <thead>
               <tr>
@@ -21148,7 +21151,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Failed nodes -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
           <div style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg-error);font-size:12px;font-weight:700;color:#FB3C44;">Unreachable Nodes</div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);">
             <div style="display:flex;align-items:center;gap:10px;">
@@ -22267,7 +22270,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Per-policy table: benchmark → policies → checks → score -->
         <div id="rep-policy-title" style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
-        <div id="rep-policy-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+        <div id="rep-policy-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
           <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div style="cursor:pointer;">Policy <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Checks (pass / fail) <span style="opacity:0.4;">⇅</span></div><div>Failing by severity</div><div style="cursor:pointer;">Nodes <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Score <span style="opacity:0.4;">⇅</span></div>
           </div>
@@ -23952,7 +23955,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
         </div>
         <!-- Reconciled list -->
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
           <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <span style="font-size:12px;font-weight:700;color:var(--text-default);">CR Match Results</span>
             <div style="display:flex;align-items:center;gap:16px;flex:1;">
@@ -24078,7 +24081,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           <span style="font-size:12px;font-weight:600;color:#92400e;">2 changes require manual review — no matching CR found or window mismatch</span>
         </div>
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
           <table class="data-table">
             <thead><tr><th>CHANGE</th><th>NODE</th><th>ISSUE</th><th>ACTION</th></tr></thead>
             <tbody>
@@ -25671,6 +25674,8 @@ function togglePeerCard(id) {
   var collapsed = body.style.display === 'none';
   body.style.display = collapsed ? '' : 'none';
   if (chev) chev.style.transform = collapsed ? '' : 'rotate(-90deg)';
+  var hdr = body.previousElementSibling;
+  if (hdr) hdr.classList.toggle('is-collapsed', !collapsed);
 }
 function togglePeerSec(id) {
   var body = document.getElementById(id + '-body');
