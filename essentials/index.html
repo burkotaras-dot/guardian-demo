@@ -2779,6 +2779,32 @@ body.dark .ai-panel-head { color:#A5B4FC; }
 body.dark .ai-panel-ico { color:#A5B4FC; }
 body.dark .ai-panel-close:hover { background:rgba(99,102,241,0.18); }
 body.dark .ai-panel-foot { border-top-color:rgba(255,255,255,0.08); }
+
+/* Bertha (Failed Scan "How to fix") — differentiated from Einstein's on-demand button+dropdown:
+   no trigger, no panel. An always-on strip attached directly to the ONE checklist step that needs
+   action, present the moment there's something to fix rather than waiting to be clicked open. */
+.sf-ai-strip { display:flex; align-items:flex-start; gap:7px; margin-top:8px; padding:8px 10px; border-radius:6px; background:rgba(99,102,241,0.06); font-size:11px; line-height:1.5; color:var(--text-sec); }
+.sf-ai-strip svg { flex-shrink:0; margin-top:1px; color:#6366F1; }
+.sf-ai-strip strong { color:#6366F1; font-weight:700; }
+.sf-ai-strip-x { flex-shrink:0; margin-left:auto; background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:14px; line-height:1; padding:0; }
+.sf-ai-strip-x:hover { color:var(--text-default); }
+body.dark .sf-ai-strip { background:rgba(99,102,241,0.14); }
+body.dark .sf-ai-strip strong { color:#A5B4FC; }
+body.dark .sf-ai-strip svg { color:#A5B4FC; }
+
+/* Jupiter (Policy Detail) — differentiated from Einstein's on-demand button+dropdown (one object,
+   click to reveal) and Bertha's inline strip (always-on but nested inside one row): a standalone
+   BLOCK that stands on its own above the checks list, summarising the whole policy, present the
+   moment the policy has a failure. */
+.pd-ai-block { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; padding:14px 18px; background:var(--bg-surface); border:1px solid var(--border); border-left:3px solid #6366F1; border-radius:var(--radius-lg); box-shadow:0 1px 2px rgba(15,23,42,0.04); }
+.pd-ai-block svg { flex-shrink:0; margin-top:1px; color:#6366F1; }
+.pd-ai-block-label { color:#6366F1; }
+.pd-ai-block-body { font-size:12px; line-height:1.6; color:var(--text-sec); }
+.pd-ai-block-body strong { color:#6366F1; font-weight:700; }
+body.dark .pd-ai-block { border-left-color:#A5B4FC; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+body.dark .pd-ai-block svg { color:#A5B4FC; }
+body.dark .pd-ai-block-label { color:#A5B4FC; }
+body.dark .pd-ai-block-body strong { color:#A5B4FC; }
 .ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6366F1; background:none; border:none; cursor:pointer; padding:0; }
 .ai-inline-cta:hover { text-decoration:underline; }
 body.dark .ai-inline-cta { color:#818CF8; }
@@ -11497,6 +11523,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="pd-desc" style="font-size:12px;color:var(--text-sec);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Industry-standard security configuration baseline for Windows 11, defined by the Center for Internet Security (CIS). Covers password policy, account settings, network security, and system configuration.</div>
         </div>
 
+        <!-- Jupiter (Week 3, Середа) — always-on BLOCK summarising the WHOLE policy, standing
+             on its own above the checks list. Distinct from Einstein's on-demand button+dropdown
+             (one object, click to reveal) and Bertha's inline strip (always-on but nested inside
+             one row): this is a standalone section, present the moment the policy has a failure,
+             not attached to any single check. Populated by pdRenderAiBlock(). -->
+        <div id="pd-ai-block" class="pd-ai-block" style="display:none;">
+          <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+          <div>
+            <div class="pd-ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
+            <div id="pd-ai-block-body" class="pd-ai-block-body"></div>
+          </div>
+        </div>
+
         <!-- Підпис таблиці живе НАД карткою, контролі — праворуч у тому ж рядку. Це той самий
              патерн, що й «Managed nodes» (≈7353): картка лишається чистим списком, а все, що
              ним керує, стоїть в одному місці. Інакше в застосунку було б два різні способи
@@ -15664,7 +15703,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // AI surfacing — "Explain" per failing credential row (extends the Bertha/Failed Scan
     // pattern to Credentials: CRED_STATUS's failure taxonomy mirrors SCAN_FAIL_TYPES). The
     // table card scrolls horizontally (overflow-x:auto), so the panel uses .ai-panel--fixed
-    // with its position computed from the trigger's own rect, same escape-hatch as pdAiExplain.
+    // with its position computed from the trigger's own rect, same escape-hatch as cmInstAiExplain.
     function credAiExplain(id) {
       var c = _credById(id);
       var panel = document.getElementById('cred-ai-panel-' + id);
@@ -16498,7 +16537,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryLabel: 'Open Secret Server',
         tertiaryAct: "go('secret-server-config')",
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 FAILED\n[2026-07-03 09:14:03] error: credentials rejected by server (0x8009030E)\n[2026-07-03 09:14:03] scan aborted \u2014 0 attributes collected',
-        aiHelp: 'The credential was accepted for the WinRM handshake but rejected at authentication (0x8009030E) \u2014 that pattern usually means the password rotated in Secret Server without the scan credential being updated to match, rather than a network or permission problem. Since connectivity still passes and the last successful scan was only 2 days ago, start with the credential itself before touching firewall or account settings.',
+        aiHelp: 'The credential was accepted for the WinRM handshake but rejected at authentication (0x8009030E) \u2014 that pattern usually means the password rotated in Secret Server without the scan credential being updated to match, rather than a network or permission problem.',
         steps: [
           { title: 'Update the credential', desc: 'Check the credential in Secret Server is current and not expired.', linkLabel: 'Open Secret Server', linkAct: "go('secret-server-config')", status: 'needs' },
           { title: 'Verify the account status', desc: 'Confirm the account isn\u2019t locked out or disabled on the target node.', status: 'notchecked' },
@@ -16519,7 +16558,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryLabel: '',
         tertiaryAct: '',
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 FAILED\n[2026-07-03 09:14:32] error: connection timed out after 30s (WSAETIMEDOUT)\n[2026-07-03 09:14:32] scan aborted \u2014 target unreachable',
-        aiHelp: 'The scan never reached the authentication stage \u2014 the connection attempt to 10.4.12.31 timed out after 30s, which points to the node being offline, moved to a different address, or blocked by a firewall rule rather than a credential issue. Because the last successful scan was 2 days ago, check whether the node\u2019s IP changed or it\u2019s powered down before assuming a Guardian configuration problem.',
+        aiHelp: 'The scan never reached the authentication stage \u2014 the connection attempt to 10.4.12.31 timed out after 30s, which points to the node being offline, moved to a different address, or blocked by a firewall rule rather than a credential issue.',
         steps: [
           { title: 'Confirm the node is reachable', desc: 'Verify the node is powered on and reachable from your network.', status: 'needs' },
           { title: 'Check firewall ports', desc: 'Port 5985 (WinRM HTTP) or 5986 (HTTPS) must be open on the target.', status: 'notchecked' },
@@ -16540,7 +16579,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryLabel: '',
         tertiaryAct: '',
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:03] collecting attributes \u2026 47/96\n[2026-07-03 09:19:03] error: scan exceeded 300s limit (timeout)\n[2026-07-03 09:19:03] scan aborted \u2014 partial collection discarded',
-        aiHelp: 'Guardian authenticated successfully and started collecting attributes, but only reached 47 of 96 before hitting the 300s limit \u2014 that\u2019s a partial-progress timeout, not a connectivity or credential failure. This usually means the node is under heavy load or the scan scope is larger than the timeout allows; increasing the limit or narrowing the policy scope is more likely to fix it than retrying immediately.',
+        aiHelp: 'Guardian authenticated successfully and started collecting attributes, but only reached 47 of 96 before hitting the 300s limit \u2014 that\u2019s a partial-progress timeout, not a connectivity or credential failure. This usually means the node is under heavy load or the scan scope is larger than the timeout allows.',
         steps: [
           { title: 'Check node load', desc: 'A node under heavy load can respond too slowly and cause timeouts.', status: 'needs' },
           { title: 'Review the scan scope', desc: 'Reduce the number of policies or checks if the node has many attributes.', status: 'notchecked' },
@@ -16561,7 +16600,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryLabel: 'Open Secret Server',
         tertiaryAct: "go('secret-server-config')",
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:04] reading registry HKLM\\SOFTWARE\\Policies \u2026 ACCESS DENIED\n[2026-07-03 09:14:04] error: insufficient privileges (0x80070005)\n[2026-07-03 09:14:04] scan aborted \u2014 3 of 12 attributes inaccessible',
-        aiHelp: 'Authentication succeeded, but the account was denied while reading a specific registry path (HKLM\\SOFTWARE\\Policies) \u2014 narrower than a full permissions failure, since 9 of 12 attributes were read successfully. The most likely cause is the scan account has standard access but not local administrator rights, which most policy checks under this path require.',
+        aiHelp: 'Authentication succeeded, but the account was denied while reading a specific registry path (HKLM\\SOFTWARE\\Policies) \u2014 narrower than a full permissions failure, since 9 of 12 attributes were read successfully. The most likely cause is the scan account has standard access but not local administrator rights.',
         steps: [
           { title: 'Grant local administrator', desc: 'Verify the scan account has local admin privileges on the target node.', status: 'needs' },
           { title: 'Check group policy', desc: 'Ensure GPO allows WinRM remote access for the account.', status: 'notchecked' },
@@ -16575,7 +16614,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var d = SCAN_FAIL_TYPES[type];
       if (!d) return;
       sfCurrentType = type;
-      if (typeof sfAiDismiss === 'function') sfAiDismiss(); // AI text is per-type — don't leave stale content open across a demo toggle
       document.getElementById('sf-category').textContent = d.category;
       var hl = document.getElementById('sf-headline'); if (hl) hl.textContent = d.headline;
       document.getElementById('sf-title').textContent = d.title;
@@ -16623,13 +16661,25 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           var link = s.linkLabel
             ? '<span onclick="' + s.linkAct + '" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;white-space:nowrap;">' + s.linkLabel + ' \u2192</span>'
             : '';
-          return '<div style="display:flex;align-items:center;gap:11px;padding:' + (last ? '9px 0 0' : '9px 0') + ';border-bottom:' + (last ? 'none' : '1px solid var(--border)') + ';">'
+          // Bertha — always-on AI strip attached to the ONE step that needs action, no trigger/click.
+          // Guided remediation is present the moment there's something to fix, not asked for.
+          var aiStrip = (s.status === 'needs' && d.aiHelp)
+            ? '<div class="sf-ai-strip"><svg width="14" height="14" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
+              + '<span><strong>Likely cause:</strong> ' + d.aiHelp + '</span>'
+              + '<button type="button" class="sf-ai-strip-x" onclick="this.parentElement.remove()" aria-label="Dismiss">\u00d7</button></div>'
+            : '';
+          return '<div id="sf-step-' + i + '" style="display:flex;align-items:flex-start;gap:11px;padding:' + (last ? '9px 0 0' : '9px 0') + ';border-bottom:' + (last ? 'none' : '1px solid var(--border)') + ';">'
             + circle
+            + '<div style="flex:1;min-width:0;">'
+            + '<div style="display:flex;align-items:center;gap:14px;">'
             + '<div style="flex:1;min-width:0;">'
             + '<div style="font-size:12px;font-weight:700;color:var(--text-default);">' + s.title + '</div>'
             + '<div style="font-size:11px;color:var(--text-sec);line-height:1.4;margin-top:1px;">' + s.desc + '</div>'
             + '</div>'
             + '<div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">' + link + '<span class="sf-st ' + s.status + '">' + stLabel[s.status] + '</span></div>'
+            + '</div>'
+            + aiStrip
+            + '</div>'
             + '</div>';
         }).join('');
       }
@@ -16959,9 +17009,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // Одна декларація ширин на шапку і на рядки: якщо колонки описати двічі, вони роз'їдуться
     // від першої ж правки.
     var PD_COL_CHECK  = 'flex:2;min-width:0;';   // 2/3 слеку — довший контент (назва + опис)
-    var PD_COL_TAGS   = 'flex:1;min-width:200px;'; // звужено з 245px, щоб звільнити місце під AI
+    var PD_COL_TAGS   = 'flex:1;min-width:200px;'; // AI-колонку прибрано (Jupiter переїхав на рівень політики), тому тут вільніше, ніж було
     var PD_COL_STATUS = 'flex:0 0 56px;';    // «Passed» = 51px
-    var PD_COL_AI     = 'flex:0 0 113px;';   // тільки icon-chip 32px, підпис живе в шапці (Figma 3716:17936)
 
     function pdFilter(mode) {
       var checks = window._pdChecks || [];
@@ -16982,7 +17031,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + '<div style="'+PD_COL_CHECK+'">Check</div>'
         + '<div style="'+PD_COL_STATUS+'">Status</div>'
         + '<div style="'+PD_COL_TAGS+'text-align:right;">Tags</div>'
-        + '<div style="'+PD_COL_AI+'text-align:right;">Explain with AI</div>'
         + '</div>';
       filtered.forEach(function(c) {
         var isFail = c.status==='fail';
@@ -17013,27 +17061,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           html += '<button class="bdg bdg--gray pd-tag-add" onclick="pdShowTagPicker(\''+safeKey+'\',this)">' + PD_PLUS_SVG + 'tag</button>';
         }
         html += '</div>';
-        // AI — власна остання колонка. Тригер живе тут тільки на FAILED-рядках (AI з'являється
-        // в контексті конкретної проблеми, не на кожному чеку підряд); PASSED-рядки лишають
-        // комірку порожньою, щоб решта колонок не зʼїжджала.
-        html += '<div style="'+PD_COL_AI+'display:flex;justify-content:flex-end;">';
-        if (isFail) {
-          html += '<button type="button" class="ai-cta" id="pd-ai-btn-'+safeKey+'" title="Explain with AI" aria-label="Explain with AI" onclick="pdAiExplain(\''+safeKey+'\')"><span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>';
-        }
-        html += '</div>';
         html += '</div>'; // close row flex
-        if (isFail) {
-          // The checks-list card has overflow:hidden (so long rows don't blow out its rounded
-          // corners), which would clip a nested position:absolute dropdown — so this panel uses
-          // .ai-panel--fixed (position:fixed, top/left computed in JS from the button's rect,
-          // same escape-hatch as #pd-tag-picker) instead of the .ai-dropdown wrapper pattern.
-          html += '<div class="ai-panel ai-panel--fixed" id="pd-ai-panel-'+safeKey+'">';
-          html += '<div class="ai-panel-head"><span class="ai-panel-ico">' + PD_AI_SVG + '</span>AI Explanation<button type="button" class="ai-panel-close" onclick="pdAiDismiss(\''+safeKey+'\')" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>';
-          html += '<div id="pd-ai-body-'+safeKey+'"></div>';
-          html += '</div>';
-        }
         html += '</div>'; // close outer row wrapper
       });
+      pdRenderAiBlock(checks);
       if(filtered.length===0) {
         // Канонічний empty-state (коло 44 + 14/600 + 12px + дія скинути фільтр),
         // а не рядок сірого тексту — список порожній лише через фільтр.
@@ -17052,43 +17083,32 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }
     }
 
-    // AI surfacing (Week 3, Пн) — "Explain why this check failed", per failed check row.
-    function pdAiExplain(safeKey) {
-      var panel = document.getElementById('pd-ai-panel-' + safeKey);
-      var body = document.getElementById('pd-ai-body-' + safeKey);
-      var btn = document.getElementById('pd-ai-btn-' + safeKey);
-      if (!panel || !body) return;
-      var name = window._pdKeyToName[safeKey] || 'this check';
-      if (btn) {
-        var r = btn.getBoundingClientRect();
-        var w = 320;
-        var left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
-        panel.style.left = left + 'px';
-        panel.style.top = (r.bottom + 8) + 'px';
-      }
-      panel.classList.add('is-open');
-      _aiBindOutsideClose('pd-ai-panel-' + safeKey, btn, function () { pdAiDismiss(safeKey); });
-      _aiRunPanel(btn, body, 'Analysing failed check…', function (success) {
-        setTimeout(function () {
-          // Week 3, Середа — internal "Jupiter" concept (policy intelligence): cause + impact on
-          // the policy + a concrete recommendation, not just the failure reason. window._pdKeyToDetail
-          // carries the check's own description (often "Current value: X. Required: Y") so the cause
-          // is specific to THIS check, not a generic sentence.
-          var detail = window._pdKeyToDetail && window._pdKeyToDetail[safeKey];
-          success(
-            '<div><strong>' + name + '</strong> failed' + (detail ? ' (' + detail + ')' : '') + ' \u2014 the current ' +
-            'node configuration does not meet what this check requires. This lowers the compliance score for the ' +
-            'assigned policy and will keep failing on every future scan until it\u2019s resolved. ' +
-            '<strong>Recommendation:</strong> bring the setting back in line with the requirement above, or open the ' +
-            'related change if this was recent drift, then rerun the scan to confirm it passes.</div>'
-          );
-        }, 900);
-      });
-    }
-
-    function pdAiDismiss(safeKey) {
-      var panel = document.getElementById('pd-ai-panel-' + safeKey);
-      if (panel) panel.classList.remove('is-open');
+    // Jupiter (Week 3, Середа) — "broader intelligence" across the WHOLE policy, rendered as an
+    // always-on block, not asked for. Reads the full, unfiltered check set so the summary reflects
+    // the policy as a whole regardless of the current Failed/Passed row filter. No trigger/loading
+    // state (unlike Einstein) — same reasoning as Bertha: the insight is either there or it isn't.
+    function pdRenderAiBlock(checks) {
+      var block = document.getElementById('pd-ai-block');
+      var body = document.getElementById('pd-ai-block-body');
+      if (!block || !body) return;
+      var failed = (checks || []).filter(function (c) { return c.status === 'fail'; });
+      var total = (checks || []).length;
+      if (failed.length === 0) { block.style.display = 'none'; return; }
+      block.style.display = '';
+      var names = failed.map(function (c) { return '<strong>' + c.name + '</strong>'; });
+      var namesHtml = names.length === 1 ? names[0]
+        : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+      var intro = failed.length === 1
+        ? 'One check \u2014 ' + namesHtml + ' (' + failed[0].detail + ') \u2014 is currently failing in this ' +
+          'policy on this node, bringing the score to ' + (total - failed.length) + ' of ' + total + '.'
+        : failed.length + ' of ' + total + ' checks are currently failing in this policy on this node: ' +
+          namesHtml + '. They\u2019re independent settings rather than one shared cause, so each needs to be ' +
+          'fixed on its own \u2014 clearing all ' + failed.length + ' would fully restore the score.';
+      var rec = failed.length === 1
+        ? 'bring the setting back in line with the requirement, then rerun the scan to confirm it passes.'
+        : 'start with \u201c' + failed[0].name + '\u201d \u2014 it\u2019s the first one flagged, and clearing it ' +
+          'is the quickest way to see the score move before working through the rest.';
+      body.innerHTML = intro + ' <strong>Recommendation:</strong> ' + rec;
     }
 
     function pdToggleFilter(btn) {
@@ -21378,22 +21398,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em;">Schedule</span><span style="font-size:12px;color:var(--text-default);font-weight:600;">Daily · 02:00</span></div>
           </div>
 
-          <!-- How to fix (compact checklist) -->
+          <!-- How to fix (compact checklist) — Bertha lives HERE now, as an always-on strip attached
+               to the step it applies to (setScanFailType), not a button+dropdown like Einstein/Jupiter.
+               Guided remediation shouldn't need to be asked for — see index.html "Bertha differentiation". -->
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;box-shadow:var(--shadow-sm);">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
-              <div style="font-size:13px;font-weight:700;color:var(--text-default);">How to fix</div>
-              <!-- AI surfacing (Week 3, Пн) — "Failed Scan → Help me troubleshoot" from the plan.
-                   The checklist below is always-on generic guidance; this explains the LIKELY CAUSE
-                   for this specific failure signature, tailored to the demo type. Supplementary to
-                   the checklist and to the Update credential/Retry scan primary actions above. -->
-              <div class="ai-dropdown">
-                <button type="button" class="ai-cta" id="sf-ai-btn" onclick="sfAiTroubleshoot()">Help me troubleshoot<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
-                <div class="ai-panel" id="sf-ai-panel">
-                  <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Troubleshooting<button type="button" class="ai-panel-close" onclick="sfAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-                  <div id="sf-ai-body"></div>
-                </div>
-              </div>
-            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:8px;">How to fix</div>
             <div id="sf-steps"></div>
           </div>
 
@@ -24884,28 +24893,10 @@ function cdAiDismiss() {
   if (panel) panel.classList.remove('is-open');
 }
 
-// AI surfacing (Week 3, Пн) — Failed Scan "Help me troubleshoot". Explains the LIKELY CAUSE behind
-// this failure signature (per SCAN_FAIL_TYPES[sfCurrentType].aiHelp); supplementary to the always-on
-// "How to fix" checklist and to the Update credential/Retry scan primary actions above it.
-function sfAiTroubleshoot() {
-  var btn = document.getElementById('sf-ai-btn');
-  var panel = document.getElementById('sf-ai-panel');
-  var body = document.getElementById('sf-ai-body');
-  if (!btn || !panel || !body) return;
-  panel.classList.add('is-open');
-  _aiBindOutsideClose('sf-ai-panel', btn, sfAiDismiss);
-  _aiRunPanel(btn, body, 'Diagnosing the failure…', function (success) {
-    setTimeout(function () {
-      var d = SCAN_FAIL_TYPES[sfCurrentType] || SCAN_FAIL_TYPES.auth;
-      success('<div>' + d.aiHelp + '</div>');
-    }, 900);
-  });
-}
-
-function sfAiDismiss() {
-  var panel = document.getElementById('sf-ai-panel');
-  if (panel) panel.classList.remove('is-open');
-}
+// Bertha (Failed Scan "How to fix") — no trigger function anymore. The AI strip is rendered
+// directly inside setScanFailType()'s checklist markup (index.html ~16640), attached to the one
+// step with status 'needs'. Differentiated on purpose from Einstein/Jupiter's button+dropdown:
+// guided remediation is present the moment there's something to fix, not asked for.
 
 // AI surfacing (Week 3, Вт) — "Summarise the current security posture of this node".
 // Flagship scenario for the full interaction-state set (initial/loading/success/no-result/error+
