@@ -17294,7 +17294,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // від першої ж правки.
     var PD_COL_CHECK  = 'flex:2;min-width:0;';   // 2/3 слеку — довший контент (назва + опис)
     var PD_COL_TAGS   = 'flex:1;min-width:200px;'; // AI-колонку прибрано (Jupiter переїхав на рівень політики), тому тут вільніше, ніж було
-    var PD_COL_STATUS = 'flex:0 0 56px;';    // «Passed» = 51px
+    var PD_COL_STATUS = 'flex:0 0 96px;min-width:0;';    // pill (~51px) + AI-cta (32px) + gap on failed rows
 
     function pdFilter(mode) {
       var checks = window._pdChecks || [];
@@ -17340,8 +17340,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         // Статус перевірки — канонічний .bdg--quiet за мапою severity (fail→Red, pass→Green).
         // Dot+text, не пігулка: у рядку рівно один обʼєкт із формою (теги), статус звучить
         // тихим маркером — той самий канон, що й у before→after значеннях (DS §12).
-        html += '<div style="'+PD_COL_STATUS+'display:flex;justify-content:flex-start;">';
-        html += '<span class="bdg bdg--quiet '+(isFail?'bdg--red':'bdg--green')+'">'+(isFail?'Failed':'Passed')+'</span>';
+        html += '<div style="'+PD_COL_STATUS+'display:flex;justify-content:flex-start;align-items:center;gap:6px;">';
+        html += '<span class="bdg bdg--dot '+(isFail?'bdg--red':'bdg--green')+'">'+(isFail?'Failed':'Passed')+'</span>';
+        // Einstein — "Explain why this check failed", inline per-row on FAILED checks only
+        // (same rule as Credentials/CM Instances: AI appears next to a specific problem, not
+        // on every row). Row isn't a scrolling table (unlike Credentials), so the plain
+        // .ai-dropdown + .ai-panel (position:absolute) wrapper is enough — same as CM Instances.
+        if (isFail) {
+          html += '<div class="ai-dropdown">'
+            + '<button type="button" class="ai-cta" id="pd-ai-btn-'+safeKey+'" title="Explain with AI" aria-label="Explain with AI" onclick="event.stopPropagation();pdCheckAiExplain(\''+safeKey+'\')"><span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>'
+            + '<div class="ai-panel" id="pd-ai-panel-'+safeKey+'">'
+            + '<div class="ai-panel-head"><span class="ai-panel-ico">' + PD_AI_SVG + '</span>AI Explanation<button type="button" class="ai-panel-close" onclick="event.stopPropagation();pdCheckAiDismiss(\''+safeKey+'\')" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>'
+            + '<div id="pd-ai-body-'+safeKey+'"></div>'
+            + '</div></div>';
+        }
         html += '</div>';
         // Теги — власна колонка. Раніше вони були всередині комірки Check і їх ліва межа
         // гуляла на 115px від рядка до рядка (виміряно: 840…955), бо їх штовхав гумовий опис.
@@ -17372,6 +17384,34 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var total = checks.length;
         cc.textContent = filtered.length < total ? 'Showing ' + filtered.length + ' of ' + total : total + ' checks';
       }
+      aiLockCtaButtons();
+    }
+
+    // Einstein — "Explain why this check failed" per failing check row. Same Trigger→Loading→
+    // Result/Error→Retry standard as Credentials/CM Instances (_aiRunPanel), just a generic
+    // explanation built from the check's own name/detail rather than a status taxonomy — a
+    // policy check doesn't have discrete failure "kinds" the way a credential or CM instance does.
+    function pdCheckAiExplain(safeKey) {
+      var name = (window._pdKeyToName || {})[safeKey];
+      var detail = (window._pdKeyToDetail || {})[safeKey];
+      var panel = document.getElementById('pd-ai-panel-' + safeKey);
+      var body = document.getElementById('pd-ai-body-' + safeKey);
+      var btn = document.getElementById('pd-ai-btn-' + safeKey);
+      if (!name || !panel || !body) return;
+      panel.classList.add('is-open');
+      _aiBindOutsideClose('pd-ai-panel-' + safeKey, btn, function () { pdCheckAiDismiss(safeKey); });
+      _aiRunPanel(btn, body, 'Diagnosing this check…', function (success) {
+        setTimeout(function () {
+          success('<div>The check <strong>' + name + '</strong> is failing because ' + detail + ' \u2014 that\u2019s an independent '
+            + 'configuration setting, not a symptom of a broader issue. <strong>Recommendation:</strong> bring the setting in '
+            + 'line with the requirement, then rerun the scan to confirm it passes.</div>');
+        }, 900);
+      });
+    }
+
+    function pdCheckAiDismiss(safeKey) {
+      var panel = document.getElementById('pd-ai-panel-' + safeKey);
+      if (panel) panel.classList.remove('is-open');
     }
 
     // Jupiter (Week 3, Середа) — "broader intelligence" across the WHOLE policy, rendered as an
