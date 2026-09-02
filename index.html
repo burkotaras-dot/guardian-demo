@@ -16764,9 +16764,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             : '';
           // Bertha — always-on AI strip attached to the ONE step that needs action, no trigger/click.
           // Guided remediation is present the moment there's something to fix, not asked for.
+          // AI generates a ServiceNow ticket with the diagnosis already filled in \u2014 a real
+          // action in an external system, not just navigation inside Guardian.
           var aiStrip = (s.status === 'needs' && d.aiHelp)
             ? '<div class="sf-ai-strip"><svg width="14" height="14" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
+              + '<div style="flex:1;min-width:0;">'
               + '<span><strong>Likely cause:</strong> ' + d.aiHelp + '</span>'
+              + '<div style="margin-top:6px;"><button type="button" class="ai-inline-cta" onclick="sfOpenTicketModal()">Create ServiceNow ticket \u2192</button></div>'
+              + '</div>'
               + '<button type="button" class="sf-ai-strip-x" onclick="this.parentElement.remove()" aria-label="Dismiss">\u00d7</button></div>'
             : '';
           return '<div id="sf-step-' + i + '" style="display:flex;align-items:flex-start;gap:11px;padding:' + (last ? '9px 0 0' : '9px 0') + ';border-bottom:' + (last ? 'none' : '1px solid var(--border)') + ';">'
@@ -16816,6 +16821,54 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       a.click();
       document.body.removeChild(a);
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+    // AI takes action (item 7) — the Bertha strip's "Likely cause" diagnosis becomes a
+    // ready-to-file ServiceNow incident: summary, description and priority are pre-filled
+    // from the same SCAN_FAIL_TYPES entry driving the strip, human reviews and clicks Create.
+    function _sfTicketPriority(type) {
+      var map = {
+        auth: { label: 'High', cls: 'bdg--orange' },
+        permission: { label: 'High', cls: 'bdg--orange' },
+        connect: { label: 'Medium', cls: 'bdg--orange' },
+        timeout: { label: 'Low', cls: 'bdg--blue' }
+      };
+      return map[type] || map.auth;
+    }
+    function sfOpenTicketModal() {
+      var d = SCAN_FAIL_TYPES[sfCurrentType];
+      if (!d) return;
+      var nodeName = 'MACBOOK-TARAS';
+      var pr = _sfTicketPriority(sfCurrentType);
+      var snLogo = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAxIiBoZWlnaHQ9IjU5IiB2aWV3Qm94PSIwIDAgNDAxIDU5IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfNjAwXzE4KSI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNOTcuNTU3MiAxOC4wMTE3QzkzLjI0ODcgMTguMDExNyA4OS41NTU3IDE5LjUzODMgODYuNDc4MiAyMS45ODA4VjE4LjYyMjRINzYuMDE0NlY1OC4wMDgzSDg2Ljc4NTlWMzIuOTcyM0M4OC4zMjQ3IDMwLjgzNSA5Mi4wMTc3IDI4LjA4NzIgOTYuNjM0IDI4LjA4NzJDOTguMTcyNyAyOC4wODcyIDk5LjcxMTUgMjguMzkyNSAxMDAuOTQzIDI4LjY5NzhWMTguNjIyNEM5OS43MTE1IDE4LjMxNyA5OC40ODA1IDE4LjAxMTcgOTcuNTU3MiAxOC4wMTE3WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00LjkyNDAyIDQ1Ljc4ODRDNy42OTM3OCA0OC4yMzEgMTIuMDAyMyA0OS43NTc1IDE1LjY5NTMgNDkuNzU3NUMxOC40NjUxIDQ5Ljc1NzUgMjAuOTI3MSA0OC4yMzEgMjAuOTI3MSA0Ni4zOTkxQzIwLjkyNzEgNDAuMjkyNyAxLjUzODc2IDQyLjQyOTkgMS41Mzg3NiAyOS45MTE5QzEuNTM4NzYgMjIuMjc5IDguOTI0NzkgMTcuNjk5MiAxNi42MTg2IDE3LjY5OTJDMjEuODUwMyAxNy42OTkyIDI3LjM4OTkgMTkuNTMxMSAzMC4xNTk2IDIxLjY2ODNMMjUuMjM1NiAyOS4zMDEzQzIzLjA4MTQgMjguMDggMjAuNjE5MyAyNi41NTM0IDE3LjU0MTggMjYuNTUzNEMxNC40NjQzIDI2LjU1MzQgMTIuMzEwMSAyNy43NzQ3IDEyLjMxMDEgMjkuOTExOUMxMi4zMTAxIDM1LjEwMjMgMzEuNjk4NCAzMi45NjUxIDMxLjY5ODQgNDYuNzA0NEMzMS42OTg0IDU0LjMzNzMgMjQuMzEyNCA1OC45MTcxIDE2LjAwMzEgNTguOTE3MUMxMC40NjM1IDU4LjkxNzEgNC42MTYyNyA1Ny4wODUyIDAgNTMuNzI2N0w0LjkyNDAyIDQ1Ljc4ODRaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTcxLjM5ODUgMzcuODUwMkM3MS4zOTg1IDI2Ljg1ODcgNjMuNzA0NyAxNy42OTkyIDUyLjYyNTYgMTcuNjk5MkM0MC45MzExIDE3LjY5OTIgMzMuMjM3MyAyNy40Njk0IDMzLjIzNzMgMzguMTU1NUMzMy4yMzczIDUwLjY3MzUgNDIuMTYyMSA1OC42MTE4IDUzLjg1NjYgNTguNjExOEM2MC4wMTE3IDU4LjYxMTggNjYuMTY2NyA1Ni4xNjkyIDcwLjE2NzUgNTEuNTg5NUw2NC4wMTI0IDQ1LjQ4MzFDNjIuMTY1OSA0Ny42MjAzIDU4LjQ3MjkgNTAuMDYyOSA1NC4xNjQ0IDUwLjA2MjlDNDguNjI0OSA1MC4wNjI5IDQ0LjAwODYgNDYuMDkzNyA0My4zOTMxIDQwLjU5OEg3MC43ODNDNzEuMzk4NSAzOS45ODc0IDcxLjM5ODUgMzkuMDcxNCA3MS4zOTg1IDM3Ljg1MDJaTTQ0LjMxNjQgMzMuMjcwNEM0NC45MzE5IDI5LjYwNjYgNDguNjI0OSAyNi4yNDgxIDUyLjkzMzQgMjYuMjQ4MUM1Ny4yNDE5IDI2LjI0ODEgNjAuMzE5NCAyOS42MDY2IDYwLjkzNDkgMzMuMjcwNEg0NC4zMTY0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNDcuNzIxIDE4LjYyM0wxMjkuNTYzIDU4LjAwOUgxMjIuMTc3TDEwNC4wMiAxOC42MjNIMTE0Ljc5MUwxMjUuODcgNDIuNzQzMUwxMzYuNjQyIDE4LjYyM0gxNDcuNzIxWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNTYuNjQ2IC0wLjAwMTk1MzEyQzE2MC42NDYgLTAuMDAxOTUzMTIgMTYzLjcyNCAzLjA1MTIyIDE2My43MjQgNi43MTUwM0MxNjMuNzI0IDEwLjY4NDIgMTYwLjY0NiAxMy40MzIgMTU2LjY0NiAxMy40MzJDMTUyLjY0NSAxMy40MzIgMTQ5Ljg3NSAxMC4zNzg4IDE0OS44NzUgNi43MTUwM0MxNDkuODc1IDIuNzQ1OSAxNTIuNjQ1IC0wLjAwMTk1MzEyIDE1Ni42NDYgLTAuMDAxOTUzMTIiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik0xNjIuMTg1IDE4LjYyMTFIMTUxLjQxNFY1OC4wMDdIMTYyLjE4NVYxOC42MjExWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMDUuODg2IDQ5Ljc1NzVDMjAxLjI2OSA1NS44NjM5IDE5NS40MjIgNTguNjExOCAxODguMDM2IDU4LjYxMThDMTc1LjcyNiA1OC42MTE4IDE2Ni44MDEgNDkuNDUyMiAxNjYuODAxIDM4LjE1NTVDMTY2LjgwMSAyNi41NTM0IDE3Ni4wMzQgMTcuNjk5MiAxODguMDM2IDE3LjY5OTJDMTk1LjExNCAxNy42OTkyIDIwMC45NjIgMjEuMDU3NyAyMDQuNjU1IDI1LjYzNzVMMTk3LjU3NiAzMi4wNDkxQzE5NS40MjIgMjkuMzAxMyAxOTIuMzQ1IDI3LjQ2OTQgMTg4LjY1MiAyNy40Njk0QzE4Mi40OTcgMjcuNDY5NCAxNzcuODggMzIuMzU0NSAxNzcuODggMzguMTU1NUMxNzcuODggNDQuMjYxOCAxODIuMTg5IDQ4Ljg0MTYgMTg4LjY1MiA0OC44NDE2QzE5Mi45NiA0OC44NDE2IDE5Ni4zNDUgNDYuMzk5MSAxOTguMTkyIDQzLjY1MTJMMjA1Ljg4NiA0OS43NTc1WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yNDQuMzU0IDUxLjU4OTVDMjQwLjM1NCA1Ni4xNjkyIDIzNC4xOTkgNTguNjExOCAyMjguMDQ0IDU4LjYxMThDMjE2LjM0OSA1OC42MTE4IDIwNy40MjQgNTAuNjczNSAyMDcuNDI0IDM4LjE1NTVDMjA3LjQyNCAyNy4xNjQxIDIxNC44MSAxNy42OTkyIDIyNi44MTMgMTcuNjk5MkMyMzcuNTg0IDE3LjY5OTIgMjQ1LjU4NSAyNi44NTg3IDI0NS41ODUgMzcuODUwMkMyNDUuNTg1IDM5LjA3MTQgMjQ1LjU4NSAzOS45ODc0IDI0NS4yNzggNDAuOTAzM0gyMTcuNThDMjE4LjE5NiA0Ni4zOTkxIDIyMi44MTIgNTAuMzY4MiAyMjguMzUxIDUwLjM2ODJDMjMyLjY2IDUwLjM2ODIgMjM2LjM1MyA0Ny45MjU2IDIzOC4xOTkgNDUuNzg4NEwyNDQuMzU0IDUxLjU4OTVaTTIzNC41MDYgMzMuMjcwNEMyMzQuMTk5IDI5LjkxMTkgMjMxLjEyMSAyNi4yNDgxIDIyNi41MDUgMjYuMjQ4MUMyMjIuMTk2IDI2LjI0ODEgMjE4LjUwMyAyOS42MDY2IDIxNy44ODggMzMuMjcwNEgyMzQuNTA2WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yNDkuNTg2IDU4LjAwMjRWMTguNjE2NUgyNTkuNzQyVjIxLjk3NUMyNjIuODIgMTkuNTMyNCAyNjYuNTEzIDE4LjAwNTkgMjcwLjgyMSAxOC4wMDU5QzI3Ni4zNjEgMTguMDA1OSAyODEuMjg1IDIwLjQ0ODQgMjg0LjY3IDI0LjQxNzVDMjg3LjEzMiAyNy40NzA3IDI4OC45NzkgMzEuNDM5OCAyODguOTc5IDM4LjE1NjhWNTguMzA3N0gyNzguMjA3VjM3LjI0MDlDMjc4LjIwNyAzMy4yNzE3IDI3Ny4yODQgMzEuMTM0NSAyNzUuNzQ1IDI5LjkxMzJDMjc0LjIwNyAyOC4zODY3IDI3Mi4zNiAyNy40NzA3IDI2OS41OSAyNy40NzA3QzI2NS4yODIgMjcuNDcwNyAyNjEuNTg5IDMwLjIxODYgMjU5Ljc0MiAzMi4zNTU4VjU4LjAwMjRIMjQ5LjU4NloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMzE2LjM2OCAxNy43MDUxQzMwMy40NDMgMTcuNzA1MSAyOTMuMjg3IDI3Ljc4MDYgMjkzLjI4NyA0MC42MDM5QzI5My4yODcgNDcuMzIwOSAyOTYuMDU3IDUzLjQyNzIgMzAwLjM2NSA1Ny43MDE3QzMwMS45MDQgNTkuMjI4MiAzMDQuNjc0IDU5LjIyODIgMzA2LjUyIDU4LjAwN0MzMDguOTgyIDU1Ljg2OTggMzEyLjY3NSA1NC42NDg1IDMxNi4zNjggNTQuNjQ4NUMzMjAuMzY5IDU0LjY0ODUgMzIzLjQ0NyA1NS44Njk4IDMyNi4yMTYgNTguMDA3QzMyOC4wNjMgNTkuNTMzNiAzMzAuNTI1IDU5LjIyODIgMzMyLjM3MiA1Ny4zOTYzQzMzNi42OCA1My4xMjE5IDMzOS40NSA0Ny4zMjA5IDMzOS40NSA0MC42MDM5QzMzOS4xNDIgMjguMDg1OSAzMjguOTg2IDE3LjcwNTEgMzE2LjM2OCAxNy43MDUxWk0zMTYuMDYxIDUyLjUxMTNDMzA4Ljk4MiA1Mi41MTEzIDMwNC4zNjYgNDcuMzIwOSAzMDQuMzY2IDQwLjkwOTJDMzA0LjM2NiAzNC40OTc1IDMwOC45ODIgMjkuMzA3MSAzMTYuMDYxIDI5LjMwNzFDMzIzLjEzOSAyOS4zMDcxIDMyNy43NTUgMzQuNDk3NSAzMjcuNzU1IDQwLjkwOTJDMzI3Ljc1NSA0Ny4zMjA5IDMyMy4xMzkgNTIuNTExMyAzMTYuMDYxIDUyLjUxMTNaIiBmaWxsPSIjNjJEODRFIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMzM2LjY4IDE4LjYyM0gzNDcuMTQzTDM1NS43NiA0MS4yMTY1TDM2NC4zNzcgMTguNjIzSDM3My4zMDJMMzgxLjYxMSA0MS4yMTY1TDM5MC4yMjggMTguNjIzSDQwMUwzODUuMzA0IDU4LjAwOUgzNzcuMzAzTDM2OC42ODYgMzUuNzIwOEwzNjAuMzc3IDU4LjAwOUgzNTIuMzc1TDMzNi42OCAxOC42MjNaIiBmaWxsPSJibGFjayIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzYwMF8xOCI+CjxyZWN0IHdpZHRoPSI0MDEiIGhlaWdodD0iNTkiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==';
+      var summary = d.headline + ' \u2014 ' + nodeName;
+      var description = (d.desc + '\n\n' + d.aiHelp).replace(/</g, '&lt;');
+      var html = '<div style="padding:0 24px;">'
+        + '<div style="display:flex;align-items:center;gap:12px;background:#F1F5F9;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:16px;">'
+        +   '<img src="' + snLogo + '" class="sn-logo" style="height:16px;width:auto;display:block;" alt="ServiceNow">'
+        +   '<span style="flex:1;font-size:11px;color:var(--text-sec);">Guardian pre-filled this ticket from the scan diagnostics \u2014 review before creating.</span>'
+        + '</div>'
+        + '<div class="form-group"><label class="form-label">SUMMARY</label><input id="sf-tix-summary" class="form-input" type="text" value="' + summary.replace(/"/g, '&quot;') + '"></div>'
+        + '<div class="form-group"><label class="form-label">DESCRIPTION</label><textarea id="sf-tix-desc" class="form-input" rows="4" style="resize:vertical;">' + description + '</textarea></div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+        +   '<div><div class="form-label" style="margin-bottom:6px;">PRIORITY</div><span class="bdg ' + pr.cls + '">' + pr.label + '</span></div>'
+        +   '<div><div class="form-label" style="margin-bottom:6px;">ERROR CODE</div><span class="code-tag">' + d.errorCode + '</span></div>'
+        + '</div>'
+        + '</div>';
+      openModal({
+        id: 'sf-ticket-modal',
+        size: 'md',
+        title: 'Create ServiceNow Ticket',
+        subtitle: 'AI drafted this incident from the failed-scan diagnosis \u2014 review before creating',
+        bodyHtml: html,
+        buttons: [
+          { label: 'Cancel', kind: 'secondary', onClick: function (e, close) { close(); } },
+          { label: 'Create ticket', kind: 'primary', onClick: function (e, close) {
+              close();
+              var num = 'INC00' + Math.floor(10000 + Math.random() * 89999);
+              showToast(num + ' created in ServiceNow');
+            } }
+        ]
+      });
     }
     // Render initial auth type on page load
     window.addEventListener('load', function () { try { setScanFailType('auth'); } catch (e) {} try { ssValidate(); } catch (e) {} });
