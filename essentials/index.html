@@ -2809,6 +2809,15 @@ body.dark .ai-block > svg { color:#A5B4FC; }
 body.dark .ai-block-label { color:#A5B4FC; }
 body.dark .ai-block-body strong { color:#A5B4FC; }
 .ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6366F1; background:none; border:none; cursor:pointer; padding:0; }
+/* Auto-remediation diff preview (Remediation page) — AI proposes a config change as a
+   git-style diff, human reviews and presses Apply; colours are rgba-tinted so they read
+   correctly in both themes without a separate body.dark override. */
+.remed-diff { margin-top:10px; border-radius:8px; overflow:hidden; border:1px solid var(--border); font-family:'DM Mono',ui-monospace,monospace; font-size:11.5px; line-height:1.7; }
+.remed-diff-line { padding:4px 12px; white-space:pre-wrap; word-break:break-all; color:var(--text-default); }
+.remed-diff-line.remove { background:rgba(251,60,68,0.08); }
+.remed-diff-line.remove::before { content:"\2212 "; color:#FB3C44; font-weight:700; }
+.remed-diff-line.add { background:rgba(0,175,115,0.08); }
+.remed-diff-line.add::before { content:"+ "; color:#00AF73; font-weight:700; }
 .ai-inline-cta:hover { text-decoration:underline; }
 body.dark .ai-inline-cta { color:#818CF8; }
 /* AI surfacing — inline suggestion (Peer Comparison). Distinct from Summary/Explain: no click,
@@ -7585,6 +7594,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div class="remed-step"><div class="remed-step-check"><span class="remed-step-num">3</span></div><div class="remed-step-text">Under settings → click <strong>Manage settings</strong></div></div>
               <div class="remed-step"><div class="remed-step-check"><span class="remed-step-num">4</span></div><div class="remed-step-text">Toggle <strong>Real-time protection</strong> to <strong>On</strong></div></div>
             </div>
+            <div id="remed-ai-fix"></div>
             <div id="remed-action-area" style="display:flex;align-items:center;gap:10px;">
               <button class="btn-primary" style="width:auto;padding:8px 20px;" onclick="startRescan()"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M7.50001 0.849609C10.664 0.849609 12.294 3.06861 13 4.30961V4.31161V2.49961C13 2.367 13.0527 2.23982 13.1465 2.14606C13.2402 2.05229 13.3674 1.99961 13.5 1.99961C13.6326 1.99961 13.7598 2.05229 13.8536 2.14606C13.9473 2.23982 14 2.367 14 2.49961V5.49961C14 5.63222 13.9473 5.75939 13.8536 5.85316C13.7598 5.94693 13.6326 5.99961 13.5 5.99961H10.5C10.3674 5.99961 10.2402 5.94693 10.1465 5.85316C10.0527 5.75939 10 5.63222 10 5.49961C10 5.367 10.0527 5.23982 10.1465 5.14606C10.2402 5.05229 10.3674 4.99961 10.5 4.99961H12.233L12.121 4.79161C11.481 3.66561 10.111 1.84961 7.50101 1.84961C4.06101 1.84961 1.85001 4.66461 1.85001 7.49961C1.85001 10.3346 4.06001 13.1496 7.50001 13.1496C9.16501 13.1496 10.53 12.4956 11.501 11.5066L11.693 11.3026C12.1239 10.8165 12.47 10.2614 12.717 9.66061L12.765 9.57061C12.8342 9.46774 12.9391 9.39423 13.0594 9.36436C13.1797 9.33448 13.3068 9.35036 13.4161 9.40891C13.5254 9.46747 13.609 9.56453 13.6507 9.68125C13.6925 9.79798 13.6894 9.92605 13.642 10.0406L13.512 10.3366C13.235 10.929 12.8739 11.4783 12.44 11.9676L12.214 12.2076C11.062 13.3806 9.44401 14.1496 7.50001 14.1496C3.43801 14.1496 0.850006 10.8146 0.850006 7.49961C0.850006 4.18561 3.43801 0.849609 7.50001 0.849609Z" fill="currentColor"/></svg>Scan again</button>
               <button class="action-cta remed-risk-cta" onclick="acceptRisk()"><span class="remed-risk-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.7 9L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Accept risk</button>
@@ -25025,6 +25035,7 @@ function showView(name) {
   }
   if (name === 'dashboard' && typeof dashRenderAiBlock === 'function') dashRenderAiBlock();
   if (name === 'node-detail' && typeof ndRenderAiBlock === 'function') ndRenderAiBlock();
+  if (name === 'remediation' && typeof remedRenderAiFix === 'function') remedRenderAiFix();
   if (name === 'settings-integrations' && typeof renderIntegrations === 'function') renderIntegrations();
   if (name === 'all-devices' && typeof resumeNodeScans === 'function') resumeNodeScans();
   if (name === 'all-devices' && typeof updateNodeStateCounts === 'function') updateNodeStateCounts();
@@ -25075,7 +25086,14 @@ var remedChecks = [
     currentVal: 'Disabled', currentSub: 'Real-time scanning off', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#FB3C44',
     expectedVal: 'Enabled', expectedSub: 'Real-time scanning active',
     impact: 'Without real-time protection, malware can execute on this node without detection. This is a critical security gap.',
-    steps: ['Open <strong>Windows Security</strong> from the Start menu','Click <strong>Virus & threat protection</strong>','Under settings → click <strong>Manage settings</strong>','Toggle <strong>Real-time protection</strong> to <strong>On</strong>']
+    steps: ['Open <strong>Windows Security</strong> from the Start menu','Click <strong>Virus & threat protection</strong>','Under settings → click <strong>Manage settings</strong>','Toggle <strong>Real-time protection</strong> to <strong>On</strong>'],
+    suggestedFix: {
+      summary: 'Re-enable Defender real-time monitoring via PowerShell.',
+      diff: [
+        { type: 'remove', text: 'Set-MpPreference -DisableRealtimeMonitoring $true' },
+        { type: 'add', text: 'Set-MpPreference -DisableRealtimeMonitoring $false' }
+      ]
+    }
   },
   {
     severity: 'Critical', badgeClass: 'type-pill--critical',
@@ -25084,7 +25102,14 @@ var remedChecks = [
     currentVal: 'Not encrypted', currentSub: 'System drive has no encryption', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#FB3C44',
     expectedVal: 'AES-256 encrypted', expectedSub: 'Full disk encryption active',
     impact: 'Without disk encryption, physical access to the node can expose all data. Encryption is required for compliance.',
-    steps: ['Open <strong>Control Panel → BitLocker Drive Encryption</strong>','Click <strong>Turn on BitLocker</strong> for the C: drive','Choose how to unlock (TPM recommended)','Save the recovery key and complete encryption']
+    steps: ['Open <strong>Control Panel → BitLocker Drive Encryption</strong>','Click <strong>Turn on BitLocker</strong> for the C: drive','Choose how to unlock (TPM recommended)','Save the recovery key and complete encryption'],
+    suggestedFix: {
+      summary: 'Enable BitLocker on the system drive with a TPM protector.',
+      diff: [
+        { type: 'remove', text: '# BitLocker: not configured' },
+        { type: 'add', text: 'Enable-BitLocker -MountPoint "C:" -EncryptionMethod XtsAes256 -TpmProtector' }
+      ]
+    }
   },
   {
     severity: 'Critical', badgeClass: 'type-pill--critical',
@@ -25093,7 +25118,14 @@ var remedChecks = [
     currentVal: 'No NLA', currentSub: 'RDP accessible without auth check', currentBg: '#fef2f2', currentBorder: '#fecaca', currentLabelColor: '#FB3C44',
     expectedVal: 'NLA required', expectedSub: 'Auth before session established',
     impact: 'Without NLA, attackers can reach the login screen without credentials, enabling brute-force and credential attacks.',
-    steps: ['Open <strong>System Properties → Remote</strong> tab','Check <strong>"Allow connections only from computers running Remote Desktop with NLA"</strong>','Click Apply and OK','Verify RDP port 3389 is firewall-restricted']
+    steps: ['Open <strong>System Properties → Remote</strong> tab','Check <strong>"Allow connections only from computers running Remote Desktop with NLA"</strong>','Click Apply and OK','Verify RDP port 3389 is firewall-restricted'],
+    suggestedFix: {
+      summary: 'Require Network Level Authentication in the RDP-Tcp registry key.',
+      diff: [
+        { type: 'remove', text: 'HKLM\\...\\WinStations\\RDP-Tcp : UserAuthentication = 0' },
+        { type: 'add', text: 'HKLM\\...\\WinStations\\RDP-Tcp : UserAuthentication = 1' }
+      ]
+    }
   },
   {
     severity: 'Medium', badgeClass: 'type-pill--medium',
@@ -25102,7 +25134,14 @@ var remedChecks = [
     currentVal: 'Disabled', currentSub: 'Domain profile firewall off', currentBg: '#fffbeb', currentBorder: '#fde68a', currentLabelColor: '#d97706',
     expectedVal: 'Enabled', expectedSub: 'All profiles active',
     impact: 'A disabled firewall exposes all open ports to the network. Even inside a corporate network this is a compliance violation.',
-    steps: ['Open <strong>Windows Defender Firewall</strong>','Click <strong>Turn Windows Defender Firewall on or off</strong>','Enable for <strong>Domain</strong>, Private and Public networks','Click OK to apply']
+    steps: ['Open <strong>Windows Defender Firewall</strong>','Click <strong>Turn Windows Defender Firewall on or off</strong>','Enable for <strong>Domain</strong>, Private and Public networks','Click OK to apply'],
+    suggestedFix: {
+      summary: 'Enable the firewall on the Domain profile via PowerShell.',
+      diff: [
+        { type: 'remove', text: 'Set-NetFirewallProfile -Profile Domain -Enabled False' },
+        { type: 'add', text: 'Set-NetFirewallProfile -Profile Domain -Enabled True' }
+      ]
+    }
   },
   {
     severity: 'Medium', badgeClass: 'type-pill--medium',
@@ -25111,7 +25150,14 @@ var remedChecks = [
     currentVal: '30 minutes', currentSub: 'Current idle timeout setting', currentBg: '#fffbeb', currentBorder: '#fde68a', currentLabelColor: '#d97706',
     expectedVal: '15 minutes max', expectedSub: 'Policy maximum allowed',
     impact: 'Long screen lock timeouts leave unattended nodes exposed. Policy requires automatic lock within 15 minutes of inactivity.',
-    steps: ['Open <strong>Settings → Accounts → Sign-in options</strong>','Under <strong>Require sign-in</strong> set to "When PC wakes from sleep"','Open <strong>Power & sleep settings</strong>','Set screen timeout to <strong>10 or 15 minutes</strong>']
+    steps: ['Open <strong>Settings → Accounts → Sign-in options</strong>','Under <strong>Require sign-in</strong> set to "When PC wakes from sleep"','Open <strong>Power & sleep settings</strong>','Set screen timeout to <strong>10 or 15 minutes</strong>'],
+    suggestedFix: {
+      summary: 'Lower the idle lock timeout to meet the 15-minute policy maximum.',
+      diff: [
+        { type: 'remove', text: 'InactivityTimeoutSecs = 1800' },
+        { type: 'add', text: 'InactivityTimeoutSecs = 900' }
+      ]
+    }
   }
 ];
 
@@ -25169,6 +25215,82 @@ function selectCheck(el) {
   // Hide result block
   var rb = document.getElementById('remed-result-block');
   if (rb) { rb.style.display = 'none'; rb.innerHTML = ''; }
+  remedRenderAiFix(idx);
+}
+
+// Auto-remediation with preview-and-approve: AI proposes a config diff, the analyst
+// reviews it and presses Apply — never applied without that explicit click.
+var remedCurrentIdx = 0;
+function remedRenderAiFix(idx) {
+  if (typeof idx !== 'number') {
+    var activeEl = document.querySelector('.remed-item.active');
+    idx = activeEl ? Array.from(document.querySelectorAll('.remed-item')).indexOf(activeEl) : 0;
+  }
+  remedCurrentIdx = idx;
+  var c = remedChecks[idx];
+  var aiFixEl = document.getElementById('remed-ai-fix');
+  if (!aiFixEl) return;
+  if (!c || !c.suggestedFix) { aiFixEl.style.display = 'none'; aiFixEl.innerHTML = ''; return; }
+  var f = c.suggestedFix;
+  var diffHtml = f.diff.map(function(d) {
+    return '<div class="remed-diff-line ' + d.type + '">' + d.text.replace(/</g, '&lt;') + '</div>';
+  }).join('');
+  aiFixEl.style.display = '';
+  aiFixEl.innerHTML =
+    '<div class="ai-block" style="align-items:flex-start;margin-top:14px;margin-bottom:14px;">' +
+      '<svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Suggested Fix</div>' +
+        '<div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;">' + f.summary + '</div>' +
+        '<div class="remed-diff">' + diffHtml + '</div>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;">' +
+          '<div style="font-size:11px;color:var(--text-sec);flex:1;min-width:0;">Pushes this change to the node and reverifies automatically \u2014 nothing applies until you press it.</div>' +
+          '<button type="button" class="btn-primary" id="remed-ai-fix-apply" style="width:auto;padding:0 16px;height:32px;font-size:12px;flex-shrink:0;" onclick="remedApplyAiFix()">Apply fix</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function remedApplyAiFix() {
+  var btn = document.getElementById('remed-ai-fix-apply');
+  if (!btn || btn.disabled) return;
+  var c = remedChecks[remedCurrentIdx];
+  if (!c) return;
+  btn.disabled = true;
+  btn.textContent = 'Applying fix\u2026';
+  setTimeout(function() {
+    var now = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+    var box = document.getElementById('remed-current-box');
+    if (box) {
+      box.className = 'remed-compare-side sev-ok';
+      document.getElementById('remed-current-val').textContent = c.expectedVal;
+      document.getElementById('remed-current-sub').textContent = c.expectedSub;
+    }
+    var rb = document.getElementById('remed-result-block');
+    if (rb) {
+      rb.style.display = 'block';
+      rb.innerHTML =
+        '<div class="remed-impact">' +
+          '<div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>' +
+            '<span style="font-size:12px;font-weight:700;color:#15803d;">Fix applied</span>' +
+          '</div>' +
+          '<div style="flex:1;min-width:0;font-size:11px;color:var(--text-default);line-height:1.5;">AI-applied fix verified on rescan \u2014 ' + c.currentVal + ' \u2192 ' + c.expectedVal + '.</div>' +
+          '<div style="flex-shrink:0;font-size:10px;color:var(--text-sec);">Applied ' + now + '</div>' +
+        '</div>';
+    }
+    var activeItem = document.querySelector('.remed-item.active');
+    if (activeItem) {
+      var badge = activeItem.querySelector('.type-pill');
+      if (badge) { badge.className = 'type-pill type-pill--pass'; badge.style.cssText = ''; badge.textContent = 'Passing'; }
+      var p = activeItem.querySelector('p');
+      if (p) p.textContent = 'Now passing \u00b7 AI-applied fix';
+    }
+    document.getElementById('remed-action-area').innerHTML =
+      '<button class="action-cta remed-back-results-cta" onclick="showView(\'results\')">Back to Results</button>';
+    var aiFixEl = document.getElementById('remed-ai-fix');
+    if (aiFixEl) { aiFixEl.style.display = 'none'; aiFixEl.innerHTML = ''; }
+  }, 900);
 }
 
 function filterRemed(btn, sev) {
