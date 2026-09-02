@@ -629,7 +629,7 @@ body.dark .btn-icon--danger:hover:not(:disabled) { background:rgba(251,60,68,0.1
    It lives on a wrapper, not the button: a disabled button swallows mouse events, and the
    disabled case is exactly when the user needs the explanation. */
 .tip-wrap { position:relative; display:inline-flex; }
-.tip-wrap > .btn-icon:disabled { pointer-events:none; }
+.tip-wrap > .btn-icon:disabled, .tip-wrap > .ai-cta:disabled, .tip-wrap > button:disabled, .tip-wrap > input:disabled { pointer-events:none; }
 .tip-wrap::after { content:attr(data-tip); position:absolute; top:calc(100% + 8px); left:50%;
   transform:translateX(-50%); width:220px; padding:10px 12px; box-sizing:border-box;
   background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:8px;
@@ -6680,6 +6680,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <button id="rsim-analyst" class="seg-btn" aria-pressed="false" onclick="setPreviewRole('analyst')">Analyst</button>
       <button id="rsim-viewer" class="seg-btn" aria-pressed="false" onclick="setPreviewRole('viewer')">Viewer</button>
     </div>
+    <!-- Тир-симулятор — той самий принцип, що role-sim-seg: один перемикач на застосунок.
+         Stephen Earl (Slack, 01.09): "ai capabilities are at their core enterprise only" —
+         міняє _currentTier → всі AI-точки додатку (Einstein/Bertha/Jupiter) блокуються в
+         teaser-стан на Professional через tierApply(). -->
+    <div class="seg" id="tier-sim-seg" role="group" aria-label="Preview tier" style="margin-right:8px;">
+      <button id="tsim-professional" class="seg-btn" aria-pressed="false" onclick="setPreviewTier('professional')">Professional</button>
+      <button id="tsim-enterprise" class="seg-btn is-active" aria-pressed="true" onclick="setPreviewTier('enterprise')">Enterprise</button>
+    </div>
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
       <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
@@ -7937,7 +7945,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
               <div id="dash-ai-block-body" class="ai-block-body"></div>
             </div>
-            <button class="action-cta" style="flex-shrink:0;" onclick="showView('changes')">Review drift <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+            <button id="dash-ai-block-action" class="action-cta" style="flex-shrink:0;" onclick="showView('changes')">Review drift <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
           </div>
 
           <!-- Needs your attention — mixed, prioritised action queue -->
@@ -8323,10 +8331,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
              visual language (indigo accent, spark icon) still matches the shared AI palette.
              AI never executes silently — Confirm is always a separate, explicit click. -->
         <div id="node-ai-cmdbar" style="display:flex;flex-direction:column;margin-bottom:14px;border:1px solid var(--border);border-left:3px solid #6366F1;border-radius:var(--radius-lg);background:var(--bg-surface);box-shadow:0 1px 2px rgba(15,23,42,0.04);">
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+          <div id="node-ai-cmdbar-row" style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
             <svg width="16" height="16" viewBox="0 0 18.921 18.921" fill="#6366F1" style="flex-shrink:0;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
             <input id="node-ai-cmd-input" class="ai-cmd-input" type="text" placeholder="Ask AI to filter or act on nodes… e.g. “scan all offline nodes”" onkeydown="if(event.key==='Enter'){nodeAiCmdRun();}">
-            <button type="button" class="btn-primary btn-primary--s" style="width:auto;padding:0 14px;height:28px;font-size:11.5px;flex-shrink:0;" onclick="nodeAiCmdRun()">Run</button>
+            <button type="button" id="node-ai-cmd-run" class="btn-primary btn-primary--s" style="width:auto;padding:0 14px;height:28px;font-size:11.5px;flex-shrink:0;" onclick="nodeAiCmdRun()">Run</button>
           </div>
           <div id="node-ai-cmd-result" style="display:none;"></div>
         </div>
@@ -13537,6 +13545,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     function intgRenderAiBlock() {
       var body = document.getElementById('intg-ai-block-body');
       if (!body) return;
+      if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
       var view = document.getElementById('v-settings-integrations');
       var firstRun = !!(view && view.classList.contains('is-firstrun'));
       var connected = firstRun ? [] : INTG_PROVIDERS.filter(function (p) { return p.status === 'connected' || p.status === 'attention' || p.status === 'error'; });
@@ -15809,6 +15818,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           + '</div>'
           + aiPanel;
       }).join('');
+      aiLockCtaButtons();
     }
 
     // AI surfacing — "Explain" per failing credential row (extends the Bertha/Failed Scan
@@ -16151,6 +16161,114 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (foot) foot.innerHTML = '<div class="gm-foot-left"></div><div class="gm-foot-right"><button type="button" class="gm-btn gm-btn-primary" onclick="closeModal(\'restricted-flow-overlay\')">Done</button></div>';
     }
 
+    // ── Block 5: Enterprise-tier gating for AI capabilities ──────────────
+    // Stephen Earl (Slack, 01.09): "ai capabilities are at their core enterprise only". Same
+    // principle as the role simulator above — one top-nav toggle drives _currentTier, a single
+    // apply pass locks every always-on Einstein/Bertha/Jupiter AI touchpoint to a teaser. Does
+    // NOT cover the separate "AI takes action" mechanisms (CSV/CMDB mapping, ignore-rule drafting,
+    // ServiceNow ticket creation, schedule auto-apply) — those are a distinct feature family.
+    var _currentTier = 'enterprise';
+
+    function setPreviewTier(tier) {
+      _currentTier = tier;
+      ['professional', 'enterprise'].forEach(function(t) {
+        var b = document.getElementById('tsim-' + t);
+        if (!b) return;
+        b.classList.toggle('is-active', t === tier);
+        b.setAttribute('aria-pressed', t === tier ? 'true' : 'false');
+      });
+      tierApply();
+    }
+
+    function aiTierLocked() { return _currentTier === 'professional'; }
+
+    // .ai-cta family — Detected Drift "Explain with AI", CM Detail + Credentials per-row explain
+    // buttons all share this class, so one pass locks all three at once. Also called at the end
+    // of renderCredentials()/renderCMDetail(), since those redraw their rows (and the buttons in
+    // them) independently of a tier toggle.
+    function aiLockCtaButtons() {
+      var locked = aiTierLocked();
+      document.querySelectorAll('.ai-cta').forEach(function(btn) {
+        btn.disabled = locked;
+        var wrap = btn.parentElement;
+        if (!wrap || !wrap.classList.contains('tip-wrap')) {
+          wrap = document.createElement('span');
+          wrap.className = 'tip-wrap';
+          btn.parentNode.insertBefore(wrap, btn);
+          wrap.appendChild(btn);
+        }
+        if (locked) wrap.setAttribute('data-tip', 'AI explanations are an Enterprise feature \u2014 upgrade to use them.');
+        else wrap.removeAttribute('data-tip');
+      });
+    }
+
+    function aiBlockLockedHtml() {
+      return '<span>AI-powered insight is an <strong>Enterprise</strong> feature.</span> '
+        + '<a href="#" onclick="openTierUpgradeFlow();return false;" style="color:#6366F1;font-weight:600;">See what\u2019s included \u2192</a>';
+    }
+
+    // Re-runs each page's own AI-block renderer — every renderer already recomputes its real
+    // args (or defaults them), so one call both locks (tier off) and correctly restores the
+    // real content (tier back on) without duplicating any render logic here.
+    function tierApply() {
+      var locked = aiTierLocked();
+      if (typeof dashRenderAiBlock === 'function') dashRenderAiBlock();
+      if (typeof ndRenderAiBlock === 'function') ndRenderAiBlock();
+      if (typeof pdRenderAiBlock === 'function') pdRenderAiBlock(window._pdChecks || []);
+      if (typeof _repRenderNow === 'function') _repRenderNow();
+      if (typeof schedRenderAiBlock === 'function') schedRenderAiBlock();
+      if (typeof intgRenderAiBlock === 'function') intgRenderAiBlock();
+      if (typeof driftRenderAiGroup === 'function') driftRenderAiGroup();
+      if (typeof setScanFailType === 'function') setScanFailType(sfCurrentType);
+      if (typeof peerInjectAiHints === 'function') peerInjectAiHints();
+
+      aiLockCtaButtons();
+
+      // AI command bar (Nodes) — genuinely different interaction shape but still an AI capability.
+      var cmdRow = document.getElementById('node-ai-cmdbar-row');
+      var cmdInput = document.getElementById('node-ai-cmd-input');
+      var cmdRun = document.getElementById('node-ai-cmd-run');
+      if (cmdInput) cmdInput.disabled = locked;
+      if (cmdRun) cmdRun.disabled = locked;
+      if (cmdRow) {
+        cmdRow.classList.toggle('tip-wrap', locked);
+        if (locked) cmdRow.setAttribute('data-tip', 'The AI command bar is an Enterprise feature \u2014 upgrade to use it.');
+        else cmdRow.removeAttribute('data-tip');
+      }
+    }
+
+    function openTierUpgradeFlow() {
+      var body = '<div class="restricted-banner">'
+        +   '<div class="restricted-banner-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>'
+        +   '<div><div class="restricted-banner-title">Enterprise feature</div>'
+        +     '<div class="restricted-banner-sub">AI-powered insight, explanations and recommendations across Guardian are included with the Enterprise plan.</div></div>'
+        + '</div>'
+        + '<div style="font-size:11.5px;color:var(--text-sec);line-height:1.5;">Upgrading unlocks AI on every page shown here \u2014 drift explanations, policy and scan insight, credential and CM diagnostics \u2014 for your whole organisation.</div>';
+      openModal({
+        id: 'tier-upgrade-overlay',
+        title: 'Upgrade to Enterprise',
+        bodyHtml: body,
+        buttons: [
+          { kind:'primary', id:'tu-upgrade', label:'Talk to sales', onClick:function(){ tuShowConfirmation(); } }
+        ]
+      });
+    }
+
+    function tuShowConfirmation() {
+      var ov = document.getElementById('tier-upgrade-overlay');
+      if (!ov) return;
+      var body = ov.querySelector('.gm-body');
+      if (body) body.innerHTML = '<div style="text-align:center;">'
+        + '<div style="width:44px;height:44px;border-radius:50%;background:var(--bdg-green-bg);display:flex;align-items:center;justify-content:center;margin:8px auto 14px;">'
+        +   '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bdg-green-txt)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+        + '</div>'
+        + '<div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;">Request sent</div>'
+        + '<div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Someone from our team will reach out about upgrading your Guardian plan.</div>'
+        + '</div>';
+      var foot = ov.querySelector('.gm-foot');
+      if (foot) foot.innerHTML = '<div class="gm-foot-left"></div><div class="gm-foot-right"><button type="button" class="gm-btn gm-btn-primary" onclick="closeModal(\'tier-upgrade-overlay\')">Done</button></div>';
+    }
+
     // ── CM Detail Data ──
     // Activity keyed by GROUP id
     var CM_ACTIVITY = {
@@ -16324,6 +16442,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           + '</div>';
       }
       document.getElementById('cmd-activity').innerHTML = actHTML;
+      aiLockCtaButtons();
     }
 
     // AI surfacing — "Explain" per problem CM instance. The CM Instances card isn't a scrolling
@@ -16778,10 +16897,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           // action in an external system, not just navigation inside Guardian.
           var aiStrip = (s.status === 'needs' && d.aiHelp)
             ? '<div class="sf-ai-strip"><svg width="14" height="14" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
-              + '<div style="flex:1;min-width:0;">'
-              + '<span><strong>Likely cause:</strong> ' + d.aiHelp + '</span>'
-              + '<div style="margin-top:6px;"><button type="button" class="ai-inline-cta" onclick="sfOpenTicketModal()">Create ServiceNow ticket \u2192</button></div>'
-              + '</div>'
+              + (aiTierLocked()
+                  ? '<div style="flex:1;min-width:0;">' + aiBlockLockedHtml() + '</div>'
+                  : '<div style="flex:1;min-width:0;">'
+                    + '<span><strong>Likely cause:</strong> ' + d.aiHelp + '</span>'
+                    + '<div style="margin-top:6px;"><button type="button" class="ai-inline-cta" onclick="sfOpenTicketModal()">Create ServiceNow ticket \u2192</button></div>'
+                    + '</div>')
               + '<button type="button" class="sf-ai-strip-x" onclick="this.parentElement.remove()" aria-label="Dismiss">\u00d7</button></div>'
             : '';
           return '<div id="sf-step-' + i + '" style="display:flex;align-items:flex-start;gap:11px;padding:' + (last ? '9px 0 0' : '9px 0') + ';border-bottom:' + (last ? 'none' : '1px solid var(--border)') + ';">'
@@ -17261,6 +17382,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var block = document.getElementById('pd-ai-block');
       var body = document.getElementById('pd-ai-block-body');
       if (!block || !body) return;
+      if (aiTierLocked()) {
+        if ((checks || []).length) { block.style.display = ''; body.innerHTML = aiBlockLockedHtml(); }
+        return;
+      }
       var failed = (checks || []).filter(function (c) { return c.status === 'fail'; });
       var total = (checks || []).length;
       if (failed.length === 0) { block.style.display = 'none'; return; }
@@ -25036,7 +25161,10 @@ function _aiRunPanel(btn, body, loadingText, run) {
 // Review button below) so it never outranks the app's real primary CTA.
 function dashRenderAiBlock() {
   var body = document.getElementById('dash-ai-block-body');
+  var action = document.getElementById('dash-ai-block-action');
   if (!body) return;
+  if (action) action.style.display = aiTierLocked() ? 'none' : '';
+  if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
   body.innerHTML =
     '3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
     'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
@@ -25057,6 +25185,7 @@ function reportRenderAiBlock(data, passed, failed, score) {
   var action = document.getElementById('rep-ai-block-action');
   if (!body) return;
   if (action) action.style.display = 'none';
+  if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
   if (!data || !data.nodes) { body.innerHTML = '<div>There is nothing scanned in the current scope yet, so there is nothing to summarise — adjust the scope filters or scan a node first.</div>'; return; }
   if (!failed) { body.innerHTML = '<div>Every check in this scope is passing (<strong>100%</strong> across ' + data.policies.length + ' polic' + (data.policies.length === 1 ? 'y' : 'ies') + ', ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ') — nothing here needs attention right now.</div>'; return; }
   var worst = null;
@@ -25231,8 +25360,9 @@ function ndRenderAiBlock() {
   var trigger = document.getElementById('nd-ai-demo-trigger');
   var action = document.getElementById('nd-ai-block-action');
   if (!body) return;
-  var state = (trigger && trigger.dataset.state) || 'success';
   if (action) action.style.display = 'none';
+  if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
+  var state = (trigger && trigger.dataset.state) || 'success';
   if (state === 'error') {
     body.innerHTML = '<div style="color:var(--bdg-red-txt);">' + ND_AI_TEXT.error + '</div>' +
       '<button type="button" class="ai-inline-cta" style="margin-top:10px;" onclick="ndRenderAiBlock()">Retry</button>';
@@ -26441,8 +26571,10 @@ function peerInjectAiHints() {
     if (topCount < 2 || topCount <= runnerUp) return;
     var hint = document.createElement('div');
     hint.className = 'peer-ai-hint';
-    hint.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>'
-      + '<span><strong>' + top + '</strong> differs from the majority on ' + topCount + ' tracked settings in this group — more than any other node here. Worth investigating first.</span>';
+    var hintIco = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>';
+    hint.innerHTML = hintIco + (aiTierLocked()
+      ? '<span>' + aiBlockLockedHtml() + '</span>'
+      : '<span><strong>' + top + '</strong> differs from the majority on ' + topCount + ' tracked settings in this group — more than any other node here. Worth investigating first.</span>');
     hdr.parentNode.insertBefore(hint, hdr.nextSibling);
   });
 }
@@ -26930,6 +27062,7 @@ function schedRenderAiBlock(set) {
   var action = document.getElementById('sched-ai-block-action');
   if (!body) return;
   if (action) action.style.display = 'none';
+  if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
   set = set || schedSet();
   var isEnv = _schedScope === 'env';
   var noun = isEnv ? 'environment' : 'node group';
@@ -28086,12 +28219,19 @@ function driftRenderAiGroup() {
   if (!block) return;
   var group = driftComputeAiGroup();
   if (!group) { block.style.display = 'none'; return; }
+  var body = document.getElementById('drift-ai-group-body');
+  if (aiTierLocked()) {
+    if (body) body.innerHTML = aiBlockLockedHtml();
+    var lockedCta = document.getElementById('drift-ai-group-cta');
+    if (lockedCta) lockedCta.style.display = 'none';
+    block.style.display = 'flex';
+    return;
+  }
   var tsList = group.items.map(function(it) { return it.ts; });
   var spanHrs = Math.max(1, Math.round((Math.max.apply(null, tsList) - Math.min.apply(null, tsList)) / 3600));
-  var body = document.getElementById('drift-ai-group-body');
   if (body) body.innerHTML = 'AI grouped <strong>' + group.items.length + '</strong> unreconciled changes on <strong>' + group.node + '</strong> as part of the same event — detected within <strong>' + spanHrs + 'h</strong> of each other. Review and approve them together instead of one at a time.';
   var cta = document.getElementById('drift-ai-group-cta');
-  if (cta && cta.firstChild) cta.firstChild.textContent = 'Select group (' + group.items.length + ') ';
+  if (cta) { cta.style.display = ''; if (cta.firstChild) cta.firstChild.textContent = 'Select group (' + group.items.length + ') '; }
   block.dataset.idxs = group.items.map(function(it) { return it.idx; }).join(',');
   block.style.display = 'flex';
 }
