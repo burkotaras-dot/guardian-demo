@@ -9986,13 +9986,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Jupiter mechanism — always-on block, no trigger, above the checks it summarises.
              Demo state selector lets a reviewer step through success/no-result/error/unavailable
              without needing real data to trigger each one — same "Demo state" convention as
-             .icx-demo-tabs (L14160). Doesn't touch Run Scan Now / Compare scans above. Its own
-             row below the compliance-score strip, not a flex item inside it — its body text
-             is long enough to force everything after it onto a wrapped second line. -->
-        <div id="nd-ai-block" class="ai-block">
+             .icx-demo-tabs (L14160). Doesn't touch Run Scan Now / Compare scans above. Action CTA
+             sits on the right of the block as its own flex item, same canonical placement as
+             Dashboard/Reports/Scan Schedules AI blocks — not stacked below the body text. -->
+        <div id="nd-ai-block" class="ai-block" style="align-items:center;">
           <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
           <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
               <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;">AI Insight</div>
               <div style="position:relative;">
                 <button type="button" class="scan-menu-trigger" id="nd-ai-demo-trigger" data-state="success" style="height:22px;padding:3px 8px;font-size:10px;gap:4px;" onclick="ndAiToggleDemoPanel(this)"><span id="nd-ai-demo-label">Success</span><svg class="scan-menu-chevron" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
@@ -10005,10 +10005,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
             <div id="nd-ai-block-body" class="ai-block-body"></div>
-            <!-- Only shown by ndRenderAiBlock() in the 'success' state, where the text points at a
-                 specific policy area — the other demo states have nothing concrete to act on. -->
-            <button type="button" id="nd-ai-block-action" class="action-cta" style="display:none;margin-top:10px;" onclick="ndTab('policies')">View failing policies <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
           </div>
+          <!-- Only shown by ndRenderAiBlock() in the 'success' state, where the text points at a
+               specific policy area — the other demo states have nothing concrete to act on. -->
+          <button type="button" id="nd-ai-block-action" class="action-cta" style="display:none;flex-shrink:0;" onclick="ndTab('policies')">View failing policies <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
         </div>
 
         <!-- Tab nav -->
@@ -13984,15 +13984,16 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       // inventing a parallel "confidence" model: unmapped = AI found no match, validation:warn
       // = AI matched but isn't fully confident (custom/missing field) — surfaced here instead
       // of silently pre-filling the table with no explanation.
-      var html = '<div class="ai-block ai-block--tint" style="align-items:flex-start;margin-bottom:14px;">'
+      var html = '<div class="ai-block ai-block--tint" style="align-items:center;margin-bottom:14px;">'
         + '<svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
         + '<div style="flex:1;min-width:0;">'
         + '<div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Mapping</div>'
         + '<div class="ai-block-body">AI matched <strong>' + schema.fields.length + '</strong> of <strong>' + totalAll + '</strong> ' + schema.sourceLabel + ' fields to Guardian properties by name and type'
         + (schema.unmapped.length ? ' — <strong>' + schema.unmapped.length + '</strong> field' + (schema.unmapped.length===1?'':'s') + ' couldn\'t be matched and ' + (schema.unmapped.length===1?'is':'are') + ' listed below' : '')
         + '.' + (fmWarnCount ? ' <strong>' + fmWarnCount + '</strong> matched field' + (fmWarnCount===1?'':'s') + ' need' + (fmWarnCount===1?'s':'') + ' a quick review before you activate this mapping.' : ' Review the mapping on the next step before you activate it.') + '</div>'
-        + (fmWarnCount ? '<button type="button" class="ai-inline-cta" style="margin-top:8px;" onclick="fmJumpToWarnField()">Review flagged field' + (fmWarnCount===1?'':'s') + ' →</button>' : '')
-        + '</div></div>';
+        + '</div>'
+        + (fmWarnCount ? '<button type="button" class="action-cta" style="flex-shrink:0;" onclick="fmJumpToWarnField()">Review flagged field' + (fmWarnCount===1?'':'s') + ' <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>' : '')
+        + '</div>';
 
       // Hint text
       html += '<div class="fm-hint">Select the ' + schema.sourceLabel + ' fields you want to import. Required fields are selected automatically and cannot be removed.</div>';
@@ -19808,6 +19809,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span style="font-size:12px;color:var(--text-muted);flex-shrink:0;">Active filters</span>
           <div id="changes-active-chips" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"></div>
           <span id="changes-clear-all" onclick="filterChanges(&#39;all&#39;)" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;flex-shrink:0;">Clear all</span>
+        </div>
+
+        <!-- AI Grouping — Jupiter mechanism (always-on, standalone, above the whole list).
+             Scans the currently visible unreconciled drift events for ones sharing the same
+             node within a short time window (a proxy for "same underlying event") and offers
+             one CTA that pre-selects them into the existing bulk-action bar — the human still
+             clicks Approve, AI only prepares the batch. -->
+        <div id="drift-ai-group-block" class="ai-block" style="display:none;align-items:center;margin-bottom:14px;">
+          <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+          <div style="flex:1;min-width:0;">
+            <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Grouping</div>
+            <div id="drift-ai-group-body" class="ai-block-body"></div>
+          </div>
+          <button type="button" id="drift-ai-group-cta" class="action-cta" style="flex-shrink:0;" onclick="driftSelectAiGroup()">Select group <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
         </div>
 
         <!-- Bulk action bar — shown when 1+ drift items selected -->
@@ -27252,7 +27267,7 @@ function updateDriftBulkBar() {
   var bar = document.getElementById('drift-bulk-bar');
   if (!bar) return;
   var visible = [], checked = [];
-  for (var i = 0; i < 3; i++) {
+  for (var i = 0; i < CHANGE_DATA.length; i++) {
     var card = document.getElementById('change-card-' + i);
     if (!card || card.style.display === 'none') continue;
     visible.push(i);
@@ -27281,7 +27296,7 @@ function updateDriftBulkBar() {
 }
 // Master select-all — selects every currently filtered (visible) drift event
 function toggleSelectAllVisible(cb) {
-  for (var i = 0; i < 3; i++) {
+  for (var i = 0; i < CHANGE_DATA.length; i++) {
     var card = document.getElementById('change-card-' + i);
     if (!card || card.style.display === 'none') continue;
     var sel = document.querySelector('.drift-select-cb[data-idx="' + i + '"]');
@@ -27908,6 +27923,53 @@ function applyDriftFilters() {
   applyDriftGrouping();
   // Sync master + group checkboxes and bulk bar against current selection
   updateDriftBulkBar();
+  driftRenderAiGroup();
+}
+
+// AI Grouping — find the largest cluster of currently-visible unreconciled events on the
+// same node, detected close together in time (a stand-in for "same underlying event/rollout").
+function driftComputeAiGroup() {
+  var byNode = {};
+  for (var i = 0; i < CHANGE_DATA.length; i++) {
+    var card = document.getElementById('change-card-' + i);
+    if (!card || card.style.display === 'none') continue;
+    if (card.dataset.recon !== 'unreconciled') continue;
+    var node = card.dataset.node;
+    if (!byNode[node]) byNode[node] = [];
+    byNode[node].push({ idx: i, ts: parseInt(card.dataset.ts || '0', 10) });
+  }
+  var best = null;
+  Object.keys(byNode).forEach(function(node) {
+    var items = byNode[node];
+    if (items.length >= 2 && (!best || items.length > best.items.length)) best = { node: node, items: items };
+  });
+  return best;
+}
+function driftRenderAiGroup() {
+  var block = document.getElementById('drift-ai-group-block');
+  if (!block) return;
+  var group = driftComputeAiGroup();
+  if (!group) { block.style.display = 'none'; return; }
+  var tsList = group.items.map(function(it) { return it.ts; });
+  var spanHrs = Math.max(1, Math.round((Math.max.apply(null, tsList) - Math.min.apply(null, tsList)) / 3600));
+  var body = document.getElementById('drift-ai-group-body');
+  if (body) body.innerHTML = 'AI grouped <strong>' + group.items.length + '</strong> unreconciled changes on <strong>' + group.node + '</strong> as part of the same event — detected within <strong>' + spanHrs + 'h</strong> of each other. Review and approve them together instead of one at a time.';
+  var cta = document.getElementById('drift-ai-group-cta');
+  if (cta && cta.firstChild) cta.firstChild.textContent = 'Select group (' + group.items.length + ') ';
+  block.dataset.idxs = group.items.map(function(it) { return it.idx; }).join(',');
+  block.style.display = 'flex';
+}
+function driftSelectAiGroup() {
+  var block = document.getElementById('drift-ai-group-block');
+  if (!block) return;
+  var idxs = (block.dataset.idxs || '').split(',').filter(Boolean);
+  idxs.forEach(function(idx) {
+    var cb = document.querySelector('.drift-select-cb[data-idx="' + idx + '"]');
+    if (cb) cb.checked = true;
+  });
+  updateDriftBulkBar();
+  var row = document.getElementById('drift-select-all-row');
+  if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 // Group visible drift cards under headers; each header has a select-all checkbox
