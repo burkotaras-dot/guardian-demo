@@ -8294,6 +8294,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span style="font-size:12px;color:var(--text-default);">Viewing: <strong id="crumb-group-name">Windows 11</strong> group</span>
         </div>
 
+        <!-- AI command bar — natural language → real filter + bulk action. Genuinely different
+             interaction shape from Einstein/Bertha/Jupiter (input → parse → preview → confirm,
+             not explain/suggest), so it gets its own compact bar rather than reusing .ai-block;
+             visual language (indigo accent, spark icon) still matches the shared AI palette.
+             AI never executes silently — Confirm is always a separate, explicit click. -->
+        <div id="node-ai-cmdbar" style="display:flex;flex-direction:column;margin-bottom:14px;border:1px solid var(--border);border-left:3px solid #6366F1;border-radius:var(--radius-lg);background:var(--bg-surface);box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <svg width="16" height="16" viewBox="0 0 18.921 18.921" fill="#6366F1" style="flex-shrink:0;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+            <input id="node-ai-cmd-input" type="text" placeholder="Ask AI to filter or act on nodes… e.g. “scan all offline nodes”" style="flex:1;min-width:0;border:none;background:none;outline:none;font-size:12.5px;color:var(--text-default);font-family:inherit;" onkeydown="if(event.key==='Enter'){nodeAiCmdRun();}">
+            <button type="button" class="btn-primary btn-primary--s" style="width:auto;padding:0 14px;height:28px;font-size:11.5px;flex-shrink:0;" onclick="nodeAiCmdRun()">Run</button>
+          </div>
+          <div id="node-ai-cmd-result" style="display:none;"></div>
+        </div>
 
         <!-- Tab intro on the left, all controls on the right -->
         <div id="node-filter-row" style="display:flex;gap:16px;margin-bottom:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
@@ -24577,6 +24590,88 @@ function filterNodes() {
       + '<button class="btn-outline" style="width:auto;padding:0 14px;" onclick="nodesResetFilters()">Reset filters</button>'
     : '';
   empty.style.display = visible === 0 ? '' : 'none';
+}
+
+/* AI command bar (Managed Nodes) — natural language → real filter + bulk action.
+   Parses against the SAME vocabulary the manual filters already expose (state/group/environment)
+   and the one real bulk operation currently wired (scan), previews a match count computed with
+   the exact same nodeMatchesState()/data-attribute logic filterNodes() uses, and only touches the
+   page — checkboxes, filters, scanSelectedNodes() — after the user presses Confirm. */
+var _nodeAiCmdParsed = null;
+function nodeAiCmdRun() {
+  var input = document.getElementById('node-ai-cmd-input');
+  var resultEl = document.getElementById('node-ai-cmd-result');
+  var text = (input?.value || '').trim();
+  if (!text) { resultEl.style.display = 'none'; resultEl.innerHTML = ''; return; }
+  var lower = text.toLowerCase();
+
+  var groups = ['Windows Laptops', 'Developer Macs', 'Windows Desktops', 'AWS Web Servers', 'AWS API Servers', 'AWS Containers'];
+  var envs = ['production', 'staging', 'development'];
+  var parsed = { state: null, group: null, env: null, action: null };
+
+  if (/unscanned|never scanned|not scanned/.test(lower)) parsed.state = 'unscanned';
+  else if (/offline/.test(lower)) parsed.state = 'offline';
+  groups.forEach(function (g) { if (lower.indexOf(g.toLowerCase()) !== -1) parsed.group = g; });
+  envs.forEach(function (e) { if (lower.indexOf(e) !== -1) parsed.env = e; });
+  if (/\bscan\b/.test(lower)) parsed.action = 'scan';
+
+  var rows = Array.from(document.querySelectorAll('#nodes-managed-view .node-row'));
+  var matches = rows.filter(function (row) {
+    if (parsed.state && !nodeMatchesState(row, parsed.state)) return false;
+    if (parsed.group && row.dataset.group !== parsed.group) return false;
+    if (parsed.env && row.dataset.env !== parsed.env) return false;
+    return true;
+  });
+  _nodeAiCmdParsed = { parsed: parsed, matches: matches };
+
+  var parts = [];
+  if (parsed.state) parts.push(parsed.state + ' nodes');
+  if (parsed.group) parts.push(parsed.group);
+  if (parsed.env) parts.push(parsed.env);
+  var criteria = parts.length ? parts.join(' · ') : 'all nodes';
+  var actionLabel = parsed.action === 'scan' ? 'Scan' : 'Select';
+
+  resultEl.style.display = 'block';
+  resultEl.innerHTML =
+    '<div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">' +
+      '<div style="font-size:12px;color:var(--text-sec);">' +
+        (matches.length
+          ? actionLabel + ' <strong style="color:var(--text-default);">' + matches.length + ' node' + (matches.length === 1 ? '' : 's') + '</strong> matching <strong style="color:var(--text-default);">' + criteria + '</strong>?'
+          : 'No nodes match <strong style="color:var(--text-default);">' + criteria + '</strong>.') +
+      '</div>' +
+      '<div style="display:flex;gap:8px;flex-shrink:0;">' +
+        '<button type="button" class="btn-secondary" style="height:28px;padding:0 12px;font-size:11.5px;" onclick="nodeAiCmdCancel()">Cancel</button>' +
+        (matches.length ? '<button type="button" class="btn-primary" style="height:28px;padding:0 14px;font-size:11.5px;" onclick="nodeAiCmdConfirm()">Confirm</button>' : '') +
+      '</div>' +
+    '</div>';
+}
+function nodeAiCmdCancel() {
+  var resultEl = document.getElementById('node-ai-cmd-result');
+  if (resultEl) { resultEl.style.display = 'none'; resultEl.innerHTML = ''; }
+  _nodeAiCmdParsed = null;
+  var input = document.getElementById('node-ai-cmd-input');
+  if (input) input.value = '';
+}
+function nodeAiCmdConfirm() {
+  if (!_nodeAiCmdParsed) return;
+  var p = _nodeAiCmdParsed;
+  setNodeStateFilter(p.parsed.state || 'all');
+  if (p.parsed.group) {
+    var gEl = document.querySelector('#node-scope-panel .ng-opt[data-val="' + p.parsed.group + '"]');
+    if (gEl) pickNodeGroup(gEl);
+  }
+  if (p.parsed.env) {
+    var eEl = document.querySelector('#node-scope-panel .ne-opt[data-val="' + p.parsed.env + '"]');
+    if (eEl) pickNodeEnv(eEl);
+  }
+  document.querySelectorAll('#nodes-managed-view .node-checkbox').forEach(function (cb) { cb.checked = false; });
+  p.matches.forEach(function (row) {
+    var cb = row.querySelector('.node-checkbox');
+    if (cb) cb.checked = true;
+  });
+  updateScanSelected();
+  if (p.parsed.action === 'scan') scanSelectedNodes();
+  nodeAiCmdCancel();
 }
 
 // Collapsed, every table search is a canonical Only icon button; opening it grows the field leftward.
