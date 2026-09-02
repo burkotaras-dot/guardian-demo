@@ -7934,11 +7934,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</div>
           </div>
 
-          <!-- Jupiter mechanism — always-on block, no trigger, above the list it summarises.
-               Recommendation ends in a real .action-cta — same weight/colour as the row's own
-               Review button, not the filled .btn-primary: AI never outranks the real primary
-               action, it only offers the same one from a second place. Populated by
-               dashRenderAiBlock(). -->
+          <!-- Einstein mechanism — on-demand button+dropdown, not always-on: dashRenderAiBlock()
+               renders the .ai-cta trigger, dashAiExplain() runs the Trigger→Loading→Result/Error
+               standard (_aiRunPanel) in-place inside the card. Recommendation ends in a real
+               .action-cta — same weight/colour as the row's own Review button, not the filled
+               .btn-primary: AI never outranks the real primary action, it only offers the same
+               one from a second place. -->
           <div id="dash-ai-block" class="ai-block" style="margin:0 0 12px;align-items:center;">
             <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
             <div style="flex:1;min-width:0;">
@@ -10001,12 +10002,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
         </div>
 
-        <!-- Jupiter mechanism — always-on block, no trigger, above the checks it summarises.
-             Demo state selector lets a reviewer step through success/no-result/error/unavailable
-             without needing real data to trigger each one — same "Demo state" convention as
-             .icx-demo-tabs (L14160). Doesn't touch Run Scan Now / Compare scans above. Action CTA
-             sits on the right of the block as its own flex item, same canonical placement as
-             Dashboard/Reports/Scan Schedules AI blocks — not stacked below the body text. -->
+        <!-- Einstein mechanism — on-demand button+dropdown: ndRenderAiBlock() renders the .ai-cta
+             trigger, ndAiExplain() runs the Trigger→Loading→Result/Error standard (_aiRunPanel)
+             in-place inside the card. Demo state selector lets a reviewer pick which outcome the
+             next click reveals (success/no-result/error/unavailable) without needing real data —
+             same "Demo state" convention as .icx-demo-tabs (L14160); changing it resets the card
+             back to the trigger so each state is genuinely re-triggered, not auto-shown. Doesn't
+             touch Run Scan Now / Compare scans above. Action CTA sits on the right of the block as
+             its own flex item, same canonical placement as Dashboard/Reports/Scan Schedules AI
+             blocks — not stacked below the body text. -->
         <div id="nd-ai-block" class="ai-block" style="align-items:center;">
           <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
           <div style="flex:1;min-width:0;">
@@ -25203,13 +25207,25 @@ function dashRenderAiBlock() {
   var body = document.getElementById('dash-ai-block-body');
   var action = document.getElementById('dash-ai-block-action');
   if (!body) return;
-  if (action) action.style.display = aiTierLocked() ? 'none' : '';
-  if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
-  body.innerHTML =
-    '3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
-    'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
-    'flagged on a policy check. The drift is the highest priority — it touches a node outside its ' +
-    'expected baseline and has been open the longest.';
+  if (action) action.style.display = 'none';
+  body.innerHTML = '<button type="button" class="ai-cta" id="dash-ai-trigger" onclick="dashAiExplain()">Summarise what needs my attention<span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>';
+  aiLockCtaButtons();
+}
+
+function dashAiExplain() {
+  var btn = document.getElementById('dash-ai-trigger');
+  var body = document.getElementById('dash-ai-block-body');
+  var action = document.getElementById('dash-ai-block-action');
+  if (!btn || !body) return;
+  _aiRunPanel(btn, body, 'Summarising what needs attention…', function (success) {
+    setTimeout(function () {
+      success('3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
+        'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
+        'flagged on a policy check. The drift is the highest priority — it touches a node outside its ' +
+        'expected baseline and has been open the longest.');
+      if (action) action.style.display = '';
+    }, 900);
+  });
 }
 
 // Jupiter mechanism — Reports summary rollup. Always-on block, no trigger, no loading state:
@@ -25347,15 +25363,14 @@ function cdUndoIgnoreRule() {
 
 // AI surfacing (Week 3, Вт) — "Summarise the current security posture of this node".
 // Flagship scenario for the full interaction-state set (initial/loading/success/no-result/error+
-// retry/unavailable): #nd-ai-demo-state drives which one renders, since real node data on this
-// prototype can't naturally produce all six on demand. Success/no-result get the AI-generated
-// disclaimer footer; error/unavailable don't, since neither is making a claim to verify. Retry
-// re-runs the same demo state deterministically — recovery is demonstrated by switching the
-// selector, not by faking a random success.
+// retry/unavailable), now driven by a real click through ndAiExplain(): #nd-ai-demo-trigger picks
+// which outcome the next click resolves to, since real node data on this prototype can't naturally
+// produce all six on demand. Success/no-result get the AI-generated disclaimer footer (via
+// _aiRunPanel's success()); error goes through _aiRunPanel's own fail()+Retry chrome; unavailable
+// is set directly, since neither error nor unavailable is making a claim that needs verifying.
 var ND_AI_TEXT = {
   success: 'This node is passing 9 of 12 checks (78/100), with 1 critical and 2 medium findings behind the gap. The critical item and one of the two medium items both trace back to the same policy area (encryption enforcement) \u2014 usually one root cause showing up on two related checks rather than two separate problems, so fixing the critical is likely to clear the medium alongside it.',
   none: 'Nothing here points to a specific pattern worth calling out beyond what the summary above already shows \u2014 the findings are unrelated to each other and each is already covered by its own remediation guidance.',
-  error: 'Couldn\u2019t generate a summary for this node right now.',
   unavailable: 'This node hasn\u2019t completed a scan yet, so there isn\u2019t enough data to summarise its posture.'
 };
 
@@ -25392,29 +25407,40 @@ function ndAiSetDemoState(state) {
   ndRenderAiBlock();
 }
 
-// Jupiter mechanism — Node Detail "current security posture" rollup. Always-on block, no
-// trigger, no loading state: renders directly off the demo-state selector (success/no-result/
-// error/unavailable), same states real scan data would drive.
+// Einstein mechanism — Node Detail "current security posture" rollup. On-demand button+dropdown:
+// ndRenderAiBlock() resets the card to the .ai-cta trigger; ndAiExplain() runs the real
+// Trigger→Loading→Result/Error standard (_aiRunPanel) off whichever demo state the reviewer has
+// picked (success/no-result/error/unavailable), same states real scan data would drive. 'error'
+// goes through _aiRunPanel's own fail()+Retry chrome; 'unavailable' is set directly (not via
+// success()) since neither state is making a claim that needs the "AI-generated" disclaimer.
 function ndRenderAiBlock() {
   var body = document.getElementById('nd-ai-block-body');
-  var trigger = document.getElementById('nd-ai-demo-trigger');
   var action = document.getElementById('nd-ai-block-action');
   if (!body) return;
   if (action) action.style.display = 'none';
-  if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
-  var state = (trigger && trigger.dataset.state) || 'success';
-  if (state === 'error') {
-    body.innerHTML = '<div style="color:var(--bdg-red-txt);">' + ND_AI_TEXT.error + '</div>' +
-      '<button type="button" class="ai-inline-cta" style="margin-top:10px;" onclick="ndRenderAiBlock()">Retry</button>';
-    return;
-  }
-  if (state === 'unavailable') {
-    body.innerHTML = '<div style="color:var(--text-muted);">' + ND_AI_TEXT.unavailable + '</div>';
-    return;
-  }
-  body.innerHTML = ND_AI_TEXT[state];
-  // 'success' points at a specific policy area; 'none' has nothing concrete to jump to.
-  if (action && state === 'success') action.style.display = '';
+  body.innerHTML = '<button type="button" class="ai-cta" id="nd-ai-trigger" onclick="ndAiExplain()">Summarise the current security posture of this node<span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>';
+  aiLockCtaButtons();
+}
+
+function ndAiExplain() {
+  var btn = document.getElementById('nd-ai-trigger');
+  var body = document.getElementById('nd-ai-block-body');
+  var action = document.getElementById('nd-ai-block-action');
+  var demoTrigger = document.getElementById('nd-ai-demo-trigger');
+  if (!btn || !body) return;
+  var state = (demoTrigger && demoTrigger.dataset.state) || 'success';
+  _aiRunPanel(btn, body, 'Summarising this node\u2019s posture…', function (success, fail) {
+    setTimeout(function () {
+      if (state === 'error') { fail(); return; }
+      if (state === 'unavailable') {
+        body.innerHTML = '<div style="color:var(--text-muted);">' + ND_AI_TEXT.unavailable + '</div>';
+        return;
+      }
+      success('<div>' + ND_AI_TEXT[state] + '</div>');
+      // 'success' points at a specific policy area; 'none' has nothing concrete to jump to.
+      if (action && state === 'success') action.style.display = '';
+    }, 900);
+  });
 }
 
 function showView(name) {
