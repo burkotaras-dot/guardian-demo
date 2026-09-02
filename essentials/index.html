@@ -630,6 +630,13 @@ body.dark .btn-icon--danger:hover:not(:disabled) { background:rgba(251,60,68,0.1
    disabled case is exactly when the user needs the explanation. */
 .tip-wrap { position:relative; display:inline-flex; }
 .tip-wrap > .btn-icon:disabled, .tip-wrap > .ai-cta:disabled, .tip-wrap > button:disabled, .tip-wrap > input:disabled { pointer-events:none; }
+/* content:none when there's no data-tip to show — an empty tooltip box (visibility:hidden
+   still generates and sizes its box) otherwise sits at its fixed 220px width, absolutely
+   positioned, and quietly inflates the scrollWidth of any narrow ancestor (e.g. a table card
+   with overflow-x:auto) even though nothing is ever painted. Every .ai-cta gets wrapped in a
+   .tip-wrap unconditionally (aiLockCtaButtons), so this fires on every unlocked page, not just
+   while actually tier-locked. */
+.tip-wrap:not([data-tip])::after { content:none; }
 .tip-wrap::after { content:attr(data-tip); position:absolute; top:calc(100% + 8px); left:50%;
   transform:translateX(-50%); width:220px; padding:10px 12px; box-sizing:border-box;
   background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:8px;
@@ -971,6 +978,17 @@ body.dark .cd-decision-card { background:rgba(255,255,255,0.03); border-color:rg
 body.dark .cd-skip-btn { background:rgba(255,255,255,0.05); border-color:#04363A; color:var(--p-neutral-50); }
 body.dark .cd-skip-btn:hover:not(:disabled) { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); }
 .cd-side-caption { font-size:11px; color:var(--text-sec); text-align:center; line-height:1.4; }
+
+/* AI Insight card action — Figma 3913:49858. Icon + label share one bordered chip (unlike
+   .action-cta's trailing arrow); flat neutral #F8F9FA surface, border/text stay slate, not
+   green (explicit request: dropped the 5% green wash .action-cta uses). */
+.ai-block-cta { display:inline-flex; align-items:center; justify-content:center; gap:4px; height:32px; padding:0 20px; border-radius:10px; border:1px solid var(--border); background:#F8F9FA; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#334155; cursor:pointer; white-space:nowrap; flex-shrink:0; transition:background .15s, border-color .15s; }
+.ai-block-cta svg { width:18px; height:18px; flex-shrink:0; color:#6366F1; }
+.ai-block-cta:hover { background:#F1F5F9; }
+.ai-block-cta:disabled { opacity:0.4; cursor:not-allowed; }
+body.dark .ai-block-cta { background:rgba(255,255,255,0.05); border-color:#04363A; color:var(--p-neutral-50); }
+body.dark .ai-block-cta svg { color:#818CF8; }
+body.dark .ai-block-cta:hover { background:rgba(255,255,255,0.08); }
 
 /* Approve Change — neutral summary boxes, explicit dark request (Approve Change page) */
 body.dark .ca-neutral-box { background:rgba(255,255,255,0.05) !important; border-color:rgba(255,255,255,0.10) !important; }
@@ -2753,6 +2771,17 @@ body.dark .ai-cta:hover { color:#A5B4FC; }
 body.dark .ai-cta-ico { background:var(--bg-subtle); border-color:var(--border); }
 body.dark .ai-cta:hover .ai-cta-ico { background:rgba(99,102,241,0.15); border-color:rgba(99,102,241,0.4); }
 body.dark .ai-cta-ico svg { color:#818CF8; }
+/* Dashboard AI Insight trigger only (Figma 3910:48167) — same "Butttons" pill as .ai-block-cta
+   (leading icon + bordered chip, no trailing icon-square), but keeps the .ai-cta class so it
+   stays covered by aiLockCtaButtons()'s tier-gating. Compound selector wins over plain .ai-cta
+   regardless of source order, so this never needs touching .ai-cta itself. */
+.ai-cta.ai-cta--pill { display:inline-flex; align-items:center; justify-content:center; gap:4px; height:32px; padding:0 20px; border-radius:10px; border:1px solid var(--border); background:#F8F9FA; font-size:12px; color:#334155; }
+.ai-cta.ai-cta--pill:hover { color:#334155; background:#F1F5F9; }
+.ai-cta.ai-cta--pill svg { width:18px; height:18px; flex-shrink:0; color:#6366F1; }
+body.dark .ai-cta.ai-cta--pill { border-color:#04363A; background:rgba(255,255,255,0.05); color:var(--p-neutral-50); }
+body.dark .ai-cta.ai-cta--pill:hover { color:var(--p-neutral-50); background:rgba(255,255,255,0.08); }
+body.dark .ai-cta.ai-cta--pill svg { color:#818CF8; }
+.ai-block-subtitle { font-size:11.5px; color:var(--text-sec); margin-top:2px; }
 /* AI result surface — a floating DROPDOWN anchored to its trigger button, not an inline block that
    pushes page content down. `.ai-dropdown` is the position:relative wrapper around trigger+panel for
    contexts with no clipping ancestor (Dashboard, Detected Drift). Policy Detail's checks list sits
@@ -2800,12 +2829,12 @@ body.dark .sf-ai-strip svg { color:#A5B4FC; }
    Shared by every page-level "broad overview + recommendation" AI spot (Policy Detail, Dashboard,
    Node Detail, Reports, Scan Schedules, Integrations) — same purpose class as Jupiter, so same
    mechanism, not a per-page reinvention. */
-.ai-block { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; padding:14px 18px; background:var(--bg-surface); border:1px solid var(--border); border-left:3px solid #6366F1; border-radius:var(--radius-lg); box-shadow:0 1px 2px rgba(15,23,42,0.04); }
+.ai-block { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; padding:14px 18px; background:var(--bg-surface); border:1px solid #6366F1; border-left:3px solid #6366F1; border-radius:var(--radius-lg); box-shadow:0 1px 1px rgba(15,23,42,0.04); }
 .ai-block > svg { flex-shrink:0; margin-top:1px; color:#6366F1; }
 .ai-block-label { color:#6366F1; }
 .ai-block-body { font-size:12px; line-height:1.6; color:var(--text-sec); }
 .ai-block-body strong { color:#6366F1; font-weight:700; }
-body.dark .ai-block { border-left-color:#A5B4FC; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+body.dark .ai-block { border-color:#A5B4FC; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
 body.dark .ai-block > svg { color:#A5B4FC; }
 body.dark .ai-block-label { color:#A5B4FC; }
 body.dark .ai-block-body strong { color:#A5B4FC; }
@@ -4119,7 +4148,13 @@ body.dark .cm-actions-btn:hover { background:rgba(255,255,255,0.05); border-colo
 body.dark .id-cap-menu-btn { background:rgba(255,255,255,0.05); border-color:#04363A; color:rgba(255,255,255,0.7); }
 body.dark .id-cap-menu-btn:hover { background:rgba(255,255,255,0.05); border-color:rgba(16,185,129,0.30); color:#FFFFFF; }
 /* ── Credential Vault ── */
-.cred-row { display:grid; grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px; min-width:900px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
+.cred-row { display:grid; grid-template-columns:1.6fr 0.8fr 1.2fr minmax(110px,1fr) 0.85fr 0.9fr 0.9fr 76px; padding:12px 18px; border-bottom:1px solid var(--border); align-items:center; font-size:12px; cursor:pointer; transition:background 0.12s; }
+/* Grid tracks don't shrink past their content's intrinsic width by default — without this,
+   a long fixed-format cell (e.g. the INSUFFICIENT PERMISSIONS status pill) forces its whole
+   column, and the row as a whole, past the card's actual width even though every column is
+   already fr-sized. min-width:0 on every cell lets the real overflow rule (nowrap + ellipsis
+   on Name/Username, white-space:nowrap on the pills) take over instead. */
+#cred-table-card .col-thead > div, .cred-row > div { min-width:0; }
 .cred-row:hover { background:var(--bg-canvas); }
 body.dark .cred-row:hover { background:#012F32; }
 .cred-row:last-child { border-bottom:none; }
@@ -7941,12 +7976,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                .btn-primary: AI never outranks the real primary action, it only offers the same
                one from a second place. -->
           <div id="dash-ai-block" class="ai-block" style="margin:0 0 12px;align-items:center;">
-            <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+            <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="align-self:flex-start;margin-top:1px;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
             <div style="flex:1;min-width:0;">
               <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
               <div id="dash-ai-block-body" class="ai-block-body"></div>
             </div>
-            <button id="dash-ai-block-action" class="action-cta" style="flex-shrink:0;" onclick="showView('changes')">Review drift <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+            <button id="dash-ai-block-action" class="ai-cta ai-cta--pill" onclick="dashAiExplain()"></button>
           </div>
 
           <!-- Needs your attention — mixed, prioritised action queue -->
@@ -8335,7 +8370,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="node-ai-cmdbar-row" style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
             <svg width="16" height="16" viewBox="0 0 18.921 18.921" fill="#6366F1" style="flex-shrink:0;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
             <input id="node-ai-cmd-input" class="ai-cmd-input" type="text" placeholder="Ask AI to filter or act on nodes… e.g. “scan all offline nodes”" onkeydown="if(event.key==='Enter'){nodeAiCmdRun();}">
-            <button type="button" id="node-ai-cmd-run" class="btn-primary btn-primary--s" style="width:auto;padding:0 14px;height:28px;font-size:11.5px;flex-shrink:0;" onclick="nodeAiCmdRun()">Run</button>
+            <button type="button" id="node-ai-cmd-run" class="ai-block-cta" onclick="nodeAiCmdRun()"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>Run</button>
           </div>
           <div id="node-ai-cmd-result" style="display:none;"></div>
         </div>
@@ -10028,9 +10063,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
             <div id="nd-ai-block-body" class="ai-block-body"></div>
           </div>
-          <!-- Only shown by ndRenderAiBlock() in the 'success' state, where the text points at a
-               specific policy area — the other demo states have nothing concrete to act on. -->
-          <button type="button" id="nd-ai-block-action" class="action-cta" style="display:none;flex-shrink:0;" onclick="ndTab('policies')">View failing policies <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+          <!-- Trigger and follow-up share this one slot (see Dashboard's #dash-ai-block-action) —
+               ndRenderAiBlock() puts the "Summarise…" trigger here; ndAiExplain() swaps it to
+               "View failing policies" only for the 'success' demo state, else hides it (the other
+               demo states have nothing concrete to act on). -->
+          <button type="button" id="nd-ai-block-action" class="ai-cta ai-cta--pill" style="flex-shrink:0;" onclick="ndAiExplain()"></button>
         </div>
 
         <!-- Tab nav -->
@@ -11617,7 +11654,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
           <!-- Recommendation always names the check to start with (see pdRenderAiBlock) —
                this filters the table to it directly, matching Dashboard's row-end action-cta. -->
-          <button type="button" class="action-cta" style="flex-shrink:0;" onclick="pdFilter('fail')">View failing checks <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+          <button type="button" class="ai-block-cta" onclick="pdFilter('fail')"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>View failing checks</button>
         </div>
 
         <!-- Підпис таблиці живе НАД карткою, контролі — праворуч у тому ж рядку. Це той самий
@@ -15814,7 +15851,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           + '</div>'
           + '<div style="color:var(--text-sec);">'+c.type+'</div>'
           + '<div style="color:var(--text-sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+c.user+'</div>'
-          + '<div><span class="cred-badge" data-s="'+c.status+'"><span class="cm-dot"></span>'+st.label+'</span></div>'
+          + '<div style="min-width:0;"><span class="cred-badge" data-s="'+c.status+'" style="max-width:100%;overflow:hidden;"><span class="cm-dot"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;">'+st.label+'</span></span></div>'
           + '<div style="color:var(--text-sec);font-size:11px;">'+c.lastVal+'</div>'
           + '<div>'+usedByCell+'</div>'
           + '<div>'+srcCell+'</div>'
@@ -20053,7 +20090,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Grouping</div>
             <div id="drift-ai-group-body" class="ai-block-body"></div>
           </div>
-          <button type="button" id="drift-ai-group-cta" class="action-cta" style="flex-shrink:0;" onclick="driftSelectAiGroup()">Select group <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+          <button type="button" id="drift-ai-group-cta" class="ai-block-cta" onclick="driftSelectAiGroup()"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg><span id="drift-ai-group-cta-label">Select group</span></button>
         </div>
 
         <!-- Bulk action bar — shown when 1+ drift items selected -->
@@ -20237,7 +20274,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                    before the Risk callout it elaborates on (Figma 3716:17918), not at the top of
                    the card — supplementary to Risk, never replaces the Approve/Flag/Skip panel. -->
               <div class="ai-dropdown">
-                <button type="button" class="ai-cta" id="cd-ai-btn" onclick="cdAiExplain()">Explain with AI<span class="ai-cta-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg></span></button>
+                <button type="button" class="ai-cta ai-cta--pill" id="cd-ai-btn" onclick="cdAiExplain()"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>Explain with AI</button>
                 <div class="ai-panel" id="cd-ai-panel">
                   <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Explanation<button type="button" class="ai-panel-close" onclick="cdAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
                   <div id="cd-ai-body"></div>
@@ -22940,7 +22977,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
           <!-- Only shown by reportRenderAiBlock() when there's a specific worst policy to jump to —
                hidden for the empty-scope and 100%-passing cases, which have nothing to act on. -->
-          <button type="button" id="rep-ai-block-action" class="action-cta" style="display:none;flex-shrink:0;">Open policy <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+          <button type="button" id="rep-ai-block-action" class="ai-block-cta" style="display:none;"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>Open policy</button>
         </div>
 
         <!-- Summary band — KPI donut cards rendered by _repRenderKpis() -->
@@ -23087,7 +23124,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
           <!-- Only shown by schedRenderAiBlock() when there's a real coverage gap — hidden for the
                empty-list and full-coverage cases, which have nothing to act on. -->
-          <button type="button" id="sched-ai-block-action" class="action-cta" style="display:none;flex-shrink:0;">Set schedule <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
+          <button type="button" id="sched-ai-block-action" class="ai-block-cta" style="display:none;"></button>
         </div>
 
         <!-- Schedule table -->
@@ -23318,7 +23355,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
       <!-- Table -->
       <div id="cred-table-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
-        <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1fr 1.3fr 1.15fr 1fr 1.15fr 0.9fr 50px;min-width:900px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
+        <div class="col-thead" style="display:grid;grid-template-columns:1.6fr 0.8fr 1.2fr minmax(110px,1fr) 0.85fr 0.9fr 0.9fr 76px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
           <!-- Лише Name і Used by — стабільно порівнювані значення (ім'я, число вузлів).
                Type/Status/Source — категорійні (як STATUS у Managed Nodes), Username — довільний
                текст, не первинний ідентифікатор, Last validated — відносні мітки ("2 hours ago",
@@ -25203,27 +25240,37 @@ function _aiRunPanel(btn, body, loadingText, run) {
 // not action — indigo stays on the block's border/label/strong text only. The action button
 // lives in the static markup (end of the row, .action-cta, same handler as the row's own
 // Review button below) so it never outranks the app's real primary CTA.
+var DASH_AI_ICO_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>';
+// Trigger and follow-up share one slot (#dash-ai-block-action, right of the label+subtitle
+// column) instead of two separately-positioned buttons — Figma 3910:48167 keeps a single
+// button anchored to that slot throughout, only its label/handler/class change.
 function dashRenderAiBlock() {
   var body = document.getElementById('dash-ai-block-body');
   var action = document.getElementById('dash-ai-block-action');
   if (!body) return;
-  if (action) action.style.display = 'none';
-  body.innerHTML = '<button type="button" class="ai-cta" id="dash-ai-trigger" onclick="dashAiExplain()">Summarise what needs my attention<span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>';
+  body.innerHTML = '<div class="ai-block-subtitle">3 items need attention across your infrastructure</div>';
+  if (action) {
+    action.className = 'ai-cta ai-cta--pill';
+    action.disabled = false;
+    action.onclick = dashAiExplain;
+    action.innerHTML = DASH_AI_ICO_SVG + 'Summarise what needs my attention';
+  }
   aiLockCtaButtons();
 }
 
 function dashAiExplain() {
-  var btn = document.getElementById('dash-ai-trigger');
+  var btn = document.getElementById('dash-ai-block-action');
   var body = document.getElementById('dash-ai-block-body');
-  var action = document.getElementById('dash-ai-block-action');
-  if (!btn || !body) return;
+  if (!btn) return;
   _aiRunPanel(btn, body, 'Summarising what needs attention…', function (success) {
     setTimeout(function () {
       success('3 items need attention: an <strong>unreconciled drift</strong> on a production node, ' +
         'a pending <strong>change request</strong> awaiting approval, and a <strong>compliance issue</strong> ' +
         'flagged on a policy check. The drift is the highest priority — it touches a node outside its ' +
         'expected baseline and has been open the longest.');
-      if (action) action.style.display = '';
+      btn.className = 'ai-block-cta';
+      btn.onclick = function () { showView('changes'); };
+      btn.innerHTML = DASH_AI_ICO_SVG + 'Review drift';
     }, 900);
   });
 }
@@ -25417,28 +25464,43 @@ function ndRenderAiBlock() {
   var body = document.getElementById('nd-ai-block-body');
   var action = document.getElementById('nd-ai-block-action');
   if (!body) return;
-  if (action) action.style.display = 'none';
-  body.innerHTML = '<button type="button" class="ai-cta" id="nd-ai-trigger" onclick="ndAiExplain()">Summarise the current security posture of this node<span class="ai-cta-ico">' + PD_AI_ICO_SVG + '</span></button>';
+  // Reuses the Issues section's own live subtitle (#nd-iss-sub) instead of a hardcoded
+  // string, so it never drifts from what "Overview" already shows for this node/scan.
+  var issSub = document.getElementById('nd-iss-sub');
+  body.innerHTML = issSub ? '<div class="ai-block-subtitle">' + issSub.textContent + '</div>' : '';
+  if (action) {
+    action.className = 'ai-cta ai-cta--pill';
+    action.style.display = '';
+    action.disabled = false;
+    action.onclick = ndAiExplain;
+    action.innerHTML = DASH_AI_ICO_SVG + 'Summarise the current security posture of this node';
+  }
   aiLockCtaButtons();
 }
 
 function ndAiExplain() {
-  var btn = document.getElementById('nd-ai-trigger');
+  var btn = document.getElementById('nd-ai-block-action');
   var body = document.getElementById('nd-ai-block-body');
-  var action = document.getElementById('nd-ai-block-action');
   var demoTrigger = document.getElementById('nd-ai-demo-trigger');
   if (!btn || !body) return;
   var state = (demoTrigger && demoTrigger.dataset.state) || 'success';
   _aiRunPanel(btn, body, 'Summarising this node\u2019s posture…', function (success, fail) {
     setTimeout(function () {
-      if (state === 'error') { fail(); return; }
+      if (state === 'error') { fail(); btn.style.display = 'none'; return; }
       if (state === 'unavailable') {
         body.innerHTML = '<div style="color:var(--text-muted);">' + ND_AI_TEXT.unavailable + '</div>';
+        btn.style.display = 'none';
         return;
       }
       success('<div>' + ND_AI_TEXT[state] + '</div>');
       // 'success' points at a specific policy area; 'none' has nothing concrete to jump to.
-      if (action && state === 'success') action.style.display = '';
+      if (state === 'success') {
+        btn.className = 'action-cta';
+        btn.onclick = function () { ndTab('policies'); };
+        btn.innerHTML = 'View failing policies <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>';
+      } else {
+        btn.style.display = 'none';
+      }
     }, 900);
   });
 }
@@ -25684,7 +25746,7 @@ function remedRenderAiFix(idx) {
         '<div class="remed-diff">' + diffHtml + '</div>' +
         '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;">' +
           '<div style="font-size:11px;color:var(--text-sec);flex:1;min-width:0;">Pushes this change to the node and reverifies automatically \u2014 nothing applies until you press it.</div>' +
-          '<button type="button" class="btn-primary" id="remed-ai-fix-apply" style="width:auto;padding:0 16px;height:32px;font-size:12px;flex-shrink:0;" onclick="remedApplyAiFix()">Apply fix</button>' +
+          '<button type="button" class="ai-block-cta" id="remed-ai-fix-apply" onclick="remedApplyAiFix()">' + DASH_AI_ICO_SVG + 'Apply fix</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -25696,7 +25758,7 @@ function remedApplyAiFix() {
   var c = remedChecks[remedCurrentIdx];
   if (!c) return;
   btn.disabled = true;
-  btn.textContent = 'Applying fix\u2026';
+  btn.innerHTML = DASH_AI_ICO_SVG + 'Applying fix\u2026';
   setTimeout(function() {
     var now = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
     var box = document.getElementById('remed-current-box');
@@ -27163,12 +27225,11 @@ function schedRenderAiBlock(set) {
   }
   var html = 'Of ' + keys.length + ' ' + nounPlural + ', ' + active + ' ha' + (active === 1 ? 's' : 've') + ' an active schedule. ' + parts.join('; ') + '. <strong>Recommendation:</strong> ' + recNote;
   body.innerHTML = '<div>' + html + '</div>';
-  var arrow = '<span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>';
   if (action) {
     action.style.display = '';
-    if (unscheduled.length) { action.innerHTML = 'Apply recommended schedule ' + arrow; action.setAttribute('onclick', "schedApplyRecommended('" + unscheduled[0] + "')"); }
-    else if (paused.length) { action.innerHTML = 'Resume schedule ' + arrow; action.setAttribute('onclick', "toggleSchedule('" + paused[0] + "')"); }
-    else { action.innerHTML = 'Apply recommended schedule ' + arrow; action.setAttribute('onclick', "schedApplyRecommended('" + mismatched[0] + "')"); }
+    if (unscheduled.length) { action.innerHTML = DASH_AI_ICO_SVG + 'Apply recommended schedule'; action.setAttribute('onclick', "schedApplyRecommended('" + unscheduled[0] + "')"); }
+    else if (paused.length) { action.innerHTML = DASH_AI_ICO_SVG + 'Resume schedule'; action.setAttribute('onclick', "toggleSchedule('" + paused[0] + "')"); }
+    else { action.innerHTML = DASH_AI_ICO_SVG + 'Apply recommended schedule'; action.setAttribute('onclick', "schedApplyRecommended('" + mismatched[0] + "')"); }
   }
 }
 
@@ -28297,7 +28358,11 @@ function driftRenderAiGroup() {
   var spanHrs = Math.max(1, Math.round((Math.max.apply(null, tsList) - Math.min.apply(null, tsList)) / 3600));
   if (body) body.innerHTML = 'AI grouped <strong>' + group.items.length + '</strong> unreconciled changes on <strong>' + group.node + '</strong> as part of the same event — detected within <strong>' + spanHrs + 'h</strong> of each other. Review and approve them together instead of one at a time.';
   var cta = document.getElementById('drift-ai-group-cta');
-  if (cta) { cta.style.display = ''; if (cta.firstChild) cta.firstChild.textContent = 'Select group (' + group.items.length + ') '; }
+  if (cta) {
+    cta.style.display = '';
+    var ctaLabel = document.getElementById('drift-ai-group-cta-label');
+    if (ctaLabel) ctaLabel.textContent = 'Select group (' + group.items.length + ')';
+  }
   block.dataset.idxs = group.items.map(function(it) { return it.idx; }).join(',');
   block.style.display = 'flex';
 }
