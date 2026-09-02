@@ -1534,6 +1534,7 @@ body.dark .btn-third { color:#FFFFFF; }
 
 .drift-stat--reconciled,
 .drift-stat--approved,
+.drift-stat--ignored,
 .intg-status.connected,
 .id-cap-badge.enabled,
 .cm-status[data-s="connected"],
@@ -6161,6 +6162,9 @@ body.dark #export-modal .export-file-card { background:#133033 !important; borde
 #incident-modal .csel-wrap, #incident-modal .csel-btn { width:100%; }
 body.dark #incident-modal .csel-btn { background:rgba(255,255,255,0.05) !important; border-color:rgba(255,255,255,0.10) !important; }
 #incident-modal .csel-btn { height:38px; box-sizing:border-box; }
+/* Ignore-rule modal — Scope select spans the full field width, matching Check/Reason above/below it */
+#ignore-modal .csel-wrap, #ignore-modal .csel-btn, #ignore-modal .csel-menu { width:100%; box-sizing:border-box; }
+body.dark #ignore-modal .csel-btn { background:rgba(255,255,255,0.05) !important; border-color:rgba(255,255,255,0.10) !important; }
 .gm-foot-left { display:flex; align-items:center; gap:8px; min-width:0; }
 .gm-foot-right { display:flex; align-items:center; gap:8px; margin-left:auto; }
 .gm-btn {
@@ -12083,6 +12087,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
         <div style="max-width:680px;margin:0 auto;">
+          <!-- AI drafting — Jupiter mechanism (Policies domain), new "takes action" shape: AI reads a
+               plain-language description and fills the check form below, rather than only explaining
+               something that already exists. Human still reviews every field and presses Add Check
+               themselves — same human-in-the-loop rule as every other AI surface in the app. -->
+          <div id="ac-ai-draft" class="ai-block" style="align-items:flex-start;">
+            <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+            <div style="flex:1;min-width:0;">
+              <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Draft with AI</div>
+              <div style="font-size:12px;color:var(--text-sec);margin-bottom:10px;">Describe what this check should enforce — AI fills in the fields below for you to review.</div>
+              <textarea id="ac-ai-desc" class="form-input" rows="2" placeholder="e.g. Block RDP access from the public internet on all Windows servers" style="resize:vertical;margin-bottom:10px;"></textarea>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                <div id="ac-ai-draft-msg" class="ai-inline-cta" style="display:none;font-size:11px;cursor:default;flex:1;"></div>
+                <button type="button" class="btn-secondary" id="ac-ai-draft-btn" style="flex-shrink:0;width:auto;height:32px;padding:0 16px;font-size:12px;" onclick="acAiDraft()">Draft fields</button>
+              </div>
+            </div>
+          </div>
           <div style="padding:0;">
             <!-- Check name -->
             <div class="form-group">
@@ -12127,17 +12147,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Finding message -->
             <div class="form-group">
               <label class="form-label">Finding message</label>
-              <textarea class="form-input" rows="3" placeholder="What message shows when this check fails?" style="resize:vertical;"></textarea>
+              <textarea id="ac-finding-input" class="form-input" rows="3" placeholder="What message shows when this check fails?" style="resize:vertical;"></textarea>
             </div>
             <!-- Background -->
             <div class="form-group">
               <label class="form-label">Background</label>
-              <textarea class="form-input" rows="2" placeholder="Additional context about why this check matters" style="resize:vertical;"></textarea>
+              <textarea id="ac-background-input" class="form-input" rows="2" placeholder="Additional context about why this check matters" style="resize:vertical;"></textarea>
             </div>
             <!-- Remediation -->
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label">Remediation</label>
-              <textarea class="form-input" rows="3" placeholder="How should this issue be fixed?" style="resize:vertical;"></textarea>
+              <textarea id="ac-remediation-input" class="form-input" rows="3" placeholder="How should this issue be fixed?" style="resize:vertical;"></textarea>
             </div>
           </div>
           <!-- Connection Manager -->
@@ -12175,7 +12195,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Expected value -->
             <div class="form-group">
               <label class="form-label">Expected value</label>
-              <input type="text" class="form-input" placeholder="e.g. true" style="font-family:'DM Sans',sans-serif;font-size:12px;">
+              <input type="text" id="ac-expected-input" class="form-input" placeholder="e.g. true" style="font-family:'DM Sans',sans-serif;font-size:12px;">
             </div>
             <!-- Pass if absent -->
             <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-sec);cursor:pointer;">
@@ -13470,9 +13490,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // sync with what's on screen. Called at the end of renderIntegrations().
     function intgRenderAiBlock() {
       var body = document.getElementById('intg-ai-block-body');
-      var action = document.getElementById('intg-ai-block-action');
       if (!body) return;
-      if (action) action.style.display = 'none';
       var view = document.getElementById('v-settings-integrations');
       var firstRun = !!(view && view.classList.contains('is-firstrun'));
       var connected = firstRun ? [] : INTG_PROVIDERS.filter(function (p) { return p.status === 'connected' || p.status === 'attention' || p.status === 'error'; });
@@ -13492,10 +13510,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       html += ' <strong>Recommendation:</strong> ' + (attention.length ? 'resolve ' + attention[0].name + ' first — it\'s already connected but not healthy' : (available.length ? 'connect ' + available[0].name + ' next — it adds ' + (available[0].caps && available[0].caps[0] ? available[0].caps[0] : (available[0].purpose || 'more automated coverage')) : 'everything you need is already connected — no action needed'));
       html += '.';
       body.innerHTML = '<div>' + html + '</div>';
-      if (action) {
-        if (attention.length) { action.style.display = ''; action.innerHTML = 'Resolve now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>'; action.setAttribute('onclick', "openIntegrationDetail('" + attention[0].id + "')"); }
-        else if (available.length) { action.style.display = ''; action.innerHTML = 'Connect now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>'; action.setAttribute('onclick', "openIntegrationSetup('" + available[0].id + "')"); }
-      }
     }
     // ── Capability data per provider (keyed by provider id) ──
     var INTG_CAPS = {
@@ -17061,6 +17075,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         // Колонка Check: назва + опис — це заголовок і підзаголовок одного обʼєкта,
         // тому вони живуть в ОДНІЙ комірці, як `Simulation result` у сусідній таблиці.
         html += '<div style="'+PD_COL_CHECK+'display:flex;align-items:center;gap:10px;">';
+        // Той самий pass/fail-кружечок, що й у рядках чеків Policy Create (крок 2) —
+        // статус видно одразу біля назви, не лише в колонці Status праворуч.
+        html += '<div class="'+(isFail?'pc-check-icon-error':'pc-check-icon-success')+'" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          + (isFail
+              ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#FB3C44" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
+              : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#00AF73" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>')
+          + '</div>';
         html += '<div style="font-size:13px;font-weight:'+(isFail?'600':'500')+';color:'+(isFail?'var(--text-default)':'var(--text-sec)')+';white-space:nowrap;flex-shrink:0;">' + c.name + '</div>';
         html += '<div style="font-size:11px;color:var(--text-sec);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.detail + '</div>';
         html += '</div>';
@@ -18782,6 +18803,42 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var typeRadio = document.querySelector('input[name="pc-type"]:checked');
       var type = typeRadio ? typeRadio.value : 'custom';
       var isCustom = type === 'custom';
+      var descInput = document.getElementById('pc-desc');
+      var desc = (descInput && descInput.value.trim()) || 'No description provided.';
+
+      // Реальні чеки з кроку 2, а не статичний CIS-заглушка — інакше на Policy Detail
+      // висіла б чужа політика (той самий баг, що й тут виправляємо).
+      var checks = Array.prototype.map.call(document.querySelectorAll('#pc-step-2 .pc-check-row'), function(row) {
+        var nameEl = row.querySelector('div[style*="min-width:0"] > div[style*="font-weight:600"]');
+        var status = row.querySelector('.pc-check-icon-error') ? 'fail' : 'pass';
+        var sevLbl = row.querySelector('.pe-sev-lbl');
+        return {
+          name: (nameEl && nameEl.textContent.trim()) || 'Untitled check',
+          status: status,
+          detail: status === 'fail' ? 'Check failed — needs remediation' : 'Check passed' + (sevLbl ? ' · ' + sevLbl.textContent.trim() + ' severity' : '')
+        };
+      });
+      var assignRadio = document.querySelector('input[name="pc-assign-group"]:checked');
+      var applies = 'All nodes';
+      if (assignRadio) {
+        var titleEl = assignRadio.closest('.gm-radio-card');
+        titleEl = titleEl && titleEl.querySelector('.gm-radio-title');
+        if (titleEl) applies = titleEl.textContent.trim();
+      }
+
+      var key = 'custom-' + Date.now();
+      PD_POLICIES[key] = {
+        name: name,
+        sub: (isCustom ? 'Custom policy' : 'Public benchmark') + ' · Just created',
+        type: isCustom ? 'Custom' : 'Compliance Policy',
+        typeBg: isCustom ? '#fef3c7' : '#ede9fe',
+        typeColor: isCustom ? '#92400e' : '#5b21b6',
+        desc: desc,
+        applies: applies,
+        isCustom: isCustom,
+        checks: checks
+      };
+      window._pcLastCreatedKey = key;
 
       // Pre-fill policy detail
       var pdCardName = document.getElementById('pd-card-name');
@@ -18841,7 +18898,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
     function pcSuccessView() {
       closeModal(_PC_MODAL);
-      showView('policy-detail');
+      if (window._pcLastCreatedKey) showPolicyDetail(window._pcLastCreatedKey);
+      else showView('policy-detail');
     }
 
     function pcSuccessList() {
@@ -19093,6 +19151,114 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       document.querySelectorAll('.ac-sev-pill').forEach(function(p) {
         p.classList.toggle('is-selected', p.getAttribute('data-val') === radio.value);
       });
+    }
+
+    // AI drafting (Jupiter mechanism, Policies domain) — "Draft with AI" on Add Check. A small
+    // keyword-matched template library stands in for a real model: each template supplies every
+    // field the form has (name, section, severity, finding/background/remediation copy, Connection
+    // Manager attribute/type/expected value). No match -> generic fallback built from the description
+    // itself, never an empty draft. Human reviews every field and still presses Add Check themselves.
+    var AC_AI_TEMPLATES = [
+      { kw: ['rdp', 'remote desktop'], name: 'RDP not exposed to the public internet', section: 'endpoint-security', sectionLabel: 'Endpoint Security', severity: 'critical',
+        finding: 'RDP (port 3389) is reachable from a public IP range.',
+        background: 'Internet-exposed RDP is one of the most common initial access vectors for ransomware and brute-force attacks.',
+        remediation: 'Restrict RDP to a VPN or bastion host, or disable it entirely if not required.',
+        attribute: 'firewall.rdp_public_exposure', type: 'Exact Match', expected: 'false' },
+      { kw: ['firewall'], name: 'Host firewall enabled', section: 'endpoint-security', sectionLabel: 'Endpoint Security', severity: 'high',
+        finding: 'The host firewall is disabled or not enforcing inbound rules.',
+        background: 'A disabled firewall removes the last line of defense against unsolicited inbound network traffic.',
+        remediation: 'Enable the host firewall and confirm default-deny inbound rules are active.',
+        attribute: 'firewall.enabled', type: 'Exact Match', expected: 'true' },
+      { kw: ['antivirus', 'anti-virus', 'malware'], name: 'Antivirus active and up to date', section: 'endpoint-security', sectionLabel: 'Endpoint Security', severity: 'high',
+        finding: 'Antivirus real-time protection is off or signatures are out of date.',
+        background: 'Outdated or disabled antivirus leaves endpoints unprotected against known malware.',
+        remediation: 'Re-enable real-time protection and force a signature update.',
+        attribute: 'av.realtime_protection', type: 'Exact Match', expected: 'true' },
+      { kw: ['encrypt', 'bitlocker', 'filevault', 'disk encryption'], name: 'Endpoint disk encryption enabled', section: 'data-protection', sectionLabel: 'Data Protection', severity: 'high',
+        finding: 'Disk encryption is not enabled on the primary volume.',
+        background: 'Unencrypted disks expose data at rest if the device is lost or stolen.',
+        remediation: 'Enable full-disk encryption (BitLocker / FileVault) and escrow the recovery key.',
+        attribute: 'disk.encryption_enabled', type: 'Exact Match', expected: 'true' },
+      { kw: ['password', 'passcode'], name: 'Password policy meets minimum requirements', section: 'endpoint-security', sectionLabel: 'Endpoint Security', severity: 'medium',
+        finding: 'The local password policy does not meet the minimum length/complexity requirement.',
+        background: 'Weak password policies make accounts easier to brute-force or guess.',
+        remediation: 'Set minimum password length to 12+ characters with complexity enabled.',
+        attribute: 'auth.password_min_length', type: '>=', expected: '12' },
+      { kw: ['screen lock', 'auto-lock', 'screensaver', 'lock timeout'], name: 'Screen lock timeout configured', section: 'endpoint-security', sectionLabel: 'Endpoint Security', severity: 'low',
+        finding: 'Screen lock timeout exceeds the allowed idle period.',
+        background: 'An unlocked, unattended session is an easy way for someone with physical access to gain data.',
+        remediation: 'Set the idle screen-lock timeout to 10 minutes or less.',
+        attribute: 'os.screen_lock_timeout_minutes', type: '<=', expected: '10' },
+      { kw: ['patch', 'update'], name: 'OS security patches up to date', section: 'endpoint-security', sectionLabel: 'Endpoint Security', severity: 'high',
+        finding: 'One or more critical OS security patches are missing.',
+        background: 'Unpatched systems remain vulnerable to publicly known exploits.',
+        remediation: 'Install pending critical/security updates and confirm the patch level.',
+        attribute: 'os.pending_critical_patches', type: 'Exact Match', expected: '0' },
+      { kw: ['log', 'audit'], name: 'Audit logging enabled', section: 'compliance-logging', sectionLabel: 'Compliance & Logging', severity: 'medium',
+        finding: 'Audit/security event logging is disabled or not forwarding to the central log store.',
+        background: 'Without audit logs, incident response and compliance evidence are unavailable.',
+        remediation: 'Enable audit logging and confirm events are forwarded to the SIEM.',
+        attribute: 'log.audit_enabled', type: 'Exact Match', expected: 'true' },
+      { kw: ['usb', 'removable media', 'removable storage'], name: 'Removable media access restricted', section: 'data-protection', sectionLabel: 'Data Protection', severity: 'medium',
+        finding: 'USB mass-storage devices are not blocked.',
+        background: 'Unrestricted removable media is a common path for data exfiltration and malware introduction.',
+        remediation: 'Block USB mass-storage class devices via device control policy.',
+        attribute: 'device.usb_storage_blocked', type: 'Exact Match', expected: 'true' }
+    ];
+    function acAiMatchDraft(desc) {
+      var lower = desc.toLowerCase();
+      var best = null, bestScore = 0;
+      AC_AI_TEMPLATES.forEach(function (t) {
+        var score = 0;
+        t.kw.forEach(function (k) { if (lower.indexOf(k) !== -1) score++; });
+        if (score > bestScore) { bestScore = score; best = t; }
+      });
+      if (best) return best;
+      var name = desc.charAt(0).toUpperCase() + desc.slice(1);
+      if (name.length > 70) name = name.slice(0, 67) + '\u2026';
+      return { name: name, section: 'endpoint-security', sectionLabel: 'Endpoint Security', severity: 'medium',
+        finding: 'This check is failing: ' + desc.charAt(0).toLowerCase() + desc.slice(1) + '.',
+        background: 'Drafted from your description \u2014 confirm this matches the actual compliance requirement.',
+        remediation: 'Review and correct the setting described above.',
+        attribute: '', type: 'Exact Match', expected: 'true' };
+    }
+    function acAiApplyDraft(d) {
+      var nameInput = document.getElementById('ac-name-input');
+      if (nameInput) { nameInput.value = d.name; nameInput.style.borderColor = ''; nameInput.style.boxShadow = ''; }
+      acPickSec(d.section, d.sectionLabel);
+      var sevRadio = document.querySelector('input[name="ac-severity"][value="' + d.severity + '"]');
+      if (sevRadio) { sevRadio.checked = true; acSetSev(sevRadio); }
+      var finding = document.getElementById('ac-finding-input');
+      if (finding) finding.value = d.finding;
+      var background = document.getElementById('ac-background-input');
+      if (background) background.value = d.background;
+      var remediation = document.getElementById('ac-remediation-input');
+      if (remediation) remediation.value = d.remediation;
+      var attr = document.getElementById('ac-attr-input');
+      if (attr) attr.value = d.attribute;
+      acPickType(d.type);
+      var expected = document.getElementById('ac-expected-input');
+      if (expected) expected.value = d.expected;
+    }
+    function acAiDraft() {
+      var input = document.getElementById('ac-ai-desc');
+      var btn = document.getElementById('ac-ai-draft-btn');
+      var msg = document.getElementById('ac-ai-draft-msg');
+      if (!input || !btn || !msg) return;
+      var desc = input.value.trim();
+      if (!desc) { input.style.borderColor = '#FB3C44'; input.focus(); return; }
+      input.style.borderColor = '';
+      btn.disabled = true;
+      var origLabel = btn.textContent;
+      btn.textContent = 'Drafting\u2026';
+      msg.style.display = 'none';
+      setTimeout(function () {
+        acAiApplyDraft(acAiMatchDraft(desc));
+        btn.disabled = false;
+        btn.textContent = origLabel;
+        msg.textContent = 'Draft applied \u2014 review every field before adding this check.';
+        msg.style.display = 'block';
+      }, 900);
     }
 
     function ecSetSev(radio) {
@@ -19639,6 +19805,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </div>
+
+        <div class="check-card drift-row" id="change-card-3" data-change-type="modified" data-recon="unreconciled" data-cr="none" data-node="MACBOOK-TARAS" data-group="laptops" data-env="production" data-category="services" data-approval-reason="" data-approval-comment="" data-date="2026-07-06" data-ts="18000" onclick="openChange(3)">
+          <input type="checkbox" class="drift-select-cb" data-idx="3" onclick="event.stopPropagation();updateDriftBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);">
+          <span class="drift-type drift-type--modified" onclick="event.stopPropagation();setDriftFilter(&#39;type&#39;,&#39;modified&#39;)" title="Filter by Modified">Modified</span>
+          <div class="check-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Antivirus definition version string changed</div>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();selectReconNode(&#39;MACBOOK-TARAS&#39;)" title="Filter by node" style="justify-self:start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>MACBOOK-TARAS
+          </span>
+          <span class="drift-meta-pill" onclick="event.stopPropagation();setDriftFilter(&#39;cr&#39;,&#39;none&#39;)" title="Filter by change request" style="justify-self:start;white-space:nowrap;">No CR</span>
+          <span id="change-status-3" class="drift-stat drift-stat--unreconciled">Unreconciled</span>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap;">
+            <span style="font-size:11px;color:var(--text-sec);">5h ago</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="justify-self:end;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
         </div><!-- /drift-cards -->
 
         <!-- Pagination footer — hidden when all items fit on one page -->
@@ -19833,7 +20014,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <button onclick="openFlagModal()" class="action-cta" style="width:100%;min-width:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>Flag</button>
               <button onclick="skipChange()" class="cd-skip-btn" style="width:100%;min-width:0;">Skip</button>
             </div>
-            <div class="cd-side-caption">Approving reconciles this drift.<br>Use ←/→ to move through the queue.</div>
+            <button id="cd-ignore-btn" onclick="cdOpenIgnoreModal()" class="action-cta" style="display:none;width:100%;margin-top:8px;"><svg width="12" height="12" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>Create ignore rule</button>
+            <div id="cd-ignore-active-row" style="display:none;align-items:center;justify-content:center;gap:6px;margin-top:8px;font-size:12px;color:var(--text-sec);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Ignore rule active</span>
+              <span style="color:var(--text-muted);">·</span>
+              <button onclick="cdUndoIgnoreRule()" style="background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--green1);" onmouseover="this.style.color='#10B981'" onmouseout="this.style.color='var(--green1)'">Undo</button>
+            </div>
+            <div class="cd-side-caption" id="cd-side-caption">Approving reconciles this drift.<br>Use ←/→ to move through the queue.</div>
           </div>
         </div>
       </div>
@@ -22902,9 +23090,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
             <div id="intg-ai-block-body" class="ai-block-body"></div>
           </div>
-          <!-- Only shown by intgRenderAiBlock() when there's a connected-but-unhealthy or an
-               available provider to act on — hidden in the empty and all-good states. -->
-          <button type="button" id="intg-ai-block-action" class="action-cta" style="display:none;flex-shrink:0;">Fix now <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
         </div>
         <div id="intg-list"></div>
         <!-- Смуга запиту нової інтеграції — не картка каталогу, а підсумковий рядок
@@ -24648,17 +24833,8 @@ function cdAiExplain() {
   _aiBindOutsideClose('cd-ai-panel', btn, cdAiDismiss);
   _aiRunPanel(btn, body, 'Analysing this change…', function (success) {
     setTimeout(function () {
-      var impactEl = document.getElementById('cd-impact');
-      var impact = impactEl ? impactEl.textContent : '';
-      success(
-        '<div>This change disabled real-time protection, which is the control that would normally ' +
-        'stop malware before it runs. ' + (impact ? impact + ' ' : '') +
-        'It matters most on this node because it sits outside the expected baseline for its group — ' +
-        'similar nodes still have the setting enabled, which suggests this is a local change rather ' +
-        'than a policy-driven one. <strong>Recommendation:</strong> since it doesn\u2019t match an approved ' +
-        'policy change, flag it for investigation rather than approving it outright — only skip it if ' +
-        'you already know the context behind this node.</div>'
-      );
+      var d = CHANGE_DATA[currentChangeIdx];
+      success((d && d.aiText) || '<div>No additional analysis available for this change.</div>');
     }, 900);
   });
 }
@@ -24666,6 +24842,80 @@ function cdAiExplain() {
 function cdAiDismiss() {
   var panel = document.getElementById('cd-ai-panel');
   if (panel) panel.classList.remove('is-open');
+}
+
+// AI drafts ignore rule — Jupiter-style AI recommendation that takes a real action rather than
+// just summarising. Only offered when CHANGE_DATA[idx].ignoreCandidate is true (benign, recurring drift).
+function cdOpenIgnoreModal() {
+  var d = CHANGE_DATA[currentChangeIdx];
+  var s = d && d.ignoreSuggestion;
+  if (!d || !s) return;
+  var body = ''
+    + '<div style="font-size:12px;color:var(--text-sec);margin-bottom:16px;">AI-drafted from this check\u2019s history — review and edit before creating the rule</div>'
+    + '<div class="ca-neutral-box" style="background:var(--bg-page);border-radius:var(--radius-md);padding:12px;margin-bottom:16px;border:1px solid var(--border);">'
+      + '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Check</div>'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text-default);">' + s.checkName + '</div>'
+    + '</div>'
+    + '<div style="margin-bottom:16px;">'
+      + '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Scope</div>'
+      + '<select id="ignore-scope" class="csel">'
+        + '<option value="node"' + (s.scope === 'node' ? ' selected' : '') + '>This node — ' + d.node + '</option>'
+        + '<option value="group"' + (s.scope === 'group' ? ' selected' : '') + '>' + s.scopeLabel + '</option>'
+        + '<option value="all">All nodes</option>'
+      + '</select>'
+    + '</div>'
+    + '<div>'
+      + '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Reason</div>'
+      + '<textarea id="ignore-reason" class="form-input" rows="3" style="resize:vertical;">' + s.reason + '</textarea>'
+      + '<div style="font-size:11px;color:var(--text-sec);margin-top:5px;">Recorded in the audit trail — visible to anyone who later asks why this check stopped surfacing.</div>'
+    + '</div>';
+  openModal({
+    id: 'ignore-modal',
+    size: 'md',
+    title: 'Create ignore rule',
+    subtitle: d.checkName,
+    bodyHtml: body,
+    buttons: [
+      { label: 'Create rule', kind: 'primary', onClick: function (e, close) { cdCreateIgnoreRule(); close(); } }
+    ]
+  });
+  enhanceSelect(document.getElementById('ignore-scope'));
+}
+
+function cdCreateIgnoreRule() {
+  var idx = currentChangeIdx;
+  var d = CHANGE_DATA[idx];
+  if (!d) return;
+  d.recon = 'ignored';
+  var rb = document.getElementById('cd-recon-status');
+  if (rb) { rb.textContent = 'Ignored'; rb.className = 'drift-stat drift-stat--ignored'; }
+  var badge = document.getElementById('change-status-' + idx);
+  var card = document.getElementById('change-card-' + idx);
+  if (badge) { badge.textContent = 'Ignored'; badge.className = 'drift-stat drift-stat--ignored'; }
+  if (card) card.style.opacity = '0.65';
+  var ignoreBtn = document.getElementById('cd-ignore-btn');
+  if (ignoreBtn) ignoreBtn.style.display = 'none';
+  var ignoreActiveRow = document.getElementById('cd-ignore-active-row');
+  if (ignoreActiveRow) ignoreActiveRow.style.display = 'flex';
+  showToast('Ignore rule created — future occurrences of this check will be skipped automatically');
+}
+
+function cdUndoIgnoreRule() {
+  var idx = currentChangeIdx;
+  var d = CHANGE_DATA[idx];
+  if (!d) return;
+  d.recon = 'unreconciled';
+  var rb = document.getElementById('cd-recon-status');
+  if (rb) { rb.textContent = 'Unreconciled'; rb.className = 'drift-stat drift-stat--unreconciled'; }
+  var badge = document.getElementById('change-status-' + idx);
+  var card = document.getElementById('change-card-' + idx);
+  if (badge) { badge.textContent = 'Unreconciled'; badge.className = 'drift-stat drift-stat--unreconciled'; }
+  if (card) card.style.opacity = '';
+  var ignoreActiveRow = document.getElementById('cd-ignore-active-row');
+  if (ignoreActiveRow) ignoreActiveRow.style.display = 'none';
+  var ignoreBtn = document.getElementById('cd-ignore-btn');
+  if (ignoreBtn) ignoreBtn.style.display = 'inline-flex';
+  showToast('Ignore rule undone — this check will surface as drift again');
 }
 
 // Bertha (Failed Scan "How to fix") — no trigger function anymore. The AI strip is rendered
@@ -24933,7 +25183,7 @@ function filterRemed(btn, sev) {
 }
 
 // ── Journey 2 state ──
-let changeStatuses = ['pending','pending','pending'];
+let changeStatuses = ['pending','pending','pending','pending'];
 let currentChangeIdx = 0;
 let approvedCount = 0;
 let flaggedCount = 0;
@@ -24956,6 +25206,7 @@ var CHANGE_DATA = [
     detby: { method:'Scheduled scan', detail:'Today 14:23 · Process: MsMpSvc' },
     impact: 'Without real-time protection, malware can execute on the node undetected — Compliance Policy failure.',
     cr: 'nocr',
+    aiText: '<div>This change disabled real-time protection, which is the control that would normally stop malware before it runs. Without real-time protection, malware can execute on the node undetected — Compliance Policy failure. It matters most on this node because it sits outside the expected baseline for its group — similar nodes still have the setting enabled, which suggests this is a local change rather than a policy-driven one. <strong>Recommendation:</strong> since it doesn\u2019t match an approved policy change, flag it for investigation rather than approving it outright — only skip it if you already know the context behind this node.</div>',
     notes: [
       { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration, CR pending.' }
     ]
@@ -24981,6 +25232,7 @@ var CHANGE_DATA = [
       { id:'CHG0012346', title:'Endpoint Security Update', status:'Approved' },
       { id:'CHG0012347', title:'Q3 Patch Rollout', status:'Approved' }
     ],
+    aiText: '<div>This change disabled real-time protection, which is the control that would normally stop malware before it runs. It was already matched against an approved change request — CHG0012345, AV Software Migration — so the underlying cause is accounted for. <strong>Recommendation:</strong> the reconciliation looks correct; no further action is needed unless the change request itself gets revoked or extended.</div>',
     notes: [
       { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration.' },
       { author:'bambuk@cloudhouse.io', time:'1 day ago', text:'Reconciled against CHG0012345 — AV Software Migration. Closing as expected.' }
@@ -25002,9 +25254,36 @@ var CHANGE_DATA = [
     detby: { method:'Scheduled scan', detail:'Today 13:40 · Process: lusrmgr' },
     impact: 'An unexpected local account — particularly with elevated rights — can serve as a backdoor for persistent access.',
     cr: 'nocr',
+    aiText: '<div>A new local account, svc-helpdesk, was created outside of the standard provisioning process — no matching change request was found. Unrecognised local accounts, especially ones with elevated rights, are a common persistence technique after a node is compromised. <strong>Recommendation:</strong> keep this flagged until the service-desk owner confirms the account is expected — approve only once you have that confirmation, since undoing an approval after the fact is harder than reviewing it now.</div>',
     notes: [
       { author:'John Smith', time:'1 day ago', text:'Account "svc-helpdesk" not recognised by IT — flagged for review with the service-desk owner.' }
     ]
+  },
+  { // 3 — Antivirus definition version string (benign, recurring) — ignore-rule candidate
+    title: 'Antivirus definition version string changed',
+    checkName: 'Antivirus definitions are up to date',
+    severity: 'low',
+    controlShort: '8.2 Malware Def. Updates',
+    complianceLabel: 'CIS Pass', complianceFail: false,
+    node: 'MACBOOK-TARAS',
+    detected: '· Detected today at 09:12 · Scheduled scan',
+    recon: 'unreconciled', type: 'modified',
+    control: 'Control 8.2 · Malware Defenses · <span style="color:#15803d;font-weight:600;">CIS Pass</span>',
+    before: { val:'1.403.221.0', status:'✓ CIS Pass', sub:'Definitions up to date' },
+    after:  { val:'1.403.229.0', status:'✓ CIS Pass', sub:'Definitions up to date' },
+    score: { from:'82', to:'82', delta:'0 pts' },
+    detby: { method:'Scheduled scan', detail:'Today 09:12 · Process: MsMpSvc' },
+    impact: 'This is a routine antivirus signature update — it changes daily and does not affect compliance status.',
+    cr: 'nocr',
+    ignoreCandidate: true,
+    ignoreSuggestion: {
+      checkName: 'Antivirus definitions are up to date',
+      scope: 'group',
+      scopeLabel: 'All Windows nodes',
+      reason: 'Definition version strings update automatically and change daily as part of normal AV operation — flagging every version bump as drift creates noise without security value.'
+    },
+    aiText: '<div>This is a routine antivirus signature update — the definitions version string increments automatically as part of normal AV operation and changes daily on every managed node. Compliance state stayed at CIS Pass before and after, so nothing about the node\u2019s security posture actually changed. <strong>Recommendation:</strong> create an ignore rule for this check so future definition-version bumps stop generating drift noise, instead of reviewing the same benign change every day.</div>',
+    notes: []
   }
 ];
 // "Your decision" sidebar — Change Request value per CR-state (colour stays default text,
@@ -25022,7 +25301,8 @@ var CD_TYPE = {
 var CD_RECON = {
   unreconciled: { label:'Unreconciled' },
   reconciled:   { label:'Reconciled' },
-  flagged:      { label:'Flagged' }
+  flagged:      { label:'Flagged' },
+  ignored:      { label:'Ignored' }
 };
 function renderChangeDetail(idx) {
   const d = CHANGE_DATA[idx];
@@ -25057,6 +25337,10 @@ function renderChangeDetail(idx) {
   const r = CD_RECON[d.recon] || CD_RECON.unreconciled;
   const rb = document.getElementById('cd-recon-status');
   if (rb) { rb.textContent = r.label; rb.className = 'drift-stat drift-stat--' + (d.recon || 'unreconciled'); }
+  const ignoreBtn = document.getElementById('cd-ignore-btn');
+  if (ignoreBtn) ignoreBtn.style.display = (d.ignoreCandidate && d.recon !== 'ignored') ? 'inline-flex' : 'none';
+  const ignoreActiveRow = document.getElementById('cd-ignore-active-row');
+  if (ignoreActiveRow) ignoreActiveRow.style.display = (d.ignoreCandidate && d.recon === 'ignored') ? 'flex' : 'none';
   const nb = document.getElementById('nav-breadcrumb');
   if (nb) nb.innerHTML = `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">${d.title}</span>`;
   setCrState(d.cr);
@@ -27269,7 +27553,7 @@ function applyDriftFilters() {
   updateNodeSelectorLabel();
   // Card visibility — AND across every active dimension
   let visible = 0;
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < CHANGE_DATA.length; i++) {
     const card = document.getElementById('change-card-' + i);
     if (!card) continue;
     let ok = true;
@@ -27429,7 +27713,7 @@ function updateChangeList() {
     flagged:  { text:'Flagged',  cls:'flagged' },
     skipped:  { text:'Skipped',  cls:'skipped' }
   };
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < CHANGE_DATA.length; i++) {
     const badge = document.getElementById('change-status-' + i);
     const card  = document.getElementById('change-card-' + i);
     const s = changeStatuses[i];
