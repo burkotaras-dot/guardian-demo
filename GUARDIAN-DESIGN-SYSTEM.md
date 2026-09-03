@@ -206,15 +206,17 @@ Hover змінює лише поверхню всього рядка. Текст
 
 **Rule.** Усі radio-вибори всередині `gm-overlay` використовують один компонент `.gm-radio-card` (або legacy `.radio-item`, який у модалці наслідує ті самі токени). Геометрія: `min-height:63px`, `padding:14px`, `gap:12px`, `border:1px`, `border-radius:10px`; radio — `15×15px`, внутрішня крапка — `7×7px`. Заголовок — DM Sans Semibold `13px`, опис — DM Sans Regular `11px` із верхнім відступом `2px`.
 
-Light default: фон `#F1F5F9`, border `#E2E8F0`, radio border `#94A3B8`, title `#0F172A`, description `#475569`. Light active: фон `rgba(16,185,129,.12)`, border `rgba(16,185,129,.60)`, radio/dot `#059669`. Dark default: фон `rgba(255,255,255,.05)`, border `rgba(255,255,255,.10)`, title `#FFFFFF`, description `#CBD5E1`. Dark active зберігає той самий фон і змінює border на `rgba(16,185,129,.40)` та radio/dot на `#059669`.
+Light default: фон картки `#F1F5F9`, border `#E2E8F0`, title `#0F172A`, description `#475569`. Light active: фон `rgba(16,185,129,.12)`, border `rgba(16,185,129,.60)`. Dark default: фон `rgba(255,255,255,.05)`, border `rgba(255,255,255,.10)`, title `#FFFFFF`, description `#CBD5E1`. Dark active зберігає той самий фон і змінює border на `rgba(16,185,129,.40)`.
+
+Сам гурток (radio dot) — окремий компонент `Radioburtoon`, однаковий для картки, для Scans-фільтра (§3.3 exception) і для будь-якого іншого `<input type="radio">` у застосунку: `15×15px`, `border:1px`, внутрішня крапка `7×7px`. Light default: фон `rgba(255,255,255,.05)`, border `#94A3B8`. Dark default: той самий фон, border `rgba(255,255,255,.25)` (**не** `#94A3B8` — окремий, темніший колір за замовчуванням для темної теми, а не той самий hex, що й у світлій). Hover (обидві теми, обраний чи ні) — border `rgba(5,150,105,.6)`. Checked/Activated (обидві теми, той самий колір) — border **і** крапка `#059669`, фон гуртка стає `transparent` (не зберігає фонову заливку default-стану).
 
 Вкладений залежний dropdown належить активній картці: `.gm-radio-dropdown` зʼявляється тільки для checked / `.is-selected` стану. Не дублювати active-стилі inline або JavaScript-ом; стан виводиться через `:checked` / `.is-selected`.
 
-**Reference.** Figma `Guardian UI Design System based on Mantine v5.10`, node `3018:4218` (`RadioButton`: Default, Active, Active + Dropdown; White + Dark).
+**Reference.** Figma `Guardian UI Design System based on Mantine v5.10`: card — node `3018:4218` (`RadioButton`: Default, Active, Active + Dropdown; White + Dark); radio dot — node `2929:4828` (`Radioburtoon`: Default/Hover/Activated × White/Dark, 6 variants).
 
 **Examples.** Policy Create → Type; CMDB Import → Authentication; CMDB Import → Connection Manager picker.
 
-**Exceptions.** Scans → Filters використовує компактні inline radio/checkbox у popover і має окремий selected-state без постійної фонової заливки (§3.3). Severity selectors у Add/Edit Check лишаються компактними кольоровими pills: це взаємовиключний severity-control, а не content selection card. Full-page agentless onboarding не є модальним flow і не успадковує `.gm-overlay`-правило автоматично.
+**Exceptions.** Scans → Filters використовує компактні inline radio/checkbox у popover і має окремий selected-state без постійної фонової заливки (§3.3) — але сам гурток той самий `Radioburtoon`, той самий колір в обох контекстах. Severity selectors у Add/Edit Check лишаються компактними кольоровими pills: це взаємовиключний severity-control, а не content selection card. Full-page agentless onboarding не є модальним flow і не успадковує `.gm-overlay`-правило автоматично.
 
 ### 3.6 Text inputs і textarea у модальних вікнах
 
