@@ -2807,13 +2807,12 @@ body.dark .action-ico--polcustom { color:#D98A3A; }
 /* DS §6.5 "Secondary" (s=32) — THE row/strip action button, app-wide.
    width:auto + min-width keeps rows aligned for short labels without clipping long ones. */
 .action-cta { display:inline-flex; align-items:center; justify-content:center; gap:4px; width:auto; min-width:124px; height:32px; box-sizing:border-box; padding:0 12px; border-radius:10px; background:rgba(0,175,115,0.05); border:1px solid #9DE0C9; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#334155; cursor:pointer; flex-shrink:0; transition:background .15s, border-color .15s, color .15s; white-space:nowrap; }
-.action-cta .action-arrow { color:var(--green1); transition:transform .15s, color .15s; }
+.action-cta .action-arrow { color:inherit; transition:transform .15s, color .15s; }
 .action-cta:hover { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:#334155; }
 .action-cta:hover .action-arrow { transform:translateX(2px); }
 .action-cta:disabled { opacity:0.4; cursor:not-allowed; }
 .action-cta:focus-visible { outline:2px solid var(--green1); outline-offset:2px; }
 body.dark .action-cta { background:rgba(0,175,115,0.15); border-color:rgba(0,175,115,0.35); color:var(--p-neutral-50); }
-body.dark .action-cta .action-arrow { color:#00AF73; }
 body.dark .action-cta:hover { background:rgba(0,175,115,0.20); border-color:rgba(0,175,115,0.41); color:var(--p-neutral-50); }
 /* Neutral Secondary (Figma 3543:44549) — same Secondary shape, gray chrome for a row action
    that sits next to a green Secondary (e.g. "Mark as Unmanaged" beside "Promote") so the two
@@ -8260,23 +8259,32 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- AWS Fleet stats — shown after J3 -->
         <div id="dash-aws-summary" style="display:none;margin-top:12px;">
-          <!-- AWS stats grid -->
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;">
-              <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">AWS Compliance</div>
-              <div style="font-size:26px;font-weight:800;color:#d97706;letter-spacing:-0.5px;line-height:1;">71<span style="font-size:13px;font-weight:500;color:var(--text-sec);">/100</span></div>
-              <div style="font-size:11px;color:#d97706;font-weight:600;margin-top:4px;">−7% vs industry avg</div>
+          <!-- AWS stats grid — canonical .stat-card/.stat-card-label/.stat-value/.stat-sub (DS §8 KPI), same
+               component the AWS scan-complete summary uses (index.html:21734), not a hand-rolled inline card. -->
+          <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;margin-bottom:0;">
+            <div class="stat-card">
+              <div class="stat-card-label">AWS Compliance</div>
+              <div class="stat-value" style="color:#d97706;">71<span style="font-size:14px;font-weight:500;color:var(--text-sec);">/100</span></div>
+              <div class="stat-sub" style="color:#d97706;font-weight:600;">−7% vs industry avg</div>
             </div>
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;">
-              <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Critical Issues</div>
-              <div style="font-size:26px;font-weight:800;color:#FB3C44;letter-spacing:-0.5px;line-height:1;">18</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">Across 8 nodes</div>
+            <div class="stat-card">
+              <div class="stat-card-label">Critical Issues</div>
+              <div class="stat-value" style="color:#FB3C44;">18</div>
+              <div class="stat-sub">Across 8 nodes</div>
             </div>
-            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;">
-              <div style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Nodes Scanned</div>
-              <div style="font-size:26px;font-weight:800;color:#00AF73;letter-spacing:-0.5px;line-height:1;">12</div>
-              <div style="font-size:11px;color:var(--text-sec);margin-top:4px;">EC2 · ECS · EKS · RDS</div>
+            <div class="stat-card">
+              <div class="stat-card-label">Nodes Scanned</div>
+              <div class="stat-value" style="color:#00AF73;">12</div>
+              <div class="stat-sub">EC2 · ECS · EKS · RDS</div>
             </div>
+            <div class="stat-card">
+              <div class="stat-card-label">Regions</div>
+              <div class="stat-value" style="color:var(--bdg-blue-txt);">2</div>
+              <div class="stat-sub">us-east-1 · eu-west-1</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+            <button class="stat-link" style="padding-top:0;" onclick="showView(&#39;all-devices&#39;)"><span class="stat-link-txt">View AWS fleet</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
           </div>
         </div>
 

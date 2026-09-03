@@ -38,8 +38,10 @@ plus or spinner; inline them with `stroke="currentColor"` so they follow the the
 `Only icon` — єдиний нейтральний тип: квадрат 32×32, radius **8** (виняток із загального r10), гліф 16×16.
 
 **Кнопка в «рядку/картці з діями» (полоски з кнопками) — завжди зелена контурна (`.action-cta`):**
-- light: bg `rgba(0,175,115,0.05)`, border `#9DE0C9`, hover bg `rgba(0,175,115,0.15)` + border `rgba(0,175,115,0.35)`
-- dark: bg `rgba(0,175,115,0.15)`, border `rgba(0,175,115,0.35)`, текст білий, стрілка `#00AF73`
+- light: bg `rgba(0,175,115,0.05)`, border `#9DE0C9`, текст `#334155`, hover bg `rgba(0,175,115,0.15)` + border `rgba(0,175,115,0.35)`
+- dark: bg `rgba(0,175,115,0.15)`, border `rgba(0,175,115,0.35)`, текст білий
+- **Стрілка завжди `color:inherit`** — того ж кольору, що й текст кнопки, ніколи не окремий зелений
+  (`.action-cta .action-arrow`, `index.html:2810`)
 
 Стрілки/плюс/спінер — **тільки з `Assets/icons/`**, інлайном зі `stroke="currentColor"`, 12×12.
 
