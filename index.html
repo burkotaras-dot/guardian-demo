@@ -16229,6 +16229,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // apply pass locks every always-on Einstein/Bertha/Jupiter AI touchpoint to a teaser. Does
     // NOT cover the separate "AI takes action" mechanisms (CSV/CMDB mapping, ignore-rule drafting,
     // ServiceNow ticket creation, schedule auto-apply) — those are a distinct feature family.
+    //
+    // Two named exceptions from the same message, both a deliberate teaser rather than a hard wall:
+    // 1. "surfacing in the onboarding stages being universal ... a good teaser ... ai as an
+    //    onboarding assist" — already satisfied without new code: the "AI takes action" family
+    //    above (CSV/CMDB column auto-mapping, etc.) already runs unlocked at every tier and is
+    //    exactly the AI a user meets while onboarding a node/import. Nothing here to gate.
+    // 2. "ai lite in professional for policy simulation ... a teaser for what you get at
+    //    enterprise" — concrete example, implemented: Policy Simulation insight (both
+    //    pdRenderSimAiBlock() on Policy Detail and the modal in _peOpenSimModal()) does NOT fall
+    //    back to aiBlockLockedHtml() in Professional. It renders _simAiSummaryLite() instead — a
+    //    bare fail count, no per-node reasoning or Recommendation text, tagged with a LITE badge
+    //    and a "See full AI recommendations with Enterprise" link. See _simAiSummaryLite() below.
     var _currentTier = 'enterprise';
 
     function setPreviewTier(tier) {
@@ -17146,7 +17158,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     function pdRenderSimAiBlock() {
       var body = document.getElementById('pd-sim-ai-block-body');
       if (!body) return;
-      body.innerHTML = aiTierLocked() ? aiBlockLockedHtml() : _simAiSummary(_PE_SIM);
+      body.innerHTML = aiTierLocked() ? _simAiSummaryLite(_PE_SIM) : _simAiSummary(_PE_SIM);
     }
 
     function pdExport(kind) {
@@ -17186,6 +17198,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         ' node' + (total === 1 ? '' : 's') + ': ' + partsHtml + '. <strong>Recommendation:</strong> resolve ' +
         'these before assigning this policy further \u2014 the rest of the estate already complies.';
     }
+    // Exception 2 (Stephen Earl, Slack 01.09): "maybe ai lite in professional for policy simulation
+    // ... as a teaser for what you get at enterprise". Unlike every other AI touchpoint (fully locked
+    // by aiTierLocked() -> aiBlockLockedHtml()), simulation insight stays partially on in Professional:
+    // the fail count, no per-node reasoning or Recommendation text, plus a named upgrade teaser.
+    function _simAiSummaryLite(rows) {
+      var total = rows.length;
+      var failed = rows.filter(function (r) { return !r.pass; }).length;
+      var text = failed
+        ? failed + ' of ' + total + ' node' + (total === 1 ? '' : 's') + ' would fail this policy as configured.'
+        : 'All ' + total + ' evaluated nodes would pass this policy as configured.';
+      return '<span class="bdg bdg--gray" style="margin-right:6px;">LITE</span><span>' + text + '</span> '
+        + '<a href="#" onclick="openTierUpgradeFlow();return false;" style="color:#6366F1;font-weight:600;">See full AI recommendations with Enterprise \u2192</a>';
+    }
     function peRunSimulation(btn) {
       var orig = btn.innerHTML;
       btn.innerHTML = '⏳ Running…';
@@ -17199,26 +17224,25 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     function _peOpenSimModal() {
       var failed = _PE_SIM.filter(function(r) { return !r.pass; }).length;
       var rows = _PE_SIM.map(function(r) {
-        return '<div style="display:flex;align-items:center;gap:12px;padding:10px 24px;border-top:1px solid var(--border);">'
+        return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);">'
           + '<div style="flex:0 0 150px;font-size:12px;font-weight:600;color:var(--text-default);">' + r.node + '</div>'
           + '<div style="flex:1;font-size:12px;color:var(--text-sec);">' + r.res + '</div>'
           + '<span class="bdg bdg--dot ' + (r.pass ? 'bdg--green' : 'bdg--red') + '">' + (r.pass ? 'Pass' : 'Fail') + '</span>'
           + '</div>';
       }).join('');
-      var aiHtml = '<div style="padding:0 24px;margin-bottom:14px;">'
-        + '<div class="ai-block ai-block--tint" style="align-items:center;margin-bottom:0;">'
+      var aiHtml = '<div class="ai-block ai-block--tint" style="align-items:center;margin-bottom:14px;">'
         + PD_AI_SVG
         + '<div style="flex:1;min-width:0;">'
         + '<div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>'
-        + '<div class="ai-block-body">' + (aiTierLocked() ? aiBlockLockedHtml() : _simAiSummary(_PE_SIM)) + '</div>'
-        + '</div></div></div>';
+        + '<div class="ai-block-body">' + (aiTierLocked() ? _simAiSummaryLite(_PE_SIM) : _simAiSummary(_PE_SIM)) + '</div>'
+        + '</div></div>';
       openModal({
         id: 'pe-sim-modal',
         size: 'lg',
         title: 'Simulation preview',
         subtitle: 'What this policy would do against the current estate. Nothing is saved yet.',
         bodyHtml: aiHtml
-          + '<div style="padding:0 24px;display:flex;align-items:center;gap:8px;">'
+          + '<div style="display:flex;align-items:center;gap:8px;">'
           + '<span class="bdg bdg--gray">' + _PE_SIM.length + ' evaluated</span>'
           + '<span class="bdg bdg--green">' + (_PE_SIM.length - failed) + ' passed</span>'
           + '<span class="bdg bdg--red">' + failed + ' failed</span>'
