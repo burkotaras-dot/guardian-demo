@@ -1004,18 +1004,24 @@ body.dark .ca-neutral-box { background:rgba(255,255,255,0.05) !important; border
 .rep-skel { background:linear-gradient(90deg, var(--bg-canvas) 25%, var(--border) 37%, var(--bg-canvas) 63%); background-size:200% 100%; animation:shimmer 1.4s ease-in-out infinite; border-radius:6px; }
 body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.10) 37%, rgba(255,255,255,0.04) 63%); background-size:200% 100%; }
 
-/* ── TOP NAV ── */
+/* ── TOP NAV ──
+   The logo lives inside .sidebar now (Figma 3942:18293 — one rounded floating card owns
+   both the "Guardian" header and the nav list, not split across two elements). .top-nav no
+   longer reserves a dark 220px strip for it; padding-left instead clears the floating sidebar
+   itself (228px = 8px inset + 220px width), toggled to 0 by go()/showView() while the sidebar
+   is hidden for onboarding chrome — see their _nav.style.paddingLeft writes. */
 .top-nav {
   height: 54px;
-  background: linear-gradient(to right, var(--navy-dark) 220px, transparent 220px);
+  background: var(--bg-canvas);
   border-bottom: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px 0 0;
+  padding: 0 20px 0 228px;
   flex-shrink: 0;
   z-index: 100;
   position: relative;
+  transition: padding-left .15s;
 }
 .top-nav::after { display:none; }
 
@@ -1027,14 +1033,30 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
   font-weight: 700;
   letter-spacing: -0.3px;
   color: var(--white);
-  width: 220px;
+  width: 100%;
   flex-shrink: 0;
-  padding-left: 10px;
+  padding: 0 0 0 20px;
+  height: 54px;
+  box-sizing: border-box;
+  position: relative;
+  border-bottom: 0.5px solid #094248;
 }
 .nav-logo-icon {
   width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
 }
+.sidebar-collapse-btn {
+  width: 28px; height: 28px; flex-shrink: 0; margin-right: 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.sidebar-collapse-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.sidebar-collapse-btn svg { flex-shrink: 0; }
 
 /* STEP INDICATORS */
 .nav-steps { display:flex; align-items:center; gap:4px; flex:1; justify-content:flex-end; }
@@ -1099,17 +1121,67 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
 }
 .search-filter-item:hover { background:var(--status-success-bg); color:var(--brand-hover); }
 
-/* ── SIDEBAR ── */
+/* ── SIDEBAR ──
+   One floating rounded card (Figma 3942:18293) holding both the "Guardian" header and the
+   nav list — inset 8px from the viewport's top/left/bottom, not a flex column inside
+   .app-shell. position:fixed takes it out of .app-shell's layout entirely, so .content-area
+   (its former flex sibling) needs its own left clearance — see the sibling-selector rule
+   below — and .top-nav needs matching padding-left (see .top-nav). */
 .sidebar {
   width: 220px;
   background: var(--navy-dark);
   border-right: 1px solid var(--border-dark);
+  border-radius: 14px;
   flex-shrink: 0;
   display: none;
   flex-direction: column;
-  position: relative;
+  position: fixed;
+  top: 8px; left: 8px; bottom: 8px;
+  z-index: 110;
+  overflow: hidden;
 }
 .sidebar.visible { display:flex; }
+.sidebar.visible + .content-area { margin-left: 228px; }
+/* Collapsed rail — Figma 3943:40124 "Property 1=collapse". Same card, width 220px→56px;
+   icons stay, labels/badges/section-label text hide (kept in the DOM as their own
+   .sidebar-item-label/-badge/.sidebar-section-label-text spans so this is pure CSS, no
+   re-render). Footer text isn't specially hidden — Figma's own collapsed frame shows it
+   clipped as-is by the card's overflow:hidden, so this matches that literally rather than
+   improving on it unprompted. */
+.sidebar.collapsed { width: 56px; }
+.sidebar.collapsed + .content-area { margin-left: 64px; }
+.sidebar.collapsed .nav-logo { justify-content:center; padding:0; cursor:pointer; }
+.sidebar.collapsed .nav-logo > span { display:none; }
+/* Hidden by default (icon alone reads as the logo); on hover it swaps in over the icon as
+   the "click to expand" affordance, same glyph as the expanded header's collapse button. */
+.sidebar.collapsed .sidebar-collapse-btn {
+  display: flex;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  background: var(--navy-dark);
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s;
+}
+.sidebar.collapsed .nav-logo:hover .sidebar-collapse-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sidebar.collapsed .sidebar-item { justify-content:center; padding:9px 0; }
+.sidebar.collapsed .sidebar-item-label,
+.sidebar.collapsed .sidebar-item-badge,
+.sidebar.collapsed .sidebar-section-label-text { display:none; }
+.sidebar.collapsed .sidebar-section-label { padding-bottom:0; text-align:center; }
+/* Footer text has nowhere to go at 56px (it was overlapping itself) — a tooltip-on-hover
+   was considered, but the sidebar's own overflow:hidden (needed for its rounded corners)
+   would clip it, same issue already solved elsewhere with a JS position:fixed escape hatch;
+   not worth that for a footer detail, so just drop to the bare progress bar, matching the
+   icon-only treatment everywhere else in this state. */
+.sidebar.collapsed .sidebar-footer { padding:12px 8px; }
+.sidebar.collapsed .sidebar-footer-label { display:none !important; }
 .sidebar::before {
   content:'';
   position:absolute;
@@ -1121,7 +1193,8 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
 .sidebar-section-label {
   font-size:9px; font-weight:600; letter-spacing:1px;
   text-transform:uppercase; color:var(--muted);
-  padding:16px 16px 8px;
+  padding:16px 10px 8px; margin-top:16px;
+  border-top:1px solid var(--border-dark);
 }
 
 .sidebar-device-wrap { padding:0 10px 12px; }
@@ -1144,7 +1217,7 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
   flex-shrink:0;
 }
 
-.sidebar-nav { padding:4px 10px; flex:1; }
+.sidebar-nav { padding:16px 10px 4px; flex:1; }
 .sidebar-item {
   display:flex; align-items:center; gap:10px;
   padding:9px 10px; border-radius:var(--radius-md);
@@ -6672,13 +6745,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 </div>
 
 <!-- TOP NAV -->
-<div class="top-nav" style="background: linear-gradient(to right, rgb(6, 42, 46) 220px, transparent 220px);">
-  <div class="nav-logo">
-    <div class="nav-logo-icon">
-      <span class="gclogo" style="width:28px;height:28px;"></span>
-    </div>
-    Guardian
-  </div>
+<div class="top-nav">
   <div class="nav-steps" id="navSteps" style="display: none;">
     <div class="step-item" id="si0" onclick="go(&#39;s02&#39;)" style="cursor:pointer;"><div class="step-dot">1</div>&nbsp;Add node</div>
     <div class="step-line"></div>
@@ -6706,7 +6773,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     <button onclick="showView(&#39;settings-integrations&#39;)" style="margin-left:18px;background:none;border:none;font-size:11px;color:var(--p-neutral-400);cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.color=&#39;#1a2a3a&#39;;this.style.background=&#39;rgba(0,0,0,0.05)&#39;" onmouseout="this.style.color=&#39;#94a3b8&#39;;this.style.background=&#39;none&#39;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Exit</button>
   </div>
   <div id="nav-breadcrumb" style="display:none;flex:1;padding:0 20px;align-items:center;gap:5px;font-size:12px;"></div>
-  <div id="navUser" class="nav-user" style="display: flex;">
+  <div id="navUser" class="nav-user" style="display: flex; margin-left: auto;">
     <!-- Прототипний перемикач стану даних. У продукті стан диктують дані; тут потрібен
          ручний вхід у сценарій «щойно зайшов уперше». ОДИН на застосунок, а не по одному
          на сторінку: окремі перемикачі дозволяли поставити прототип у комбінацію, якої
@@ -6750,54 +6817,65 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
   <!-- SIDEBAR -->
   <div class="sidebar visible" id="sidebar">
+    <div class="nav-logo" onclick="if(document.getElementById('sidebar').classList.contains('collapsed'))toggleSidebarCollapse()">
+      <div class="nav-logo-icon">
+        <span class="gclogo" style="width:28px;height:28px;"></span>
+      </div>
+      <span style="flex:1;min-width:0;">Guardian</span>
+      <button type="button" class="sidebar-collapse-btn" id="sidebar-collapse-btn" onclick="event.stopPropagation();toggleSidebarCollapse()" title="Collapse sidebar" aria-label="Collapse sidebar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9.5" y1="4" x2="9.5" y2="20"></line></svg>
+      </button>
+    </div>
     <div class="sidebar-nav">
       <div class="sidebar-item active" id="sb-dashboard" onclick="showView(&#39;dashboard&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
-        Dashboard
+        <span class="sidebar-item-label">Dashboard</span>
       </div>
+      <div class="sidebar-section-label"><span class="sidebar-section-label-text">Monitoring</span></div>
       <div class="sidebar-item" id="sb-all-devices" onclick="showView(&#39;all-devices&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path><path d="M2 10h20"></path></svg>
-        All Nodes
-        <span id="sb-all-devices-count" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
+        <span class="sidebar-item-label">All Nodes</span>
+        <span id="sb-all-devices-count" class="sidebar-item-badge" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
       </div>
       <div class="sidebar-item" id="sb-results" onclick="showView(&#39;results&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect><path d="m9 12 2 2 4-4"></path></svg>
-        Scans
+        <span class="sidebar-item-label">Scans</span>
       </div>
       <div class="sidebar-item" id="sb-changes" onclick="showView(&#39;changes&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 7l3-3M4 7l3 3M20 17H4M20 17l-3-3M20 17l-3 3"></path></svg>
-        Detected Drift
+        <span class="sidebar-item-label">Detected Drift</span>
       </div>
       <div class="sidebar-item" id="sb-policies" onclick="showView(&#39;policies&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg>
-        Policies
+        <span class="sidebar-item-label">Policies</span>
       </div>
       <div class="sidebar-item" id="sb-reports" onclick="showView(&#39;reports-list&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
-        Reports
+        <span class="sidebar-item-label">Reports</span>
       </div>
+      <div class="sidebar-section-label"><span class="sidebar-section-label-text">Configuration</span></div>
       <div class="sidebar-item" id="sb-scan-schedule" onclick="showView(&#39;scan-schedule&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        Scan Schedules
+        <span class="sidebar-item-label">Scan Schedules</span>
       </div>
       <div class="sidebar-item" id="sb-cm-list" onclick="showView(&#39;cm-list&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>
-        CM Groups
-        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
+        <span class="sidebar-item-label">CM Groups</span>
+        <span class="sidebar-item-badge" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
       </div>
       <div class="sidebar-item" id="sb-credentials" onclick="showView(&#39;credentials&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path></svg>
-        Credentials
-        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">8</span>
+        <span class="sidebar-item-label">Credentials</span>
+        <span class="sidebar-item-badge" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">8</span>
       </div>
       <div class="sidebar-item" id="sb-integrations" onclick="showView(&#39;settings-integrations&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"></circle><circle cx="16" cy="16" r="3"></circle><path d="M8 11v2a5 5 0 0 0 5 5h1"></path><path d="M16 5v2a5 5 0 0 0-5 5h-1" transform="rotate(180 16 10)"></path><path d="M11 8h2M13 16h-2"></path></svg>
-        Integrations
-        <span style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">2</span>
+        <span class="sidebar-item-label">Integrations</span>
+        <span class="sidebar-item-badge" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">2</span>
       </div>
       <div class="sidebar-item" id="sb-roles" onclick="showView(&#39;roles&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        Roles & Permissions
+        <span class="sidebar-item-label">Roles & Permissions</span>
       </div>
     </div>
     <div class="sidebar-footer" id="sidebar-footer">
@@ -19785,6 +19863,24 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       _syncInlineTheme(isDark);
     }
 
+    // Manual show/hide of the floating sidebar — reuses the same .visible class and
+    // .top-nav padding-left toggle that go()/showView() already drive for onboarding chrome,
+    // so the two mechanisms never fight: whichever ran last wins, and leaving a wizard flow
+    // always restores the sidebar regardless of this button's last state.
+    function toggleSidebarCollapse() {
+      var sidebar = document.getElementById('sidebar');
+      if (!sidebar) return;
+      var isCollapsed = sidebar.classList.toggle('collapsed');
+      var btn = document.getElementById('sidebar-collapse-btn');
+      if (btn) {
+        var label = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
+        btn.title = label;
+        btn.setAttribute('aria-label', label);
+      }
+      var topNav = document.querySelector('.top-nav');
+      if (topNav) topNav.style.paddingLeft = isCollapsed ? '64px' : '';
+    }
+
     var _DK_BG   = '#062528';  /* surface.elevated */
     var _DK_PAGE = '#031516';  /* surface.canvas */
     var _DK_BORDER = 'rgba(255,255,255,0.1)';
@@ -25164,7 +25260,7 @@ function go(key) {
   const isOnboarding = isJ1Onboarding || isJ3Onboarding || isJ4Onboarding || isCmSetup;
 
   const nav = document.querySelector('.top-nav');
-  if (nav) nav.style.background = isOnboarding ? '#062A2E' : 'linear-gradient(to right, #062A2E 220px, transparent 220px)';
+  if (nav) { nav.style.background = isOnboarding ? '#062A2E' : ''; nav.style.paddingLeft = isOnboarding ? '20px' : ''; }
 
   document.getElementById('sidebar').classList.toggle('visible', !isOnboarding);
   document.getElementById('navSteps').style.display    = isJ1Onboarding ? 'flex' : 'none';
@@ -25657,7 +25753,7 @@ function showView(name) {
   document.getElementById('j4-step-nav').style.display = isJ4Nav ? 'flex' : 'none';
   document.getElementById('navUser').style.display = (isJ3 || isJ4) ? 'none' : 'flex';
   const _nav = document.querySelector('.top-nav');
-  if (_nav) _nav.style.background = isWizardChrome ? '#062A2E' : 'linear-gradient(to right, #062A2E 220px, transparent 220px)';
+  if (_nav) { _nav.style.background = isWizardChrome ? '#062A2E' : ''; _nav.style.paddingLeft = isWizardChrome ? '20px' : ''; }
   showOnly(name);
   // Data-state toggle belongs only on the ten main pages (those with a First-run state),
   // not on detail / edit / wizard views.
