@@ -1182,6 +1182,13 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
    icon-only treatment everywhere else in this state. */
 .sidebar.collapsed .sidebar-footer { padding:12px 8px; }
 .sidebar.collapsed .sidebar-footer-label { display:none !important; }
+/* Nav item labels DO get a tooltip when collapsed — unlike the footer, losing the item name
+   entirely would make the icon-only rail unusable. Same overflow:hidden clipping problem, same
+   fix: a position:fixed pill (#sidebar-tip) driven from JS instead of a CSS ::after, styled like
+   the existing #donut-tip pill rather than the wide #stat-float-tip description box, since this
+   is a one-word label, not a paragraph. */
+#sidebar-tip { display:none; position:fixed; z-index:9999; background:#0f172a; color:#fff; font-size:11px; font-weight:600; padding:5px 10px; border-radius:7px; pointer-events:none; white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.25); }
+body.dark #sidebar-tip { background:#0a1f22; border:1px solid rgba(255,255,255,0.14); }
 .sidebar::before {
   content:'';
   position:absolute;
@@ -3253,24 +3260,36 @@ body.dark #node-scope-panel .nsp-div { background:rgba(255,255,255,0.08); }
 .scan-menu-option:hover,
 .scan-filter-choice:hover { background:rgba(0,175,115,.08); }
 .scan-menu-option svg { color:var(--green1); flex-shrink:0; }
+/* Figma 2929:4828 "Radioburtoon" — bare radio glyph (as opposed to .gm-radio-card's own,
+   deliberately different, always-white dot below). Hover and checked are the same colour in
+   both themes (rgba(5,150,105,.6) / #059669); only the unchecked resting border differs. */
 #v-results .scan-filter-choice input[type="radio"] {
   appearance:none; -webkit-appearance:none; width:15px; height:15px; margin:0;
-  box-sizing:border-box; flex:0 0 15px; border:2px solid var(--text-muted); border-radius:50%;
-  background:transparent; cursor:pointer; transition:border-color .15s, background .15s;
+  box-sizing:border-box; flex:0 0 15px; border:1px solid #94A3B8; border-radius:50%;
+  background:rgba(255,255,255,.05); cursor:pointer; transition:border-color .15s, background .15s;
+}
+#v-results .scan-filter-choice input[type="radio"]:hover {
+  border-color:rgba(5,150,105,.6);
 }
 #v-results .scan-filter-choice input[type="radio"]:checked {
-  border-color:var(--green1);
-  background:radial-gradient(circle, var(--green1) 0 3.5px, transparent 3.6px);
+  border-color:var(--green2);
+  background:radial-gradient(circle, var(--green2) 0 3.5px, transparent 3.6px);
 }
 #v-results .scan-filter-choice input[type="radio"]:focus-visible {
   outline:2px solid rgba(16,185,129,.32); outline-offset:2px;
 }
 body.dark #v-results .scan-filter-choice input[type="radio"] {
-  border-color:#96A6BD;
+  border-color:rgba(255,255,255,.25);
+}
+/* body.dark's extra type-selector specificity would otherwise beat the plain :hover/:checked
+   rules above and stomp them back to the resting border — redeclare both under body.dark too,
+   even though the colour itself doesn't change between themes. */
+body.dark #v-results .scan-filter-choice input[type="radio"]:hover {
+  border-color:rgba(5,150,105,.6);
 }
 body.dark #v-results .scan-filter-choice input[type="radio"]:checked {
-  border-color:#00AF73;
-  background:radial-gradient(circle, #00AF73 0 3.5px, transparent 3.6px);
+  border-color:var(--green2);
+  background:radial-gradient(circle, var(--green2) 0 3.5px, transparent 3.6px);
 }
 body.dark .scan-menu-trigger { background:var(--bg-subtle); }
 body.dark .scan-menu-panel { background:var(--bg-surface); box-shadow:0 8px 24px rgba(0,0,0,.5); }
@@ -3439,8 +3458,11 @@ body.dark #v-s-agentless .form-input { background:#0C2123 !important; }
 .seg-sm-label { font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0; }
 .cred-radio { display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-size:12.5px;color:var(--text-sec);user-select:none;transition:color 0.15s; }
 .cred-radio.active { color:var(--text-default);font-weight:600; }
-.cred-radio.active .radio-dot { border-color:var(--green1); }
-.cred-radio.active .radio-dot::after { content:'';width:8px;height:8px;border-radius:50%;background:var(--green1);display:block; }
+/* Figma 2929:4828 "Radioburtoon" — same hover/checked colour as every other radio in the app. */
+.cred-radio:hover .radio-dot { border-color:rgba(5,150,105,.6); }
+.cred-radio.active .radio-dot { border-color:#059669;background:transparent; }
+.cred-radio.active:hover .radio-dot { border-color:#059669; }
+.cred-radio.active .radio-dot::after { content:'';width:7px;height:7px;border-radius:50%;background:#059669;display:block; }
 /* .csv-col — див. .code-tag у канонічному блоці вище */
 /* .csv-badge — див. канонічний блок BADGE (квадрат 4px зведено до пігулки) */
 .region-pills { display:flex;flex-wrap:wrap;gap:8px; }
@@ -3470,9 +3492,13 @@ body.dark #v-s-agentless .form-input { background:#0C2123 !important; }
 .j3-radio-group { display:flex;flex-direction:column;gap:10px; }
 .j3-radio { display:flex;align-items:flex-start;gap:12px;padding:14px;border:1.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;transition:all 0.15s; }
 .j3-radio.selected { border-color:var(--green1);background:var(--green-dim); }
-.j3-radio-dot { width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center; }
-.j3-radio.selected .j3-radio-dot { border-color:var(--green1); }
-.j3-radio.selected .j3-radio-dot::after { content:'';width:8px;height:8px;border-radius:50%;background:var(--green1);display:block; }
+/* Figma 2929:4828 "Radioburtoon" (unused component — no live .j3-radio markup currently,
+   kept in sync anyway so it doesn't drift if ever reused). */
+.j3-radio-dot { box-sizing:border-box; width:15px;height:15px;border-radius:50%;border:1px solid #94A3B8;background:rgba(255,255,255,.05);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center; }
+.j3-radio:hover .j3-radio-dot { border-color:rgba(5,150,105,.6); }
+.j3-radio.selected .j3-radio-dot { border-color:#059669;background:transparent; }
+.j3-radio.selected .j3-radio-dot::after { content:'';width:7px;height:7px;border-radius:50%;background:#059669;display:block; }
+body.dark .j3-radio-dot { border-color:rgba(255,255,255,.25); }
 .j3-section-title { font-size:20px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;margin-bottom:4px; }
 .j3-section-sub   { font-size:13px;color:var(--text-sec);margin-bottom:20px; }
 .j3-filter-bar { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
@@ -3498,9 +3524,14 @@ body.dark #v-s-agentless .form-input { background:#0C2123 !important; }
 .radio-group { display:flex;flex-direction:column;gap:10px; }
 .radio-item { display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;transition:all 0.15s;background:var(--bg-surface); }
 .radio-item.selected { border-color:var(--green1);background:rgba(63,200,120,0.06); }
-.radio-dot { width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center; }
-.radio-item.selected .radio-dot { border-color:var(--green1); }
-.radio-item.selected .radio-dot::after { content:'';width:8px;height:8px;border-radius:50%;background:var(--green1);display:block; }
+/* Figma 2929:4828 "Radioburtoon" — the actual radio glyph; .radio-item above is just its
+   card wrapper (own border/bg, untouched here). Hover/checked colour is the same in both
+   themes, only the unchecked resting border differs (see body.dark override below). */
+.radio-dot { box-sizing:border-box; width:15px;height:15px;border-radius:50%;border:1px solid #94A3B8;background:rgba(255,255,255,.05);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .15s; }
+.radio-item:hover .radio-dot { border-color:rgba(5,150,105,.6); }
+.radio-item.selected .radio-dot { border-color:#059669;background:transparent; }
+.radio-item.selected:hover .radio-dot { border-color:#059669; }
+.radio-item.selected .radio-dot::after { content:'';width:7px;height:7px;border-radius:50%;background:#059669;display:block; }
 /* Softer selected state for the agentless CM picker (dot carries the signal) */
 .radio-item.cm-item.selected { border-color:rgba(63,200,120,0.45);background:rgba(63,200,120,0.035); }
 /* Dark: all three CM cards share one flat fill; selection & hover live on the border + radio dot only (no bg change). */
@@ -3508,6 +3539,13 @@ body.dark .radio-item.cm-item { background:#0C2123; }
 body.dark .radio-item.cm-item:not(.selected) .radio-dot { border-color:rgba(255,255,255,0.3); }
 body.dark .radio-item.cm-item:hover { background:#0C2123;border-color:rgba(16,185,129,0.55); }
 body.dark .radio-item.cm-item.selected { background:#0C2123;border-color:rgba(16,185,129,0.4); }
+/* Figma 2929:4828 Dark — same hover/checked colour as light, only the resting border differs.
+   Deliberately less specific than the cm-item rules above so cm-item's own dark treatment
+   (one flat card fill, 0.3-alpha resting border) still wins for that variant. */
+body.dark .radio-dot { border-color:rgba(255,255,255,.25); }
+body.dark .radio-item:hover .radio-dot { border-color:rgba(5,150,105,.6); }
+body.dark .radio-item.selected .radio-dot { border-color:#059669; }
+body.dark .radio-item.selected:hover .radio-dot { border-color:#059669; }
 
 /* ── Canonical modal radio card — Figma RadioButton 3018:4218 ──
    Applies only inside gm-overlay. Full-page Scans filters keep their documented compact exception. */
@@ -3548,18 +3586,23 @@ body.dark .radio-item.cm-item.selected { background:#0C2123;border-color:rgba(16
   margin:0;
   border:1px solid #94A3B8;
   border-radius:50%;
-  background:#FFFFFF;
+  background:rgba(255,255,255,.05);
   display:flex;
   align-items:center;
   justify-content:center;
 }
 .gm-overlay .gm-radio-card > input[type="radio"]:checked,
 .gm-overlay .gm-radio-card.is-selected .gm-radio-control,
-.gm-overlay .radio-item.selected .radio-dot { border-color:#059669; }
-/* Figma 2926:1413 — the dot itself gets a green ring on hover, even unselected. */
+.gm-overlay .radio-item.selected .radio-dot { border-color:#059669; background:transparent; }
+/* Figma 2929:4828 "Radioburtoon" — hover ring, even unselected, same colour in both themes. */
 .gm-overlay .gm-radio-card:hover > input[type="radio"],
 .gm-overlay .gm-radio-card:hover .gm-radio-control,
-.gm-overlay .radio-item:hover .radio-dot { border-color:#059669; }
+.gm-overlay .radio-item:hover .radio-dot { border-color:rgba(5,150,105,.6); }
+/* Hovering an already-selected card must stay the solid checked colour, not dim to the
+   lighter hover tint above — higher specificity (hover + checked together) wins either way. */
+.gm-overlay .gm-radio-card:hover > input[type="radio"]:checked,
+.gm-overlay .gm-radio-card.is-selected:hover .gm-radio-control,
+.gm-overlay .radio-item.selected:hover .radio-dot { border-color:#059669; }
 .gm-overlay .gm-radio-card > input[type="radio"]:checked::after,
 .gm-overlay .gm-radio-card.is-selected .gm-radio-control::after,
 .gm-overlay .radio-item.selected .radio-dot::after {
@@ -3613,26 +3656,28 @@ body.dark .gm-overlay .gm-radio-card:has(.gm-radio-dropdown):has(input[type="rad
 body.dark .gm-overlay .gm-radio-card.is-selected:has(.gm-radio-dropdown) {
   border-color:rgba(16,185,129,.60);
 }
-/* Figma 3018:4457 (Dark/Default) — the dot component itself never themes: it's
-   the same white circle with a #94A3B8 ring in dark as in light. Only the
-   surrounding card/text adapts to the theme. */
+/* Figma 2929:4828 "Radioburtoon", Dark/Default — replaces the old always-white 3018:4457
+   dot: translucent fill + translucent white ring, same as every other dark-mode default. */
 body.dark .gm-overlay .gm-radio-card > input[type="radio"],
 body.dark .gm-overlay .gm-radio-card .gm-radio-control,
 body.dark .gm-overlay .radio-item .radio-dot {
-  background:#FFFFFF;
-  border-color:#94A3B8;
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.25);
 }
 body.dark .gm-overlay .gm-radio-card:hover > input[type="radio"],
 body.dark .gm-overlay .gm-radio-card:hover .gm-radio-control,
-body.dark .gm-overlay .radio-item:hover .radio-dot { border-color:var(--green1); }
-/* Figma 3018:4481 (Dark/Active) — the dot component itself never themes: white
-   fill, #059669 ring and dot in both light and dark. Only the card around it does. */
+body.dark .gm-overlay .radio-item:hover .radio-dot { border-color:rgba(5,150,105,.6); }
+/* Figma 2929:4828 Dark/Activated — #059669 ring, transparent fill; identical to light,
+   so no dark-specific colour here beyond dropping the old white fill. */
 body.dark .gm-overlay .gm-radio-card > input[type="radio"]:checked,
 body.dark .gm-overlay .gm-radio-card.is-selected .gm-radio-control,
 body.dark .gm-overlay .radio-item.selected .radio-dot {
-  background:#FFFFFF;
+  background:transparent;
   border-color:#059669;
 }
+body.dark .gm-overlay .gm-radio-card:hover > input[type="radio"]:checked,
+body.dark .gm-overlay .gm-radio-card.is-selected:hover .gm-radio-control,
+body.dark .gm-overlay .radio-item.selected:hover .radio-dot { border-color:#059669; }
 body.dark .gm-overlay .gm-radio-card > input[type="radio"]:checked::after,
 body.dark .gm-overlay .gm-radio-card.is-selected .gm-radio-control::after,
 body.dark .gm-overlay .radio-item.selected .radio-dot::after { background:#059669; }
@@ -6826,53 +6871,53 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </button>
     </div>
     <div class="sidebar-nav">
-      <div class="sidebar-item active" id="sb-dashboard" onclick="showView(&#39;dashboard&#39;)">
+      <div class="sidebar-item active" id="sb-dashboard" data-tip="Dashboard" onclick="showView(&#39;dashboard&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
         <span class="sidebar-item-label">Dashboard</span>
       </div>
       <div class="sidebar-section-label"><span class="sidebar-section-label-text">Monitoring</span></div>
-      <div class="sidebar-item" id="sb-all-devices" onclick="showView(&#39;all-devices&#39;)">
+      <div class="sidebar-item" id="sb-all-devices" data-tip="All Nodes" onclick="showView(&#39;all-devices&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path><path d="M2 10h20"></path></svg>
         <span class="sidebar-item-label">All Nodes</span>
         <span id="sb-all-devices-count" class="sidebar-item-badge" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
       </div>
-      <div class="sidebar-item" id="sb-results" onclick="showView(&#39;results&#39;)">
+      <div class="sidebar-item" id="sb-results" data-tip="Scans" onclick="showView(&#39;results&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect><path d="m9 12 2 2 4-4"></path></svg>
         <span class="sidebar-item-label">Scans</span>
       </div>
-      <div class="sidebar-item" id="sb-changes" onclick="showView(&#39;changes&#39;)">
+      <div class="sidebar-item" id="sb-changes" data-tip="Detected Drift" onclick="showView(&#39;changes&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 7l3-3M4 7l3 3M20 17H4M20 17l-3-3M20 17l-3 3"></path></svg>
         <span class="sidebar-item-label">Detected Drift</span>
       </div>
-      <div class="sidebar-item" id="sb-policies" onclick="showView(&#39;policies&#39;)">
+      <div class="sidebar-item" id="sb-policies" data-tip="Policies" onclick="showView(&#39;policies&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg>
         <span class="sidebar-item-label">Policies</span>
       </div>
-      <div class="sidebar-item" id="sb-reports" onclick="showView(&#39;reports-list&#39;)">
+      <div class="sidebar-item" id="sb-reports" data-tip="Reports" onclick="showView(&#39;reports-list&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
         <span class="sidebar-item-label">Reports</span>
       </div>
       <div class="sidebar-section-label"><span class="sidebar-section-label-text">Configuration</span></div>
-      <div class="sidebar-item" id="sb-scan-schedule" onclick="showView(&#39;scan-schedule&#39;)">
+      <div class="sidebar-item" id="sb-scan-schedule" data-tip="Scan Schedules" onclick="showView(&#39;scan-schedule&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         <span class="sidebar-item-label">Scan Schedules</span>
       </div>
-      <div class="sidebar-item" id="sb-cm-list" onclick="showView(&#39;cm-list&#39;)">
+      <div class="sidebar-item" id="sb-cm-list" data-tip="CM Groups" onclick="showView(&#39;cm-list&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>
         <span class="sidebar-item-label">CM Groups</span>
         <span class="sidebar-item-badge" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">5</span>
       </div>
-      <div class="sidebar-item" id="sb-credentials" onclick="showView(&#39;credentials&#39;)">
+      <div class="sidebar-item" id="sb-credentials" data-tip="Credentials" onclick="showView(&#39;credentials&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path></svg>
         <span class="sidebar-item-label">Credentials</span>
         <span class="sidebar-item-badge" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">8</span>
       </div>
-      <div class="sidebar-item" id="sb-integrations" onclick="showView(&#39;settings-integrations&#39;)">
+      <div class="sidebar-item" id="sb-integrations" data-tip="Integrations" onclick="showView(&#39;settings-integrations&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"></circle><circle cx="16" cy="16" r="3"></circle><path d="M8 11v2a5 5 0 0 0 5 5h1"></path><path d="M16 5v2a5 5 0 0 0-5 5h-1" transform="rotate(180 16 10)"></path><path d="M11 8h2M13 16h-2"></path></svg>
         <span class="sidebar-item-label">Integrations</span>
         <span class="sidebar-item-badge" style="margin-left:auto;background:rgba(63,200,120,0.35);color:var(--p-green-100);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;">2</span>
       </div>
-      <div class="sidebar-item" id="sb-roles" onclick="showView(&#39;roles&#39;)">
+      <div class="sidebar-item" id="sb-roles" data-tip="Roles &amp; Permissions" onclick="showView(&#39;roles&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         <span class="sidebar-item-label">Roles & Permissions</span>
       </div>
@@ -31702,11 +31747,12 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
 
 <div id="donut-tip" style="display: none; left: 893px; top: 174px;">Critical: 9 issues</div>
 <div id="stat-float-tip"></div>
+<div id="sidebar-tip"></div>
 <script>
 /* ── Stat info floating tooltip ── */
 (function(){
   var ft = document.getElementById('stat-float-tip');
-  document.querySelectorAll('.stat-info, .has-tip, [data-tip]:not(.tip-wrap)').forEach(function(el){
+  document.querySelectorAll('.stat-info, .has-tip, [data-tip]:not(.tip-wrap):not(.sidebar-item)').forEach(function(el){
     el.addEventListener('mouseenter', function(){
       // .stat-info і gauge несуть текст у дочірньому .stat-tip; спарк-бари — в data-tip.
       var childTip = el.querySelector('.stat-tip');
@@ -31726,6 +31772,31 @@ window.addEventListener('load', function() { hideAuth(); showAuth('auth-login');
     });
     el.addEventListener('mouseleave', function(){
       ft.style.display = 'none';
+    });
+  });
+})();
+
+/* ── Sidebar nav item tooltip (collapsed rail only) ──
+   Labels are already visible next to the icon when expanded, so the tooltip only makes sense —
+   and only fires — while .sidebar has .collapsed. Positioned to the right of the rail via
+   position:fixed rather than a CSS ::after, because .sidebar needs overflow:hidden for its
+   rounded corners and would otherwise clip it (same class of problem as #stat-float-tip). */
+(function(){
+  var st = document.getElementById('sidebar-tip');
+  var sidebar = document.getElementById('sidebar');
+  document.querySelectorAll('.sidebar-item[data-tip]').forEach(function(el){
+    el.addEventListener('mouseenter', function(){
+      if (!sidebar || !sidebar.classList.contains('collapsed')) return;
+      var txt = el.getAttribute('data-tip');
+      if (!txt) return;
+      st.textContent = txt;
+      st.style.display = 'block';
+      var r = el.getBoundingClientRect();
+      st.style.left = (r.right + 8) + 'px';
+      st.style.top  = (r.top + r.height/2 - st.offsetHeight/2) + 'px';
+    });
+    el.addEventListener('mouseleave', function(){
+      st.style.display = 'none';
     });
   });
 })();
