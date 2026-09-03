@@ -2823,12 +2823,19 @@ body.dark .sf-ai-strip { background:rgba(99,102,241,0.14); }
 body.dark .sf-ai-strip strong { color:#A5B4FC; }
 body.dark .sf-ai-strip svg { color:#A5B4FC; }
 
-/* Jupiter mechanism — differentiated from Einstein's on-demand button+dropdown (one object,
-   click to reveal) and Bertha's inline strip (always-on but nested inside one row): a standalone
-   BLOCK that stands on its own above the list/table it summarises, present without being asked.
-   Shared by every page-level "broad overview + recommendation" AI spot (Policy Detail, Dashboard,
-   Node Detail, Reports, Scan Schedules, Integrations) — same purpose class as Jupiter, so same
-   mechanism, not a per-page reinvention. */
+/* AI shape vs. AI domain (client feedback, Stephen Earl, 02.09): Einstein/Bertha/Jupiter are NOT
+   the three interaction shapes below — they are three product DOMAINS. Bertha = general AI
+   assistance anywhere in Guardian. Jupiter = policy creation/simulation/policy activity ONLY.
+   Einstein = change analysis/risk assessment ONLY (change request -> implementation plan ->
+   post-change scan -> expected vs actual -> risk -> reconcile; gated by a ServiceNow/Freshservice
+   integration). The three SHAPES below are still correct and are kept as-is — most existing
+   .ai-block/.ai-cta touchpoints are Bertha domain by default (general summary/explain), only
+   Policy Detail + Add Check are Jupiter, only Change Detail's per-change explain is Einstein.
+   Shape (this comment) = the standalone BLOCK that stands on its own above the list/table it
+   summarises, present without being asked — distinct from the on-demand button+dropdown (one
+   object, click to reveal) and the inline strip (always-on but nested inside one row). Shared by
+   every page-level "broad overview + recommendation" AI spot (Policy Detail = Jupiter; Dashboard,
+   Node Detail, Reports, Scan Schedules, Integrations = Bertha) — same shape, different domains. */
 .ai-block { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; padding:14px 18px; background:var(--bg-surface); border:1px solid var(--border); border-left:3px solid #6366F1; border-radius:var(--radius-lg); box-shadow:0 1px 1px rgba(15,23,42,0.04); }
 .ai-block > svg { flex-shrink:0; align-self:flex-start; margin-top:1px; color:#6366F1; }
 .ai-block-label { color:#6366F1; }
@@ -2862,8 +2869,9 @@ body.dark .ai-inline-cta { color:#818CF8; }
 .ai-cmd-input:focus { background:#fff; border-color:var(--green1); box-shadow:0 0 0 3px var(--green-dim); }
 body.dark .ai-cmd-input { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.10); }
 body.dark .ai-cmd-input:focus { background:rgba(255,255,255,0.07); border-color:var(--green1); box-shadow:0 0 0 3px var(--green-dim); }
-/* AI surfacing — inline suggestion (Peer Comparison). Distinct from Summary/Explain: no click,
-   no loading state — always-visible, computed from the real outlier rows already on screen. */
+/* Bertha domain (general AI assistance) — inline suggestion (Peer Comparison). Distinct from
+   Summary/Explain: no click, no loading state — always-visible, computed from the real outlier
+   rows already on screen. */
 .peer-ai-hint { display:flex; align-items:flex-start; gap:6px; padding:8px 20px; font-size:11px; line-height:1.5; color:#6366F1; background:rgba(99,102,241,0.06); border-bottom:1px solid var(--border); }
 .peer-ai-hint svg { flex-shrink:0; margin-top:2px; }
 body.dark .peer-ai-hint { color:#A5B4FC; background:rgba(99,102,241,0.12); }
@@ -7969,9 +7977,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</div>
           </div>
 
-          <!-- Einstein mechanism — on-demand button+dropdown, not always-on: dashRenderAiBlock()
-               renders the .ai-cta trigger, dashAiExplain() runs the Trigger→Loading→Result/Error
-               standard (_aiRunPanel) in-place inside the card. Recommendation ends in a real
+          <!-- Bertha domain (general AI assistance, not policy/change-specific) — on-demand
+               button+dropdown, not always-on: dashRenderAiBlock() renders the .ai-cta trigger,
+               dashAiExplain() runs the Trigger→Loading→Result/Error standard (_aiRunPanel)
+               in-place inside the card. Recommendation ends in a real
                .action-cta — same weight/colour as the row's own Review button, not the filled
                .btn-primary: AI never outranks the real primary action, it only offers the same
                one from a second place. -->
@@ -10037,8 +10046,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
         </div>
 
-        <!-- Einstein mechanism — on-demand button+dropdown: ndRenderAiBlock() renders the .ai-cta
-             trigger, ndAiExplain() runs the Trigger→Loading→Result/Error standard (_aiRunPanel)
+        <!-- Bertha domain (general AI assistance) — on-demand button+dropdown: ndRenderAiBlock()
+             renders the .ai-cta trigger, ndAiExplain() runs the Trigger→Loading→Result/Error standard (_aiRunPanel)
              in-place inside the card. Demo state selector lets a reviewer pick which outcome the
              next click reveals (success/no-result/error/unavailable) without needing real data —
              same "Demo state" convention as .icx-demo-tabs (L14160); changing it resets the card
@@ -11641,11 +11650,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="pd-desc" style="font-size:12px;color:var(--text-sec);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Industry-standard security configuration baseline for Windows 11, defined by the Center for Internet Security (CIS). Covers password policy, account settings, network security, and system configuration.</div>
         </div>
 
-        <!-- Jupiter (Week 3, Середа) — always-on BLOCK summarising the WHOLE policy, standing
-             on its own above the checks list. Distinct from Einstein's on-demand button+dropdown
-             (one object, click to reveal) and Bertha's inline strip (always-on but nested inside
-             one row): this is a standalone section, present the moment the policy has a failure,
-             not attached to any single check. Populated by pdRenderAiBlock(). -->
+        <!-- Jupiter domain (policy-only, confirmed in scope by client feedback) — always-on BLOCK
+             summarising the WHOLE policy, standing on its own above the checks list. Distinct from
+             the on-demand button+dropdown (one object, click to reveal) and the inline strip
+             (always-on but nested inside one row): this is a standalone section, present the moment
+             the policy has a failure, not attached to any single check. Populated by pdRenderAiBlock(). -->
         <div id="pd-ai-block" class="ai-block" style="display:none;align-items:center;">
           <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
           <div style="flex:1;min-width:0;">
@@ -11705,6 +11714,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="display:flex;align-items:center;gap:8px;">
               <button onclick="pdRunSimulation();" class="action-cta" style="width:auto;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linejoin="round"><path d="M3.33398 2.91583C3.33398 2.52025 3.77161 2.28133 4.10436 2.49524L12.0131 7.57941C12.3192 7.77623 12.3192 8.22377 12.0131 8.42059L4.10436 13.5048C3.77161 13.7187 3.33398 13.4798 3.33398 13.0842V2.91583Z"/></svg>Run again</button>
               <button onclick="document.getElementById(&#39;pd-simulation&#39;).style.display=&#39;none&#39;;" class="btn-outline">Close</button>
+            </div>
+          </div>
+
+          <!-- Jupiter domain (policy-only) — simulation AI insight. Same standalone-block shape
+               as pd-ai-block above, but summarising the WHOLE simulation run rather than the
+               policy's live check state. Populated by pdRenderSimAiBlock(), called at the end of
+               pdRunSimulation() so it's never stale relative to the table below. -->
+          <div id="pd-sim-ai-block" class="ai-block" style="align-items:center;margin-bottom:12px;">
+            <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+            <div style="flex:1;min-width:0;">
+              <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
+              <div id="pd-sim-ai-block-body" class="ai-block-body"></div>
             </div>
           </div>
           <!-- Table: Node / Simulation result / Status -->
@@ -13579,7 +13600,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (window._syncInlineTheme) _syncInlineTheme(document.body.classList.contains('dark'));
       intgRenderAiBlock();
     }
-    // Jupiter mechanism — Integrations rollup. Always-on block, no trigger, no loading state:
+    // Bertha domain (general AI assistance) — Integrations rollup. Always-on block, no trigger, no loading state:
     // reads INTG_PROVIDERS live (the exact array renderIntegrations() renders from), so
     // connected/available/attention counts and the first-run empty state can never drift out of
     // sync with what's on screen. Called at the end of renderIntegrations().
@@ -14039,7 +14060,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var totalAll = schema.fields.length + schema.unmapped.length;
       var fmWarnCount = schema.fields.filter(function(f){ return f.validation === 'warn'; }).length;
 
-      // AI Mapping — Jupiter mechanism (always-on, standalone, above the whole field list).
+      // AI Mapping — Bertha domain (general AI assistance, always-on, standalone, above the whole field list).
       // Reuses the existing name/type-based mapping data already in FM_SCHEMAS rather than
       // inventing a parallel "confidence" model: unmapped = AI found no match, validation:warn
       // = AI matched but isn't fully confident (custom/missing field) — surfaced here instead
@@ -16256,6 +16277,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (typeof dashRenderAiBlock === 'function') dashRenderAiBlock();
       if (typeof ndRenderAiBlock === 'function') ndRenderAiBlock();
       if (typeof pdRenderAiBlock === 'function') pdRenderAiBlock(window._pdChecks || []);
+      if (typeof pdRenderSimAiBlock === 'function') pdRenderSimAiBlock();
       if (typeof _repRenderNow === 'function') _repRenderNow();
       if (typeof schedRenderAiBlock === 'function') schedRenderAiBlock();
       if (typeof intgRenderAiBlock === 'function') intgRenderAiBlock();
@@ -17116,8 +17138,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         panel.style.display = 'block';
         var ts = document.getElementById('pd-sim-time');
         if (ts) ts.textContent = 'Simulated just now';
+        pdRenderSimAiBlock();
         panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 1200);
+    }
+
+    function pdRenderSimAiBlock() {
+      var body = document.getElementById('pd-sim-ai-block-body');
+      if (!body) return;
+      body.innerHTML = aiTierLocked() ? aiBlockLockedHtml() : _simAiSummary(_PE_SIM);
     }
 
     function pdExport(kind) {
@@ -17138,6 +17167,25 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       { node:'PROD-SERVER-01', res:'No failed checks',                                  pass:true  },
       { node:'STAGING-WIN-02', res:'No failed checks',                                  pass:true  }
     ];
+    // Jupiter domain (policy-only) — AI insight over a simulation run. Shared by both simulation
+    // surfaces (Policy Detail's pd-sim-ai-block and this modal's own AI block), since they read
+    // the same demo dataset. Genuinely data-driven: names the failing nodes and their own failing
+    // checks straight from the rows passed in, not a canned sentence.
+    function _simAiSummary(rows) {
+      var total = rows.length;
+      var failed = rows.filter(function (r) { return !r.pass; });
+      if (!failed.length) {
+        return 'All ' + total + ' evaluated nodes would pass this policy as configured \u2014 safe to assign or extend without further changes.';
+      }
+      var parts = failed.map(function (r) {
+        var reason = r.res.indexOf('\u00b7') > -1 ? r.res.split('\u00b7')[1].trim() : r.res;
+        return '<strong>' + r.node + '</strong> (' + reason + ')';
+      });
+      var partsHtml = parts.length === 1 ? parts[0] : parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
+      return 'Running this policy against the current estate would fail ' + failed.length + ' of ' + total +
+        ' node' + (total === 1 ? '' : 's') + ': ' + partsHtml + '. <strong>Recommendation:</strong> resolve ' +
+        'these before assigning this policy further \u2014 the rest of the estate already complies.';
+    }
     function peRunSimulation(btn) {
       var orig = btn.innerHTML;
       btn.innerHTML = '⏳ Running…';
@@ -17157,12 +17205,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           + '<span class="bdg bdg--dot ' + (r.pass ? 'bdg--green' : 'bdg--red') + '">' + (r.pass ? 'Pass' : 'Fail') + '</span>'
           + '</div>';
       }).join('');
+      var aiHtml = '<div style="padding:0 24px;margin-bottom:14px;">'
+        + '<div class="ai-block ai-block--tint" style="align-items:center;margin-bottom:0;">'
+        + PD_AI_SVG
+        + '<div style="flex:1;min-width:0;">'
+        + '<div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>'
+        + '<div class="ai-block-body">' + (aiTierLocked() ? aiBlockLockedHtml() : _simAiSummary(_PE_SIM)) + '</div>'
+        + '</div></div></div>';
       openModal({
         id: 'pe-sim-modal',
         size: 'lg',
         title: 'Simulation preview',
         subtitle: 'What this policy would do against the current estate. Nothing is saved yet.',
-        bodyHtml: '<div style="padding:0 24px;display:flex;align-items:center;gap:8px;">'
+        bodyHtml: aiHtml
+          + '<div style="padding:0 24px;display:flex;align-items:center;gap:8px;">'
           + '<span class="bdg bdg--gray">' + _PE_SIM.length + ' evaluated</span>'
           + '<span class="bdg bdg--green">' + (_PE_SIM.length - failed) + ' passed</span>'
           + '<span class="bdg bdg--red">' + failed + ' failed</span>'
@@ -17211,7 +17267,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     // Гліф «плюс» із канонічного набору Assets/icons/Property 1=Plus.svg — 8×8 viewBox,
     // stroke="currentColor", тож колір бере з кнопки й сам іде за темою і за hover.
     var PD_PLUS_SVG = '<svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 0.629639V7.37038"/><path d="M0.628906 4H7.36965"/></svg>';
-    // AI surfacing (Week 3, Пн) — "Explain why this check failed", inline per-row on FAILED
+    // Bertha domain (general AI assistance) — "Explain why this check failed", inline per-row on FAILED
     // checks only. Same sparkle glyph as the Dashboard/Detected Drift AI triggers.
     var PD_AI_SVG = '<svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>';
     // Same icon-chip glyph as .ai-cta on Dashboard/Detected Drift (mingcute:ai-line, Figma 3704:25546).
@@ -17428,7 +17484,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       aiLockCtaButtons();
     }
 
-    // Einstein — "Explain why this check failed" per failing check row. Same Trigger→Loading→
+    // Bertha domain (general AI assistance) — "Explain why this check failed" per failing check row. Same Trigger→Loading→
     // Result/Error→Retry standard as Credentials/CM Instances (_aiRunPanel), just a generic
     // explanation built from the check's own name/detail rather than a status taxonomy — a
     // policy check doesn't have discrete failure "kinds" the way a credential or CM instance does.
@@ -17455,10 +17511,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (panel) panel.classList.remove('is-open');
     }
 
-    // Jupiter (Week 3, Середа) — "broader intelligence" across the WHOLE policy, rendered as an
+    // Jupiter domain (policy-only) — "broader intelligence" across the WHOLE policy, rendered as an
     // always-on block, not asked for. Reads the full, unfiltered check set so the summary reflects
     // the policy as a whole regardless of the current Failed/Passed row filter. No trigger/loading
-    // state (unlike Einstein) — same reasoning as Bertha: the insight is either there or it isn't.
+    // state — the insight is either there or it isn't.
     function pdRenderAiBlock(checks) {
       var block = document.getElementById('pd-ai-block');
       var body = document.getElementById('pd-ai-block-body');
@@ -20079,7 +20135,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <span id="changes-clear-all" onclick="filterChanges(&#39;all&#39;)" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;flex-shrink:0;">Clear all</span>
         </div>
 
-        <!-- AI Grouping — Jupiter mechanism (always-on, standalone, above the whole list).
+        <!-- AI Grouping — Bertha domain (general AI assistance, always-on, standalone, above the whole list).
              Scans the currently visible unreconciled drift events for ones sharing the same
              node within a short time window (a proxy for "same underlying event") and offers
              one CTA that pre-selects them into the existing bulk-action bar — the human still
@@ -20270,10 +20326,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <span id="cd-detby-detail">Today 14:23 · Process: MsMpSvc</span>
                 </span>
               </div>
-              <!-- AI surfacing demo (Week 3, Пн) — "Explain why this change matters". Sits right
+              <!-- Einstein domain (change analysis/risk assessment — the only Einstein touchpoint
+                   confirmed by client feedback) — "Explain why this change matters". Sits right
                    before the Risk callout it elaborates on (Figma 3716:17918), not at the top of
-                   the card — supplementary to Risk, never replaces the Approve/Flag/Skip panel. -->
-              <div class="ai-dropdown">
+                   the card — supplementary to Risk, never replaces the Approve/Flag/Skip panel.
+                   Same button now also carries the full flow: Change Request -> Implementation
+                   Plan -> Post-change Scan -> Expected vs Actual -> Risk -> Reconcile, gated by
+                   einsteinFlowAvailable() (connected ServiceNow/Freshservice + a matched CR with
+                   an implementation plan on this change) — see cdAiExplain() below. Falls back to
+                   the plain explanation text otherwise, so no other change's behaviour changes. -->
+              <!-- margin-left:auto: cd-meta is justify-content:space-between + flex-wrap, and a
+                   single item alone on a wrapped line sits at flex-start, not flex-end — without
+                   this the button (and its panel, anchored off it) drift to the left edge on
+                   changes whose Score/Detected-by text is long enough to wrap this onto its own
+                   line (e.g. the reconciled Windows Defender change). -->
+              <div class="ai-dropdown" style="margin-left:auto;">
                 <button type="button" class="ai-cta ai-cta--pill" id="cd-ai-btn" onclick="cdAiExplain()"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>Explain with AI</button>
                 <div class="ai-panel" id="cd-ai-panel">
                   <div class="ai-panel-head"><span class="ai-panel-ico"><svg width="19" height="19" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg></span>AI Explanation<button type="button" class="ai-panel-close" onclick="cdAiDismiss()" aria-label="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
@@ -22966,7 +23033,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Report results (summary + tables) -->
         <div id="report-results">
 
-        <!-- Jupiter mechanism — always-on block, no trigger, above the KPI band it summarises.
+        <!-- Bertha domain (general AI assistance) — always-on block, no trigger, above the KPI band it summarises.
              Populated by reportRenderAiBlock(), called from _repRenderNow() so it stays in sync
              with scope/filter changes without needing a manual click. -->
         <div id="rep-ai-block" class="ai-block" style="align-items:center;">
@@ -23111,7 +23178,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <button id="ss-env" class="pol-tab" onclick="setSchedScope(&#39;env&#39;)" style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Environments <span class="pol-tab-count">3</span></button>
         </div>
 
-        <!-- Jupiter mechanism — always-on block, no trigger, above the schedule table it
+        <!-- Bertha domain (general AI assistance) — always-on block, no trigger, above the schedule table it
              summarises. No per-row failure state exists here (Active/Paused/Not scheduled only,
              no error/drift data), so a coverage-gap summary is the honest fit: which groups/
              environments have no schedule or a paused one. Populated by schedRenderAiBlock(),
@@ -23430,7 +23497,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
       </div>
       <div style="flex:1;background:var(--bg-page);padding:24px;overflow-y:auto;">
-        <!-- Jupiter mechanism — always-on block, no trigger, above the provider list it
+        <!-- Bertha domain (general AI assistance) — always-on block, no trigger, above the provider list it
              summarises. Reads live INTG_PROVIDERS state (same array renderIntegrations() renders
              from), so it reflects connected/available/attention exactly as shown on the page,
              including the first-run state where nothing is connected yet. Populated by
@@ -24399,7 +24466,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     <!-- STEP 2 · Map columns — AI takes action (item 4): AI auto-matches this file's column
          headers to Guardian node fields by name/keyword, same "propose with confidence, human
          reviews/overrides" shape as the CMDB/Freshservice AI Mapping step (openFieldMapping,
-         ~13986). Jupiter mechanism — always-on block above the table, not a click+dropdown. -->
+         ~13986). Bertha domain (general AI assistance) — always-on block above the table, not a click+dropdown. -->
     <div class="csvm-panel csv-map" id="v-csv-mapping" style="display:none;">
 
       <div class="csv-sec">
@@ -25235,7 +25302,7 @@ function _aiRunPanel(btn, body, loadingText, run) {
   );
 }
 
-// Jupiter mechanism — Dashboard "what needs my attention" rollup. Always-on block, no trigger,
+// Bertha domain (general AI assistance) — Dashboard "what needs my attention" rollup. Always-on block, no trigger,
 // no loading state: rendered directly whenever the dashboard is shown. Purple is provenance,
 // not action — indigo stays on the block's border/label/strong text only. The action button
 // lives in the static markup (end of the row, .action-cta, same handler as the row's own
@@ -25275,7 +25342,7 @@ function dashAiExplain() {
   });
 }
 
-// Jupiter mechanism — Reports summary rollup. Always-on block, no trigger, no loading state:
+// Bertha domain (general AI assistance) — Reports summary rollup. Always-on block, no trigger, no loading state:
 // renders directly off the already-resolved scope (_repRenderNow passes its own data/passed/
 // failed/score so the numbers can never drift from the KPI band above). Text is genuinely
 // data-driven: compliance score, worst-performing policy, most common failure severity, affected
@@ -25307,8 +25374,48 @@ function reportRenderAiBlock(data, passed, failed, score) {
   if (action && pid) { action.style.display = ''; action.setAttribute('onclick', "showPolicyDetail('" + pid + "')"); }
 }
 
-// AI surfacing (Week 3, Пн) — Detected Drift "Explain why this change matters". Supplementary
-// to the Risk callout; the Approve/Flag/Skip decision panel stays the primary action.
+// Einstein domain (change analysis/risk assessment). The full flow — Change Request ->
+// Implementation Plan -> Post-change Scan -> Expected vs Actual -> Risk Assessment -> Reconcile —
+// only makes sense once there is a real CR to walk through, so it's gated on BOTH a connected
+// ITSM integration (ServiceNow or Freshservice) AND this specific change having a matched CR with
+// an implementation plan on it (see CHANGE_DATA[1].implPlan). Everything else falls back to the
+// plain "why this change matters" text, same as before — this is additive, not a replacement.
+function einsteinFlowAvailable(d) {
+  var sn = intgProvider('servicenow'), fs = intgProvider('freshservice');
+  var itsmConnected = (sn && sn.status === 'connected') || (fs && fs.status === 'connected');
+  return !!(itsmConnected && d && d.cr === 'matched' && d.implPlan);
+}
+// Six-step timeline, reusing the same dot+connector visual language as the Change Request Audit
+// page (v-cr-audit) rather than inventing a new one — this is a compressed version of that same
+// idea, scoped to just this one change. Every step reads off real CHANGE_DATA/CR_STATES fields;
+// nothing here is a canned sentence independent of the change being shown. Renders inside the
+// existing default-width ai-panel (no wide variant) — the panel's anchor point shifts left when
+// the cd-meta row wraps, so a wider panel can run off the left edge of the viewport; text wraps
+// fine at this width instead.
+function cdEinsteinFlowHtml(d) {
+  var cr = (d.crs && d.crs[0]) || { id: 'CHG0012345', title: 'AV Software Migration' };
+  var reconciled = d.recon === 'reconciled';
+  var steps = [
+    { color: '#3B82F6', title: 'Change Request', text: '<strong>' + cr.id + '</strong> — ' + cr.title + ' · ' + (cr.status || 'Approved') },
+    { color: '#6366F1', title: 'Implementation Plan', text: d.implPlan.summary },
+    { color: '#94A3B8', title: 'Post-change Scan', text: d.detby.method + ' · ' + d.detby.detail },
+    { color: d.implPlan.matchesExpected === false ? '#F59E0B' : '#10B981', title: 'Expected vs Actual', text: '<strong>Expected:</strong> ' + d.implPlan.expected + '<br><strong>Actual:</strong> ' + d.after.val + ' — ' + d.after.sub },
+    { color: '#FB3C44', title: 'Risk Assessment', text: d.impact },
+    { color: reconciled ? '#10B981' : '#94A3B8', title: 'Reconcile', text: reconciled ? 'Already reconciled against this CR — no further action needed.' : 'Not yet reconciled — approving this change will close it out against ' + cr.id + '.' }
+  ];
+  return '<div>' + steps.map(function (s, i) {
+    return '<div style="display:flex;gap:10px;">'
+      + '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">'
+        + '<span style="width:8px;height:8px;border-radius:50%;background:' + s.color + ';margin-top:3px;flex-shrink:0;"></span>'
+        + (i < steps.length - 1 ? '<span style="flex:1;width:2px;background:var(--border);margin:3px 0;"></span>' : '')
+      + '</div>'
+      + '<div style="padding-bottom:' + (i < steps.length - 1 ? '12px' : '0') + ';">'
+        + '<div style="font-size:11px;font-weight:700;color:var(--text-default);margin-bottom:2px;">' + s.title + '</div>'
+        + '<div style="font-size:12px;color:var(--text-sec);line-height:1.5;">' + s.text + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('') + '</div>';
+}
 function cdAiExplain() {
   var btn = document.getElementById('cd-ai-btn');
   var panel = document.getElementById('cd-ai-panel');
@@ -25319,7 +25426,8 @@ function cdAiExplain() {
   _aiRunPanel(btn, body, 'Analysing this change…', function (success) {
     setTimeout(function () {
       var d = CHANGE_DATA[currentChangeIdx];
-      success((d && d.aiText) || '<div>No additional analysis available for this change.</div>');
+      var full = d && einsteinFlowAvailable(d);
+      success(full ? cdEinsteinFlowHtml(d) : ((d && d.aiText) || '<div>No additional analysis available for this change.</div>'));
     }, 900);
   });
 }
@@ -25454,7 +25562,7 @@ function ndAiSetDemoState(state) {
   ndRenderAiBlock();
 }
 
-// Einstein mechanism — Node Detail "current security posture" rollup. On-demand button+dropdown:
+// Bertha domain (general AI assistance) — Node Detail "current security posture" rollup. On-demand button+dropdown:
 // ndRenderAiBlock() resets the card to the .ai-cta trigger; ndAiExplain() runs the real
 // Trigger→Loading→Result/Error standard (_aiRunPanel) off whichever demo state the reviewer has
 // picked (success/no-result/error/unavailable), same states real scan data would drive. 'error'
@@ -25855,6 +25963,13 @@ var CHANGE_DATA = [
       { id:'CHG0012346', title:'Endpoint Security Update', status:'Approved' },
       { id:'CHG0012347', title:'Q3 Patch Rollout', status:'Approved' }
     ],
+    // Einstein flow (change analysis, gated by a connected ITSM) — the implementation plan the
+    // approved CR describes, and what it says the end state should be. Only present on changes
+    // that actually have a matched CR to pull a plan from; see einsteinFlowAvailable().
+    implPlan: {
+      summary: 'Deploy CrowdStrike Falcon across the endpoint fleet; temporarily disable Windows Defender real-time protection for the duration of the migration window to avoid an AV engine conflict during rollout.',
+      expected: 'Real-time protection: Disabled (temporary) — re-enabled automatically once Falcon deployment completes.'
+    },
     aiText: '<div>This change disabled real-time protection, which is the control that would normally stop malware before it runs. It was already matched against an approved change request — CHG0012345, AV Software Migration — so the underlying cause is accounted for. <strong>Recommendation:</strong> the reconciliation looks correct; no further action is needed unless the change request itself gets revoked or extended.</div>',
     notes: [
       { author:'John Smith', time:'2 days ago', text:'Confirmed with endpoint team — Defender was disabled during the AV migration.' },
@@ -27178,7 +27293,7 @@ function renderSchedules() {
       + '</div>';
   }).join('');
 }
-// Jupiter mechanism — Scan Schedules coverage-gap + cadence rollup. Always-on block, no
+// Bertha domain (general AI assistance) — Scan Schedules coverage-gap + cadence rollup. Always-on block, no
 // trigger, no loading state: renders directly off schedSet() + SCHED_DRIFT_ACTIVITY for
 // whichever scope tab (group/env) is active, called from renderSchedules() so it never
 // drifts from the table below.
