@@ -1198,11 +1198,13 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
    was our own addition before this spec existed). Same shared button/handler as the expanded
    header's collapse control; scaleX(-1) turns the "collapse" (double-arrow-left) glyph into
    "expand" (double-arrow-right, ic:baseline-keyboard-double-arrow-right) without a second icon.
-   Sized and spaced to the icon itself (19×20, 12px clearance below) rather than a filled
-   28×28 button square — Figma shows a bare icon here, no button chrome. */
+   Box stays sized/spaced to the bare icon (19×20, 12px clearance below) to keep the measured
+   16/12/16px rhythm exact — the hover fill below is a ::before overlay so it doesn't consume
+   any of that layout space, same canonical 32×32 r8 "Only icon" square the expanded button
+   already gets, just centered over a smaller box instead of filling it. */
 .sidebar.collapsed .sidebar-collapse-btn {
   display: flex;
-  position: static;
+  position: relative;
   order: -1;
   width: 19px;
   height: 20px;
@@ -1212,8 +1214,19 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
   opacity: 1;
   pointer-events: auto;
 }
-.sidebar.collapsed .sidebar-collapse-btn:hover { background: none; }
-.sidebar.collapsed .sidebar-collapse-btn svg { width:19px; height:20px; transform: scaleX(-1); }
+.sidebar.collapsed .sidebar-collapse-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 32px; height: 32px;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  background: transparent;
+  transition: background .15s;
+  pointer-events: none;
+}
+.sidebar.collapsed .sidebar-collapse-btn:hover::before { background: rgba(255,255,255,0.1); }
+.sidebar.collapsed .sidebar-collapse-btn svg { width:19px; height:20px; transform: scaleX(-1); position:relative; z-index:1; }
 .sidebar.collapsed .sidebar-item { justify-content:center; padding:9px 0; }
 .sidebar.collapsed .sidebar-item-label,
 .sidebar.collapsed .sidebar-item-badge,
