@@ -1174,26 +1174,27 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
    improving on it unprompted. */
 .sidebar.collapsed { width: 56px; }
 .sidebar.collapsed + .content-area { margin-left: 64px; }
-.sidebar.collapsed .nav-logo { justify-content:center; padding:0; cursor:pointer; }
+/* Header becomes its own two-slot column (Figma 4037:49611, "Section 39"): a 29px expand-button
+   slot stacked directly on the 54px logo slot, no gap between them — taller than the expanded
+   header's single 54px row, which is the literal spec, not an oversight. */
+.sidebar.collapsed .nav-logo { flex-direction:column; height:auto; padding:16px 0 0; cursor:pointer; }
 .sidebar.collapsed .nav-logo > span { display:none; }
-/* Hidden by default (icon alone reads as the logo); on hover it swaps in over the icon as
-   the "click to expand" affordance, same glyph as the expanded header's collapse button. */
+/* Always visible now — Figma shows this as a static icon, not a hover-reveal affordance (that
+   was our own addition before this spec existed). Same shared button/handler as the expanded
+   header's collapse control; scaleX(-1) turns the "collapse" (double-arrow-left) glyph into
+   "expand" (double-arrow-right, ic:baseline-keyboard-double-arrow-right) without a second icon. */
 .sidebar.collapsed .sidebar-collapse-btn {
   display: flex;
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  position: static;
+  order: -1;
+  width: 100%;
   margin: 0;
-  background: var(--navy-dark);
-  border-radius: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .15s;
-}
-.sidebar.collapsed .nav-logo:hover .sidebar-collapse-btn {
+  padding-bottom: 8px;
+  border-bottom: 0.5px solid #094248;
   opacity: 1;
   pointer-events: auto;
 }
+.sidebar.collapsed .sidebar-collapse-btn svg { transform: scaleX(-1); }
 .sidebar.collapsed .sidebar-item { justify-content:center; padding:9px 0; }
 .sidebar.collapsed .sidebar-item-label,
 .sidebar.collapsed .sidebar-item-badge,
@@ -6911,8 +6912,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <span class="gclogo" style="width:28px;height:28px;"></span>
       </div>
       <span style="flex:1;min-width:0;">Guardian</span>
+      <!-- Double-chevron (Figma 4037:49611: ic:baseline-keyboard-double-arrow-left expanded /
+           -right collapsed) replaces the old panel+divider glyph. One icon, flipped via
+           scaleX(-1) in the collapsed state (see .sidebar.collapsed .sidebar-collapse-btn svg). -->
       <button type="button" class="sidebar-collapse-btn" id="sidebar-collapse-btn" onclick="event.stopPropagation();toggleSidebarCollapse()" title="Collapse sidebar" aria-label="Collapse sidebar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9.5" y1="4" x2="9.5" y2="20"></line></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 17 13 12 18 7"></polyline><polyline points="11 17 6 12 11 7"></polyline></svg>
       </button>
     </div>
     <div class="sidebar-nav">
