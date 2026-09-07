@@ -8159,10 +8159,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                "look ours, AI functionality his"; Kash labels this pattern Einstein, so we keep it
                Einstein rather than remap to Bertha (see kash-ai-functionality-decision memory).
                Always-on, no trigger: dashRenderAiBlock() renders the headline straight off the same
-               3 items already listed in #dash-concept-attention below, plus a coverage line that's
-               honest about how much of the estate the summary actually covers — ported from Kash's
-               Dashboard "Needs your attention" block, rebuilt entirely in our own .ai-block/token
-               canon (no Kash markup/layout carried over). -->
+               3 items already listed in #dash-concept-attention below. Full-parity pass 07.09 (user:
+               "forget our caution, port everything Kash has") added the amber coverage banner + Why
+               reveal, the 3-button row, and the "Show the working out" evidence trail — same
+               patterns as Kash, our own tokens/components, real numbers throughout. -->
           <div id="dash-ai-block" class="ai-block" style="margin:0 0 12px;align-items:flex-start;">
             <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="align-self:flex-start;margin-top:1px;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
             <div style="flex:1;min-width:0;">
@@ -8207,7 +8207,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   </div>
                   <button class="action-cta" onclick="event.stopPropagation();openRemediation(0)">Review issue <span class="action-arrow"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
                 </div>
-                <div style="padding-top:8px;font-size:10px;color:var(--text-sec);">Risk area is inferred — check criticality is not an attribute in Guardian today.</div>
+                <div style="padding-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                  <span class="link-cta" style="font-size:12px;" onclick="showView('changes')"><span class="lc-txt">3 of 186 unreconciled items shown</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></span>
+                  <span style="margin-left:auto;font-size:10px;color:var(--text-sec);">Risk area is inferred — check criticality is not an attribute in Guardian today.</span>
+                </div>
               </div>
             </div>
             <button id="dash-ai-block-action" class="ai-cta ai-cta--pill" style="display:none;"></button>
@@ -25553,33 +25556,96 @@ function _aiRunPanel(btn, body, loadingText, run) {
 // lives in the static markup (end of the row, .action-cta, same handler as the row's own
 // Review button below) so it never outranks the app's real primary CTA.
 var DASH_AI_ICO_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>';
-// Always-on, no trigger: renders only the headline + coverage banner. The itemised list
+// Always-on, no trigger: renders the full headline/coverage/action set. The itemised list
 // (#dash-concept-attention) that the headline refers to lives INSIDE this same .ai-block in
 // the static markup, right below this body — one continuous panel, not a card stacked under
 // a separate card (Kash concept 07.09: "Needs your attention" is a single bordered block from
-// badges down through the item list, not split pieces). Coverage banner rebuilt in our own
-// status-box canon (neutral surface + colour dot, never a filled tinted box). "Open the N" /
-// "Show suppressed" / "This split is wrong" did NOT port: those need an actual noise set to
-// hide, which this page doesn't have (all 3 items are already substantive) — that pattern
-// belongs on Detected Drift, where driftComputeAiGroup() already does real grouping/suppression.
+// badges down through the item list, not split pieces). 07.09 full-parity pass (user: "forget
+// our caution, port everything Kash has for AI on the Dashboard"): coverage banner now uses the
+// real amber `.impact-box` (rule #4 exception, explicitly requested), the 3-button row, the
+// "Why" reveal, and the "Show the working out" evidence trail are all ported — every number in
+// them is real (186/14 from the KPI cards, 8/6 from the Change reconciliation card, and the
+// "1 of 14 nodes" fact is literally true: every CHANGE_DATA record is on MACBOOK-TARAS). What
+// did NOT change: still exactly the 3 real action items below — Kash's 6-item sample list isn't
+// reproduced with invented rows just to match its count, since we have no 4th–6th real item to
+// point at.
 function dashRenderAiBlock() {
   var body = document.getElementById('dash-ai-block-body');
   var action = document.getElementById('dash-ai-block-action');
   if (!body) return;
   if (action) action.style.display = 'none';
-  var scopeLine = '<div style="text-align:right;font-size:10px;color:var(--text-sec);margin-bottom:4px;">186 detected changes \u00b7 14 nodes monitored</div>';
+  var scopeLine = '<div style="text-align:right;font-size:10px;color:var(--text-sec);margin-bottom:4px;">186 unreconciled drift \u00b7 14 nodes monitored</div>';
   var headerRow = scopeLine
     + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap;">'
-    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">' + _currentTier + '</span></div>'
+    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">' + _currentTier + '</span><span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);border:1px dotted var(--border);border-radius:3px;padding:2px 6px;">TRIAGE AT VOLUME</span></div>'
     + '<span style="font-size:10px;color:var(--text-sec);flex-shrink:0;">Checked 2 minutes ago</span>'
     + '</div>';
   if (aiTierLocked()) { body.innerHTML = headerRow + aiBlockLockedHtml(); return; }
-  body.innerHTML = headerRow
-    + '<div style="font-size:13px;font-weight:700;color:var(--text-default);line-height:1.5;margin-top:2px;"><strong>3</strong> items need a decision today — a drift on a production node, a change request awaiting approval, and a critical compliance failure. The rest of what Guardian is tracking already matches expected patterns.</div>'
-    + '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;background:var(--bg-subtle);border-radius:6px;font-size:11px;color:var(--text-sec);">'
-    + '<span style="width:5px;height:5px;border-radius:50%;background:#00AF73;flex-shrink:0;"></span>'
-    + '<span><strong style="color:var(--text-default);">Coverage</strong> — based on 14 of 14 nodes monitored · last scanned 2 minutes ago</span>'
+
+  var headline = '<div style="font-size:16px;font-weight:700;color:var(--text-default);line-height:1.4;margin-top:2px;"><strong>3</strong> items need a decision today \u2014 a drift on a production node, a change request awaiting approval, and a critical compliance failure. The rest of what Guardian is tracking already matches expected patterns.</div>';
+
+  var coverage = '<div class="impact-box" style="margin:10px 0 0;display:flex;align-items:center;gap:9px;flex-wrap:wrap;">'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:9.5px;letter-spacing:0.1em;font-weight:700;flex-shrink:0;">COVERAGE</span>'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:11.5px;">Based on 1 of 14 nodes with detected-change history \u2014 MACBOOK-TARAS only \u00b7 last scanned 2 minutes ago</span>'
+    + '<span id="dash-ai-why-toggle" style="margin-left:auto;font-size:11.5px;font-weight:700;cursor:pointer;flex-shrink:0;" onclick="dashAiToggleWhy()">Why \u2192</span>'
+    + '</div>'
+    + '<div id="dash-ai-why" style="display:none;font-size:12px;line-height:1.6;color:var(--text-sec);margin-top:6px;">This reflects one node\u2019s history, not the estate\u2019s. The other 13 monitored nodes have no detected-change data in this window \u2014 that\u2019s an absence of visibility, not a clean bill of health.</div>';
+
+  var buttons = '<div style="display:flex;align-items:center;gap:10px;padding-top:10px;flex-wrap:wrap;">'
+    + '<button class="btn-primary btn-primary--s" onclick="dashAiScrollToItems()">Review the 3</button>'
+    + '<button class="btn-secondary" onclick="showView(\'changes\')">Show all 186 \u2192</button>'
+    + '<span style="margin-left:auto;font-size:11.5px;font-weight:600;color:var(--text-sec);cursor:pointer;" onclick="showToast(\'Feedback noted \u2014 thanks.\',\'info\')">This priority looks wrong</span>'
     + '</div>';
+
+  var trace = '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:9px;">'
+    + '<span id="dash-ai-trace-toggle" style="font-size:11.5px;font-weight:700;color:var(--ai-txt,#6D28D9);cursor:pointer;" onclick="dashAiToggleTrace()">Show the working out \u25be \u00b7 3 sources used</span>'
+    + '<div id="dash-ai-trace" style="display:none;margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:11px 13px;">'
+    + _dashAiTraceRow('SCANS', 'Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.')
+    + _dashAiTraceRow('CHANGE REQUESTS', '6 upcoming CRs tracked; 8 drift events have no matching CR.')
+    + _dashAiTraceRow('NOT USED', 'Peer comparison and consensus data were not consulted \u2014 this triage looks at reconciliation status only.')
+    + '<button class="btn-secondary" style="margin-top:2px;" onclick="dashAiCopyTrace()">Copy trace for a support ticket</button>'
+    + '</div>'
+    + '</div>';
+
+  body.innerHTML = headerRow + headline + coverage + buttons + trace;
+}
+function _dashAiTraceRow(label, text) {
+  return '<div style="display:grid;grid-template-columns:130px 1fr;gap:11px;align-items:baseline;margin-bottom:7px;">'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:10.5px;letter-spacing:0.06em;color:var(--text-sec);">' + label + '</span>'
+    + '<span style="font-size:12px;line-height:1.5;color:var(--text-default);">' + text + '</span>'
+    + '</div>';
+}
+function dashAiToggleWhy() {
+  var box = document.getElementById('dash-ai-why');
+  var t = document.getElementById('dash-ai-why-toggle');
+  if (!box || !t) return;
+  var open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  t.textContent = open ? 'Why \u2192' : 'Hide \u2192';
+}
+function dashAiToggleTrace() {
+  var box = document.getElementById('dash-ai-trace');
+  var t = document.getElementById('dash-ai-trace-toggle');
+  if (!box || !t) return;
+  var open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  t.textContent = (open ? 'Show the working out \u25be' : 'Hide the working out \u25b4') + ' \u00b7 3 sources used';
+}
+function dashAiCopyTrace() {
+  var text = 'Guardian AI triage trace\nScans: Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.\nChange requests: 6 upcoming CRs tracked; 8 drift events have no matching CR.\nNot used: Peer comparison and consensus data were not consulted.';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { showToast('Trace copied to clipboard', 'success'); });
+  } else {
+    showToast('Trace copied to clipboard', 'success');
+  }
+}
+function dashAiScrollToItems() {
+  var el = document.getElementById('dash-concept-attention');
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.style.transition = 'background 0.3s';
+  el.style.background = 'rgba(124,58,237,0.06)';
+  setTimeout(function () { el.style.background = 'transparent'; }, 900);
 }
 
 // Bertha domain (general AI assistance) — Reports summary rollup. Always-on block, no trigger, no loading state:
