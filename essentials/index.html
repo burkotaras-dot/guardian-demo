@@ -1174,26 +1174,60 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
    improving on it unprompted. */
 .sidebar.collapsed { width: 56px; }
 .sidebar.collapsed + .content-area { margin-left: 64px; }
-.sidebar.collapsed .nav-logo { justify-content:center; padding:0; cursor:pointer; }
+/* Header becomes its own two-slot column (Figma 4037:49535, literal re-check): pt-16 before the
+   chevron icon, the icon itself 19×20 with pb-12 under it, then the 54px logo slot carrying
+   BOTH dividers on its own box (border-t + border-b, #094248) — not one divider hung off the
+   chevron button. Taller than the expanded header's single 54px row; that's the literal spec,
+   not an oversight. */
+/* gap:0 + border-bottom:none override the base row rule's own gap:10px and border-bottom
+   (both meant for the expanded single-row header) — in the collapsed column they'd stack an
+   extra 10px onto every explicit margin below, and double up nav-logo-icon's own border-bottom
+   with a second line right underneath it. */
+.sidebar.collapsed .nav-logo { flex-direction:column; height:auto; padding:16px 0 0; gap:0; border-bottom:none; cursor:pointer; }
 .sidebar.collapsed .nav-logo > span { display:none; }
-/* Hidden by default (icon alone reads as the logo); on hover it swaps in over the icon as
-   the "click to expand" affordance, same glyph as the expanded header's collapse button. */
+/* Figma's logo slot is a fixed 54px band (matches the icon's own height everywhere else), not
+   the icon's bare 30px, AND it carries both dividers itself (border-t above, border-b below) —
+   not the chevron button underlining itself. */
+.sidebar.collapsed .nav-logo-icon {
+  height: 54px;
+  width: 100%;
+  border-top: 0.5px solid #094248;
+  border-bottom: 0.5px solid #094248;
+}
+/* Always visible now — Figma shows this as a static icon, not a hover-reveal affordance (that
+   was our own addition before this spec existed). Same shared button/handler as the expanded
+   header's collapse control; scaleX(-1) turns the "collapse" (double-arrow-left) glyph into
+   "expand" (double-arrow-right, ic:baseline-keyboard-double-arrow-right) without a second icon.
+   Box stays sized/spaced to the bare icon (19×20, 12px clearance below) to keep the measured
+   16/12/16px rhythm exact — the hover fill below is a ::before overlay so it doesn't consume
+   any of that layout space, sized 28×28 r8 to exactly match the expanded button's own
+   .sidebar-collapse-btn box (index.html:1072), just centered over a smaller icon instead of
+   filling it directly. */
 .sidebar.collapsed .sidebar-collapse-btn {
   display: flex;
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  background: var(--navy-dark);
-  border-radius: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .15s;
-}
-.sidebar.collapsed .nav-logo:hover .sidebar-collapse-btn {
+  position: relative;
+  order: -1;
+  width: 19px;
+  height: 20px;
+  margin: 0 auto 12px;
+  padding: 0;
+  background: none;
   opacity: 1;
   pointer-events: auto;
 }
+.sidebar.collapsed .sidebar-collapse-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 28px; height: 28px;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  background: transparent;
+  transition: background .15s;
+  pointer-events: none;
+}
+.sidebar.collapsed .sidebar-collapse-btn:hover::before { background: rgba(255,255,255,0.1); }
+.sidebar.collapsed .sidebar-collapse-btn svg { width:19px; height:20px; transform: scaleX(-1); position:relative; z-index:1; }
 .sidebar.collapsed .sidebar-item { justify-content:center; padding:9px 0; }
 .sidebar.collapsed .sidebar-item-label,
 .sidebar.collapsed .sidebar-item-badge,
@@ -2760,19 +2794,19 @@ body.dark #donut-tip { background:var(--p-dark-muted); color:var(--p-neutral-300
 .issue-fix-btn:hover { background:var(--bg-canvas); border-color:var(--green1); }
 /* Dashboard "what needs action" — 2 concepts for client review */
 .dash-block-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
-.action-row { position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 16px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:10px; cursor:pointer; transition:background .15s, border-color .15s, box-shadow .15s, transform .15s; --row-accent:var(--border-strong); }
+.action-row { position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 16px; background:#F8FAFC; border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:10px; cursor:pointer; transition:background .15s, border-color .15s, box-shadow .15s, transform .15s; --row-accent:var(--border-strong); }
 .action-row::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--row-accent); opacity:0; transition:opacity .15s; }
 .action-row:hover::before { opacity:1; }
 .action-row--drift { --row-accent:#C56A10; }
 .action-row--change { --row-accent:#7659C4; }
 .action-row--compliance { --row-accent:#D94A52; }
-.action-row:hover { background:var(--bg-surface); border-color:var(--border-strong); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+.action-row:hover { border-color:var(--border-strong); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
 .action-row:focus-visible { outline:2px solid var(--green1); outline-offset:2px; border-color:var(--green1); }
-body.dark .action-row { border-color:rgba(255,255,255,0.1); }
+body.dark .action-row { background:rgba(255,255,255,0.05) !important; border-color:rgba(255,255,255,0.1) !important; }
 body.dark .action-row--drift { --row-accent:#D98A3A; }
 body.dark .action-row--change { --row-accent:#9B83DD; }
 body.dark .action-row--compliance { --row-accent:#E66A71; }
-body.dark .action-row:hover { background:#012F32; border-color:rgba(255,255,255,0.18); }
+body.dark .action-row:hover { border-color:rgba(255,255,255,0.18); }
 /* Порожній стан «Needs your attention» бере ту саму поверхню, що й рядок черги
    (.action-row): .issues-card — прозора обгортка, тож без цього блок висів просто
    на канві й коло-іконка (--bg-canvas) зливалася з фоном. Hover немає — це не рядок,
@@ -2804,14 +2838,12 @@ body.dark .policy-card[data-pol-type="archived"]:hover { background:var(--bg-sur
 .policy-card .btn-icon { background:#F8FAFC; }
 /* Nodes table (All Nodes) row action buttons — DS §6.5 "Secondary" (s=32) */
 .action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
-.action-ico { width:34px; height:34px; padding:8px; box-sizing:border-box; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F1F5F9; }
+.action-ico { width:34px; height:34px; padding:8px; box-sizing:border-box; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--bg-surface); border:1px solid var(--border); }
 .action-ico svg { width:17px; height:17px; stroke:currentColor; }
 .action-ico--drift { color:#C56A10; }
 .action-ico--change { color:#7659C4; }
 .action-ico--compliance { color:#D94A52; }
-.action-row:hover .action-ico { background:#EAF0F6; }
-body.dark .action-ico { background:rgba(148,163,184,0.09); }
-body.dark .action-row:hover .action-ico { background:rgba(255,255,255,0.14); }
+body.dark .action-ico { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.14); }
 body.dark .action-ico--drift { color:#D98A3A; }
 body.dark .action-ico--change { color:#9B83DD; }
 body.dark .action-ico--compliance { color:#E66A71; }
@@ -2951,16 +2983,22 @@ body.dark .ai-block-body strong { color:#A5B4FC; }
    where the default var(--bg-surface) background would blend into the surrounding card. */
 .ai-block--tint { background:var(--bg-subtle); }
 body.dark .ai-block--tint { background:rgba(255,255,255,0.04); }
+/* Header band variant — Dashboard "Needs your attention" (user 07.09: move the title/scope line
+   INSIDE the bordered card as its own strip instead of a plain heading above it). Neutral surface
+   like .assign-notice/.j4m-info, NOT an indigo tint — colour stays on the icon/label only. */
+.ai-block-head-band { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 18px; background:var(--bg-subtle); border-bottom:1px solid #E2E8F0; border-radius:calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px) 0 0; }
+.ai-block-head-icon { color:#6366F1; flex-shrink:0; }
+body.dark .ai-block-head-band { background:rgba(255,255,255,0.05); border-bottom-color:#04363A; }
+body.dark .ai-block-head-icon { color:#A5B4FC; }
+/* Dashboard "Needs your attention" left accent — thicker, rounded terminals (a pronounced
+   bracket, per reference mock) instead of the shared .ai-block's thin straight edge. Scoped to
+   this one block only; every other .ai-block domain (Policy Detail, Node Detail, Reports, Scan
+   Schedules, Integrations) keeps the standard 3px straight rule. Head-band radius is the outer
+   radius minus the border thickness on each side, so the two arcs stay concentric without needing
+   overflow:hidden. */
+#dash-ai-block { border-left-width:3px; border-radius:22px var(--radius-lg) var(--radius-lg) 22px; }
+#dash-ai-block .ai-block-head-band { border-radius:19px calc(var(--radius-lg) - 1px) 0 0; }
 .ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6366F1; background:none; border:none; cursor:pointer; padding:0; }
-/* Action rows nested inside .ai-block (Dashboard "Needs your attention" — Kash concept 07.09):
-   the block itself is already the one bordered card, so nested rows drop their own card
-   border/radius/shadow and separate with a hairline divider instead, matching Kash's single
-   continuous panel rather than stacking a card inside a card. */
-.ai-block .action-row { background:transparent; border:none; border-bottom:1px solid var(--border); border-radius:0; margin-bottom:0; padding:12px 0 12px 14px; box-shadow:none !important; transform:none !important; --row-accent:#6366F1; }
-.ai-block .action-row:last-child { border-bottom:none; padding-bottom:2px; }
-.ai-block .action-row::before { opacity:1; }
-.ai-block .action-row:hover { background:transparent; }
-body.dark .ai-block .action-row { border-bottom-color:rgba(255,255,255,0.1); --row-accent:#A5B4FC; }
 /* Auto-remediation diff preview (Remediation page) — AI proposes a config change as a
    git-style diff, human reviews and presses Apply; colours are rgba-tinted so they read
    correctly in both themes without a separate body.dark override. */
@@ -4701,8 +4739,6 @@ body.dark .pill { color: #94A3B8; }
 .reset-btn-2s { color: var(--text-muted); }
 .reset-btn-2s.is-active { color: #059669; }
 
-/* All Nodes table header dark mode */
-body.dark #v-all-devices [style*="background:#F9FAFC"] { background: var(--table-header-bg) !important; }
 /* Peer Baseline table headers and group headers */
 body.dark #nodes-peer-view [style*="background:var(--bg-canvas)"] { background: #00262A !important; }
 body.dark #nodes-peer-view [style*="background:#fff"] { background: var(--bg-card) !important; }
@@ -6911,8 +6947,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <span class="gclogo" style="width:28px;height:28px;"></span>
       </div>
       <span style="flex:1;min-width:0;">Guardian</span>
+      <!-- Double-chevron (Figma 4037:49611: ic:baseline-keyboard-double-arrow-left expanded /
+           -right collapsed) replaces the old panel+divider glyph. One icon, flipped via
+           scaleX(-1) in the collapsed state (see .sidebar.collapsed .sidebar-collapse-btn svg). -->
       <button type="button" class="sidebar-collapse-btn" id="sidebar-collapse-btn" onclick="event.stopPropagation();toggleSidebarCollapse()" title="Collapse sidebar" aria-label="Collapse sidebar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9.5" y1="4" x2="9.5" y2="20"></line></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 17 13 12 18 7"></polyline><polyline points="11 17 6 12 11 7"></polyline></svg>
       </button>
     </div>
     <div class="sidebar-nav">
@@ -8140,43 +8179,37 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <div class="issues-card">
-          <div class="dash-block-head">
-            <div style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</div>
-          </div>
-
-          <!-- Deterministic contrast line — Kash concept 07.09 ("3 of 591 detected changes are
-               matched to a change request", a direct lookup, no model). Reuses the SAME real number
-               already shown on the reconciliation card below (8 drift events without CR) instead of
-               inventing a new figure — deliberately plain/neutral styling so it doesn't compete with
-               the indigo AI block right underneath. -->
-          <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;margin-bottom:10px;background:var(--bg-subtle);border-radius:8px;font-size:12px;color:var(--text-sec);flex-wrap:wrap;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
-            <span><strong style="color:var(--text-default);">8</strong> detected changes have no matching change request — a direct lookup across data Guardian already stores, no model involved.</span>
-            <button class="stat-link" style="margin-left:auto;padding-top:0;flex-shrink:0;font-weight:600;" onclick="showView('changes')"><span class="stat-link-txt">View reconciliation</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
-          </div>
-
-          <!-- Einstein domain (estate-wide change/risk triage) — Kash concept 07.09, client call:
-               "look ours, AI functionality his"; Kash labels this pattern Einstein, so we keep it
-               Einstein rather than remap to Bertha (see kash-ai-functionality-decision memory).
-               Always-on, no trigger: dashRenderAiBlock() renders the headline straight off the same
-               3 items already listed in #dash-concept-attention below. Full-parity pass 07.09 (user:
-               "forget our caution, port everything Kash has") added the amber coverage banner + Why
-               reveal, the 3-button row, and the "Show the working out" evidence trail — same
-               patterns as Kash, our own tokens/components, real numbers throughout. -->
-          <div id="dash-ai-block" class="ai-block" style="margin:0 0 12px;align-items:flex-start;">
-            <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="align-self:flex-start;margin-top:1px;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
-            <div style="flex:1;min-width:0;">
+          <!-- Header band lives INSIDE the bordered card (user 07.09: "Needs your attention" title +
+               scope line move into a tinted strip at the top of the card, not a plain heading above
+               it) — see .ai-block-head-band. Einstein domain (estate-wide change/risk triage) — Kash
+               concept 07.09, client call: "look ours, AI functionality his"; Kash labels this pattern
+               Einstein, so we keep it Einstein rather than remap to Bertha (see
+               kash-ai-functionality-decision memory). Always-on, no trigger: dashRenderAiBlock()
+               renders the headline straight off the same 3 items already listed in
+               #dash-concept-attention below. Full-parity pass 07.09 (user: "forget our caution, port
+               everything Kash has") added the amber coverage banner + Why reveal, the 3-button row,
+               and the "Show the working out" evidence trail — same patterns as Kash, our own
+               tokens/components, real numbers throughout. -->
+          <div id="dash-ai-block" class="ai-block" style="margin:0 0 12px;padding:0;display:block;">
+            <div class="ai-block-head-band" style="padding-left:20px;">
+              <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+                <svg class="ai-block-head-icon" width="15" height="15" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+                <span style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</span>
+              </div>
+              <span style="font-size:11px;color:var(--text-sec);white-space:nowrap;">186 unreconciled drift &middot; 14 nodes monitored</span>
+            </div>
+            <div style="padding:14px 18px 14px 50px;">
               <div id="dash-ai-block-body" class="ai-block-body"></div>
 
-              <!-- Needs your attention — mixed, prioritised action queue. Nested INSIDE the same
-                   bordered .ai-block as the headline/coverage above (Kash concept 07.09: one
-                   continuous panel, not a card stacked under a separate card) — see
-                   `.ai-block .action-row` override for the borderless/divider treatment. Risk-area
-                   tags (.bdg--gray) sit only on the 2 items where they're honestly derivable from
-                   the row's own text (config changes → Service config, Defender/BitLocker →
-                   Security posture); CR-1842 gets none — it's a reconciliation-status record, not
-                   a technical change with an impact area. -->
-              <div id="dash-concept-attention" style="border-top:1px solid var(--border);margin-top:10px;padding-top:2px;">
+              <!-- Needs your attention — mixed, prioritised action queue. Nested inside the same
+                   .ai-block as the headline/coverage above, but each item keeps the standard
+                   .action-row card treatment (own border/radius/shadow) instead of the merged
+                   divider-list look (user 07.09: keep cards separate, don't join them into one
+                   continuous list). Risk-area tags (.bdg--gray) sit only on the 2 items where
+                   they're honestly derivable from the row's own text (config changes → Service
+                   config, Defender/BitLocker → Security posture); CR-1842 gets none — it's a
+                   reconciliation-status record, not a technical change with an impact area. -->
+              <div id="dash-concept-attention" style="margin-top:10px;padding-top:2px;">
                 <div class="action-row action-row--drift" role="link" tabindex="0" onclick="showView(&#39;changes&#39;)" onkeydown="if(event.key===&#39;Enter&#39;||event.key===&#39; &#39;){event.preventDefault();showView(&#39;changes&#39;);}">
                   <div class="action-row-l">
                     <div class="action-ico action-ico--drift"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"></path></svg></div>
@@ -8212,8 +8245,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <span style="margin-left:auto;font-size:10px;color:var(--text-sec);">Risk area is inferred — check criticality is not an attribute in Guardian today.</span>
                 </div>
               </div>
+              <button id="dash-ai-block-action" class="ai-cta ai-cta--pill" style="display:none;"></button>
             </div>
-            <button id="dash-ai-block-action" class="ai-cta ai-cta--pill" style="display:none;"></button>
           </div>
 
           <!-- Перший запуск. Це не «все спокійно», а «ти ще не почав», тому текст називає
@@ -8688,7 +8721,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <div id="nodes-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
 
           <!-- Table header -->
-          <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+          <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 120px;padding:10px 20px;background:var(--table-header-bg);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
             <div><input type="checkbox" id="select-all-nodes" onchange="toggleAllNodes(this)" style="cursor:pointer;accent-color:var(--green2);"></div>
             <div onclick="sortNodes(&#39;name&#39;)" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;&#39;">Node <span id="sort-icon-name" style="display:inline-flex;color:#94a3b8;"><svg width="10" height="10" viewBox="0 0 9 8" fill="none" style="display:block"><path d="M0.5 6L2.21 7.5L3.93 6M2.21 7.5V0.5M8.5 2L6.79 0.5L5.07 2M6.79 0.5V7.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
             <div onclick="sortNodes(&#39;score&#39;)" style="cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;&#39;">Score <span id="sort-icon-score" style="display:inline-flex;color:#94a3b8;"><svg width="10" height="10" viewBox="0 0 9 8" fill="none" style="display:block"><path d="M0.5 6L2.21 7.5L3.93 6M2.21 7.5V0.5M8.5 2L6.79 0.5L5.07 2M6.79 0.5V7.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
@@ -9056,7 +9089,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="detected-list-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
 
             <!-- Table header -->
-            <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 260px;padding:10px 20px;background:#F9FAFC;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+            <div class="col-thead" style="display:grid;grid-template-columns:40px 2fr 1.2fr 1fr 1fr 260px;padding:10px 20px;background:var(--table-header-bg);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
               <div><input type="checkbox" id="select-all-detected" onchange="toggleAllDetected(this)" style="cursor:pointer;accent-color:var(--green2);"></div>
               <div>Node</div>
               <div>Discovered via</div>
@@ -25560,11 +25593,10 @@ var DASH_AI_ICO_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="non
 // (#dash-concept-attention) that the headline refers to lives INSIDE this same .ai-block in
 // the static markup, right below this body — one continuous panel, not a card stacked under
 // a separate card (Kash concept 07.09: "Needs your attention" is a single bordered block from
-// badges down through the item list, not split pieces). 07.09 full-parity pass (user: "forget
-// our caution, port everything Kash has for AI on the Dashboard"): coverage banner now uses the
-// real amber `.impact-box` (rule #4 exception, explicitly requested), the 3-button row, the
-// "Why" reveal, and the "Show the working out" evidence trail are all ported — every number in
-// them is real (186/14 from the KPI cards, 8/6 from the Change reconciliation card, and the
+// badges down through the item list, not split pieces). Coverage banner is a neutral status-box
+// (`.assign-notice` canon — neutral surface + colour dot, index.html:3229) with a "Why" reveal;
+// the 3-button row and the "Show the working out" evidence trail are also ported — every number
+// in them is real (186/14 from the KPI cards, 8/6 from the Change reconciliation card, and the
 // "1 of 14 nodes" fact is literally true: every CHANGE_DATA record is on MACBOOK-TARAS). What
 // did NOT change: still exactly the 3 real action items below — Kash's 6-item sample list isn't
 // reproduced with invented rows just to match its count, since we have no 4th–6th real item to
@@ -25574,32 +25606,33 @@ function dashRenderAiBlock() {
   var action = document.getElementById('dash-ai-block-action');
   if (!body) return;
   if (action) action.style.display = 'none';
-  var scopeLine = '<div style="text-align:right;font-size:10px;color:var(--text-sec);margin-bottom:4px;">186 unreconciled drift \u00b7 14 nodes monitored</div>';
-  var headerRow = scopeLine
-    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap;">'
-    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">' + _currentTier + '</span><span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);border:1px dotted var(--border);border-radius:3px;padding:2px 6px;">TRIAGE AT VOLUME</span></div>'
+  var headerRow = '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap;">'
+    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">' + _currentTier + '</span><span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">TRIAGE AT VOLUME</span></div>'
     + '<span style="font-size:10px;color:var(--text-sec);flex-shrink:0;">Checked 2 minutes ago</span>'
     + '</div>';
   if (aiTierLocked()) { body.innerHTML = headerRow + aiBlockLockedHtml(); return; }
 
-  var headline = '<div style="font-size:16px;font-weight:700;color:var(--text-default);line-height:1.4;margin-top:2px;"><strong>3</strong> items need a decision today \u2014 a drift on a production node, a change request awaiting approval, and a critical compliance failure. The rest of what Guardian is tracking already matches expected patterns.</div>';
+  var headline = '<div style="font-size:16px;font-weight:700;color:var(--text-default);line-height:1.4;margin-top:2px;"><strong>3</strong> items need a decision today. Everything else Guardian is tracking already matches expected patterns.</div>';
 
-  var coverage = '<div class="impact-box" style="margin:10px 0 0;display:flex;align-items:center;gap:9px;flex-wrap:wrap;">'
-    + '<span style="font-family:\'DM Mono\',monospace;font-size:9.5px;letter-spacing:0.1em;font-weight:700;flex-shrink:0;">COVERAGE</span>'
-    + '<span style="font-family:\'DM Mono\',monospace;font-size:11.5px;">Based on 1 of 14 nodes with detected-change history \u2014 MACBOOK-TARAS only \u00b7 last scanned 2 minutes ago</span>'
-    + '<span id="dash-ai-why-toggle" style="margin-left:auto;font-size:11.5px;font-weight:700;cursor:pointer;flex-shrink:0;" onclick="dashAiToggleWhy()">Why \u2192</span>'
+  var coverage = '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:center;gap:8px;padding:9px 14px;flex-wrap:wrap;font-size:12px;">'
+    + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;"></span>'
+    + '<span style="color:var(--text-sec);"><strong style="color:var(--text-default);">Coverage</strong> \u2014 Based on 1 of 14 nodes with detected-change history \u2014 MACBOOK-TARAS only \u00b7 last scanned 2 minutes ago</span>'
+    + '<span id="dash-ai-why-toggle" style="margin-left:auto;font-weight:700;color:var(--green2);cursor:pointer;flex-shrink:0;" onclick="dashAiToggleWhy()">Why \u2192</span>'
     + '</div>'
     + '<div id="dash-ai-why" style="display:none;font-size:12px;line-height:1.6;color:var(--text-sec);margin-top:6px;">This reflects one node\u2019s history, not the estate\u2019s. The other 13 monitored nodes have no detected-change data in this window \u2014 that\u2019s an absence of visibility, not a clean bill of health.</div>';
 
   var buttons = '<div style="display:flex;align-items:center;gap:10px;padding-top:10px;flex-wrap:wrap;">'
-    + '<button class="btn-primary btn-primary--s" onclick="dashAiScrollToItems()">Review the 3</button>'
-    + '<button class="btn-secondary" onclick="showView(\'changes\')">Show all 186 \u2192</button>'
+    + '<button class="btn-secondary" onclick="dashAiScrollToItems()">Review the 3</button>'
+    + '<button class="btn-primary btn-primary--s" onclick="showView(\'changes\')">Show all 186 \u2192</button>'
     + '<span style="margin-left:auto;font-size:11.5px;font-weight:600;color:var(--text-sec);cursor:pointer;" onclick="showToast(\'Feedback noted \u2014 thanks.\',\'info\')">This priority looks wrong</span>'
     + '</div>';
 
-  var trace = '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:9px;">'
-    + '<span id="dash-ai-trace-toggle" style="font-size:11.5px;font-weight:700;color:var(--ai-txt,#6D28D9);cursor:pointer;" onclick="dashAiToggleTrace()">Show the working out \u25be \u00b7 3 sources used</span>'
-    + '<div id="dash-ai-trace" style="display:none;margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:11px 13px;">'
+  var trace = '<div style="margin-top:10px;padding-top:2px;">'
+    + '<div class="fm-collapsed-toggle" onclick="this.classList.toggle(\'is-open\')">'
+    + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>'
+    + 'Show the working out \u00b7 3 sources used'
+    + '</div>'
+    + '<div class="fm-collapsed-body" style="margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:11px 13px;">'
     + _dashAiTraceRow('SCANS', 'Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.')
     + _dashAiTraceRow('CHANGE REQUESTS', '6 upcoming CRs tracked; 8 drift events have no matching CR.')
     + _dashAiTraceRow('NOT USED', 'Peer comparison and consensus data were not consulted \u2014 this triage looks at reconciliation status only.')
@@ -25622,14 +25655,6 @@ function dashAiToggleWhy() {
   var open = box.style.display !== 'none';
   box.style.display = open ? 'none' : 'block';
   t.textContent = open ? 'Why \u2192' : 'Hide \u2192';
-}
-function dashAiToggleTrace() {
-  var box = document.getElementById('dash-ai-trace');
-  var t = document.getElementById('dash-ai-trace-toggle');
-  if (!box || !t) return;
-  var open = box.style.display !== 'none';
-  box.style.display = open ? 'none' : 'block';
-  t.textContent = (open ? 'Show the working out \u25be' : 'Hide the working out \u25b4') + ' \u00b7 3 sources used';
 }
 function dashAiCopyTrace() {
   var text = 'Guardian AI triage trace\nScans: Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.\nChange requests: 6 upcoming CRs tracked; 8 drift events have no matching CR.\nNot used: Peer comparison and consensus data were not consulted.';
