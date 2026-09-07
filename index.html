@@ -2986,15 +2986,6 @@ body.dark .ai-block-body strong { color:#A5B4FC; }
 .ai-block--tint { background:var(--bg-subtle); }
 body.dark .ai-block--tint { background:rgba(255,255,255,0.04); }
 .ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6366F1; background:none; border:none; cursor:pointer; padding:0; }
-/* Action rows nested inside .ai-block (Dashboard "Needs your attention" — Kash concept 07.09):
-   the block itself is already the one bordered card, so nested rows drop their own card
-   border/radius/shadow and separate with a hairline divider instead, matching Kash's single
-   continuous panel rather than stacking a card inside a card. */
-.ai-block .action-row { background:transparent; border:none; border-bottom:1px solid var(--border); border-radius:0; margin-bottom:0; padding:12px 0 12px 14px; box-shadow:none !important; transform:none !important; --row-accent:#6366F1; }
-.ai-block .action-row:last-child { border-bottom:none; padding-bottom:2px; }
-.ai-block .action-row::before { opacity:1; }
-.ai-block .action-row:hover { background:transparent; }
-body.dark .ai-block .action-row { border-bottom-color:rgba(255,255,255,0.1); --row-accent:#A5B4FC; }
 /* Auto-remediation diff preview (Remediation page) — AI proposes a config change as a
    git-style diff, human reviews and presses Apply; colours are rgba-tinted so they read
    correctly in both themes without a separate body.dark override. */
@@ -8181,17 +8172,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</div>
           </div>
 
-          <!-- Deterministic contrast line — Kash concept 07.09 ("3 of 591 detected changes are
-               matched to a change request", a direct lookup, no model). Reuses the SAME real number
-               already shown on the reconciliation card below (8 drift events without CR) instead of
-               inventing a new figure — deliberately plain/neutral styling so it doesn't compete with
-               the indigo AI block right underneath. -->
-          <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;margin-bottom:10px;background:var(--bg-subtle);border-radius:8px;font-size:12px;color:var(--text-sec);flex-wrap:wrap;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
-            <span><strong style="color:var(--text-default);">8</strong> detected changes have no matching change request — a direct lookup across data Guardian already stores, no model involved.</span>
-            <button class="stat-link" style="margin-left:auto;padding-top:0;flex-shrink:0;font-weight:600;" onclick="showView('changes')"><span class="stat-link-txt">View reconciliation</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></button>
-          </div>
-
           <!-- Einstein domain (estate-wide change/risk triage) — Kash concept 07.09, client call:
                "look ours, AI functionality his"; Kash labels this pattern Einstein, so we keep it
                Einstein rather than remap to Bertha (see kash-ai-functionality-decision memory).
@@ -8205,14 +8185,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="flex:1;min-width:0;">
               <div id="dash-ai-block-body" class="ai-block-body"></div>
 
-              <!-- Needs your attention — mixed, prioritised action queue. Nested INSIDE the same
-                   bordered .ai-block as the headline/coverage above (Kash concept 07.09: one
-                   continuous panel, not a card stacked under a separate card) — see
-                   `.ai-block .action-row` override for the borderless/divider treatment. Risk-area
-                   tags (.bdg--gray) sit only on the 2 items where they're honestly derivable from
-                   the row's own text (config changes → Service config, Defender/BitLocker →
-                   Security posture); CR-1842 gets none — it's a reconciliation-status record, not
-                   a technical change with an impact area. -->
+              <!-- Needs your attention — mixed, prioritised action queue. Nested inside the same
+                   .ai-block as the headline/coverage above, but each item keeps the standard
+                   .action-row card treatment (own border/radius/shadow) instead of the merged
+                   divider-list look (user 07.09: keep cards separate, don't join them into one
+                   continuous list). Risk-area tags (.bdg--gray) sit only on the 2 items where
+                   they're honestly derivable from the row's own text (config changes → Service
+                   config, Defender/BitLocker → Security posture); CR-1842 gets none — it's a
+                   reconciliation-status record, not a technical change with an impact area. -->
               <div id="dash-concept-attention" style="border-top:1px solid var(--border);margin-top:10px;padding-top:2px;">
                 <div class="action-row action-row--drift" role="link" tabindex="0" onclick="showView(&#39;changes&#39;)" onkeydown="if(event.key===&#39;Enter&#39;||event.key===&#39; &#39;){event.preventDefault();showView(&#39;changes&#39;);}">
                   <div class="action-row-l">
@@ -25619,7 +25599,7 @@ function dashRenderAiBlock() {
     + '</div>';
   if (aiTierLocked()) { body.innerHTML = headerRow + aiBlockLockedHtml(); return; }
 
-  var headline = '<div style="font-size:16px;font-weight:700;color:var(--text-default);line-height:1.4;margin-top:2px;"><strong>3</strong> items need a decision today \u2014 a drift on a production node, a change request awaiting approval, and a critical compliance failure. The rest of what Guardian is tracking already matches expected patterns.</div>';
+  var headline = '<div style="font-size:16px;font-weight:700;color:var(--text-default);line-height:1.4;margin-top:2px;"><strong>3</strong> items need a decision today. Everything else Guardian is tracking already matches expected patterns.</div>';
 
   var coverage = '<div class="impact-box" style="margin:10px 0 0;display:flex;align-items:center;gap:9px;flex-wrap:wrap;">'
     + '<span style="font-family:\'DM Mono\',monospace;font-size:9.5px;letter-spacing:0.1em;font-weight:700;flex-shrink:0;">COVERAGE</span>'
@@ -25634,9 +25614,12 @@ function dashRenderAiBlock() {
     + '<span style="margin-left:auto;font-size:11.5px;font-weight:600;color:var(--text-sec);cursor:pointer;" onclick="showToast(\'Feedback noted \u2014 thanks.\',\'info\')">This priority looks wrong</span>'
     + '</div>';
 
-  var trace = '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:9px;">'
-    + '<span id="dash-ai-trace-toggle" style="font-size:11.5px;font-weight:700;color:var(--ai-txt,#6D28D9);cursor:pointer;" onclick="dashAiToggleTrace()">Show the working out \u25be \u00b7 3 sources used</span>'
-    + '<div id="dash-ai-trace" style="display:none;margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:11px 13px;">'
+  var trace = '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:2px;">'
+    + '<div class="fm-collapsed-toggle" onclick="this.classList.toggle(\'is-open\')">'
+    + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>'
+    + 'Show the working out \u00b7 3 sources used'
+    + '</div>'
+    + '<div class="fm-collapsed-body" style="margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:11px 13px;">'
     + _dashAiTraceRow('SCANS', 'Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.')
     + _dashAiTraceRow('CHANGE REQUESTS', '6 upcoming CRs tracked; 8 drift events have no matching CR.')
     + _dashAiTraceRow('NOT USED', 'Peer comparison and consensus data were not consulted \u2014 this triage looks at reconciliation status only.')
@@ -25659,14 +25642,6 @@ function dashAiToggleWhy() {
   var open = box.style.display !== 'none';
   box.style.display = open ? 'none' : 'block';
   t.textContent = open ? 'Why \u2192' : 'Hide \u2192';
-}
-function dashAiToggleTrace() {
-  var box = document.getElementById('dash-ai-trace');
-  var t = document.getElementById('dash-ai-trace-toggle');
-  if (!box || !t) return;
-  var open = box.style.display !== 'none';
-  box.style.display = open ? 'none' : 'block';
-  t.textContent = (open ? 'Show the working out \u25be' : 'Hide the working out \u25b4') + ' \u00b7 3 sources used';
 }
 function dashAiCopyTrace() {
   var text = 'Guardian AI triage trace\nScans: Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.\nChange requests: 6 upcoming CRs tracked; 8 drift events have no matching CR.\nNot used: Peer comparison and consensus data were not consulted.';
