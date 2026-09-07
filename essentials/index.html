@@ -13,6 +13,20 @@
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
+/* Canonical scrollbar — overlay style (Variant C): invisible track, thumb hidden until the
+   scrolling element itself is hovered. Applies app-wide via `*` so every scrollable panel
+   (Remediation side list, modal bodies, dropdown popovers, etc.) matches without needing a
+   per-component override. Uses the same --border/--text-muted tokens as everywhere else, so
+   light/dark just falls out of the existing body.dark token redefinitions — no separate
+   dark rule needed here. */
+* { scrollbar-width:thin; scrollbar-color:transparent transparent; }
+*:hover { scrollbar-color:var(--border) transparent; }
+*::-webkit-scrollbar { width:8px; height:8px; }
+*::-webkit-scrollbar-track { background:transparent; }
+*::-webkit-scrollbar-thumb { background:transparent; border-radius:4px; transition:background .15s; }
+*:hover::-webkit-scrollbar-thumb { background:var(--border); }
+*::-webkit-scrollbar-thumb:hover { background:var(--text-muted); }
+
 :root {
   /* ═══════════════════════════════════════════════════════
      PRIMITIVE SCALE  —  raw color values (Figma confirmed)
@@ -950,8 +964,8 @@ body.dark .cd-risk { background:rgba(255,255,255,0.03); border-color:rgba(255,25
 .cd-check-name { font-size:16px; font-weight:700; color:var(--text-default); letter-spacing:-0.3px; margin-top:10px; }
 
 /* Change Detail — two-column layout: scrollable main + fixed "Your decision" sidebar */
-.cd-layout { flex:1; display:flex; align-items:stretch; min-height:0; overflow:hidden; }
-.cd-main { flex:1; min-width:0; overflow-y:auto; background:var(--bg-page); padding:24px; }
+.cd-layout { flex:1; display:flex; align-items:stretch; min-height:0; overflow:hidden; padding-right:10px; }
+.cd-main { flex:1; min-width:0; overflow-y:auto; background:var(--bg-page); padding:24px; margin-right:10px; }
 .cd-side { width:380px; flex-shrink:0; background:var(--bg-surface); border-left:1px solid var(--border); box-shadow:-6px 0 16px rgba(15,23,42,0.04); display:flex; flex-direction:column; overflow-y:auto; }
 .cd-side-nav { display:flex; align-items:center; gap:12px; padding:14px; border-bottom:1px solid var(--border); flex-shrink:0; }
 .cd-nav-btn { width:32px; height:32px; flex-shrink:0; border-radius:8px; background:#F8F9FA; border:1px solid #E2E8F0; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-default); transition:background .15s, border-color .15s; }
@@ -1344,7 +1358,6 @@ body.dark #sidebar-tip { background:#0a1f22; border:1px solid rgba(255,255,255,0
   border:1px solid rgba(16,185,129,0.3);
   padding:24px;
   margin-bottom:16px;
-  box-shadow:var(--shadow-sm);
 }
 
 .os-banner {
@@ -2319,7 +2332,7 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
 }
 
 /* ── REMEDIATION ── */
-.remed-layout { flex:1; display:flex; overflow:hidden; min-width:0; }
+.remed-layout { flex:1; display:flex; overflow:hidden; min-width:0; padding-right:10px; }
 /* Failed-checks list — RIGHT sidebar */
 .remed-list {
   width:380px; background:var(--bg-surface);
@@ -2327,7 +2340,7 @@ body.dark .code-btn:hover { background:rgba(16,185,129,0.32); }
   box-shadow:-6px 0 16px rgba(15,23,42,0.04);
   overflow-y:auto; flex-shrink:0;
 }
-.remed-detail { flex:1; background:var(--bg-page); padding:24px; overflow-y:auto; min-width:0; }
+.remed-detail { flex:1; background:var(--bg-page); padding:24px; margin-right:10px; overflow-y:auto; min-width:0; }
 
 .remed-list-header {
   padding:14px 16px 0;
@@ -4109,21 +4122,10 @@ body.dark #ec-sec-pop { background:#00262A !important; border-color:#1A3D40 !imp
 body.dark #ac-sec-pop { background:#00262A;border-color:#1A3D40;box-shadow:0 8px 32px rgba(0,0,0,0.5); }
 body.dark .ac-sec-opt { color:#CBD5E1; }
 body.dark .ac-sec-opt:hover { background:rgba(255,255,255,0.05); }
-/* Scrollable type-of-check popups — themed scrollbar (default was bright white in dark) */
-#ac-type-pop, .ec-type-pop { scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
-#ac-type-pop::-webkit-scrollbar, .ec-type-pop::-webkit-scrollbar { width:8px; }
-#ac-type-pop::-webkit-scrollbar-track, .ec-type-pop::-webkit-scrollbar-track { background:transparent; }
-#ac-type-pop::-webkit-scrollbar-thumb, .ec-type-pop::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
-#ac-type-pop::-webkit-scrollbar-thumb:hover, .ec-type-pop::-webkit-scrollbar-thumb:hover { background:var(--text-muted); }
-body.dark #ac-type-pop, body.dark .ec-type-pop { scrollbar-color:rgba(255,255,255,0.18) transparent; }
-body.dark #ac-type-pop::-webkit-scrollbar-thumb, body.dark .ec-type-pop::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.18); }
-body.dark #ac-type-pop::-webkit-scrollbar-thumb:hover, body.dark .ec-type-pop::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,0.3); }
-/* Modal body + inner code/pre blocks — thin dark scrollbars (no bright OS default in dark) */
-body.dark .gm-body, body.dark .gm-body pre, body.dark .gm-body code[id] { scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.18) transparent; color-scheme:dark; }
-body.dark .gm-body::-webkit-scrollbar, body.dark .gm-body pre::-webkit-scrollbar, body.dark .gm-body code[id]::-webkit-scrollbar { width:8px; height:8px; }
-body.dark .gm-body::-webkit-scrollbar-track, body.dark .gm-body pre::-webkit-scrollbar-track, body.dark .gm-body code[id]::-webkit-scrollbar-track { background:transparent; }
-body.dark .gm-body::-webkit-scrollbar-thumb, body.dark .gm-body pre::-webkit-scrollbar-thumb, body.dark .gm-body code[id]::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.18); border-radius:4px; }
-body.dark .gm-body::-webkit-scrollbar-thumb:hover, body.dark .gm-body pre::-webkit-scrollbar-thumb:hover, body.dark .gm-body code[id]::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,0.3); }
+/* Scrollbar styling for these now comes from the app-wide overlay rule (top of <style>) —
+   both blocks below only carried scrollbar CSS, so they're gone except for the one
+   non-scrollbar declaration (.gm-body's color-scheme, kept for native form-control theming). */
+body.dark .gm-body, body.dark .gm-body pre, body.dark .gm-body code[id] { color-scheme:dark; }
 /* Policy-edit column header row and section headers — make dividers visible in dark mode */
 body.dark div:has(> #pe-col-header) { border-bottom-color: rgba(255,255,255,0.12) !important; }
 body.dark [onclick^="peToggleSec"] { border-bottom-color: rgba(255,255,255,0.12) !important; }
@@ -4635,11 +4637,8 @@ body.dark #ci-add-btn { border-color: rgba(139,92,246,0.5) !important; color: #A
 body.dark .gm-j4-connect [style*="background:var(--bg-canvas)"] { background: rgba(255,255,255,0.03) !important; }
 body.dark #ci-pop { background: #0e3535 !important; border-color: var(--p-dark-border-strong) !important; box-shadow: 0 8px 32px rgba(0,0,0,0.55) !important; }
 body.dark #ci-search { background:#062528 !important;border-color:var(--p-dark-border) !important;color:var(--search-text) !important; }
-body.dark #ci-list { scrollbar-color: rgba(255,255,255,0.25) transparent; scrollbar-width: thin; color-scheme: dark; }
-body.dark #ci-list::-webkit-scrollbar { width: 6px; }
-body.dark #ci-list::-webkit-scrollbar-track { background: transparent; }
-body.dark #ci-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }
-body.dark #ci-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+/* Scrollbar styling now comes from the app-wide overlay rule (top of <style>). */
+body.dark #ci-list { color-scheme: dark; }
 
 /* Policy Detail dark mode */
 body.dark #v-policy-detail [style*="background:var(--bg-surface)"],
