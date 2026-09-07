@@ -16,9 +16,11 @@
 /* Canonical scrollbar — overlay style (Variant C): invisible track, thumb hidden until the
    scrolling element itself is hovered. Applies app-wide via `*` so every scrollable panel
    (Remediation side list, modal bodies, dropdown popovers, etc.) matches without needing a
-   per-component override. Uses the same --border/--text-muted tokens as everywhere else, so
-   light/dark just falls out of the existing body.dark token redefinitions — no separate
-   dark rule needed here. */
+   per-component override. Light uses --border/--text-muted like everywhere else; dark does
+   NOT reuse --border here — that token is a dark-teal card outline (#04363A) that read as a
+   solid bright line against the canvas rather than a subtle overlay, so dark gets its own
+   translucent-white value instead, matching how every other dark surface in this file
+   (.gm-radio-card, .cmd-mono, etc.) does its resting/hover states. */
 * { scrollbar-width:thin; scrollbar-color:transparent transparent; }
 *:hover { scrollbar-color:var(--border) transparent; }
 *::-webkit-scrollbar { width:8px; height:8px; }
@@ -26,6 +28,12 @@
 *::-webkit-scrollbar-thumb { background:transparent; border-radius:4px; transition:background .15s; }
 *:hover::-webkit-scrollbar-thumb { background:var(--border); }
 *::-webkit-scrollbar-thumb:hover { background:var(--text-muted); }
+/* Flat single colour in dark — no separate thumb-hover escalation. Brand green
+   (var(--green1)), not a neutral, per direct request — deliberately different
+   from every other dark-mode overlay in this file, which use translucent white. */
+body.dark *:hover { scrollbar-color:rgba(16,185,129,.4) transparent; }
+body.dark *:hover::-webkit-scrollbar-thumb,
+body.dark *::-webkit-scrollbar-thumb:hover { background:rgba(16,185,129,.4); }
 
 :root {
   /* ═══════════════════════════════════════════════════════
@@ -260,6 +268,7 @@
 }
 
 body {
+  color-scheme: light;
   font-family: 'DM Sans', sans-serif;
   background: var(--bg-page);
   color: var(--white);
@@ -3714,6 +3723,11 @@ body.dark .cmw-req { background:var(--bg-subtle); }
    DARK THEME
    ═══════════════════════════════════════════ */
 body.dark {
+  /* Tells the browser this page is intentionally dark so native rendering (scrollbar
+     fallback states, form controls) uses neutral dark-mode grays instead of blending in
+     the OS/browser accent colour — without this, only 3 scoped elements had it declared,
+     so a hover-only scrollbar sub-state elsewhere could pick up the system accent tint. */
+  color-scheme: dark;
   --progress-track: #335256;
   --progress-fill:  #09996C;
   --search-text: #96A6BD;
@@ -4755,7 +4769,13 @@ body.dark #v-remediation [style*="font-weight:700"][style*="color:#92400e"] { co
 body.dark #v-remediation [style*="color:#92400e"]:not([style*="font-weight:700"]) { color: #CBD5E1 !important; }
 body.dark #v-remediation [style*="color:#b45309"] { color: #CBD5E1 !important; }
 /* Issue-list panel — subtle elevation off the darker content area */
-body.dark #v-remediation .remed-list { box-shadow: -6px 0 16px rgba(0,0,0,0.25) !important; border-left-color: rgba(255,255,255,0.08) !important; }
+/* Tight, low-blur shadow in dark — the old -6px 0 16px spread was wide enough that
+   whatever card sat behind it in the main column (the AI Suggested Fix block's own
+   border, say) visibly showed through and blended into a different apparent shade
+   further up vs. further down the same border-left. A short, low-blur shadow reads
+   as one flat colour regardless of what's behind it in the neighbouring column. */
+body.dark #v-remediation .remed-list { box-shadow: -2px 0 4px rgba(0,0,0,0.25) !important; border-left-color: rgba(255,255,255,0.08) !important; }
+body.dark #v-change-detail .cd-side { box-shadow: -2px 0 4px rgba(0,0,0,0.25) !important; border-left-color: rgba(255,255,255,0.08) !important; }
 /* Security-impact panel — subtle raised fill, not black */
 body.dark #v-remediation .remed-impact { background: rgba(255,255,255,0.03) !important; border-color: rgba(255,255,255,0.08) !important; }
 /* Security-impact label — soften red for dark */
