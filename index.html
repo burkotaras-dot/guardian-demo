@@ -1179,6 +1179,11 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
    header's single 54px row, which is the literal spec, not an oversight. */
 .sidebar.collapsed .nav-logo { flex-direction:column; height:auto; padding:16px 0 0; cursor:pointer; }
 .sidebar.collapsed .nav-logo > span { display:none; }
+/* Figma's logo slot is a fixed 54px band (matches the icon's own height everywhere else),
+   not the icon's bare 30px — that's what gives it 12px of cushion above/below before hitting
+   the divider on either side. Without this the icon sat flush against nav-logo's own
+   border-bottom, reading as "gap too small" even though the 16px space after it was correct. */
+.sidebar.collapsed .nav-logo-icon { height:54px; width:100%; }
 /* Always visible now — Figma shows this as a static icon, not a hover-reveal affordance (that
    was our own addition before this spec existed). Same shared button/handler as the expanded
    header's collapse control; scaleX(-1) turns the "collapse" (double-arrow-left) glyph into
