@@ -28,12 +28,13 @@
 *::-webkit-scrollbar-thumb { background:transparent; border-radius:4px; transition:background .15s; }
 *:hover::-webkit-scrollbar-thumb { background:var(--border); }
 *::-webkit-scrollbar-thumb:hover { background:var(--text-muted); }
-/* Flat single colour in dark — no separate thumb-hover escalation. Brand green
-   (var(--green1)), not a neutral, per direct request — deliberately different
-   from every other dark-mode overlay in this file, which use translucent white. */
-body.dark *:hover { scrollbar-color:rgba(16,185,129,.4) transparent; }
+/* Flat single colour in dark — no separate thumb-hover escalation. #043437 is the literal
+   fill of the design system's own scrollbar-thumb component (Figma node 4016:18196,
+   "Rectangle 373" inside 4016:18201) — not a token match (closest token, --p-dark-border
+   #04363A, is a different value), so it's spelled out as a literal per CLAUDE.md §0.4. */
+body.dark *:hover { scrollbar-color:#043437 transparent; }
 body.dark *:hover::-webkit-scrollbar-thumb,
-body.dark *::-webkit-scrollbar-thumb:hover { background:rgba(16,185,129,.4); }
+body.dark *::-webkit-scrollbar-thumb:hover { background:#043437; }
 
 :root {
   /* ═══════════════════════════════════════════════════════
@@ -4774,8 +4775,24 @@ body.dark #v-remediation [style*="color:#b45309"] { color: #CBD5E1 !important; }
    border, say) visibly showed through and blended into a different apparent shade
    further up vs. further down the same border-left. A short, low-blur shadow reads
    as one flat colour regardless of what's behind it in the neighbouring column. */
-body.dark #v-remediation .remed-list { box-shadow: -2px 0 4px rgba(0,0,0,0.25) !important; border-left-color: rgba(255,255,255,0.08) !important; }
-body.dark #v-change-detail .cd-side { box-shadow: -2px 0 4px rgba(0,0,0,0.25) !important; border-left-color: rgba(255,255,255,0.08) !important; }
+/* rgba(255,255,255,.08) turned out to be visually indistinguishable from the dark card
+   surface behind it (~#062528) -- alpha-blending the two lands within a couple hex digits
+   of the ORIGINAL #04363A colour this was supposed to replace, so a 1px line at that
+   opacity reads as "still teal" no matter what the intent was. Switched to the same
+   rgba(150,166,189,.22) already used for visible dark-mode dividers elsewhere in this
+   exact panel (.remed-item/.remed-list-header row borders) -- blended, that's a distinctly
+   lighter blue-grey, not a shade of the card colour itself. */
+body.dark #v-remediation .remed-list { box-shadow: -2px 0 4px rgba(0,0,0,0.25) !important; border-left-color: rgba(150,166,189,0.22) !important; }
+body.dark #v-change-detail .cd-side { box-shadow: -2px 0 4px rgba(0,0,0,0.25) !important; border-left-color: rgba(150,166,189,0.22) !important; }
+/* Figma design-system scrollbar-thumb spec (node 4016:18196, "Rectangle 373" inside the
+   canonical scrollbar component 4016:18201): flat fill #043437, no separate hover shade.
+   That's the literal value the user was pointing at all along -- not a bug to fix away from,
+   the target to match. Override the app-wide overlay pattern (transparent until hovered) for
+   these two panels specifically: the thumb is always this colour here, no hover reveal needed. */
+body.dark #v-remediation .remed-list,
+body.dark #v-change-detail .cd-side { scrollbar-color: #043437 transparent !important; }
+body.dark #v-remediation .remed-list::-webkit-scrollbar-thumb,
+body.dark #v-change-detail .cd-side::-webkit-scrollbar-thumb { background: #043437 !important; }
 /* Security-impact panel — subtle raised fill, not black */
 body.dark #v-remediation .remed-impact { background: rgba(255,255,255,0.03) !important; border-color: rgba(255,255,255,0.08) !important; }
 /* Security-impact label — soften red for dark */
