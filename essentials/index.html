@@ -8506,7 +8506,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
              not explain/suggest), so it gets its own compact bar rather than reusing .ai-block;
              visual language (indigo accent, spark icon) still matches the shared AI palette.
              AI never executes silently — Confirm is always a separate, explicit click. -->
-        <div id="node-ai-cmdbar" style="display:flex;flex-direction:column;margin-bottom:14px;border:1px solid var(--border);border-left:3px solid #6366F1;border-radius:var(--radius-lg);background:var(--bg-surface);box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+        <div id="node-ai-cmdbar" style="display:flex;flex-direction:column;margin-bottom:14px;border:1px solid var(--border);border-left:3px solid #6366F1;border-radius:var(--radius-lg);background:var(--bg-surface);box-shadow:0 1px 2px rgba(15,23,42,0.04);overflow:hidden;">
           <div id="node-ai-cmdbar-row" style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
             <svg width="16" height="16" viewBox="0 0 18.921 18.921" fill="#6366F1" style="flex-shrink:0;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
             <input id="node-ai-cmd-input" class="ai-cmd-input" type="text" placeholder="Ask AI to filter or act on nodes… e.g. “scan all offline nodes”" onkeydown="if(event.key==='Enter'){nodeAiCmdRun();}">
@@ -23235,7 +23235,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Per-policy table: benchmark → policies → checks → score -->
         <div id="rep-policy-title" style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--text-default);">Policies in CIS Windows 11</div>
-        <div id="rep-policy-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;">
+        <div id="rep-policy-table" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
           <div class="col-thead" style="display:grid;grid-template-columns:1.5fr 1.3fr 1.6fr 1fr 0.8fr;padding:8px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">
             <div style="cursor:pointer;">Policy <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Checks (pass / fail) <span style="opacity:0.4;">⇅</span></div><div>Failing by severity</div><div style="cursor:pointer;">Nodes <span style="opacity:0.4;">⇅</span></div><div style="cursor:pointer;">Score <span style="opacity:0.4;">⇅</span></div>
           </div>
@@ -27185,7 +27185,7 @@ function promoteNode(btn) {
       '<div><button class="btn-secondary" style="font-size:12px;padding:8px 12px;width:90px;justify-content:center;text-align:center;font-weight:600;opacity:0.5;cursor:default;" onclick="event.stopPropagation();">Queued</button></div>';
 
     // Insert before AWS rows section (or at end of table)
-    var managedTable = document.querySelector('#nodes-managed-view [style*="box-shadow"]');
+    var managedTable = document.getElementById('nodes-list-wrap');
     if (managedTable) {
       var awsRows = managedTable.querySelector('#aws-device-rows');
       if (awsRows) { managedTable.insertBefore(newRow, awsRows); }
@@ -27227,7 +27227,7 @@ function dismissNode(btn) {
 function bulkPromote() {
   var cbs = document.querySelectorAll('.detected-checkbox:checked');
   var count = cbs.length;
-  var managedTable = document.querySelector('#nodes-managed-view [style*="box-shadow"]');
+  var managedTable = document.getElementById('nodes-list-wrap');
   var awsRows = managedTable ? managedTable.querySelector('#aws-device-rows') : null;
   var isDark = document.body.classList.contains('dark');
   var newRows = [];
