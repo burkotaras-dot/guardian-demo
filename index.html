@@ -20231,16 +20231,18 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <button class="pol-tab" id="filter-flagged" aria-pressed="false" onclick="filterChanges(&#39;flagged&#39;)">Flagged <span class="pol-tab-count">1</span></button>
               <button class="pol-tab" id="filter-nocr" aria-pressed="false" onclick="filterChanges(&#39;nocr&#39;)">No CR <span class="pol-tab-count">2</span></button>
             </div>
-            <span onclick="enterReconcileMode()" title="Query, node, type, category &amp; approval filters" style="display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-size:11.5px;font-weight:600;color:var(--green1);cursor:pointer;white-space:nowrap;user-select:none;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-              <span id="drift-morefilters-label">More filters</span>
-            </span>
           </div>
           <!-- Search — Figma 3466:19325. "Show handled" and "Filters" (sort/group) moved below
-               the AI Grouping block (see #drift-table-toolbar), since they only affect the table
-               rows. Search stays here because it filters card visibility via applyDriftFilters(),
-               same as the tabs above — it also drives what AI Grouping sees. -->
+               the AI Grouping block, onto the select-all row (see #drift-select-all-row), since
+               they only affect the table rows. Search stays here because it filters card
+               visibility via applyDriftFilters(), same as the tabs above — it also drives what
+               AI Grouping sees. "More filters" moved here (09.09) next to search — same visibility
+               role, both belong to the right-hand controls group. -->
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span onclick="enterReconcileMode()" title="Query, node, type, category &amp; approval filters" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--green1);cursor:pointer;white-space:nowrap;user-select:none;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+            <span id="drift-morefilters-label">More filters</span>
+          </span>
           <div class="btn-icon isearch" role="search" onclick="isearchOpen(this)" title="Space-separated terms. Prefix with - to exclude, use * as a wildcard.">
             <svg class="isearch-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
             <input type="text" id="changes-search" class="isearch-input" placeholder="Search drift… -exclude, wild*" aria-label="Search drift items" oninput="searchChanges(this.value)" onblur="isearchClose(this)" onkeydown="if(event.key==='Escape'){this.value='';searchChanges('');this.blur();}">
@@ -20482,54 +20484,52 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           </div>
         </div>
 
-        <!-- Table-only controls — moved below AI Grouping (user 08.09, variant 3): "Show handled"
-             only hides reconciled/approved cards, which driftComputeAiGroup() already excludes,
-             and "Filters" (sort/group) never touches card visibility — so neither affects the AI
-             card above. Kept apart from the tabs/search row, which does drive the AI card. -->
-        <div id="drift-table-toolbar" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <!-- Table-only controls — "Filters" (sort/group) and "Show handled" never touch card
+             visibility, so they don't affect the AI card above; both live on the select-all row
+             (user 09.09), at the same level as the checkboxes. Bulk bar and Filters share one
+             margin-left:auto wrapper so Filters stays pinned to the far right whether or not the
+             bulk bar is showing. -->
+        <div id="drift-select-all-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-left:17px;">
+          <input type="checkbox" id="drift-select-all-cb" onclick="toggleSelectAllVisible(this)" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
+          <label for="drift-select-all-cb" style="font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;">Select all · <span id="drift-select-all-count">3</span> in view</label>
           <div id="drift-show-handled" class="chg-checkbox" onclick="toggleShowHandled()" title="Show events that are already reconciled or handled">
             <span class="chg-checkbox-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
             <span class="chg-checkbox-label">Show handled</span>
           </div>
-          <div style="position:relative;flex-shrink:0;">
-            <div id="changes-filters-btn" class="chg-filters-btn" onclick="toggleChangesFilters(this)">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
-              <span>Filters</span>
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.7;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          <div style="display:flex;align-items:center;gap:12px;margin-left:auto;">
+            <div id="drift-bulk-bar" style="display:none;align-items:center;gap:12px;padding-right:4px;">
+              <span id="drift-bulk-count" style="font-size:12px;font-weight:600;color:var(--text-default);">0 selected</span>
+              <div style="width:1px;height:16px;background:var(--border);"></div>
+              <button onclick="driftBulkAction(&#39;approve&#39;)" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">Approve</button>
+              <button onclick="driftBulkAction(&#39;unapprove&#39;)" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-sec)&#39;">Unapprove</button>
+              <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-muted)&#39;">Clear selection</button>
             </div>
-            <div id="changes-filters-dropdown" class="chg-filters-dropdown" style="display:none;">
-              <div>
-                <div class="chg-filters-section">Sort by</div>
-                <div class="chg-filters-list">
-                  <div class="sort-opt sort-opt-active" data-val="newest" onclick="pickSort(this,&#39;Newest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Newest first</div>
-                  <div class="sort-opt" data-val="oldest" onclick="pickSort(this,&#39;Oldest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Oldest first</div>
-                  <div class="sort-opt" data-val="severity" onclick="pickSort(this,&#39;By severity&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By severity</div>
-                  <div class="sort-opt" data-val="node" onclick="pickSort(this,&#39;By node&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By node</div>
+            <div style="position:relative;flex-shrink:0;">
+              <div id="changes-filters-btn" class="chg-filters-btn" onclick="toggleChangesFilters(this)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
+                <span>Filters</span>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.7;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div id="changes-filters-dropdown" class="chg-filters-dropdown" style="display:none;">
+                <div>
+                  <div class="chg-filters-section">Sort by</div>
+                  <div class="chg-filters-list">
+                    <div class="sort-opt sort-opt-active" data-val="newest" onclick="pickSort(this,&#39;Newest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Newest first</div>
+                    <div class="sort-opt" data-val="oldest" onclick="pickSort(this,&#39;Oldest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Oldest first</div>
+                    <div class="sort-opt" data-val="severity" onclick="pickSort(this,&#39;By severity&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By severity</div>
+                    <div class="sort-opt" data-val="node" onclick="pickSort(this,&#39;By node&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By node</div>
+                  </div>
+                </div>
+                <div class="chg-filters-col-divider">
+                  <div class="chg-filters-section">Group by</div>
+                  <div class="chg-filters-list">
+                    <div class="group-opt group-opt-active" data-val="none" onclick="pickGroup(this,&#39;None&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Group: None</div>
+                    <div class="group-opt" data-val="node" onclick="pickGroup(this,&#39;Node&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Node</div>
+                    <div class="group-opt" data-val="cr" onclick="pickGroup(this,&#39;Change Request&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Change Request</div>
+                  </div>
                 </div>
               </div>
-              <div class="chg-filters-col-divider">
-                <div class="chg-filters-section">Group by</div>
-                <div class="chg-filters-list">
-                  <div class="group-opt group-opt-active" data-val="none" onclick="pickGroup(this,&#39;None&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Group: None</div>
-                  <div class="group-opt" data-val="node" onclick="pickGroup(this,&#39;Node&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Node</div>
-                  <div class="group-opt" data-val="cr" onclick="pickGroup(this,&#39;Change Request&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Change Request</div>
-                </div>
-              </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Bulk action bar — shown when 1+ drift items selected -->
-        <!-- Combined select-all + bulk actions — single row, no layout jump -->
-        <div id="drift-select-all-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-left:17px;">
-          <input type="checkbox" id="drift-select-all-cb" onclick="toggleSelectAllVisible(this)" style="width:15px;height:15px;cursor:pointer;accent-color:var(--green2);flex-shrink:0;">
-          <label for="drift-select-all-cb" style="font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;">Select all · <span id="drift-select-all-count">3</span> in view</label>
-          <div id="drift-bulk-bar" style="display:none;align-items:center;gap:12px;margin-left:auto;padding-right:4px;">
-            <span id="drift-bulk-count" style="font-size:12px;font-weight:600;color:var(--text-default);">0 selected</span>
-            <div style="width:1px;height:16px;background:var(--border);"></div>
-            <button onclick="driftBulkAction(&#39;approve&#39;)" style="font-size:12px;font-weight:600;color:var(--green1);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">Approve</button>
-            <button onclick="driftBulkAction(&#39;unapprove&#39;)" style="font-size:12px;font-weight:600;color:var(--text-sec);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-sec)&#39;">Unapprove</button>
-            <button onclick="driftClearSelection()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color=&#39;var(--text-default)&#39;" onmouseout="this.style.color=&#39;var(--text-muted)&#39;">Clear selection</button>
           </div>
         </div>
 
