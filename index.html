@@ -25659,13 +25659,15 @@ function dashRenderAiBlock() {
   // follow). 186 total \u2212 3 that need a decision = 183; the four groups below sum to exactly
   // that. Real navigation to the full Detected Drift table is kept as a quiet link at the
   // bottom, so this doesn't remove the only way to reach that page.
-  var allDrift = '<div id="dash-all-drift-body" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">'
-    + '<div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">The other 183 unreconciled drift events</div>'
-    + _dashAllDriftRow(96, 'Vendor auto-updates', 'Browser and agent version bumps, consistent with published release dates.', 'expected')
-    + _dashAllDriftRow(54, 'Approved maintenance window', 'Config changes timestamped inside a pre-approved change window.', 'matches CR')
-    + _dashAllDriftRow(21, 'Baseline re-sync', 'Nodes re-confirming an already-approved policy baseline after re-enrollment.', 'expected')
-    + _dashAllDriftRow(12, 'Routine heartbeat writes', 'Scheduled agent check-ins with no configuration impact.', 'no impact')
-    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px;padding-top:8px;border-top:1px solid var(--border);">'
+  var allDrift = '<div id="dash-all-drift-body" style="display:none;margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;line-height:17.6px;margin-bottom:12px;">The other 183 unreconciled drift events</div>'
+    + '<div style="border-top:1px solid var(--border);">'
+    + _dashAllDriftRow(96, 'Vendor auto-updates', 'Browser and agent version bumps, consistent with published release dates.', 'expected', 'utun0\u2013utun3')
+    + _dashAllDriftRow(54, 'Approved maintenance window', 'Config changes timestamped inside a pre-approved change window.', 'matches CR', 'same cause')
+    + _dashAllDriftRow(21, 'Baseline re-sync', 'Nodes re-confirming an already-approved policy baseline after re-enrollment.', 'expected', 'false positive')
+    + _dashAllDriftRow(12, 'Routine heartbeat writes', 'Scheduled agent check-ins with no configuration impact.', 'no impact', '3 items', true)
+    + '</div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">'
     + '<span style="font-size:10px;color:var(--text-sec);">183 of 183 excluded items shown \u2014 nothing held back.</span>'
     + '<span class="link-cta" style="font-size:11px;" onclick="showView(\'changes\')"><span class="lc-txt">Open Detected Drift</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></span>'
     + '</div>'
@@ -25688,13 +25690,14 @@ function dashRenderAiBlock() {
 
   body.innerHTML = headerRow + headline + coverage + buttons + allDrift + trace;
 }
-function _dashAllDriftRow(count, title, desc, tag) {
-  return '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;">'
-    + '<div style="font-size:15px;font-weight:800;color:var(--text-default);width:32px;flex-shrink:0;text-align:right;">' + count + '</div>'
+function _dashAllDriftRow(count, title, desc, tag, groupKey, isLast) {
+  return '<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0 8px;' + (isLast ? '' : 'border-bottom:1px solid var(--border);') + '">'
+    + '<div style="font-size:15px;font-weight:800;line-height:24px;color:var(--text-default);width:32px;flex-shrink:0;text-align:right;">' + count + '</div>'
     + '<div style="flex:1;min-width:0;">'
-    + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-size:12.5px;font-weight:700;color:var(--text-default);">' + title + '</span><span class="bdg bdg--gray">' + tag + '</span></div>'
-    + '<div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">' + desc + '</div>'
+    + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-size:12.5px;font-weight:700;line-height:20px;color:var(--text-default);">' + title + '</span><span class="bdg bdg--gray">' + tag + '</span></div>'
+    + '<div style="font-size:11.5px;line-height:18.4px;color:var(--text-sec);padding-top:2px;">' + desc + '</div>'
     + '</div>'
+    + '<div style="font-size:11.5px;line-height:18.4px;color:var(--text-sec);flex-shrink:0;white-space:nowrap;">' + groupKey + '</div>'
     + '</div>';
 }
 function dashToggleAllDrift() {
