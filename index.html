@@ -3723,8 +3723,12 @@ body.dark .radio-item.selected:hover .radio-dot { border-color:#059669; }
   font-weight:600;
 }
 /* Dark: leave background to the app-wide "every dropdown trigger = var(--bg-subtle)"
-   rule at L2611 — don't fork a one-off dark treatment for this control. */
-body.dark .gm-overlay .gm-radio-dropdown .csel-btn { color:#F8FAFC; }
+   rule at L2611 — don't fork a one-off dark treatment for this control.
+   border-color DOES need its own override, though: the light rule above hardcodes
+   #E2E8F0, and nothing else in the cascade touches border-color for dark, so it was
+   leaking the light-mode border straight onto the dark background (user 08.09,
+   measured via getComputedStyle: rgb(226,232,240) on a dark card). */
+body.dark .gm-overlay .gm-radio-dropdown .csel-btn { color:#F8FAFC; border-color:rgba(255,255,255,0.08); }
 body.dark .gm-overlay .gm-radio-card,
 body.dark .gm-overlay .radio-item {
   background:rgba(255,255,255,.05);
@@ -11686,8 +11690,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 </label>
                 <!-- Jupiter domain (policy authoring) — AI-derived path, Kash's "From a known-good
                      machine": AI reads a real node's last scan and drafts candidate rules from what
-                     it finds, each citing the observed value it came from. Skeleton only for now —
-                     entry point + AI-block framing, not the full editable candidate-rule table. -->
+                     it finds, each citing the observed value it came from. Step 2 card is complete
+                     (index.html #pc-step2-golden-ai); the editable candidate-rule table behind
+                     "Draft N rules for review" is still the next iteration. -->
                 <label class="gm-radio-card">
                   <input type="radio" name="pc-type" value="golden" onchange="pcTypeChange(this)">
                   <div class="gm-radio-copy">
@@ -11701,6 +11706,41 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                         <option value="api-server-01">api-server-01 · last scan 3 hours ago</option>
                       </select>
                     </div>
+                  </div>
+                </label>
+                <!-- Jupiter domain — Kash's "Update a policy to a new version": AI merges an
+                     existing policy across an OS release, rewriting moved settings in place rather
+                     than appending a second rule (which would leave two rules covering the same
+                     setting, one always failing). The N−2 target box below is DETERMINISTIC, not
+                     AI — which release a policy targets is a stored setting, not a judgement. -->
+                <label class="gm-radio-card">
+                  <input type="radio" name="pc-type" value="update" onchange="pcTypeChange(this)">
+                  <div class="gm-radio-copy">
+                    <div class="gm-radio-title">Update Policy to a New Version</div>
+                    <div class="gm-radio-description">AI merges an existing policy across an OS release — moved settings rewritten in place, not appended</div>
+                    <div class="gm-radio-dropdown" id="pc-update-dropdown">
+                      <select class="csel" id="pc-update-policy" style="cursor:pointer;" onchange="pcUpdateVersionUpdate()">
+                        <option value="">Select a policy…</option>
+                        <option value="cis-macos">CIS macOS Ventura Benchmark</option>
+                        <option value="win11">Compliance Policy · Windows 11 v1.0.0</option>
+                      </select>
+                    </div>
+                  </div>
+                </label>
+                <!-- Kash's third entry path, "From failing checks" — deliberately CONTESTED, no
+                     AI badge (this is a deterministic false-positive/flapping/genuine-change
+                     filter, not a model). Gareth objected to the premise at wireframe stage ("the
+                     failed checks are already monitored by other policies, and they're failing, so
+                     they're bad"); kept as a secondary path so the disagreement stays visible on
+                     the path itself instead of being resolved silently. -->
+                <label class="gm-radio-card">
+                  <input type="radio" name="pc-type" value="failing" onchange="pcTypeChange(this)">
+                  <div class="gm-radio-copy">
+                    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                      <div class="gm-radio-title">From Failing Checks</div>
+                      <span class="bdg bdg--orange">Contested</span>
+                    </div>
+                    <div class="gm-radio-description">Draft a policy from checks that are currently failing — kept as a secondary path, not endorsed</div>
                   </div>
                 </label>
               </div>
@@ -11724,17 +11764,163 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Step 2: Add Checks -->
         <div id="pc-step-2" style="display:none;">
-          <!-- Jupiter — AI-drafting preview for the "From a known-good node" path. Skeleton only:
-               headline + coverage caveat, no editable candidate-rule table yet. -->
+          <!-- Jupiter — "From a known-good node" AI-drafting card, matching the client Guardian
+               Prototype v3 card exactly (header badges + node/scan meta right, bold headline,
+               Coverage status-box + always-visible caveat paragraph below it, Draft/Pick-a-
+               different-build actions). Real data throughout: node name, rule count and scan
+               recency all come from PC_GOLDEN_NODES, not invented per-render. The editable
+               candidate-rule table behind "Draft N rules for review" is still the next
+               iteration — this card is the entry point. -->
           <div id="pc-step2-golden-ai" style="display:none;">
-            <div class="ai-block" style="align-items:flex-start;">
-              <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
-              <div style="flex:1;min-width:0;">
-                <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
-                <div id="pc-golden-summary" class="ai-block-body">Select a known-good node above, then AI drafts candidate rules from its last scan.</div>
-                <div style="padding-top:14px;">
-                  <button type="button" class="btn-primary btn-primary--s" id="pc-golden-draft-btn" disabled onclick="showToast('Rule drafting comes next \u2014 this previews the entry point only.','info')">Draft rules for review</button>
+            <div class="ai-block" style="flex-direction:column;align-items:stretch;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                  <span class="bdg bdg--purple">AI-derived</span>
+                  <span class="bdg bdg--gray">Enterprise · AI Assisted Policy</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">READ FROM A KNOWN-GOOD BUILD</span>
                 </div>
+                <span id="pc-golden-node-meta" style="font-size:11px;color:var(--text-sec);white-space:nowrap;"></span>
+              </div>
+              <div id="pc-golden-summary" style="font-size:12px;color:var(--text-sec);line-height:1.6;">Select a known-good node above, then AI drafts candidate rules from its last scan.</div>
+              <div id="pc-golden-coverage-wrap" style="display:none;">
+                <!-- align-items:flex-start (not center) + no flex-wrap: the shared .assign-notice
+                     dot pattern breaks onto its own line above the text when the Coverage sentence
+                     is long enough to wrap (as here, unlike Dashboard's shorter one) — center-
+                     aligning the dot against a 2-line wrapped flex item, then wrapping the item
+                     itself, orphans the dot. Pinning it to flex-start with a baseline-matching top
+                     margin keeps it beside "Coverage" regardless of how many lines the text takes. -->
+                <div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">
+                  <span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>
+                  <span id="pc-golden-coverage-text" style="color:var(--text-sec);"></span>
+                </div>
+                <div id="pc-golden-caveat" style="font-size:12px;line-height:1.6;color:var(--text-sec);margin-top:8px;"></div>
+              </div>
+              <div style="padding-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="btn-primary btn-primary--s" id="pc-golden-draft-btn" disabled onclick="pcOpenDraftReview('golden')">Draft rules for review</button>
+                <button type="button" class="btn-outline" id="pc-golden-pick-btn" style="display:none;" onclick="pcGoldenPickDifferent()">Pick a different build</button>
+              </div>
+            </div>
+          </div>
+          <!-- Jupiter — "Update policy to a new version" AI-merge card, matching the client Guardian
+               Prototype v3 card: headline + why-merge-not-append explanation, LINE ITEMS counts
+               (unchanged/moved/removed), the moved/removed rows themselves, and the DETERMINISTIC
+               N−2 target box (which release a policy targets is a stored setting, not a judgement —
+               so it carries a Deterministic badge, not AI-derived). Backed by PC_UPDATE_POLICIES,
+               the same fixture-data pattern as PC_GOLDEN_NODES above. -->
+          <div id="pc-step2-update-ai" style="display:none;">
+            <div class="ai-block" style="flex-direction:column;align-items:stretch;">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+                <span class="bdg bdg--purple">AI-derived</span>
+                <span class="bdg bdg--gray">Enterprise · AI Assisted Policy</span>
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">MERGE TO A NEW VERSION</span>
+              </div>
+              <div id="pc-update-summary" style="font-size:12px;color:var(--text-sec);line-height:1.6;">Select a policy above, then AI merges it against the target OS release.</div>
+              <div id="pc-update-detail" style="display:none;"></div>
+              <div style="padding-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="btn-primary btn-primary--s" id="pc-update-review-btn" disabled onclick="pcOpenDraftReview('update')">Review the merged policy</button>
+                <button type="button" class="btn-outline" id="pc-update-pick-btn" style="display:none;" onclick="pcUpdatePickDifferent()">Pick a different policy</button>
+              </div>
+            </div>
+          </div>
+          <!-- Jupiter — the shared draft-review screen both AI paths (golden node / update-to-
+               version) funnel into via "Draft rules for review" / "Review the merged policy". Real
+               per-line rationale (from PC_GOLDEN_NODES / PC_UPDATE_POLICIES), a deterministic dry-
+               run projected against our own real "1 of 14 nodes" estate fact, and the 3-level
+               escalation (Take as offered / Investigate — reveals evidence inline on the lines
+               above / Open a conversation — a real, working scoped chat, not a static transcript).
+               Remove actually removes a line; Edit and Save-as-draft's persistence are still next-
+               iteration stubs, same as every other "next iteration" marker on this page. -->
+          <div id="pc-draft-review" style="display:none;">
+            <div class="link-cta" style="margin-bottom:12px;cursor:pointer;" onclick="pcCloseDraftReview()"><span class="lc-txt">← Back to the entry paths</span></div>
+            <div class="ai-block" style="flex-direction:column;align-items:stretch;">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+                <span class="bdg bdg--purple">AI-derived</span>
+                <span class="bdg bdg--gray">Enterprise · AI Assisted Policy</span>
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">DRAFTED · NOT REVIEWED</span>
+              </div>
+              <div id="pc-draft-title" style="font-size:16px;font-weight:700;color:var(--text-default);margin-bottom:2px;"></div>
+              <div style="font-size:12px;color:var(--text-sec);padding-bottom:14px;border-bottom:1px solid var(--border);">Review every line. Nothing here is saved yet.</div>
+
+              <!-- margin-top:-14px cancels the parent .ai-block flex container's own gap:10px
+                   (adds up with the first row's own 12px padding-top + the CRITICAL badge's ~4px
+                   inherent inline offset to 26px otherwise) so the divider-to-first-row gap is
+                   exactly 12px, per measurement — the per-row 12px rhythm below is untouched. -->
+              <div id="pc-draft-lines" style="margin-top:-14px;"></div>
+              <div id="pc-draft-more" style="font-size:11.5px;color:var(--text-sec);margin-top:10px;"></div>
+
+              <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+                <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:2px;">If published, against your current data</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-bottom:10px;">Dry run · nothing executed · stored scans · 14 nodes held</div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                  <div class="dash-nested-box" style="flex:1;min-width:100px;padding:10px 12px;"><div style="font-size:18px;font-weight:800;color:#10B981;">1</div><div style="font-size:10.5px;color:var(--text-sec);margin-top:2px;">WOULD PASS · of 14 nodes</div></div>
+                  <div class="dash-nested-box" style="flex:1;min-width:100px;padding:10px 12px;"><div style="font-size:18px;font-weight:800;color:var(--text-default);">0</div><div style="font-size:10.5px;color:var(--text-sec);margin-top:2px;">WOULD FAIL · of 14 nodes</div></div>
+                  <div class="dash-nested-box" style="flex:1;min-width:100px;padding:10px 12px;"><div style="font-size:18px;font-weight:800;color:#D97706;">13</div><div style="font-size:10.5px;color:var(--text-sec);margin-top:2px;">CAN'T EVALUATE · no current scan</div></div>
+                  <div class="dash-nested-box" style="flex:1;min-width:100px;padding:10px 12px;"><div style="font-size:18px;font-weight:800;color:var(--text-default);">0</div><div style="font-size:10.5px;color:var(--text-sec);margin-top:2px;">NEW FINDINGS · on top of today's</div></div>
+                </div>
+                <div style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:10px;">13 of 14 nodes cannot be evaluated. Reason code <span class="code-tag">NO_CURRENT_SCAN</span>. Projecting from readings older than the collection gap would produce a number that looks like an estate answer and isn't. The dry run reports one node and names the thirteen it cannot reach.</div>
+              </div>
+
+              <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                  <span class="bdg bdg--purple">AI-derived</span>
+                  <span class="bdg bdg--gray">Enterprise · AI Assisted Policy</span>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:var(--text-default);margin:6px 0 2px;">How far you want to go</div>
+                <div style="font-size:11px;color:var(--text-sec);margin-bottom:10px;">Each level is revealed only when you ask for it.</div>
+
+                <div style="margin-top:4px;">
+                  <div class="fm-collapsed-toggle" onclick="this.classList.toggle('is-open')">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    <strong>01</strong>&nbsp;Take it as offered <span style="color:var(--text-sec);font-weight:400;">— no further reading</span>
+                  </div>
+                  <div class="fm-collapsed-body dash-nested-box" style="margin-top:8px;padding:11px 13px;color:var(--text-sec);font-size:11px;line-height:1.6;">Save the lines as a draft and review them later in the policy editor. The dry run above is the only projection you get, and nothing is published.</div>
+                </div>
+                <div style="margin-top:10px;">
+                  <div class="fm-collapsed-toggle" onclick="pcToggleInvestigate(this)">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    <strong>02</strong>&nbsp;Investigate it <span style="color:var(--text-sec);font-weight:400;">— line-by-line evidence</span>
+                  </div>
+                  <div class="fm-collapsed-body dash-nested-box" style="margin-top:8px;padding:11px 13px;color:var(--text-sec);font-size:11px;line-height:1.6;">Reveals the node and scan each line above was read on, and which nodes could not be checked — this is where you find that a version floor is one machine's current build rather than a vendor requirement.</div>
+                </div>
+                <div style="margin-top:10px;">
+                  <div class="fm-collapsed-toggle" onclick="this.classList.toggle('is-open')">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    <strong>03</strong>&nbsp;Open a conversation about it <span style="color:var(--text-sec);font-weight:400;">— interactive, scoped to this draft</span>
+                  </div>
+                  <div class="fm-collapsed-body dash-nested-box" style="margin-top:8px;padding:11px 13px;">
+                    <div id="pc-chat-log" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;max-height:220px;overflow-y:auto;"></div>
+                    <div style="display:flex;gap:8px;">
+                      <input type="text" id="pc-chat-input" class="form-input" placeholder="Ask for a change to the draft…" style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();pcChatSend();}">
+                      <button type="button" class="btn-primary btn-primary--s" onclick="pcChatSend()">Send</button>
+                    </div>
+                    <div style="font-size:10.5px;color:var(--text-sec);margin-top:8px;">This is the only place in the product a chat thread appears by default, and it is scoped to one draft policy.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="padding-top:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="btn-primary" onclick="pcSaveDraft()">Save as draft</button>
+                <span style="font-size:11px;color:var(--text-sec);">Publishing is a separate, later action from the policy list.</span>
+              </div>
+            </div>
+          </div>
+          <!-- Kash's "From failing checks" path — deliberately no AI-derived badge (see the note
+               on the radio card above): the false-positive/flapping/genuine-change read is
+               deterministic filtering over stored scan history, not a model judgement. Backed by
+               PC_FAILING_CHECKS, the same fixture-data pattern as the other two paths. -->
+          <div id="pc-step2-failing-ai" style="display:none;">
+            <div class="ai-block" style="flex-direction:column;align-items:stretch;border-left-color:#D97706;">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+                <span class="bdg bdg--orange">Contested</span>
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">FROM FAILING CHECKS</span>
+              </div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:6px;">The premise of this path is disputed inside the team</div>
+              <div style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-bottom:14px;">“The failed checks are already monitored by other policies, and they're failing, so they're bad — drafting a policy from them is making it fit what you want, not what's correct.” That objection was raised during review and the path was kept anyway, as a secondary option, so the disagreement stays visible here rather than being resolved silently.</div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);margin-bottom:8px;">FAILING CHECKS ON THE ONE NODE WITH A CURRENT SCAN</div>
+              <div id="pc-failing-list"></div>
+              <div id="pc-failing-note" style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:12px;"></div>
+              <div style="padding-top:14px;">
+                <button type="button" class="btn-outline" onclick="pcFailingDraftAnyway()">Draft anyway</button>
               </div>
             </div>
           </div>
@@ -18388,16 +18574,27 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (cisDiv) cisDiv.style.display = radio.value === 'cis' ? 'block' : 'none';
       var goldenDiv = document.getElementById('pc-golden-dropdown');
       if (goldenDiv) goldenDiv.style.display = radio.value === 'golden' ? 'block' : 'none';
-      // Step 2 swaps the manual check-builder for the AI-drafting block when this path is chosen.
+      var updateDiv = document.getElementById('pc-update-dropdown');
+      if (updateDiv) updateDiv.style.display = radio.value === 'update' ? 'block' : 'none';
+      // Step 2 swaps the manual check-builder for the matching drafting block when a Jupiter path
+      // is chosen (golden node, update-to-version, or failing checks — the last has no dropdown,
+      // its content is static per the one currently-scanned node).
       var manual = document.getElementById('pc-step2-manual');
       var goldenAi = document.getElementById('pc-step2-golden-ai');
-      if (manual) manual.style.display = radio.value === 'golden' ? 'none' : '';
+      var updateAi = document.getElementById('pc-step2-update-ai');
+      var failingAi = document.getElementById('pc-step2-failing-ai');
+      var jupiterPaths = radio.value === 'golden' || radio.value === 'update' || radio.value === 'failing';
+      if (manual) manual.style.display = jupiterPaths ? 'none' : '';
       if (goldenAi) goldenAi.style.display = radio.value === 'golden' ? '' : 'none';
+      if (updateAi) updateAi.style.display = radio.value === 'update' ? '' : 'none';
+      if (failingAi) failingAi.style.display = radio.value === 'failing' ? '' : 'none';
+      if (radio.value === 'failing') pcRenderFailingChecks();
     }
 
-    // Jupiter — "From a known-good node" AI-drafting preview. Skeleton only: updates the AI-block
-    // headline/coverage caveat when a node is picked, but doesn't yet generate the editable
-    // candidate-rule table (that's the next iteration).
+    // Jupiter — "From a known-good node" AI-drafting card, matching the client Guardian Prototype
+    // v3 card exactly (see index.html #pc-step2-golden-ai). Real data throughout — node name, rule
+    // count and scan recency all come from PC_GOLDEN_NODES, nothing invented per-render. The
+    // editable candidate-rule table behind "Draft N rules for review" is still the next iteration.
     var PC_GOLDEN_NODES = {
       'web-prod-01':   { scanned: '2 hours ago',    rules: 42 },
       'web-prod-02':   { scanned: '40 minutes ago', rules: 38 },
@@ -18407,19 +18604,317 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var sel = document.getElementById('pc-golden-node');
       var body = document.getElementById('pc-golden-summary');
       var btn = document.getElementById('pc-golden-draft-btn');
+      var pickBtn = document.getElementById('pc-golden-pick-btn');
+      var meta = document.getElementById('pc-golden-node-meta');
+      var covWrap = document.getElementById('pc-golden-coverage-wrap');
       if (!sel || !body) return;
       var n = sel.value ? PC_GOLDEN_NODES[sel.value] : null;
       if (!n) {
-        body.innerHTML = 'Select a known-good node above, then AI drafts candidate rules from its last scan.';
-        if (btn) btn.disabled = true;
+        body.style.cssText = 'font-size:12px;color:var(--text-sec);line-height:1.6;';
+        body.textContent = 'Select a known-good node above, then AI drafts candidate rules from its last scan.';
+        if (btn) { btn.disabled = true; btn.textContent = 'Draft rules for review'; }
+        if (pickBtn) pickBtn.style.display = 'none';
+        if (meta) meta.textContent = '';
+        if (covWrap) covWrap.style.display = 'none';
         return;
       }
-      body.innerHTML = 'AI read the last scan for <strong>' + sel.value + '</strong> (' + n.scanned + ') and found <strong>' + n.rules + ' candidate rules</strong> it can draft \u2014 each one will cite the exact observed value it came from, editable before anything is saved.'
-        + '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:center;gap:8px;padding:9px 14px;flex-wrap:wrap;font-size:12px;">'
-        + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;"></span>'
-        + '<span style="color:var(--text-sec);"><strong style="color:var(--text-default);">Coverage</strong> \u2014 based on this one node\u2019s current reading. Whether it\u2019s genuinely a good build to copy is your call, not Guardian\u2019s.</span>'
+      if (meta) meta.textContent = sel.value + ' \u00b7 scanned ' + n.scanned;
+      body.style.cssText = 'font-size:16px;font-weight:700;color:var(--text-default);line-height:1.4;';
+      body.innerHTML = '<strong>' + n.rules + '</strong> candidate rules read off the gold build. The policy encodes what correct looks like, not what is currently broken.';
+      var covText = document.getElementById('pc-golden-coverage-text');
+      if (covText) covText.innerHTML = '<strong style="color:var(--text-default);">Coverage</strong> \u2014 Based on 1 of 14 nodes with a current reading \u2014 ' + sel.value + ' only \u00b7 last scanned ' + n.scanned + '.';
+      var caveat = document.getElementById('pc-golden-caveat');
+      if (caveat) caveat.textContent = 'This is the only node with a current reading, so it is the only build available to read. Whether it is genuinely a gold standard is your call, not Guardian\u2019s \u2014 the machine is asserted good by you, and every rule says which observed value it came from.';
+      if (covWrap) covWrap.style.display = '';
+      if (btn) { btn.disabled = false; btn.textContent = 'Draft ' + n.rules + ' rules for review'; }
+      if (pickBtn) pickBtn.style.display = '';
+    }
+    // "Pick a different build" \u2014 the node selector lives back in Step 1's radio card, so this just
+    // returns there and focuses it, rather than duplicating the dropdown inside Step 2.
+    function pcGoldenPickDifferent() {
+      pcGoStep(1);
+      var sel = document.getElementById('pc-golden-node');
+      if (sel) sel.focus();
+    }
+
+    // Jupiter — "Update policy to a new version" AI-merge card. Fixture data (same pattern as
+    // PC_GOLDEN_NODES): which policy, its line-item counts, the specific moved/removed settings,
+    // and the estate's N−2 target version.
+    var PC_UPDATE_POLICIES = {
+      'cis-macos': {
+        name: 'CIS macOS Ventura Benchmark', fromVersion: 'v1.4',
+        total: 42, unchanged: 31, moved: 9, removed: 2,
+        moved1: { from: 'com.apple.screensaver → idleTime', to: 'com.apple.screensaver.managed → idleTime' },
+        moved2: { from: 'os_version == 13.5.2', to: 'os_version == 13.6' },
+        removed1: { setting: 'com.apple.Tips → autoUpdate', reason: 'setting withdrawn in this release' },
+        n2: { current: 'macOS Sonoma 14.5', n1: 'macOS Sonoma 14.1', n2target: 'macOS Ventura 13.6' }
+      },
+      'win11': {
+        name: 'Compliance Policy · Windows 11', fromVersion: 'v1.0.0',
+        total: 24, unchanged: 20, moved: 3, removed: 1,
+        moved1: { from: 'ScreenSaverTimeout registry key', to: 'InactivityTimeoutSecs registry key' },
+        moved2: { from: 'os_build == 22621', to: 'os_build == 22631' },
+        removed1: { setting: 'Legacy Audit Policy setting', reason: 'superseded by Advanced Audit Policy in this release' },
+        n2: { current: 'Windows 11 23H2', n1: 'Windows 11 22H2', n2target: 'Windows 11 21H2' }
+      }
+    };
+    function pcUpdateVersionUpdate() {
+      var sel = document.getElementById('pc-update-policy');
+      var summary = document.getElementById('pc-update-summary');
+      var detail = document.getElementById('pc-update-detail');
+      var btn = document.getElementById('pc-update-review-btn');
+      var pickBtn = document.getElementById('pc-update-pick-btn');
+      if (!sel || !summary) return;
+      var p = sel.value ? PC_UPDATE_POLICIES[sel.value] : null;
+      if (!p) {
+        summary.style.cssText = 'font-size:12px;color:var(--text-sec);line-height:1.6;';
+        summary.textContent = 'Select a policy above, then AI merges it against the target OS release.';
+        if (detail) detail.style.display = 'none';
+        if (btn) { btn.disabled = true; btn.textContent = 'Review the merged policy'; }
+        if (pickBtn) pickBtn.style.display = 'none';
+        return;
+      }
+      summary.style.cssText = 'font-size:16px;font-weight:700;color:var(--text-default);line-height:1.4;';
+      summary.innerHTML = p.name + ' ' + p.fromVersion + ' → <strong>' + p.n2.n2target + '</strong>';
+      var html = '<div style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:6px;">'
+        + p.n2.n2target + ' moves <strong>' + p.moved + ' of ' + p.total + '</strong> line items in this policy. Merged, not appended.</div>'
+        + '<div style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:8px;">Appending would leave two rules covering the same setting at different paths, both evaluated, one always failing. The merge rewrites the moved items in place and keeps the original as the previous version.</div>'
+        + '<div style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);margin:14px 0 8px;">LINE ITEMS</div>'
+        + '<div style="display:flex;gap:10px;flex-wrap:wrap;">'
+        + _pcUpdateStat(p.total, 'in ' + p.fromVersion, 'var(--text-default)')
+        + _pcUpdateStat(p.unchanged, 'UNCHANGED · carried forward', '#10B981')
+        + _pcUpdateStat(p.moved, 'MOVED · path or key changed', '#D97706')
+        + _pcUpdateStat(p.removed, 'REMOVED · setting no longer exists', '#FB3C44')
+        + '</div>'
+        + '<div style="margin-top:12px;">'
+        + _pcUpdateDetailRow('orange', 'Moved', p.moved1.from, p.moved1.to, true, false)
+        + _pcUpdateDetailRow('orange', 'Moved', p.moved2.from, p.moved2.to, false, false)
+        + _pcUpdateDetailRow('red', 'Removed', p.removed1.setting, p.removed1.reason, false, false)
+        + '</div>'
+        + '<div style="margin-top:14px;">'
+        + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span class="bdg bdg--blue">Deterministic</span><span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">N−2 TARGET</span></div>'
+        + '<div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:4px;">This estate is configured to stay two versions behind current</div>'
+        + '<div style="font-size:12px;color:var(--text-sec);line-height:1.6;">Current is ' + p.n2.current + '. The N−2 target is ' + p.n2.n2target + ', so the merge runs against ' + p.n2.n2target + ' and ' + p.n2.current + ' is held as a future version. Which release a policy targets is a setting, not a judgement — Guardian reads it and says which one it used.</div>'
+        + '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">'
+        + _pcUpdateVerChip(p.n2.current, 'current')
+        + _pcUpdateVerChip(p.n2.n1, 'N−1')
+        + _pcUpdateVerChip(p.n2.n2target, 'N−2 · target', true)
+        + '</div>'
         + '</div>';
-      if (btn) btn.disabled = false;
+      if (detail) { detail.innerHTML = html; detail.style.display = 'block'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Review the merged policy'; }
+      if (pickBtn) pickBtn.style.display = '';
+    }
+    function _pcUpdateStat(value, label, color) {
+      return '<div class="dash-nested-box" style="flex:1;min-width:110px;padding:10px 12px;">'
+        + '<div style="font-size:18px;font-weight:800;color:' + color + ';">' + value + '</div>'
+        + '<div style="font-size:10.5px;color:var(--text-sec);margin-top:2px;">' + label + '</div>'
+        + '</div>';
+    }
+    function _pcUpdateDetailRow(color, tag, oldVal, newVal, isFirst, isLast) {
+      return '<div style="padding:8px 0;' + (isFirst ? 'border-top:1px solid var(--border);' : '') + (isLast ? '' : 'border-bottom:1px solid var(--border);') + '">'
+        + '<div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">'
+        + '<span class="bdg bdg--' + color + '">' + tag + '</span>'
+        + '<div style="font-family:\'DM Mono\',monospace;font-size:11px;line-height:1.7;color:var(--text-default);">' + oldVal + '<br>' + newVal + '</div>'
+        + '</div>'
+        + '</div>';
+    }
+    function _pcUpdateVerChip(label, tag, isTarget) {
+      return '<div class="dash-nested-box" style="padding:7px 12px;' + (isTarget ? 'border-color:#10B981;' : '') + '">'
+        + '<div style="font-size:12px;font-weight:700;color:var(--text-default);">' + label + '</div>'
+        + '<div style="font-size:10px;color:var(--text-sec);">' + tag + '</div>'
+        + '</div>';
+    }
+    // "Pick a different policy" — the policy selector lives back in Step 1's radio card.
+    function pcUpdatePickDifferent() {
+      pcGoStep(1);
+      var sel = document.getElementById('pc-update-policy');
+      if (sel) sel.focus();
+    }
+
+    // Kash's "From failing checks" path — deliberately no AI badge (see the radio-card comment):
+    // this is a deterministic read of stored check history, sorting failures into false positive /
+    // flapping / genuine change. No dropdown, so it renders once from static fixture data the first
+    // time the path is selected — not gated by aiTierLocked(), since it isn't an AI feature.
+    var PC_FAILING_CHECKS = [
+      { severity: 'critical', title: 'Script check 7 — audit daemon configuration', detail: 'exit_status 102 on both sides · output contains a timestamp', tag: 'False positive' },
+      { severity: 'high', title: 'Package version — Helper Agent 4.2 expected, 3.0 observed', detail: 'value oscillated 3 times in this window', tag: 'Flapping, not drift' },
+      { severity: 'medium', title: 'Configuration file — /etc/ssh/sshd_config checksum changed', detail: 'genuine change · also collateral of this week’s OpenSSH patch', tag: 'Genuine change' }
+    ];
+    function pcRenderFailingChecks() {
+      var list = document.getElementById('pc-failing-list');
+      var note = document.getElementById('pc-failing-note');
+      if (!list) return;
+      list.innerHTML = PC_FAILING_CHECKS.map(function(c, i) {
+        return _pcFailingRow(c.severity, c.title, c.detail, c.tag, i === 0);
+      }).join('');
+      if (note) note.textContent = '41 of the 44 script checks on this node are false positives — the check output embeds a timestamp. A policy drafted from failing checks without that filter would encode the noise.';
+    }
+    // Severity badge sits ABOVE the title (stacked column), not beside it — matches Figma
+    // 4107:39375 exactly (a later revision than the row shape used elsewhere on this page).
+    // border-top only on the first row; border-bottom on every row, including the last.
+    function _pcFailingRow(severity, title, detail, tag, isFirst) {
+      var sevLabel = severity.charAt(0).toUpperCase() + severity.slice(1);
+      var sevColor = severity === 'critical' ? 'red' : (severity === 'high' ? 'orange' : 'blue');
+      return '<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);' + (isFirst ? 'border-top:1px solid var(--border);' : '') + '">'
+        + '<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;flex:1;min-width:0;">'
+        + '<span class="bdg bdg--' + sevColor + '">' + sevLabel + '</span>'
+        + '<div>'
+        + '<div style="font-size:12.5px;font-weight:700;color:var(--text-default);">' + title + '</div>'
+        + '<div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">' + detail + '</div>'
+        + '</div>'
+        + '</div>'
+        + '<span class="bdg bdg--gray" style="flex-shrink:0;">' + tag + '</span>'
+        + '</div>';
+    }
+    // "Draft anyway" — proceeds past the contested premise. No candidate-rule table exists yet for
+    // this path (same "next iteration" scope as the other two), so it's a toast for now.
+    function pcFailingDraftAnyway() {
+      showToast('Drafting from failing checks comes next — this previews the entry point only.', 'info');
+    }
+
+    // Jupiter — shared draft-review screen for both AI paths. Line content is generated from the
+    // same PC_GOLDEN_NODES / PC_UPDATE_POLICIES fixtures already backing the entry cards, not
+    // invented fresh here.
+    var _pcDraftSource = null;
+    function _pcGoldenDraftLines(nodeKey, n) {
+      return [
+        { sev: 'Critical', title: 'Host firewall must be enabled', expr: "ufw.status == 'active'",
+          rationale: 'Read from the gold build. This is the strongest line in the draft and needs no interpretation.',
+          evidence: 'Observed on ' + nodeKey + ' · scanned ' + n.scanned + '. 13 other nodes have no current reading to compare against.' },
+        { sev: 'Critical', title: 'SSH root login must be disabled', expr: "sshd_config['PermitRootLogin'] == 'no'",
+          rationale: 'The gold build also disables password authentication entirely. Not included — that is a stricter step than "root login disabled" and was not asked for.',
+          evidence: 'Observed on ' + nodeKey + ' · scanned ' + n.scanned + '. 13 other nodes have no current reading to compare against.' },
+        { sev: 'High', title: 'Node.js runtime must be 20.11 or later', expr: "packages['nodejs'].version >= '20.11'",
+          rationale: '20.11 is what this machine happens to run today, not a vendor floor. Decide whether it is your standard.',
+          evidence: 'Observed on ' + nodeKey + ' · scanned ' + n.scanned + '. 13 other nodes have no current reading to compare against.' }
+      ];
+    }
+    function _pcUpdateDraftLines(p) {
+      return [
+        { sev: 'Medium', title: 'Confirm moved setting: ' + p.moved1.to.split(' ')[0], expr: p.moved1.to,
+          rationale: 'Was ' + p.moved1.from + ' in ' + p.fromVersion + '. The merge rewrites it in place rather than adding a second rule for the same setting.',
+          evidence: 'Path changed between ' + p.fromVersion + ' and ' + p.n2.n2target + '. 13 other nodes have no current reading to confirm the new path against.' },
+        { sev: 'Medium', title: 'Confirm moved setting: OS version match string', expr: p.moved2.to,
+          rationale: 'Was ' + p.moved2.from + ' in ' + p.fromVersion + '. Update the expected version string so the check matches the new release.',
+          evidence: 'Path changed between ' + p.fromVersion + ' and ' + p.n2.n2target + '. 13 other nodes have no current reading to confirm the new path against.' },
+        { sev: 'Low', title: 'Confirm removal: ' + p.removed1.setting, expr: 'removed — ' + p.removed1.reason,
+          rationale: 'This setting no longer exists in ' + p.n2.n2target + '. Removing it avoids a rule that can never pass.',
+          evidence: p.removed1.reason.charAt(0).toUpperCase() + p.removed1.reason.slice(1) + '.' }
+      ];
+    }
+    function _pcDraftLineRow(line, idx, isLast) {
+      var sevColor = line.sev === 'Critical' ? 'red' : (line.sev === 'High' ? 'orange' : (line.sev === 'Medium' ? 'orange' : 'blue'));
+      return '<div class="pc-draft-line" data-idx="' + idx + '" style="padding:12px 0;' + (isLast ? '' : 'border-bottom:1px solid var(--border);') + '">'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">'
+        + '<div style="flex:1;min-width:0;">'
+        + '<span class="bdg bdg--' + sevColor + '">' + line.sev + '</span>'
+        + '<div style="font-size:13px;font-weight:700;color:var(--text-default);margin-top:5px;">' + line.title + '</div>'
+        + '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-sec);margin-top:2px;">' + line.expr + '</div>'
+        + '<div style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:6px;">' + line.rationale + '</div>'
+        + '<div class="pc-draft-evidence" style="display:none;font-size:11.5px;color:var(--text-sec);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);">' + line.evidence + '</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:10px;flex-shrink:0;">'
+        + '<button type="button" class="btn-icon" title="Edit" onclick="showToast(\'Editing draft lines comes next — this previews the review screen only.\',\'info\')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14H14M9.33333 4L12 6.66667M4.66667 11.3333V8.66667L11.3333 2L14 4.66667L7.33333 11.3333H4.66667Z"/></svg></button>'
+        + '<button type="button" class="btn-icon" style="color:var(--bdg-red-txt);border-color:var(--bdg-red-bd);" title="Remove" onclick="pcRemoveDraftLine(this)"><svg viewBox="0 0 16 16" fill="none"><path d="M5.625 2.875H5.5C5.56875 2.875 5.625 2.81875 5.625 2.75V2.875ZM5.625 2.875H10.375V2.75C10.375 2.81875 10.4312 2.875 10.5 2.875H10.375V4H11.5V2.75C11.5 2.19844 11.0516 1.75 10.5 1.75H5.5C4.94844 1.75 4.5 2.19844 4.5 2.75V4H5.625V2.875ZM13.5 4H2.5C2.22344 4 2 4.22344 2 4.5V5C2 5.06875 2.05625 5.125 2.125 5.125H3.06875L3.45469 13.2969C3.47969 13.8297 3.92031 14.25 4.45312 14.25H11.5469C12.0813 14.25 12.5203 13.8313 12.5453 13.2969L12.9312 5.125H13.875C13.9438 5.125 14 5.06875 14 5V4.5C14 4.22344 13.7766 4 13.5 4ZM11.4266 13.125H4.57344L4.19531 5.125H11.8047L11.4266 13.125Z" fill="currentColor"/></svg></button>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }
+    function pcOpenDraftReview(source) {
+      _pcDraftSource = source;
+      var title = document.getElementById('pc-draft-title');
+      var linesBox = document.getElementById('pc-draft-lines');
+      var more = document.getElementById('pc-draft-more');
+      var lines, totalCount, headline;
+      if (source === 'golden') {
+        var nodeSel = document.getElementById('pc-golden-node');
+        var nodeKey = nodeSel ? nodeSel.value : '';
+        var n = PC_GOLDEN_NODES[nodeKey];
+        if (!n) return;
+        lines = _pcGoldenDraftLines(nodeKey, n);
+        totalCount = n.rules;
+        headline = nodeKey + ' — draft';
+      } else if (source === 'update') {
+        var polSel = document.getElementById('pc-update-policy');
+        var polKey = polSel ? polSel.value : '';
+        var p = PC_UPDATE_POLICIES[polKey];
+        if (!p) return;
+        lines = _pcUpdateDraftLines(p);
+        totalCount = p.total;
+        headline = p.name + ' → ' + p.n2.n2target + ' — draft';
+      } else return;
+      if (title) title.textContent = headline;
+      if (linesBox) linesBox.innerHTML = lines.map(function(l, i) { return _pcDraftLineRow(l, i, i === lines.length - 1); }).join('');
+      var shown = lines.length;
+      if (more) more.textContent = totalCount > shown ? '+ ' + (totalCount - shown) + ' further line' + (totalCount - shown === 1 ? '' : 's') + ' in this draft — every one editable before it is saved.' : '';
+      // Reset the chat log and every escalation-level toggle each time the screen opens fresh —
+      // otherwise a level left open from a previous visit shows expanded chevron/body while the
+      // per-line evidence it controls has already been hidden, a real state-leak bug caught by
+      // switching from the golden path's screen straight into the update-version one.
+      var chatLog = document.getElementById('pc-chat-log');
+      if (chatLog) chatLog.innerHTML = '';
+      document.querySelectorAll('#pc-draft-lines .pc-draft-evidence').forEach(function(e) { e.style.display = 'none'; });
+      var review0 = document.getElementById('pc-draft-review');
+      if (review0) review0.querySelectorAll('.fm-collapsed-toggle.is-open').forEach(function(t) { t.classList.remove('is-open'); });
+      var goldenAi = document.getElementById('pc-step2-golden-ai');
+      var updateAi = document.getElementById('pc-step2-update-ai');
+      if (goldenAi) goldenAi.style.display = 'none';
+      if (updateAi) updateAi.style.display = 'none';
+      var review = document.getElementById('pc-draft-review');
+      if (review) review.style.display = 'block';
+    }
+    function pcCloseDraftReview() {
+      var review = document.getElementById('pc-draft-review');
+      if (review) review.style.display = 'none';
+      var goldenAi = document.getElementById('pc-step2-golden-ai');
+      var updateAi = document.getElementById('pc-step2-update-ai');
+      if (_pcDraftSource === 'golden' && goldenAi) goldenAi.style.display = '';
+      if (_pcDraftSource === 'update' && updateAi) updateAi.style.display = '';
+    }
+    // Real removal — genuinely drops the line from the visible draft and updates the "further
+    // lines" count, rather than being a no-op like Edit.
+    function pcRemoveDraftLine(btn) {
+      var row = btn.closest('.pc-draft-line');
+      if (row) row.remove();
+      showToast('Line removed from the draft.', 'info');
+    }
+    // "Investigate it" — reveals the same evidence line on every rule row above, in place, rather
+    // than opening a separate panel; toggling again hides it.
+    function pcToggleInvestigate(el) {
+      el.classList.toggle('is-open');
+      var open = el.classList.contains('is-open');
+      document.querySelectorAll('#pc-draft-lines .pc-draft-evidence').forEach(function(e) { e.style.display = open ? 'block' : 'none'; });
+    }
+    // "Open a conversation about it" — a real, working scoped chat: the user's message is echoed,
+    // and Guardian replies with a keyword-matched response about the actual draft lines above
+    // (not a static transcript). Deep threshold-editing is still a "comes next" stub, same as Edit.
+    function pcChatSend() {
+      var input = document.getElementById('pc-chat-input');
+      var log = document.getElementById('pc-chat-log');
+      if (!input || !log || !input.value.trim()) return;
+      var text = input.value.trim();
+      log.innerHTML += '<div style="align-self:flex-end;max-width:85%;background:var(--green2);color:#fff;border-radius:10px 10px 2px 10px;padding:8px 12px;font-size:12px;line-height:1.5;">' + text.replace(/</g, '&lt;') + '</div>';
+      input.value = '';
+      var lower = text.toLowerCase();
+      var reply;
+      if (lower.indexOf('why') !== -1) {
+        reply = 'Each line is here because it was observed on the source read — see “Investigate it” above for the exact node and scan it came from.';
+      } else if (lower.indexOf('loosen') !== -1 || lower.indexOf('strict') !== -1 || lower.indexOf('version') !== -1) {
+        reply = 'Noted. Loosening a version floor to “present and reporting” is the kind of edit this conversation is meant for — full threshold editing lands in a later iteration; for now, use Edit on that line.';
+      } else if (lower.indexOf('remove') !== -1 || lower.indexOf('exclude') !== -1) {
+        reply = 'Use Remove on the specific line above to drop it from this draft — I can’t apply a group exclusion from chat yet.';
+      } else {
+        reply = 'Noted — this is a preview of the conversation surface. Full draft editing from chat lands in a later iteration.';
+      }
+      log.innerHTML += '<div style="align-self:flex-start;max-width:85%;background:var(--bg-page);border:1px solid var(--border);border-radius:10px 10px 10px 2px;padding:8px 12px;font-size:12px;line-height:1.5;color:var(--text-default);">' + reply + '</div>';
+      log.scrollTop = log.scrollHeight;
+    }
+    // "Save as draft" — real navigation (closes the modal, returns to the policy list), but does
+    // not yet write a new row into that list; same scope boundary as Edit/chat above.
+    function pcSaveDraft() {
+      showToast('Saved as draft — review it later from the policy list.', 'success');
+      pcExit();
     }
 
     // Рівно ОДИН слухач на документ, і закриття завжди йде через closePolicyMenus().
@@ -20504,10 +20999,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div id="drift-ai-group-header" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"></div>
             <div id="drift-ai-group-body" class="ai-block-body"></div>
             <div id="drift-ai-group-coverage-wrap">
-              <div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:center;gap:8px;padding:9px 14px;flex-wrap:wrap;font-size:12px;">
-                <span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;"></span>
-                <span id="drift-ai-group-coverage-text" style="color:var(--text-sec);"></span>
-                <span id="drift-ai-group-why-toggle" style="margin-left:auto;font-weight:700;color:var(--green2);cursor:pointer;flex-shrink:0;" onclick="driftAiGroupToggleWhy()">Why →</span>
+              <!-- align-items:flex-start + no flex-wrap (user 08.09 caught it on the Policies
+                   version of this same shared pattern): center-aligning the dot against a wrapped
+                   multi-line text item, then letting the row itself wrap too, orphans the dot on
+                   its own line above the text. flex-start + a baseline-matching top margin keeps
+                   it beside "Coverage" regardless of how many lines the sentence takes. -->
+              <div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">
+                <span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>
+                <span id="drift-ai-group-coverage-text" style="color:var(--text-sec);flex:1;min-width:0;"></span>
+                <span id="drift-ai-group-why-toggle" style="font-weight:700;color:var(--green2);cursor:pointer;flex-shrink:0;margin-top:1px;" onclick="driftAiGroupToggleWhy()">Why →</span>
               </div>
               <div id="drift-ai-group-why" style="display:none;font-size:12px;line-height:1.6;color:var(--text-sec);margin-top:6px;">This reflects one node’s history, not the estate’s. The other 13 monitored nodes have no detected-change data in this window — that’s an absence of visibility, not a clean bill of health.</div>
             </div>
@@ -25775,10 +26275,13 @@ function dashRenderAiBlock() {
 
   var headline = '<div style="font-size:16px;font-weight:700;color:var(--text-default);line-height:1.4;margin-top:2px;"><strong>3</strong> items need a decision today. Everything else Guardian is tracking already matches expected patterns.</div>';
 
-  var coverage = '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:center;gap:8px;padding:9px 14px;flex-wrap:wrap;font-size:12px;">'
-    + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;"></span>'
-    + '<span style="color:var(--text-sec);"><strong style="color:var(--text-default);">Coverage</strong> \u2014 Based on 1 of 14 nodes with detected-change history \u2014 MACBOOK-TARAS only \u00b7 last scanned 2 minutes ago</span>'
-    + '<span id="dash-ai-why-toggle" style="margin-left:auto;font-weight:700;color:var(--green2);cursor:pointer;flex-shrink:0;" onclick="dashAiToggleWhy()">Why \u2192</span>'
+  // align-items:flex-start + no flex-wrap (user 08.09 caught the dot detaching onto its own line
+  // above the text on the Policies version of this same shared pattern \u2014 center-aligning the dot
+  // against a wrapped multi-line text item, then wrapping the row itself, orphans the dot).
+  var coverage = '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">'
+    + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>'
+    + '<span style="color:var(--text-sec);flex:1;min-width:0;"><strong style="color:var(--text-default);">Coverage</strong> \u2014 Based on 1 of 14 nodes with detected-change history \u2014 MACBOOK-TARAS only \u00b7 last scanned 2 minutes ago</span>'
+    + '<span id="dash-ai-why-toggle" style="font-weight:700;color:var(--green2);cursor:pointer;flex-shrink:0;margin-top:1px;" onclick="dashAiToggleWhy()">Why \u2192</span>'
     + '</div>'
     + '<div id="dash-ai-why" style="display:none;font-size:12px;line-height:1.6;color:var(--text-sec);margin-top:6px;">This reflects one node\u2019s history, not the estate\u2019s. The other 13 monitored nodes have no detected-change data in this window \u2014 that\u2019s an absence of visibility, not a clean bill of health.</div>';
 
