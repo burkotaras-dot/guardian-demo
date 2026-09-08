@@ -2998,6 +2998,25 @@ body.dark .ai-block-body strong { color:#A5B4FC; }
    where the default var(--bg-surface) background would blend into the surrounding card. */
 .ai-block--tint { background:var(--bg-subtle); }
 body.dark .ai-block--tint { background:rgba(255,255,255,0.04); }
+/* "From Failing Checks" card only (user 08.09) — the shared .ai-block dark background
+   (var(--bg-surface), a solid teal #062528) reads too heavy against this CONTESTED/orange
+   card specifically; scoped to this one id rather than changing the shared class, which
+   every other AI block in the app (Dashboard, Drift, the other two Policies paths) still
+   uses unchanged. */
+body.dark #pc-step2-failing-ai .ai-block { background:rgba(255,255,255,0.05); box-shadow:none; }
+/* "Update policy to a new version" card (user 08.09) — same treatment as the Failing-checks
+   card above. */
+body.dark #pc-step2-update-ai .ai-block { background:rgba(255,255,255,0.05); box-shadow:none; }
+/* "From a known-good node" card (user 08.09) — same treatment as the other two Policies
+   AI-path cards above. */
+body.dark #pc-step2-golden-ai .ai-block { background:rgba(255,255,255,0.05); box-shadow:none; }
+/* Moved/Removed row dividers only — scoped to the rows wrapper, not the whole detail block
+   (which also holds the LINE ITEMS stat tiles and N-2 version chips, both .dash-nested-box
+   with their own border:1px solid var(--border) that should stay as-is). */
+body.dark #pc-update-rows { --border: rgba(255,255,255,0.08); }
+/* Row dividers (border-top/border-bottom, inline via var(--border) in _pcFailingRow) — scoped
+   to the list only, not the whole card, so the card's own outer border is untouched. */
+body.dark #pc-failing-list { --border: rgba(255,255,255,0.08); }
 /* Header band variant — Dashboard "Needs your attention" (user 07.09: move the title/scope line
    INSIDE the bordered card as its own strip instead of a plain heading above it). Neutral surface
    like .assign-notice/.j4m-info, NOT an indigo tint — colour stays on the icon/label only. */
@@ -11797,7 +11816,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
               <div style="padding-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <button type="button" class="btn-primary btn-primary--s" id="pc-golden-draft-btn" disabled onclick="pcOpenDraftReview('golden')">Draft rules for review</button>
-                <button type="button" class="btn-outline" id="pc-golden-pick-btn" style="display:none;" onclick="pcGoldenPickDifferent()">Pick a different build</button>
+                <button type="button" class="btn-secondary" id="pc-golden-pick-btn" style="display:none;" onclick="pcGoldenPickDifferent()">Pick a different build</button>
               </div>
             </div>
           </div>
@@ -11818,7 +11837,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div id="pc-update-detail" style="display:none;"></div>
               <div style="padding-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <button type="button" class="btn-primary btn-primary--s" id="pc-update-review-btn" disabled onclick="pcOpenDraftReview('update')">Review the merged policy</button>
-                <button type="button" class="btn-outline" id="pc-update-pick-btn" style="display:none;" onclick="pcUpdatePickDifferent()">Pick a different policy</button>
+                <button type="button" class="btn-secondary" id="pc-update-pick-btn" style="display:none;" onclick="pcUpdatePickDifferent()">Pick a different policy</button>
               </div>
             </div>
           </div>
@@ -11920,7 +11939,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div id="pc-failing-list"></div>
               <div id="pc-failing-note" style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:12px;"></div>
               <div style="padding-top:14px;">
-                <button type="button" class="btn-outline" onclick="pcFailingDraftAnyway()">Draft anyway</button>
+                <button type="button" class="btn-secondary" onclick="pcFailingDraftAnyway()">Draft anyway</button>
               </div>
             </div>
           </div>
@@ -18686,7 +18705,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + _pcUpdateStat(p.moved, 'MOVED · path or key changed', '#D97706')
         + _pcUpdateStat(p.removed, 'REMOVED · setting no longer exists', '#FB3C44')
         + '</div>'
-        + '<div style="margin-top:12px;">'
+        + '<div id="pc-update-rows" style="margin-top:12px;">'
         + _pcUpdateDetailRow('orange', 'Moved', p.moved1.from, p.moved1.to, true, false)
         + _pcUpdateDetailRow('orange', 'Moved', p.moved2.from, p.moved2.to, false, false)
         + _pcUpdateDetailRow('red', 'Removed', p.removed1.setting, p.removed1.reason, false, false)
