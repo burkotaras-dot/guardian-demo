@@ -1905,6 +1905,7 @@ body:not(.dark) #cred-firstrun .es-ico { background:#EDF2F7; }
    Export, бо експортувати порожній звіт нема сенсу. */
 #reports-firstrun { display:none; }
 #v-reports.is-firstrun #rep-head-actions,
+#v-reports.is-firstrun #rep-ask-wrap,
 #v-reports.is-firstrun #rep-scope-wrap,
 #v-reports.is-firstrun #report-results,
 #v-reports.is-firstrun #report-loading,
@@ -23965,6 +23966,26 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openAddDeviceModal()">Add Node</button></div>
         </div>
 
+        <!-- Kash "Reports — Ask" pattern (kash-ai-functionality-decision.md, point 4): a
+             natural-language question sets the SAME scope controls below, never a parallel
+             filter state — "editable" just means the user can still use the selects by hand,
+             nothing new to keep in sync. Limited, honest vocabulary (environment / node group /
+             benchmark / failed checks); says so when nothing matches rather than guessing, same
+             "when it can't tell" discipline as the coverage banner below. -->
+        <div id="rep-ask-wrap" style="margin-bottom:14px;">
+          <div class="ai-block" style="align-items:flex-start;">
+            <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+            <div style="flex:1;min-width:0;">
+              <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Ask about this report</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input id="rep-ask-input" type="text" class="icx-input" style="flex:1;min-width:240px;" placeholder="e.g. Which policies are failing in production?" onkeydown="if(event.key==='Enter'){event.preventDefault();repAskSetFilters();}">
+                <button class="btn-primary btn-primary--s" style="flex-shrink:0;" onclick="repAskSetFilters()">Set filters</button>
+              </div>
+              <div id="rep-ask-chips" style="display:none;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Scope + Report view bar — жодної фонової картки навколо (Figma 3474:51913):
              це звичайний рядок керування прямо на фоні сторінки, без border/shadow/padding. -->
         <div id="rep-scope-wrap" style="margin-bottom:16px;">
@@ -24024,7 +24045,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         </div>
 
         <!-- Failed-checks detail -->
-        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;">
+        <div id="rep-failed-section" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-bottom:10px;">
           <div style="font-size:13px;font-weight:700;color:var(--text-default);">Failed checks (<span id="rep-failed-count">4</span>)</div>
           <div class="report-table-filter-controls" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;">
               <div class="ms-wrap" id="ms-pol">
@@ -26413,6 +26434,12 @@ function dashAiCopyTrace() {
 // Report policy keys don't match Policy Detail's ids 1:1 — same map that renders REP_POL_NAMES.
 var REP_POL_TO_PID = { compliance: 'cis-win11', endpoint: 'endpoint-protection', network: 'network-security', data: 'data-protection' };
 
+// Kash "Reports" parity (kash-ai-functionality-decision.md, points 1-3 — coverage banner,
+// deep-links from the narrative into the tables it describes, and a feedback affordance on the
+// AI text itself). Reused verbatim from the established patterns rather than invented: coverage
+// banner is the same .assign-notice markup as dashRenderAiBlock(); "This summary looks wrong" is
+// the same feedback span already shipped on Dashboard ("This priority looks wrong"). 14 = the
+// app-wide total node count (dash-sub, KPI card "Nodes Monitored"), not a fabricated figure.
 function reportRenderAiBlock(data, passed, failed, score) {
   var body = document.getElementById('rep-ai-block-body');
   var action = document.getElementById('rep-ai-block-action');
@@ -26420,7 +26447,17 @@ function reportRenderAiBlock(data, passed, failed, score) {
   if (action) action.style.display = 'none';
   if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
   if (!data || !data.nodes) { body.innerHTML = '<div>There is nothing scanned in the current scope yet, so there is nothing to summarise — adjust the scope filters or scan a node first.</div>'; return; }
-  if (!failed) { body.innerHTML = '<div>Every check in this scope is passing (<strong>100%</strong> across ' + data.policies.length + ' polic' + (data.policies.length === 1 ? 'y' : 'ies') + ', ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ') — nothing here needs attention right now.</div>'; return; }
+
+  var coverage = '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">'
+    + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>'
+    + '<span style="color:var(--text-sec);flex:1;min-width:0;"><strong style="color:var(--text-default);">Coverage</strong> \u2014 Based on ' + data.nodes + ' of 14 nodes monitored \u00b7 ' + data.benchmark + '</span>'
+    + '</div>';
+  var feedback = '<div style="padding-top:10px;"><span style="font-size:11.5px;font-weight:600;color:var(--text-sec);cursor:pointer;" onclick="showToast(\'Feedback noted \u2014 thanks.\',\'info\')">This summary looks wrong</span></div>';
+
+  if (!failed) {
+    body.innerHTML = '<div>Every check in this scope is passing (<strong>100%</strong> across ' + data.policies.length + ' polic' + (data.policies.length === 1 ? 'y' : 'ies') + ', ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ') — nothing here needs attention right now.</div>' + coverage + feedback;
+    return;
+  }
   var worst = null;
   data.policies.forEach(function (p) { if (p.fail > 0) { var s = Math.round(p.pass / (p.pass + p.fail) * 100); if (!worst || s < worst.score) worst = { p: p, score: s }; } });
   var sevCount = { critical: 0, high: 0, medium: 0, low: 0 };
@@ -26432,9 +26469,89 @@ function reportRenderAiBlock(data, passed, failed, score) {
   var html = 'This scope is passing <strong>' + score + '%</strong> (' + passed + ' of ' + (passed + failed) + ' checks) across ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ', with ' + nAff + ' node' + (nAff === 1 ? '' : 's') + ' affected by at least one failure. Most of the failures are <strong>' + topSev + '</strong> severity';
   if (worstName) html += ', and <strong>' + worstName + '</strong> is the weakest policy in scope at ' + worst.score + '%';
   html += '. <strong>Start with ' + (worstName || 'the failed checks table') + '</strong> — fixing its most common failure will move the score the most.';
-  body.innerHTML = '<div>' + html + '</div>';
+  var link = '<div style="padding-top:6px;"><span style="font-size:11.5px;font-weight:600;color:var(--green2);cursor:pointer;" onclick="document.getElementById(\'rep-failed-section\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">See the ' + failed + ' failed check' + (failed === 1 ? '' : 's') + ' \u2192</span></div>';
+  body.innerHTML = '<div>' + html + '</div>' + coverage + link + feedback;
   var pid = worst && REP_POL_TO_PID[worst.p.pol];
   if (action && pid) { action.style.display = ''; action.setAttribute('onclick', "showPolicyDetail('" + pid + "')"); }
+}
+
+// Kash "Reports — Ask" pattern (point 4). A real, limited parser over our actual scope
+// vocabulary — not a live model call, this is a static prototype — applied straight onto the
+// existing rep-env/rep-group/rep-bench selects and the report-view segmented control. There is
+// no separate "AI scope" to keep in sync with the real one: removing a chip just resets that one
+// control and re-renders. Says so when nothing in the question maps to a real filter, rather than
+// guessing or silently doing nothing.
+var REP_ASK_ENV = { production: 'Production', staging: 'Staging', development: 'Development', dev: 'Development' };
+var REP_ASK_GROUP = { 'windows 11': 'Windows 11', windows: 'Windows 11', servers: 'Servers', server: 'Servers', developer: 'Developer Macs', macs: 'Developer Macs', mac: 'Developer Macs' };
+function repAskSetFilters() {
+  var input = document.getElementById('rep-ask-input');
+  var q = input ? input.value.trim() : '';
+  if (!q) return;
+  var ql = q.toLowerCase();
+  var applied = [];
+  Object.keys(REP_ASK_ENV).some(function (k) {
+    if (ql.indexOf(k) === -1) return false;
+    _repAskSet('rep-env', REP_ASK_ENV[k]);
+    applied.push({ dim: 'env', label: 'Environment: ' + REP_ASK_ENV[k] });
+    return true;
+  });
+  Object.keys(REP_ASK_GROUP).some(function (k) {
+    if (ql.indexOf(k) === -1) return false;
+    _repAskSet('rep-group', REP_ASK_GROUP[k]);
+    applied.push({ dim: 'group', label: 'Node group: ' + REP_ASK_GROUP[k] });
+    return true;
+  });
+  if (ql.indexOf('ubuntu') !== -1) {
+    _repAskSet('rep-bench', 'CIS Ubuntu 22.04');
+    applied.push({ dim: 'bench', label: 'Benchmark: CIS Ubuntu 22.04' });
+  }
+  if (/\bfail(s|ed|ing)?\b/.test(ql)) {
+    setReportType('failed');
+    applied.push({ dim: 'view', label: 'Report: Failed checks' });
+  }
+  if (!applied.length) {
+    showToast('Couldn\u2019t match that to a scope \u2014 try mentioning an environment, node group, benchmark, or "failing checks".', 'info');
+    return;
+  }
+  renderReport();
+  _repAskRenderChips(applied);
+}
+function _repAskSet(id, value) {
+  var sel = document.getElementById(id);
+  if (!sel) return;
+  sel.value = value;
+  if (typeof refreshCsel === 'function') { try { refreshCsel(sel); } catch (e) {} }
+}
+function _repAskRenderChips(applied) {
+  var wrap = document.getElementById('rep-ask-chips');
+  if (!wrap) return;
+  wrap.style.display = 'flex';
+  wrap.innerHTML = '<span style="font-size:11px;color:var(--text-sec);flex-shrink:0;">Set from your question</span>'
+    + applied.map(function (c) {
+        return '<span data-ask-chip="1" style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);">'
+          + c.label
+          + '<span onclick="repAskRemoveChip(this,\'' + c.dim + '\')" title="Remove filter" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;">\u00d7</span>'
+          + '</span>';
+      }).join('')
+    + '<span onclick="repAskClearAll()" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;flex-shrink:0;">Clear all</span>';
+}
+function repAskRemoveChip(el, dim) {
+  if (dim === 'env') _repAskSet('rep-env', 'All environments');
+  if (dim === 'group') _repAskSet('rep-group', 'All node groups');
+  if (dim === 'bench') _repAskSet('rep-bench', 'CIS Windows 11');
+  if (dim === 'view') setReportType('full');
+  renderReport();
+  var chip = el.closest('[data-ask-chip]');
+  if (chip) chip.remove();
+  var wrap = document.getElementById('rep-ask-chips');
+  if (wrap && !wrap.querySelector('[data-ask-chip]')) { wrap.style.display = 'none'; wrap.innerHTML = ''; }
+}
+function repAskClearAll() {
+  reportResetScope();
+  var wrap = document.getElementById('rep-ask-chips');
+  if (wrap) { wrap.style.display = 'none'; wrap.innerHTML = ''; }
+  var input = document.getElementById('rep-ask-input');
+  if (input) input.value = '';
 }
 
 // Einstein domain (change analysis/risk assessment). The full flow — Change Request ->
