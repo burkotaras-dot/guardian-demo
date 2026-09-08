@@ -16545,6 +16545,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (typeof schedRenderAiBlock === 'function') schedRenderAiBlock();
       if (typeof intgRenderAiBlock === 'function') intgRenderAiBlock();
       if (typeof driftRenderAiGroup === 'function') driftRenderAiGroup();
+      if (typeof driftRenderAiRest === 'function') driftRenderAiRest();
       if (typeof setScanFailType === 'function') setScanFailType(sfCurrentType);
       if (typeof peerInjectAiHints === 'function') peerInjectAiHints();
 
@@ -20507,6 +20508,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div id="drift-ai-group-trace" class="fm-collapsed-body dash-nested-box" style="margin-top:9px;padding:11px 13px;"></div>
             </div>
           </div>
+        </div>
+
+        <!-- "The rest of the N" — deterministic complement to AI Grouping (Kash "Detected
+             Changes" pattern: a card directly below the AI-grouping card that accounts for
+             every currently unmatched drift event NOT already inside the group above, so
+             nothing "disappears" between the AI card and the table below). Plain heading, no
+             purple/AI-DERIVED provenance — Kash's own version isn't AI-labeled either, it's a
+             deterministic tally. Real counts from CHANGE_DATA/DOM state only, same convention
+             as AI Grouping's own "2 items on this estate today" (not the client's fabricated
+             57/511/17/3). Already-reconciled items are excluded — that population is the Lane 1
+             equivalent in Kash's model, not part of "the rest". -->
+        <div id="drift-ai-rest-block" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;margin:0 0 16px;">
+          <div id="drift-ai-rest-title" style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:6px;"></div>
+          <div id="drift-ai-rest-list"></div>
         </div>
 
         <!-- Bulk action bar — shown when 1+ drift items selected -->
@@ -28966,6 +28981,7 @@ function applyDriftFilters() {
   // Sync master + group checkboxes and bulk bar against current selection
   updateDriftBulkBar();
   driftRenderAiGroup();
+  driftRenderAiRest();
 }
 
 // AI Grouping — find the largest cluster of currently-visible unreconciled events on the
@@ -29077,6 +29093,53 @@ function driftRenderAiGroup() {
   var splitPicker = document.getElementById('drift-ai-group-split-picker');
   if (splitPicker) splitPicker.style.display = 'none';
   block.style.display = 'block';
+}
+// "The rest of the N" — every currently-visible, not-yet-reconciled drift event that ISN'T
+// inside the AI-grouped set above. Reconciled items are excluded on purpose (that's the Lane 1
+// equivalent in the client's model — already accounted for, not part of "the rest"). Buckets by
+// the same real fields the rest of this page already uses (ignoreCandidate, recon), never a
+// fabricated count.
+function driftComputeAiRest() {
+  var group = driftComputeAiGroup();
+  var groupedIdxs = group ? group.items.map(function(it) { return it.idx; }) : [];
+  var buckets = { pattern: [], flagged: [], nomatch: [] };
+  for (var i = 0; i < CHANGE_DATA.length; i++) {
+    var card = document.getElementById('change-card-' + i);
+    if (!card || card.style.display === 'none') continue;
+    if (card.dataset.recon === 'reconciled') continue;
+    if (groupedIdxs.indexOf(i) !== -1) continue;
+    var d = CHANGE_DATA[i];
+    if (d.ignoreCandidate) buckets.pattern.push(d);
+    else if (card.dataset.recon === 'flagged') buckets.flagged.push(d);
+    else buckets.nomatch.push(d);
+  }
+  return buckets;
+}
+function driftRenderAiRest() {
+  var block = document.getElementById('drift-ai-rest-block');
+  if (!block) return;
+  var b = driftComputeAiRest();
+  var total = b.pattern.length + b.nomatch.length + b.flagged.length;
+  if (total === 0) { block.style.display = 'none'; return; }
+  var title = document.getElementById('drift-ai-rest-title');
+  if (title) title.textContent = 'The rest of the ' + total;
+  var rows = '';
+  if (b.pattern.length) rows += _driftRestRow(b.pattern.length, 'Matches an expected pattern', b.pattern.map(function(d) { return d.checkName; }).join('; '), 'Suppressed', 'bdg--gray');
+  if (b.nomatch.length) rows += _driftRestRow(b.nomatch.length, 'No matching change request', b.nomatch.map(function(d) { return d.checkName; }).join('; '), 'No CR', 'bdg--gray');
+  if (b.flagged.length) rows += _driftRestRow(b.flagged.length, 'Needs an owner today', b.flagged.map(function(d) { return d.checkName; }).join('; '), 'Escalate', 'bdg--orange', true);
+  var list = document.getElementById('drift-ai-rest-list');
+  if (list) list.innerHTML = rows;
+  block.style.display = 'block';
+}
+function _driftRestRow(count, title, desc, tag, tagCls, isLast) {
+  return '<div style="display:flex;align-items:flex-start;gap:12px;padding:9px 0;' + (isLast ? '' : 'border-bottom:1px solid var(--border);') + '">'
+    + '<div style="font-size:15px;font-weight:800;line-height:22px;color:var(--text-default);width:28px;flex-shrink:0;text-align:right;">' + count + '</div>'
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="font-size:12.5px;font-weight:700;line-height:20px;color:var(--text-default);">' + title + '</div>'
+    + '<div style="font-size:11.5px;line-height:18.4px;color:var(--text-sec);padding-top:2px;">' + desc + '</div>'
+    + '</div>'
+    + '<span class="bdg ' + tagCls + '" style="flex-shrink:0;">' + tag + '</span>'
+    + '</div>';
 }
 // Illustrative-example row for the (fabricated, clearly-labelled) parent/child breakdown above —
 // same 32px right-aligned count + title/description layout as _dashAllDriftRow, but with a single
