@@ -16545,7 +16545,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (typeof schedRenderAiBlock === 'function') schedRenderAiBlock();
       if (typeof intgRenderAiBlock === 'function') intgRenderAiBlock();
       if (typeof driftRenderAiGroup === 'function') driftRenderAiGroup();
-      if (typeof driftRenderAiTriage === 'function') driftRenderAiTriage();
       if (typeof setScanFailType === 'function') setScanFailType(sfCurrentType);
       if (typeof peerInjectAiHints === 'function') peerInjectAiHints();
 
@@ -20194,34 +20193,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div class="es-title">No drift detected yet</div>
           <div class="es-sub">Drift is the difference between two scans. Add a node and scan it — from the<br>second scan on, everything that changes on it will be listed here.</div>
           <div class="es-act"><button class="btn-primary" style="width:auto;padding:0 18px;height:32px;" onclick="openAddDeviceModal()">Add Node</button></div>
-        </div>
-
-        <!-- AI Triage — Einstein domain (change/drift analysis, per our own domain model; Kash
-             didn't name this specific pattern so no override applies — see
-             kash-ai-functionality-decision memory). Splits everything Guardian is currently
-             tracking into what needs a human decision vs. what already matches a known/expected
-             pattern (an ignore-rule candidate) — mirrors Kash's "Open the N / Show the M
-             suppressed" pair, backed by our own CHANGE_DATA.ignoreCandidate flag, not a
-             fabricated count. Always-on, no click-trigger — same shape as Dashboard's block. -->
-        <div id="drift-ai-triage-block" class="ai-block" style="display:none;margin:0 0 16px;padding:0;">
-          <!-- Head-band matches Dashboard's #dash-ai-block exactly (user 08.09: "так як у нас в
-               дашборді") — same .ai-block-head-band strip, same icon, and the same real estate-wide
-               stat (186 unreconciled drift / 14 nodes monitored — #dash-unreconciled-val and the
-               Coverage "1 of 14 nodes" fact used elsewhere), not a fabricated page-local number. -->
-          <div class="ai-block-head-band" style="padding-left:20px;">
-            <div style="display:flex;align-items:center;gap:8px;min-width:0;">
-              <svg class="ai-block-head-icon" width="15" height="15" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
-              <span style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</span>
-            </div>
-            <span style="font-size:11px;color:var(--text-sec);white-space:nowrap;">186 unreconciled drift &middot; 14 nodes monitored</span>
-          </div>
-          <div style="padding:14px 18px 14px 20px;">
-            <div id="drift-ai-triage-body" class="ai-block-body"></div>
-            <div id="drift-ai-triage-actions" style="display:flex;align-items:center;gap:10px;padding-top:10px;flex-wrap:wrap;">
-              <button type="button" class="btn-primary btn-primary--s" id="drift-ai-triage-open" onclick="filterChanges('needs-decision')"></button>
-              <button type="button" class="btn-secondary" id="drift-ai-triage-suppressed" onclick="filterChanges('suppressed')"></button>
-            </div>
-          </div>
         </div>
 
         <!-- Change reconciliation — compact ACTIVE status strip -->
@@ -28995,52 +28966,6 @@ function applyDriftFilters() {
   // Sync master + group checkboxes and bulk bar against current selection
   updateDriftBulkBar();
   driftRenderAiGroup();
-  driftRenderAiTriage();
-}
-
-// AI Triage — signal vs. noise across the WHOLE tracked set (not just the currently filtered
-// view, same "macro" scope as the Dashboard block). "Needs a decision" = unreconciled/flagged
-// items that are NOT a known ignore-rule candidate; "suppressed" = items already known to match
-// an expected/benign pattern (CHANGE_DATA[i].ignoreCandidate). Real counts, not fabricated ones.
-function driftComputeAiTriage() {
-  var needsDecision = 0, suppressed = 0;
-  for (var i = 0; i < CHANGE_DATA.length; i++) {
-    var c = CHANGE_DATA[i];
-    if (c.ignoreCandidate) { suppressed++; continue; }
-    if (c.recon === 'unreconciled' || c.recon === 'flagged') needsDecision++;
-  }
-  return { needsDecision: needsDecision, suppressed: suppressed };
-}
-function driftRenderAiTriage() {
-  var block = document.getElementById('drift-ai-triage-block');
-  if (!block) return;
-  var t = driftComputeAiTriage();
-  if (t.needsDecision === 0 && t.suppressed === 0) { block.style.display = 'none'; return; }
-  var body = document.getElementById('drift-ai-triage-body');
-  var actions = document.getElementById('drift-ai-triage-actions');
-  if (aiTierLocked()) {
-    if (body) body.innerHTML = aiBlockLockedHtml();
-    if (actions) actions.style.display = 'none';
-    block.style.display = 'block';
-    return;
-  }
-  if (body) {
-    body.innerHTML = t.needsDecision > 0
-      ? '<strong>' + t.needsDecision + '</strong> item' + (t.needsDecision === 1 ? '' : 's') + ' need' + (t.needsDecision === 1 ? 's' : '') + ' a decision. Everything else Guardian is tracking already matches an expected pattern.'
-      : 'Nothing needs a decision right now — everything Guardian is tracking already matches an expected pattern.';
-  }
-  var openBtn = document.getElementById('drift-ai-triage-open');
-  if (openBtn) {
-    openBtn.style.display = t.needsDecision > 0 ? '' : 'none';
-    openBtn.textContent = 'Open the ' + t.needsDecision;
-  }
-  var suppBtn = document.getElementById('drift-ai-triage-suppressed');
-  if (suppBtn) {
-    suppBtn.style.display = t.suppressed > 0 ? '' : 'none';
-    suppBtn.textContent = 'Show the ' + t.suppressed + ' suppressed';
-  }
-  if (actions) actions.style.display = 'flex';
-  block.style.display = 'block';
 }
 
 // AI Grouping — find the largest cluster of currently-visible unreconciled events on the
