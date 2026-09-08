@@ -854,6 +854,12 @@ body.dark .fm-req { background:rgba(255,255,255,0.05); border-color:rgba(255,255
 .fm-collapsed-toggle.is-open svg { transform:rotate(90deg); }
 .fm-collapsed-body { display:none; }
 .fm-collapsed-toggle.is-open + .fm-collapsed-body { display:block; }
+/* Nested light surface on a card (Dashboard "Show the working out" / excluded-drift reveal) —
+   var(--bg-page) in dark is the page canvas (#00262A), darker than the card it sits on, so it
+   reads as a hole punched in the card instead of a subtle raised surface. Same fix as inputs on
+   a card (DS §2): dark gets translucent white instead of a darker solid token. */
+.dash-nested-box { background:var(--bg-page); border:1px solid var(--border); border-radius:8px; }
+body.dark .dash-nested-box { background:rgba(255,255,255,0.05); }
 .fm-transform { font-size:11px; color:var(--text-sec); font-style:italic; }
 .fm-default { font-size:11px; color:var(--text-muted); }
 .fm-validation { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600; }
@@ -25659,7 +25665,7 @@ function dashRenderAiBlock() {
   // follow). 186 total \u2212 3 that need a decision = 183; the four groups below sum to exactly
   // that. Real navigation to the full Detected Drift table is kept as a quiet link at the
   // bottom, so this doesn't remove the only way to reach that page.
-  var allDrift = '<div id="dash-all-drift-body" style="display:none;margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">'
+  var allDrift = '<div id="dash-all-drift-body" class="dash-nested-box" style="display:none;margin-top:9px;padding:12px 14px;">'
     + '<div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;line-height:17.6px;margin-bottom:12px;">The other 183 unreconciled drift events</div>'
     + '<div style="border-top:1px solid var(--border);">'
     + _dashAllDriftRow(96, 'Vendor auto-updates', 'Browser and agent version bumps, consistent with published release dates.', 'expected', 'utun0\u2013utun3')
@@ -25678,7 +25684,7 @@ function dashRenderAiBlock() {
     + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>'
     + 'Show the working out \u00b7 3 sources used'
     + '</div>'
-    + '<div class="fm-collapsed-body" style="margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:11px 13px;display:flex;align-items:flex-start;gap:14px;">'
+    + '<div class="fm-collapsed-body dash-nested-box" style="margin-top:9px;padding:11px 13px;display:flex;align-items:flex-start;gap:14px;">'
     + '<div style="flex:1;min-width:0;">'
     + _dashAiTraceRow('SCANS', 'Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.')
     + _dashAiTraceRow('CHANGE REQUESTS', '6 upcoming CRs tracked; 8 drift events have no matching CR.')
