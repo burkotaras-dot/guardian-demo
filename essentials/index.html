@@ -25659,9 +25659,14 @@ function dashRenderAiBlock() {
     + '</div>'
     + '<div id="dash-ai-why" style="display:none;font-size:12px;line-height:1.6;color:var(--text-sec);margin-top:6px;">This reflects one node\u2019s history, not the estate\u2019s. The other 13 monitored nodes have no detected-change data in this window \u2014 that\u2019s an absence of visibility, not a clean bill of health.</div>';
 
+  // Client naming/colour convention (Guardian Prototype v3): the item-count action is the
+  // green primary ("Open the 80" \u2192 navigates to the full triage view \u2014 index.html:...
+  // showView('changes') here, our "Detected Drift"), the reveal toggle is the neutral
+  // secondary ("Show/Hide the N suppressed" \u2192 our "excluded", matching this dashboard's own
+  // "already matches expected patterns" framing rather than copying "suppressed" verbatim).
   var buttons = '<div style="display:flex;align-items:center;gap:10px;padding-top:10px;flex-wrap:wrap;">'
-    + '<button class="btn-secondary" onclick="dashAiScrollToItems()">Review the 3</button>'
-    + '<button id="dash-all-drift-btn" class="btn-primary btn-primary--s" onclick="dashToggleAllDrift()">Show all 186 \u2192</button>'
+    + '<button class="btn-primary btn-primary--s" onclick="showView(\'changes\')">Open the 3</button>'
+    + '<button id="dash-all-drift-btn" class="btn-secondary" onclick="dashToggleAllDrift()">Show the 183 excluded</button>'
     + '<span style="margin-left:auto;font-size:11.5px;font-weight:600;color:var(--text-sec);cursor:pointer;" onclick="showToast(\'Feedback noted \u2014 thanks.\',\'info\')">This priority looks wrong</span>'
     + '</div>';
 
@@ -25718,7 +25723,7 @@ function dashToggleAllDrift() {
   if (!box || !btn) return;
   var open = box.style.display !== 'none';
   box.style.display = open ? 'none' : 'block';
-  btn.textContent = open ? 'Show all 186 →' : 'Hide the 183 excluded';
+  btn.textContent = open ? 'Show the 183 excluded' : 'Hide the 183 excluded';
 }
 function _dashAiTraceRow(label, text, valuePadRight) {
   var padStyle = valuePadRight ? ('padding-right:' + valuePadRight + 'px;') : '';
@@ -25742,14 +25747,6 @@ function dashAiCopyTrace() {
   } else {
     showToast('Trace copied to clipboard', 'success');
   }
-}
-function dashAiScrollToItems() {
-  var el = document.getElementById('dash-concept-attention');
-  if (!el) return;
-  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  el.style.transition = 'background 0.3s';
-  el.style.background = 'rgba(124,58,237,0.06)';
-  setTimeout(function () { el.style.background = 'transparent'; }, 900);
 }
 
 // Bertha domain (general AI assistance) — Reports summary rollup. Always-on block, no trigger, no loading state:
