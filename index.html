@@ -25659,10 +25659,7 @@ function dashRenderAiBlock() {
     + 'Show the working out \u00b7 3 sources used'
     + '</div>'
     + '<div class="fm-collapsed-body" style="margin-top:9px;background:var(--bg-page);border:1px solid var(--border);border-radius:8px;padding:11px 13px;">'
-    + '<div style="display:flex;justify-content:flex-end;margin-bottom:7px;">'
-    + '<button class="action-cta" style="height:26px;min-width:0;padding:0 10px;font-size:11px;" onclick="dashAiCopyTrace()">Copy trace for a support ticket</button>'
-    + '</div>'
-    + _dashAiTraceRow('SCANS', 'Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.')
+    + _dashAiTraceRow('SCANS', '<button class="action-cta" style="height:26px;min-width:0;padding:0 10px;font-size:11px;float:right;margin:0 0 6px 12px;" onclick="dashAiCopyTrace()">Copy trace for a support ticket</button>Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.')
     + _dashAiTraceRow('CHANGE REQUESTS', '6 upcoming CRs tracked; 8 drift events have no matching CR.')
     + _dashAiTraceRow('NOT USED', 'Peer comparison and consensus data were not consulted \u2014 this triage looks at reconciliation status only.')
     + '</div>'
@@ -25670,10 +25667,11 @@ function dashRenderAiBlock() {
 
   body.innerHTML = headerRow + headline + coverage + buttons + trace;
 }
-function _dashAiTraceRow(label, text) {
+function _dashAiTraceRow(label, text, valuePadRight) {
+  var padStyle = valuePadRight ? ('padding-right:' + valuePadRight + 'px;') : '';
   return '<div style="display:grid;grid-template-columns:130px 1fr;gap:11px;align-items:start;margin-bottom:7px;">'
     + '<span style="font-family:\'DM Mono\',monospace;font-size:10.5px;line-height:16.8px;letter-spacing:0.06em;color:var(--text-sec);">' + label + '</span>'
-    + '<span style="font-size:12px;line-height:1.5;color:var(--text-default);">' + text + '</span>'
+    + '<span style="font-size:12px;line-height:1.5;color:var(--text-default);' + padStyle + '">' + text + '</span>'
     + '</div>';
 }
 function dashAiToggleWhy() {
