@@ -20201,10 +20201,19 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
              pattern (an ignore-rule candidate) — mirrors Kash's "Open the N / Show the M
              suppressed" pair, backed by our own CHANGE_DATA.ignoreCandidate flag, not a
              fabricated count. Always-on, no click-trigger — same shape as Dashboard's block. -->
-        <div id="drift-ai-triage-block" class="ai-block" style="display:none;align-items:flex-start;margin-bottom:16px;">
-          <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
-          <div style="flex:1;min-width:0;">
-            <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Needs your attention</div>
+        <div id="drift-ai-triage-block" class="ai-block" style="display:none;margin:0 0 16px;padding:0;">
+          <!-- Head-band matches Dashboard's #dash-ai-block exactly (user 08.09: "так як у нас в
+               дашборді") — same .ai-block-head-band strip, same icon, and the same real estate-wide
+               stat (186 unreconciled drift / 14 nodes monitored — #dash-unreconciled-val and the
+               Coverage "1 of 14 nodes" fact used elsewhere), not a fabricated page-local number. -->
+          <div class="ai-block-head-band" style="padding-left:20px;">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+              <svg class="ai-block-head-icon" width="15" height="15" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+              <span style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Needs your attention</span>
+            </div>
+            <span style="font-size:11px;color:var(--text-sec);white-space:nowrap;">186 unreconciled drift &middot; 14 nodes monitored</span>
+          </div>
+          <div style="padding:14px 18px 14px 20px;">
             <div id="drift-ai-triage-body" class="ai-block-body"></div>
             <div id="drift-ai-triage-actions" style="display:flex;align-items:center;gap:10px;padding-top:10px;flex-wrap:wrap;">
               <button type="button" class="btn-primary btn-primary--s" id="drift-ai-triage-open" onclick="filterChanges('needs-decision')"></button>
@@ -20463,25 +20472,66 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
              the human still clicks Approve; nothing is silently reconciled. Split is a present-
              but-not-built no-op, matching the client's own file exactly (its Split button does
              nothing there either). -->
-        <div id="drift-ai-group-block" class="ai-block" style="display:none;flex-direction:column;align-items:flex-start;margin-bottom:14px;">
-          <div style="display:flex;align-items:flex-start;gap:10px;width:100%;">
-            <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="flex-shrink:0;margin-top:1px;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
-            <div style="flex:1;min-width:0;">
-              <div id="drift-ai-group-header" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"></div>
-              <div id="drift-ai-group-body" class="ai-block-body"></div>
-              <div id="drift-ai-group-actions" style="display:flex;align-items:center;gap:10px;padding-top:10px;flex-wrap:wrap;">
-                <button type="button" class="btn-primary btn-primary--s" id="drift-ai-group-accept" onclick="driftAcceptAiGroup()">Accept the grouping</button>
-                <button type="button" class="btn-secondary" onclick="driftRejectAiGroup()">Reject the grouping</button>
-                <button type="button" class="btn-secondary" onclick="driftSplitAiGroup()">Split out some items</button>
+        <div id="drift-ai-group-block" class="ai-block" style="display:none;margin:0 0 14px;padding:0;">
+          <!-- Head-band matches Dashboard's #dash-ai-block / the triage block above it exactly
+               (user 08.09: "так як на дашборді" + left-align the content to the same column) —
+               same .ai-block-head-band strip, same icon, title left / a real per-render meta stat
+               right (the confidence line, which used to sit awkwardly inside the content badges
+               row). Content below now shares the triage block's own 20px left padding, so both
+               cards' text columns line up under one another instead of drifting right by the old
+               icon+gap flex offset. -->
+          <div class="ai-block-head-band" style="padding-left:20px;">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+              <svg class="ai-block-head-icon" width="15" height="15" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+              <span style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">AI Grouping</span>
+            </div>
+            <span id="drift-ai-group-confidence-stat" style="font-size:11px;color:var(--text-sec);white-space:nowrap;"></span>
+          </div>
+          <div style="padding:14px 18px 14px 20px;">
+            <div id="drift-ai-group-header" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"></div>
+            <div id="drift-ai-group-body" class="ai-block-body"></div>
+            <div id="drift-ai-group-coverage-wrap">
+              <div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:center;gap:8px;padding:9px 14px;flex-wrap:wrap;font-size:12px;">
+                <span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;"></span>
+                <span id="drift-ai-group-coverage-text" style="color:var(--text-sec);"></span>
+                <span id="drift-ai-group-why-toggle" style="margin-left:auto;font-weight:700;color:var(--green2);cursor:pointer;flex-shrink:0;" onclick="driftAiGroupToggleWhy()">Why →</span>
               </div>
-              <div id="drift-ai-group-result" style="display:none;padding-top:10px;"></div>
-              <div style="margin-top:10px;padding-top:2px;">
-                <div class="fm-collapsed-toggle" onclick="this.classList.toggle('is-open')">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                  Show the working out
-                </div>
-                <div id="drift-ai-group-trace" class="fm-collapsed-body dash-nested-box" style="margin-top:9px;padding:11px 13px;"></div>
+              <div id="drift-ai-group-why" style="display:none;font-size:12px;line-height:1.6;color:var(--text-sec);margin-top:6px;">This reflects one node’s history, not the estate’s. The other 13 monitored nodes have no detected-change data in this window — that’s an absence of visibility, not a clean bill of health.</div>
+            </div>
+            <!-- Illustrative parent/child breakdown — user 08.09 asked for the client's own
+                 example (14/37/6, an OS-upgrade explaining a batch of collateral changes) after
+                 noticing it was missing; explicitly NOT real data (our CHANGE_DATA has only 2 flat
+                 grouped items, no parent/child hierarchy behind them), so it carries its own
+                 "Illustrative example" label rather than being presented as a real breakdown —
+                 unlike every other number on this card, which is computed from CHANGE_DATA. -->
+            <div id="drift-ai-group-children-wrap" style="margin-top:12px;">
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;color:#8B5CF6;margin-bottom:6px;">ILLUSTRATIVE EXAMPLE · NOT REAL SCAN DATA</div>
+              <div style="font-size:12px;line-height:1.6;color:var(--text-sec);margin-bottom:2px;">At estate scale, one root cause can explain a batch of related collateral changes the same way — for example, an OS upgrade would show up as:</div>
+              <div id="drift-ai-group-children"></div>
+            </div>
+            <div id="drift-ai-group-actions" style="display:flex;align-items:center;gap:10px;padding-top:10px;flex-wrap:wrap;">
+              <button type="button" class="btn-primary btn-primary--s" id="drift-ai-group-accept" onclick="driftAcceptAiGroup()">Accept the grouping</button>
+              <button type="button" class="btn-secondary" onclick="driftRejectAiGroup()">Reject the grouping</button>
+              <button type="button" class="btn-outline" onclick="driftSplitAiGroup()">Split out some items</button>
+            </div>
+            <!-- Real "Split" picker (user 08.09: make it work, not a no-op) — lets the reviewer
+                 uncheck the item(s) they don't think belong in this group; confirming shrinks the
+                 group to only the checked items (block.dataset.idxs), so Accept only pre-selects
+                 those. Works purely on our own 2 real grouped items — nothing fabricated. -->
+            <div id="drift-ai-group-split-picker" style="display:none;padding-top:10px;">
+              <div id="drift-ai-group-split-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <button type="button" class="btn-primary btn-primary--s" onclick="driftConfirmSplitAiGroup()">Split selected out</button>
+                <button type="button" class="btn-outline" onclick="driftCancelSplitAiGroup()">Cancel</button>
               </div>
+            </div>
+            <div id="drift-ai-group-result" style="display:none;padding-top:10px;"></div>
+            <div style="margin-top:10px;padding-top:2px;">
+              <div class="fm-collapsed-toggle" onclick="this.classList.toggle('is-open')">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                Show the working out
+              </div>
+              <div id="drift-ai-group-trace" class="fm-collapsed-body dash-nested-box" style="margin-top:9px;padding:11px 13px;"></div>
             </div>
           </div>
         </div>
@@ -25758,6 +25808,14 @@ function dashAiToggleWhy() {
   box.style.display = open ? 'none' : 'block';
   t.textContent = open ? 'Why \u2192' : 'Hide \u2192';
 }
+function driftAiGroupToggleWhy() {
+  var box = document.getElementById('drift-ai-group-why');
+  var t = document.getElementById('drift-ai-group-why-toggle');
+  if (!box || !t) return;
+  var open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  t.textContent = open ? 'Why \u2192' : 'Hide \u2192';
+}
 function dashAiCopyTrace() {
   var text = 'Guardian AI triage trace\nScans: Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.\nChange requests: 6 upcoming CRs tracked; 8 drift events have no matching CR.\nNot used: Peer comparison and consensus data were not consulted.';
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -28947,7 +29005,7 @@ function driftRenderAiTriage() {
   if (aiTierLocked()) {
     if (body) body.innerHTML = aiBlockLockedHtml();
     if (actions) actions.style.display = 'none';
-    block.style.display = 'flex';
+    block.style.display = 'block';
     return;
   }
   if (body) {
@@ -28966,7 +29024,7 @@ function driftRenderAiTriage() {
     suppBtn.textContent = 'Show the ' + t.suppressed + ' suppressed';
   }
   if (actions) actions.style.display = 'flex';
-  block.style.display = 'flex';
+  block.style.display = 'block';
 }
 
 // AI Grouping — find the largest cluster of currently-visible unreconciled events on the
@@ -29002,6 +29060,9 @@ function driftRenderAiGroup() {
   var result = document.getElementById('drift-ai-group-result');
   var traceBox = document.getElementById('drift-ai-group-trace');
   var traceWrap = traceBox ? traceBox.parentElement : null;
+  var covWrap = document.getElementById('drift-ai-group-coverage-wrap');
+  var confStat = document.getElementById('drift-ai-group-confidence-stat');
+  var childrenWrap = document.getElementById('drift-ai-group-children-wrap');
   if (!group) { block.style.display = 'none'; return; }
   if (aiTierLocked()) {
     if (header) header.innerHTML = '';
@@ -29009,10 +29070,15 @@ function driftRenderAiGroup() {
     if (actions) actions.style.display = 'none';
     if (result) result.style.display = 'none';
     if (traceWrap) traceWrap.style.display = 'none';
-    block.style.display = 'flex';
+    if (covWrap) covWrap.style.display = 'none';
+    if (childrenWrap) childrenWrap.style.display = 'none';
+    if (confStat) confStat.textContent = '';
+    block.style.display = 'block';
     return;
   }
   if (traceWrap) traceWrap.style.display = '';
+  if (covWrap) covWrap.style.display = '';
+  if (childrenWrap) childrenWrap.style.display = '';
   if (result) result.style.display = 'none';
   if (actions) actions.style.display = 'flex';
   var items = group.items.map(function(it) { return it.data; });
@@ -29029,10 +29095,21 @@ function driftRenderAiGroup() {
   if (header) header.innerHTML = '<span class="bdg bdg--purple">AI-derived</span>'
     + '<span class="bdg bdg--gray">' + _currentTier + '</span>'
     + '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">GROUPING · PROPOSED</span>'
-    + '<span style="font-size:11px;color:var(--text-sec);">' + confidence + ' confidence · ' + signals + ' of 3 signals</span>'
     + '<span class="bdg bdg--gray">Not reviewed</span>';
+  if (confStat) confStat.textContent = confidence + ' confidence · ' + signals + ' of 3 signals';
 
   if (body) body.innerHTML = 'AI grouped <strong>' + group.items.length + '</strong> unreconciled changes on <strong>' + group.node + '</strong> as part of the same event — detected within <strong>' + spanHrs + 'h</strong> of each other. Review and approve them together instead of one at a time.';
+
+  // Coverage — same real "1 of 14 nodes" fact already stated on the Dashboard AI block (every
+  // CHANGE_DATA record is on MACBOOK-TARAS); "last scanned" uses the most recent of the two
+  // grouped items' own detected timestamps rather than a separate invented number.
+  // ts is "seconds ago" (smaller = more recent), not an absolute timestamp — the most recently
+  // detected item is the one with the MINIMUM ts, not the maximum.
+  var latest = items[tsList.indexOf(Math.min.apply(null, tsList))];
+  var scanMatch = /Detected\s+(.+?)\s*·/.exec(latest.detected || '');
+  var lastScanned = scanMatch ? scanMatch[1] : 'recently';
+  var covText = document.getElementById('drift-ai-group-coverage-text');
+  if (covText) covText.innerHTML = '<strong style="color:var(--text-default);">Coverage</strong> — Based on 1 of 14 nodes with detected-change history — ' + group.node + ' only · last scanned ' + lastScanned;
 
   // Counter-evidence — genuine, drawn from the real records: a known ignore-candidate grouped
   // with a real failure, or a plain severity mismatch, rather than an invented caveat.
@@ -29046,8 +29123,32 @@ function driftRenderAiGroup() {
     + _dashAiTraceRow('TIME WINDOW', 'Detected within ' + spanHrs + 'h of each other.')
     + _dashAiTraceRow('COUNTER-EVIDENCE', counter);
 
+  // Illustrative only — see the comment on #drift-ai-group-children-wrap. Copied from the client
+  // prototype's own example rather than computed, since we have no real parent/child records to
+  // break down.
+  var childrenBox = document.getElementById('drift-ai-group-children');
+  if (childrenBox) childrenBox.innerHTML = _driftChildRow(14, 'Apple system application updates', 'Books, Maps, News, Shortcuts, Tips, Siri, Games and 7 more · 3 Aug')
+    + _driftChildRow(37, 'Daemon state changes', 'launchd services started or stopped within 4 minutes of the upgrade')
+    + _driftChildRow(6, 'Configuration-file checksum changes', '/etc/apache2/httpd.conf · /etc/cups/cupsd.conf · /etc/postfix/makedefs.out · +3', true);
+
   block.dataset.idxs = group.items.map(function(it) { return it.idx; }).join(',');
-  block.style.display = 'flex';
+  block.dataset.allIdxs = block.dataset.idxs;
+  var splitPicker = document.getElementById('drift-ai-group-split-picker');
+  if (splitPicker) splitPicker.style.display = 'none';
+  block.style.display = 'block';
+}
+// Illustrative-example row for the (fabricated, clearly-labelled) parent/child breakdown above —
+// same 32px right-aligned count + title/description layout as _dashAllDriftRow, but with a single
+// trailing badge instead of a group-key column, matching the client prototype's own row shape.
+function _driftChildRow(count, title, desc, isLast) {
+  return '<div style="display:flex;align-items:flex-start;gap:12px;padding:9px 0;' + (isLast ? '' : 'border-bottom:1px solid var(--border);') + '">'
+    + '<div style="font-size:15px;font-weight:800;line-height:22px;color:var(--text-default);width:28px;flex-shrink:0;text-align:right;">' + count + '</div>'
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="font-size:12.5px;font-weight:700;line-height:20px;color:var(--text-default);">' + title + '</div>'
+    + '<div style="font-size:11.5px;line-height:18.4px;color:var(--text-sec);padding-top:2px;">' + desc + '</div>'
+    + '</div>'
+    + '<span class="bdg bdg--purple" style="flex-shrink:0;">Likely collateral</span>'
+    + '</div>';
 }
 function driftSelectAiGroup() {
   var block = document.getElementById('drift-ai-group-block');
@@ -29093,17 +29194,72 @@ function driftUndoAiGroup() {
   var block = document.getElementById('drift-ai-group-block');
   var actions = document.getElementById('drift-ai-group-actions');
   var result = document.getElementById('drift-ai-group-result');
+  var splitPicker = document.getElementById('drift-ai-group-split-picker');
   if (result) result.style.display = 'none';
+  if (splitPicker) splitPicker.style.display = 'none';
   if (actions) actions.style.display = 'flex';
-  if (block) (block.dataset.idxs || '').split(',').filter(Boolean).forEach(function(idx) {
-    var cb = document.querySelector('.drift-select-cb[data-idx="' + idx + '"]');
-    if (cb) cb.checked = false;
-  });
+  if (block) {
+    // Undo always restores the full original group (undoes a split as well as an accept/reject),
+    // and unchecks against the full set so a since-shrunk idxs list can't leave a box stuck checked.
+    (block.dataset.allIdxs || block.dataset.idxs || '').split(',').filter(Boolean).forEach(function(idx) {
+      var cb = document.querySelector('.drift-select-cb[data-idx="' + idx + '"]');
+      if (cb) cb.checked = false;
+    });
+    if (block.dataset.allIdxs) block.dataset.idxs = block.dataset.allIdxs;
+  }
   updateDriftBulkBar();
 }
-// Present but not built — matches the client prototype's own "Split out some children" button,
-// which is confirmed (by direct testing) to be a no-op there too.
-function driftSplitAiGroup() {}
+// Real "Split out some items" (user 08.09: make it work, not a no-op like the client's own
+// unbuilt version) — a checklist of the group's own real items, defaulting the known
+// ignore-candidate (our genuine counter-evidence item) unchecked since it's the one the
+// counter-evidence line already argues doesn't belong. Confirming shrinks the active group
+// (block.dataset.idxs) to just the checked items; Undo restores the full original group.
+function driftSplitAiGroup() {
+  var block = document.getElementById('drift-ai-group-block');
+  if (!block) return;
+  var idxs = (block.dataset.allIdxs || block.dataset.idxs || '').split(',').filter(Boolean);
+  var list = document.getElementById('drift-ai-group-split-list');
+  if (list) {
+    list.innerHTML = idxs.map(function(idx) {
+      var d = CHANGE_DATA[idx];
+      var checked = d.ignoreCandidate ? '' : 'checked';
+      return '<label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text-default);cursor:pointer;">'
+        + '<input type="checkbox" class="drift-split-cb" data-idx="' + idx + '" ' + checked + ' style="margin-top:2px;">'
+        + '<span><strong>' + d.checkName + '</strong><br><span style="color:var(--text-sec);font-size:11.5px;">' + d.severity + ' severity · ' + d.node + '</span></span>'
+        + '</label>';
+    }).join('');
+  }
+  var actions = document.getElementById('drift-ai-group-actions');
+  var picker = document.getElementById('drift-ai-group-split-picker');
+  if (actions) actions.style.display = 'none';
+  if (picker) picker.style.display = 'block';
+}
+function driftCancelSplitAiGroup() {
+  var actions = document.getElementById('drift-ai-group-actions');
+  var picker = document.getElementById('drift-ai-group-split-picker');
+  if (picker) picker.style.display = 'none';
+  if (actions) actions.style.display = 'flex';
+}
+function driftConfirmSplitAiGroup() {
+  var block = document.getElementById('drift-ai-group-block');
+  if (!block) return;
+  var all = (block.dataset.allIdxs || '').split(',').filter(Boolean);
+  var checked = Array.prototype.slice.call(document.querySelectorAll('.drift-split-cb:checked')).map(function(cb) { return cb.dataset.idx; });
+  var splitOut = all.filter(function(idx) { return checked.indexOf(idx) === -1; });
+  var picker = document.getElementById('drift-ai-group-split-picker');
+  var actions = document.getElementById('drift-ai-group-actions');
+  var result = document.getElementById('drift-ai-group-result');
+  if (picker) picker.style.display = 'none';
+  if (splitOut.length === 0) { if (actions) actions.style.display = 'flex'; return; }
+  block.dataset.idxs = checked.join(',');
+  if (result) {
+    var names = splitOut.map(function(idx) { return CHANGE_DATA[idx].checkName; }).join(', ');
+    result.style.display = 'block';
+    result.innerHTML = '<span class="bdg bdg--gray" style="margin-right:8px;">Split</span>'
+      + '<span style="font-size:12px;color:var(--text-sec);">' + splitOut.length + ' item' + (splitOut.length === 1 ? '' : 's') + ' (' + names + ') removed from this group and will be reviewed on ' + (splitOut.length === 1 ? 'its' : 'their') + ' own — ' + checked.length + ' item' + (checked.length === 1 ? '' : 's') + ' still grouped.</span> '
+      + '<span class="link-cta" style="font-size:11px;" onclick="driftUndoAiGroup()"><span class="lc-txt">Undo</span></span>';
+  }
+}
 
 // Group visible drift cards under headers; each header has a select-all checkbox
 function applyDriftGrouping() {
