@@ -20236,43 +20236,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <span id="drift-morefilters-label">More filters</span>
             </span>
           </div>
-          <!-- Show handled + Search + Filters row — Figma 3466:19325 -->
+          <!-- Search — Figma 3466:19325. "Show handled" and "Filters" (sort/group) moved below
+               the AI Grouping block (see #drift-table-toolbar), since they only affect the table
+               rows. Search stays here because it filters card visibility via applyDriftFilters(),
+               same as the tabs above — it also drives what AI Grouping sees. -->
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <!-- Show handled (#2) — checkbox, unchecked hides reconciled/handled events from the active list, hidden by default -->
-          <div id="drift-show-handled" class="chg-checkbox" onclick="toggleShowHandled()" title="Show events that are already reconciled or handled">
-            <span class="chg-checkbox-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-            <span class="chg-checkbox-label">Show handled</span>
-          </div>
           <div class="btn-icon isearch" role="search" onclick="isearchOpen(this)" title="Space-separated terms. Prefix with - to exclude, use * as a wildcard.">
             <svg class="isearch-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
             <input type="text" id="changes-search" class="isearch-input" placeholder="Search drift… -exclude, wild*" aria-label="Search drift items" oninput="searchChanges(this.value)" onblur="isearchClose(this)" onkeydown="if(event.key==='Escape'){this.value='';searchChanges('');this.blur();}">
-          </div>
-          <!-- Filters custom dropdown — merges Sort + Group -->
-          <div style="position:relative;flex-shrink:0;">
-            <div id="changes-filters-btn" class="chg-filters-btn" onclick="toggleChangesFilters(this)">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
-              <span>Filters</span>
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.7;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div id="changes-filters-dropdown" class="chg-filters-dropdown" style="display:none;">
-              <div>
-                <div class="chg-filters-section">Sort by</div>
-                <div class="chg-filters-list">
-                  <div class="sort-opt sort-opt-active" data-val="newest" onclick="pickSort(this,&#39;Newest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Newest first</div>
-                  <div class="sort-opt" data-val="oldest" onclick="pickSort(this,&#39;Oldest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Oldest first</div>
-                  <div class="sort-opt" data-val="severity" onclick="pickSort(this,&#39;By severity&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By severity</div>
-                  <div class="sort-opt" data-val="node" onclick="pickSort(this,&#39;By node&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By node</div>
-                </div>
-              </div>
-              <div class="chg-filters-col-divider">
-                <div class="chg-filters-section">Group by</div>
-                <div class="chg-filters-list">
-                  <div class="group-opt group-opt-active" data-val="none" onclick="pickGroup(this,&#39;None&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Group: None</div>
-                  <div class="group-opt" data-val="node" onclick="pickGroup(this,&#39;Node&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Node</div>
-                  <div class="group-opt" data-val="cr" onclick="pickGroup(this,&#39;Change Request&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Change Request</div>
-                </div>
-              </div>
-            </div>
           </div>
           </div><!-- end right group -->
         </div>
@@ -20507,6 +20478,43 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 Show the working out
               </div>
               <div id="drift-ai-group-trace" class="fm-collapsed-body dash-nested-box" style="margin-top:9px;padding:11px 13px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table-only controls — moved below AI Grouping (user 08.09, variant 3): "Show handled"
+             only hides reconciled/approved cards, which driftComputeAiGroup() already excludes,
+             and "Filters" (sort/group) never touches card visibility — so neither affects the AI
+             card above. Kept apart from the tabs/search row, which does drive the AI card. -->
+        <div id="drift-table-toolbar" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+          <div id="drift-show-handled" class="chg-checkbox" onclick="toggleShowHandled()" title="Show events that are already reconciled or handled">
+            <span class="chg-checkbox-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+            <span class="chg-checkbox-label">Show handled</span>
+          </div>
+          <div style="position:relative;flex-shrink:0;">
+            <div id="changes-filters-btn" class="chg-filters-btn" onclick="toggleChangesFilters(this)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
+              <span>Filters</span>
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.7;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div id="changes-filters-dropdown" class="chg-filters-dropdown" style="display:none;">
+              <div>
+                <div class="chg-filters-section">Sort by</div>
+                <div class="chg-filters-list">
+                  <div class="sort-opt sort-opt-active" data-val="newest" onclick="pickSort(this,&#39;Newest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Newest first</div>
+                  <div class="sort-opt" data-val="oldest" onclick="pickSort(this,&#39;Oldest first&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Oldest first</div>
+                  <div class="sort-opt" data-val="severity" onclick="pickSort(this,&#39;By severity&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By severity</div>
+                  <div class="sort-opt" data-val="node" onclick="pickSort(this,&#39;By node&#39;)"><svg class="sort-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>By node</div>
+                </div>
+              </div>
+              <div class="chg-filters-col-divider">
+                <div class="chg-filters-section">Group by</div>
+                <div class="chg-filters-list">
+                  <div class="group-opt group-opt-active" data-val="none" onclick="pickGroup(this,&#39;None&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Group: None</div>
+                  <div class="group-opt" data-val="node" onclick="pickGroup(this,&#39;Node&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Node</div>
+                  <div class="group-opt" data-val="cr" onclick="pickGroup(this,&#39;Change Request&#39;)"><svg class="group-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Change Request</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
