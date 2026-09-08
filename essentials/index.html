@@ -854,6 +854,12 @@ body.dark .fm-req { background:rgba(255,255,255,0.05); border-color:rgba(255,255
 .fm-collapsed-toggle.is-open svg { transform:rotate(90deg); }
 .fm-collapsed-body { display:none; }
 .fm-collapsed-toggle.is-open + .fm-collapsed-body { display:block; }
+/* Dashboard "Show the working out" needs the open state to be a flex row (rows column beside
+   the Copy-trace button), not the shared rule's plain block — an inline display:flex here would
+   permanently win over the toggle's own display:none/:block (inline always beats a class rule),
+   silently breaking collapse/expand entirely. This modifier gets one more class of specificity
+   instead, so the toggle still controls visibility. */
+.fm-collapsed-toggle.is-open + .fm-collapsed-body.fm-collapsed-flex { display:flex; }
 /* Nested light surface on a card (Dashboard "Show the working out" / excluded-drift reveal) —
    var(--bg-page) in dark is the page canvas (#00262A), darker than the card it sits on, so it
    reads as a hole punched in the card instead of a subtle raised surface. Same fix as inputs on
@@ -25684,7 +25690,7 @@ function dashRenderAiBlock() {
     + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>'
     + 'Show the working out \u00b7 3 sources used'
     + '</div>'
-    + '<div class="fm-collapsed-body dash-nested-box" style="margin-top:9px;padding:11px 13px;display:flex;align-items:flex-start;gap:14px;">'
+    + '<div class="fm-collapsed-body dash-nested-box fm-collapsed-flex" style="margin-top:9px;padding:11px 13px;align-items:flex-start;gap:14px;">'
     + '<div style="flex:1;min-width:0;">'
     + _dashAiTraceRow('SCANS', 'Latest scheduled scan on MACBOOK-TARAS today at 14:23. No other node scanned inside this drift window.')
     + _dashAiTraceRow('CHANGE REQUESTS', '6 upcoming CRs tracked; 8 drift events have no matching CR.')
