@@ -3731,8 +3731,10 @@ body.dark .radio-item.selected:hover .radio-dot { border-color:#059669; }
   background:#059669;
 }
 .gm-overlay .gm-radio-copy { flex:1; min-width:0; }
-.gm-overlay .gm-radio-title { color:#0F172A; font-size:12px; font-weight:600; line-height:normal; }
-.gm-overlay .gm-radio-description { margin-top:2px; color:#475569; font-size:12px; font-weight:400; line-height:normal; }
+/* Both are authored as <span>, so without display:block they run together on one line and the
+   margin-top below silently does nothing — the description reads as part of the title. */
+.gm-overlay .gm-radio-title { display:block; color:#0F172A; font-size:12px; font-weight:600; line-height:normal; }
+.gm-overlay .gm-radio-description { display:block; margin-top:2px; color:#475569; font-size:12px; font-weight:400; line-height:normal; }
 .gm-overlay .gm-radio-dropdown { display:none; margin-top:10px; }
 .gm-overlay .gm-radio-card:has(input[type="radio"]:checked) .gm-radio-dropdown,
 .gm-overlay .gm-radio-card.is-selected .gm-radio-dropdown { display:block; }
@@ -13437,7 +13439,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           { name:'AZ-WIN-01', os:'Windows Server 2022', status:'online', lastScan:'30 sec ago' },
           { name:'AZ-LNX-01', os:'Ubuntu 22.04', status:'online', lastScan:'45 sec ago' },
           { name:'AZ-WIN-02', os:'Windows Server 2022', status:'online', lastScan:'1 min ago' }
-        ], nodeCount: 15 },
+        // Deliberately equal to London DC Group's 28. cmTieCandidates() finds a tie by node count,
+        // and with every group on a different count the ambiguity block below could never render —
+        // the one pattern that admits Guardian cannot choose was the one nobody could see.
+        ], nodeCount: 28 },
       { id: 'grp5', name: 'Staging Lab', state: 'disabled', apiKey: 'grd_t7z…masked', location: 'On-prem · Staging',
         instances: [
           { id:'cm7', reportedName:'CM-STAGING-01', status:'offline', lastContact:'2 days ago', host:'10.5.2.8', protocols:['WinRM'] }
