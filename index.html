@@ -16876,6 +16876,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (typeof driftRenderAiGroup === 'function') driftRenderAiGroup();
       if (typeof setScanFailType === 'function') setScanFailType(sfCurrentType);
       if (typeof peerInjectAiHints === 'function') peerInjectAiHints();
+      // Re-rendered from the last argument rather than from CHANGE_DATA, so a tier toggle does not
+      // undo the CR state the demo tabs are currently showing.
+      if (typeof cdRenderVerdict === 'function' && window._cdVerdictLast) cdRenderVerdict(window._cdVerdictLast);
       if (typeof renderConsequenceView === 'function' && typeof _peerGroup !== 'undefined' && _peerGroup === 'consequence') renderConsequenceView();
 
       aiLockCtaButtons();
@@ -21432,6 +21435,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
           <!-- ServiceNow match (state-driven by setCrState) -->
           <div id="cd-cr-block"><div style="display:flex;align-items:center;gap:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" stroke-width="1.5" style="flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg><div style="flex:1;"><div style="font-size:11px;color:var(--text-sec);margin-bottom:2px;">ServiceNow CR matched</div><div style="font-size:12px;font-weight:600;color:var(--text-default);">CHG0012345 — AV Software Migration</div><div style="font-size:11px;color:var(--text-sec);line-height:1.45;">Approved · 2 days ago · John Smith</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;"><span style="font-size:11px;font-weight:600;color:#15803d;white-space:nowrap;">CR pre-filled ✓</span><span onclick="showView(&#39;cr-audit&#39;)" style="font-size:11px;font-weight:600;color:var(--green1);white-space:nowrap;cursor:pointer;" onmouseover="this.style.color=&#39;#10B981&#39;" onmouseout="this.style.color=&#39;var(--green1)&#39;">View audit →</span></div></div></div>
+
+          <!-- Einstein domain — reconciliation verdict + backout-plan check. Sits directly under the
+               CR block because both blocks are statements ABOUT that change request, not about the
+               change: the first re-checks the claims the CR makes, the second reads the CR's own
+               free-text backout plan against what Guardian observed. Rendered by cdRenderVerdict()
+               and gated on the same einsteinFlowAvailable() as the dropdown flow above, so a change
+               with no matched CR shows nothing here rather than an empty shell. -->
+          <div id="cd-verdict-wrap"></div>
 
           <!-- Associated change requests (multi-CR edge case) — populated by renderChangeDetail when >1 CR -->
           <div id="cd-cr-list"></div>
@@ -26792,6 +26803,117 @@ function cdEinsteinFlowHtml(d) {
     + '</div>';
   }).join('') + '</div>';
 }
+// ── Reconciliation verdict + backout-plan check (Einstein domain) ────────────────────────────
+// The dropdown flow above narrates a change end to end. These two blocks do something the
+// narration cannot: they take each claim the change request makes and say whether it holds, and
+// they read the CR's free-text backout plan against observed state. The third verdict state —
+// "Can't tell" — is the reason this is worth building. A check Guardian cannot settle is not a
+// pass, and collapsing it into one would turn missing evidence into reassurance.
+var CD_VERDICT = {
+  pass:    { label: 'Pass',        bdg: 'bdg--green' },
+  fail:    { label: 'Fail',        bdg: 'bdg--red' },
+  unknown: { label: 'Can\u2019t tell', bdg: 'bdg--gray' }
+};
+// Every line is derived from fields that already drive the rest of the page — the CR record, the
+// implementation plan, the detection timestamp, the before/after values. Nothing is asserted that
+// the change data does not already say, so a verdict cannot drift away from the change it describes.
+function cdVerdictChecks(d) {
+  var cr = (d.crs && d.crs[0]) || {};
+  var p = d.implPlan;
+  var at = ((d.detby && d.detby.detail) || '').match(/\d{1,2}:\d{2}/);
+  at = at ? at[0] : 'the detection time';
+  var matches = String(p.expected).indexOf(d.after.val) !== -1;
+  return [
+    { v: 'pass', claim: 'A change request was raised for this change',
+      ev: cr.id + ' \u2014 ' + cr.title + ' \u00b7 ' + (cr.status || 'Approved') + '. One configuration item: ' + d.node + '.' },
+    { v: 'pass', claim: 'It was approved before the change was made',
+      ev: p.approved + '. The change was observed at ' + at + ', after that approval.' },
+    { v: 'pass', claim: 'The change happened inside the planned window',
+      ev: 'Observed ' + at + ', inside ' + p.window + '.' },
+    { v: matches ? 'pass' : 'fail', claim: 'The implemented change matches the plan',
+      ev: d.before.val + ' \u2192 ' + d.after.val + ' observed. The plan states: ' + p.expected },
+    // The unknown is computed, not scripted: the only scan of this node predates the window close,
+    // so there is genuinely no reading of the end state. If a later scan ever existed in the
+    // fixture, this line would have to be rewritten rather than silently keep claiming a gap.
+    { v: 'unknown', claim: 'The node was still in its planned state when the window closed',
+      ev: 'The most recent scan of ' + d.node + ' ran at ' + at + ' and the window does not close until ' + p.windowClose + '. No scan exists after it, so the state at ' + p.windowClose + ' cannot be established from anything Guardian holds.',
+      settle: 'the next scheduled scan. Until then this line is not a pass and must not be read as one.' }
+  ];
+}
+function cdVerdictRowHtml(c) {
+  var v = CD_VERDICT[c.v];
+  return '<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--border);">'
+    + '<span class="bdg ' + v.bdg + '" style="flex-shrink:0;margin-top:1px;">' + v.label + '</span>'
+    + '<div style="flex:1;min-width:0;">'
+      + '<div style="font-size:12px;font-weight:600;line-height:17px;color:var(--text-default);">' + c.claim + '</div>'
+      + '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:3px;">' + c.ev + '</div>'
+      + (c.settle ? '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:3px;"><strong style="color:var(--text-default);">What would settle it:</strong> ' + c.settle + '</div>' : '')
+    + '</div></div>';
+}
+// A model reading prose and comparing it with a measurement is exactly the case a rule cannot
+// cover, so it gets its own block rather than a sixth verdict row: the claim, the evidence and the
+// consequence are three separate assertions and reading them as one line loses the argument.
+function cdBackoutBlockHtml(d) {
+  var p = d.implPlan, cr = (d.crs && d.crs[0]) || {};
+  if (!p.backoutRestores || p.backoutRestores === d.before.val) return '';
+  return '<div class="ai-block" style="margin-top:10px;">' + _peerConsequenceIcon()
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span>'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">BACKOUT PLAN MISMATCH</span></div>'
+    + '<div class="ai-block-body">Executing this backout plan would not restore the control.</div>'
+    + '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;">'
+    + _pcqExampleCol('THE CLAIM', 'The backout plan on ' + cr.id + ' records the previous state as ' + p.backoutRestores + '.', 'Read out of the request\u2019s free-text backout section, not a structured field.')
+    + _pcqExampleCol('THE EVIDENCE', 'Guardian observed ' + d.before.val + ' on ' + d.node + ' immediately before the change.', 'From the last scan preceding the change, the same reading the Before card above shows.')
+    + '</div>'
+    + '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:10px;"><strong style="color:var(--text-default);">The consequence.</strong> A rollback executed as written would leave real-time protection ' + p.backoutRestores.toLowerCase() + ' \u2014 the state the change created, not the state it replaced. The backout would close the request without restoring the control.</div>'
+    + '<div style="margin-top:10px;"><span class="action-cta" style="cursor:pointer;" onclick="cdVerdictFeedback(\'backout\')">Flag the backout plan on the request<span class="action-arrow"> \u2192</span></span></div>'
+    + '<div style="font-size:11px;line-height:17px;color:var(--text-muted);margin-top:7px;">Guardian comments on the request. It does not edit the plan.</div>'
+    + '</div></div>';
+}
+function cdVerdictFeedback(kind) {
+  if (typeof showToast !== 'function') return;
+  if (kind === 'backout') showToast('Comment drafted on the change request — nothing is posted to ServiceNow until you send it.', 'info');
+  else showToast('Marked for review. The verdict line is kept, not deleted, so the correction stays auditable.', 'info');
+}
+function cdRenderVerdict(d) {
+  var wrap = document.getElementById('cd-verdict-wrap');
+  if (!wrap) return;
+  window._cdVerdictLast = d;
+  if (!einsteinFlowAvailable(d)) { wrap.innerHTML = ''; wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  if (aiTierLocked()) {
+    wrap.innerHTML = '<div class="ai-block">' + _peerConsequenceIcon() + '<div style="flex:1;min-width:0;"><div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div><div class="ai-block-body">' + aiBlockLockedHtml() + '</div></div></div>';
+    return;
+  }
+  var checks = cdVerdictChecks(d);
+  var n = function(v) { return checks.filter(function(c) { return c.v === v; }).length; };
+  var at = ((d.detby && d.detby.detail) || '').match(/\d{1,2}:\d{2}/);
+  at = at ? at[0] : '';
+  wrap.innerHTML = '<div class="ai-block">' + _peerConsequenceIcon()
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">' + _currentTier + '</span>'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">RECONCILIATION VERDICT</span></div>'
+    + '<div class="ai-block-body"><strong>' + n('pass') + ' passed · ' + n('fail') + ' failed · ' + n('unknown') + ' cannot be determined</strong> against ' + ((d.crs && d.crs[0] && d.crs[0].id) || 'the matched request') + '.</div>'
+    + '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">'
+    + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>'
+    + '<span style="color:var(--text-sec);flex:1;min-width:0;"><strong style="color:var(--text-default);">Coverage</strong> — One node, ' + d.node + ' · last scanned ' + at + ' · no scan yet after the ' + d.implPlan.windowClose + ' window close.</span></div>'
+    + '<div style="margin-top:4px;">' + checks.map(cdVerdictRowHtml).join('') + '</div>'
+    + '<div style="margin-top:8px;padding-top:2px;">'
+    + '<div class="fm-collapsed-toggle" style="color:var(--green2);" onclick="this.classList.toggle(\'is-open\')">'
+    + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg> Show the working out'
+    + '</div>'
+    + '<div class="fm-collapsed-body dash-nested-box" style="margin-top:9px;padding:11px 13px;">'
+    + _dashAiTraceRow('CHANGE REQUEST', ((d.crs && d.crs[0] && d.crs[0].id) || '—') + ' \u00b7 status and approval time read from the ITSM record, not inferred.')
+    + _dashAiTraceRow('PLAN TEXT', 'The implementation and backout sections are free text on the request — read, not parsed from a structured field.')
+    + _dashAiTraceRow('OBSERVED STATE', d.detby.method + ' \u00b7 ' + d.detby.detail + ' \u2014 the same reading the Before/After cards show.')
+    + _dashAiTraceRow('NOT AVAILABLE', 'No scan of ' + d.node + ' after ' + d.implPlan.windowClose + '. One check is left undetermined rather than assumed.')
+    + '</div></div>'
+    + '<div style="margin-top:10px;"><span class="action-cta" style="cursor:pointer;" onclick="cdVerdictFeedback(\'wrong\')">A line here is wrong<span class="action-arrow"> \u2192</span></span></div>'
+    + '<div style="font-size:11px;line-height:17px;color:var(--text-muted);margin-top:7px;">Nothing is written to ServiceNow until you post it.</div>'
+    + '</div></div>'
+    + cdBackoutBlockHtml(d);
+}
+
 function cdAiExplain() {
   var btn = document.getElementById('cd-ai-btn');
   var panel = document.getElementById('cd-ai-panel');
@@ -27346,7 +27468,16 @@ var CHANGE_DATA = [
     // that actually have a matched CR to pull a plan from; see einsteinFlowAvailable().
     implPlan: {
       summary: 'Deploy CrowdStrike Falcon across the endpoint fleet; temporarily disable Windows Defender real-time protection for the duration of the migration window to avoid an AV engine conflict during rollout.',
-      expected: 'Real-time protection: Disabled (temporary) — re-enabled automatically once Falcon deployment completes.'
+      expected: 'Real-time protection: Disabled (temporary) — re-enabled automatically once Falcon deployment completes.',
+      // Fields the reconciliation verdict re-checks. approved/window are what the CR asserts;
+      // backoutRestores is what the CR's free-text backout section says the previous state was.
+      // Guardian's own observation of that state is d.before.val — the two disagreeing is the
+      // whole point of the backout check, so they are deliberately kept as separate values
+      // rather than one shared constant.
+      approved: 'Approved 2 days ago by John Smith',
+      window: '14:00–17:00 today',
+      windowClose: '17:00',
+      backoutRestores: 'Disabled'
     },
     aiText: '<div>This change disabled real-time protection, which is the control that would normally stop malware before it runs. It was already matched against an approved change request — CHG0012345, AV Software Migration — so the underlying cause is accounted for. <strong>Recommendation:</strong> the reconciliation looks correct; no further action is needed unless the change request itself gets revoked or extended.</div>',
     notes: [
@@ -27464,6 +27595,7 @@ function renderChangeDetail(idx) {
   const nb = document.getElementById('nav-breadcrumb');
   if (nb) nb.innerHTML = `<span class="bc-link" onclick="driftGoBack()">Detected Drift</span><span class="bc-sep">›</span><span class="bc-cur">${d.title}</span>`;
   setCrState(d.cr);
+  cdRenderVerdict(d);
   const crList = document.getElementById('cd-cr-list');
   if (crList) {
     if (d.crs && d.crs.length > 1) {
@@ -29252,6 +29384,11 @@ const CR_STATES = {
 };
 function setCrState(state, overrides) {
   const s = Object.assign({}, CR_STATES[state] || CR_STATES.matched, overrides || {});
+  // The demo tabs above switch CR state without touching CHANGE_DATA, so the verdict has to follow
+  // the state being shown rather than the change's own — otherwise "No CR" would still display a
+  // verdict about a request the screen says does not exist.
+  const _vd = CHANGE_DATA[currentChangeIdx];
+  if (_vd && typeof cdRenderVerdict === 'function') cdRenderVerdict(Object.assign({}, _vd, { cr: state }));
   const block = document.getElementById('cd-cr-block');
   if (block) {
     block.innerHTML =
