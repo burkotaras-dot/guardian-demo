@@ -28323,6 +28323,10 @@ function renderConsequenceView() {
   groupsBox.innerHTML = '';
   var ord = 0;
   var pad = function(n) { return (n < 10 ? '0' : '') + n; };
+  // The worked-example block below argues that one specific row ranks where it does only because of
+  // other rows. That argument is unfindable from the row itself, so the row carries the link — but
+  // only when the example actually renders (same guard) and only when the tier can see it.
+  var exSeed = aiTierLocked() ? null : _pcqExampleSeed(groups);
   groups.forEach(function(g) {
     if (!g.diffs.length) return;
     ord++;
@@ -28339,7 +28343,17 @@ function renderConsequenceView() {
       + '<div id="pcq-' + g.cat + '-body"></div>';
     var body = sec.querySelector('#pcq-' + g.cat + '-body');
     body.appendChild(_pcqWhyLine(why));
-    g.diffs.forEach(function(r) { body.appendChild(r.cloneNode(true)); });
+    g.diffs.forEach(function(r) {
+      var c = r.cloneNode(true);
+      if (exSeed && r === exSeed.seed && c.children[0]) {
+        var lnk = document.createElement('span');
+        lnk.setAttribute('style', 'display:block;margin-top:4px;font-size:11px;font-weight:700;color:var(--green2);cursor:pointer;');
+        lnk.setAttribute('onclick', 'pcqScrollToExample(event)');
+        lnk.textContent = 'Worked through below \u2192';
+        c.children[0].appendChild(lnk);
+      }
+      body.appendChild(c);
+    });
     groupsBox.appendChild(sec);
   });
 
@@ -28411,6 +28425,7 @@ function renderConsequenceView() {
   var counter = repeat.length
     ? repeat.join(', ') + ' account' + (repeat.length === 1 ? 's' : '') + ' for a critical value in more than one group, so the ' + totalCrit + ' are not ' + totalCrit + ' independent problems — fixing one machine closes several rows.'
     : 'Each critical row belongs to a different node, so the count is not concentrated on one machine — there is no single fix that closes several rows at once.';
+  var fresh = _pcqScanFreshness();
 
   aiBox.innerHTML = '<div class="ai-block" style="margin-bottom:16px;">' + _peerConsequenceIcon()
     + '<div style="flex:1;min-width:0;">'
@@ -28421,7 +28436,13 @@ function renderConsequenceView() {
     + (unknown.length ? '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:6px;">' + unknown.length + (unknown.length === 1 ? ' further attribute is' : ' further attributes are') + ' not counted above: at least one node returned no value, and a reading that never arrived is not a node agreeing with the majority.</div>' : '')
     + '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">'
     + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>'
-    + '<span style="color:var(--text-sec);flex:1;min-width:0;"><strong style="color:var(--text-default);">Coverage</strong> — Based on the Windows 11 group only · the mac and Linux groups have fewer than 3 nodes, so no consensus is computed for them.</span></div>'
+    + '<span style="color:var(--text-sec);flex:1;min-width:0;"><strong style="color:var(--text-default);">Coverage</strong> — Windows 11 group only' + (fresh ? ', from the ' + fresh : '') + ' · ' + (totalDiffs + totalMatches + unknown.length) + ' attributes compared.</span>'
+    + '<span id="pcq-cov-why-toggle" style="font-weight:700;color:var(--green2);cursor:pointer;flex-shrink:0;margin-top:1px;" onclick="pcqToggleCoverageWhy()">Why \u2192</span></div>'
+    + '<div id="pcq-cov-why" style="display:none;font-size:12px;line-height:1.6;color:var(--text-sec);margin-top:6px;">'
+    + '<strong style="color:var(--text-default);">Scope.</strong> A consensus needs at least three nodes before a majority means anything. Only the Windows 11 group qualifies — the macOS and Linux groups hold two nodes each, so nothing is compared there and nothing above speaks to them.<br>'
+    + '<strong style="color:var(--text-default);">Freshness.</strong> These are the readings already in the By OS table' + (fresh ? ', from the ' + fresh : '') + ' — nothing was re-collected for this view.'
+    + (unknown.length ? '<br><strong style="color:var(--text-default);">Gaps.</strong> ' + unknown.length + ' attribute' + (unknown.length === 1 ? '' : 's') + ' had no reading from at least one node. ' + (unknown.length === 1 ? 'It is' : 'They are') + ' listed under “Can’t tell” and left out of every count above.' : '')
+    + '</div>'
     + '<div style="margin-top:10px;padding-top:2px;">'
     + '<div class="fm-collapsed-toggle" style="color:var(--green2);" onclick="this.classList.toggle(\'is-open\')">'
     + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg> Show the working out'
@@ -28455,7 +28476,10 @@ function _pcqExampleCol(label, claim, body) {
     + '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:5px;">' + body + '</div>'
     + '</div>';
 }
-function _pcqWorkedExample(groups) {
+// The guard lives here rather than inside the block builder so the ranked row above can ask the
+// same question before it offers a link down to the example. One lookup, one answer — a link that
+// could survive the block deciding not to render would point at nothing.
+function _pcqExampleSeed(groups) {
   var node = PCQ_EXAMPLE_NODE, seed = null, others = [], spread = {};
   groups.forEach(function(g) {
     g.diffs.forEach(function(r) {
@@ -28466,11 +28490,38 @@ function _pcqWorkedExample(groups) {
     });
   });
   var haveAll = PCQ_EXAMPLE_NEEDS.every(function(a) { return others.indexOf(a) !== -1; });
-  if (!seed || Object.keys(spread).length < 3 || !haveAll) return '';
+  if (!seed || Object.keys(spread).length < 3 || !haveAll) return null;
+  return { seed: seed, others: others };
+}
+// Freshness is quoted from the page header rather than restated, so the AI block cannot end up
+// claiming a scan age the rest of the screen disagrees with. No header, no claim.
+function _pcqScanFreshness() {
+  var sub = document.getElementById('all-devices-sub');
+  var m = sub && (sub.textContent || '').match(/Last scan[^·]*/);
+  return m ? m[0].trim().toLowerCase() : '';
+}
+function pcqToggleCoverageWhy() {
+  var box = document.getElementById('pcq-cov-why');
+  var t = document.getElementById('pcq-cov-why-toggle');
+  if (!box || !t) return;
+  var open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  t.textContent = open ? 'Why \u2192' : 'Hide \u2192';
+}
+function pcqScrollToExample(e) {
+  if (e) e.stopPropagation();
+  var el = document.getElementById('pcq-example');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function _pcqWorkedExample(groups) {
+  var node = PCQ_EXAMPLE_NODE;
+  var found = _pcqExampleSeed(groups);
+  if (!found) return '';
+  var seed = found.seed, others = found.others;
   var cells = Array.from(seed.children).filter(function(c) { return c.tagName === 'DIV'; });
   var majority = cells[1].textContent.trim();
   var value = _pcqNodeValue(seed, node);
-  return '<div class="ai-block">' + _peerConsequenceIcon()
+  return '<div class="ai-block" id="pcq-example">' + _peerConsequenceIcon()
     + '<div style="flex:1;min-width:0;">'
     + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span>'
     + '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">WHY RANKING IS THE HARD PART</span></div>'
