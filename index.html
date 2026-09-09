@@ -5538,11 +5538,11 @@ body.dark .agentless-credential-option.is-selected { background:var(--dropdown-o
 .agentless-test-tabs {
   width:100%; height:34px; box-sizing:border-box;
   display:grid; grid-template-columns:73px 92px 73px 85px 114px minmax(0,1fr);
-  overflow:hidden; border:1px solid #E2E8F0; border-radius:10px; background:#FFF;
+  overflow:hidden; border:1px solid #E2E8F0; border-radius:10px; background:#F9FAFC;
 }
 .agentless-test-tab {
   min-width:0; height:32px; padding:0 8px; border:0; border-left:1px solid #E2E8F0;
-  background:#FFF; color:#475569; font:600 11px/1 'DM Sans',sans-serif;
+  background:#F9FAFC; color:#475569; font:600 11px/1 'DM Sans',sans-serif;
   white-space:nowrap; cursor:pointer;
 }
 .agentless-test-tab:first-child { border-left:0; }
@@ -9235,6 +9235,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div class="seg" id="peer-group-btns" role="group" aria-label="Group peers by">
               <button onclick="setPeerGroup(&#39;os&#39;)" id="pg-os" class="seg-btn is-active" aria-pressed="true">By OS</button>
               <button onclick="setPeerGroup(&#39;team&#39;)" id="pg-team" class="seg-btn" aria-pressed="false">By Team</button>
+              <button onclick="setPeerGroup(&#39;consequence&#39;)" id="pg-consequence" class="seg-btn" aria-pressed="false">By Consequence</button>
             </div>
           </div>
 
@@ -9673,6 +9674,53 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             </div>
 
           </div><!-- /#peer-team-view -->
+
+          <!-- Consequence groups (hidden by default) — MOMENT 10 in client review notes: same real
+               outlier rows already computed per-OS-group, re-sliced by what a difference relates to
+               instead of by OS. renderConsequenceView() clones the live rows out of the Windows 11
+               OS-group card (#win-*-body) rather than re-authoring them, so this view can never drift
+               from the real underlying data. Team-group rows (eng/fin/devops) are excluded on purpose:
+               those partition the same node population by department, and combining both axes would
+               double-count the same node's findings. -->
+          <div id="peer-consequence-view" style="display:none;">
+            <div id="peer-consequence-ai"></div>
+            <div class="peer-card" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+              <div style="padding:14px 20px;background:var(--bg-surface);border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;font-weight:700;color:var(--text-default);">All differences, grouped by what they affect</span>
+                <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">Same outliers as Windows 11 under By OS — organised by domain instead of by platform.</div>
+              </div>
+              <div id="peer-consequence-body">
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Security</span>
+                    <span id="pcq-security-count" style="font-size:11px;color:#d97706;font-weight:600;"></span>
+                  </div>
+                  <div id="pcq-security-body"></div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Access Control</span>
+                    <span id="pcq-access-count" style="font-size:11px;color:#d97706;font-weight:600;"></span>
+                  </div>
+                  <div id="pcq-access-body"></div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Network</span>
+                    <span id="pcq-network-count" style="font-size:11px;color:#d97706;font-weight:600;"></span>
+                  </div>
+                  <div id="pcq-network-body"></div>
+                </div>
+                <div class="peer-sec">
+                  <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Software</span>
+                    <span id="pcq-software-count" style="font-size:11px;color:#d97706;font-weight:600;"></span>
+                  </div>
+                  <div id="pcq-software-body"></div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /#peer-consequence-view -->
 
         </div><!-- /#nodes-peer-view -->
 
@@ -13429,6 +13477,36 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       m.sort(function (a, b) { return b.nodes - a.nodes; });
       return m[0].id;
     }
+    // Kash's "the choice is ambiguous" moment (client Guardian Prototype v3, M7 · Add a node,
+    // Universal tier — not gated by aiTierLocked()). recommendedCMId() above silently sorts by
+    // node count; when the top count is shared by 2+ compatible groups, that "recommendation" is
+    // really an arbitrary tiebreak with no visible reasoning. This returns the tied groups (real
+    // node counts, not fabricated) so the UI can say so instead of picking quietly.
+    function cmTieCandidates() {
+      var m = CONNECTION_MANAGERS.filter(_cmCompatible);
+      if (m.length < 2) return null;
+      var maxNodes = Math.max.apply(null, m.map(function(c) { return c.nodes; }));
+      var tied = m.filter(function(c) { return c.nodes === maxNodes; });
+      return tied.length >= 2 ? tied : null;
+    }
+    // Real names/counts only — no fabricated "reaches subnet" or "last seen" columns we don't
+    // actually track per-target. The reasoning shape matches the client moment (both compatible,
+    // both already carrying real load, the tiebreak itself is invisible to Guardian) without
+    // inventing data our model doesn't have.
+    function _cmTieCard(tied) {
+      var names = tied.map(function(c) { return c.name; });
+      var namesJoined = names.length === 2 ? (names[0] + ' and ' + names[1]) : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+      return '<div class="ai-block" style="margin-top:12px;">'
+        + '<svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="flex-shrink:0;margin-top:1px;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
+        + '<div style="flex:1;min-width:0;">'
+        + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">'
+        + '<span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">Universal · Onboarding assistance</span>'
+        + '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">THE CHOICE IS AMBIGUOUS</span>'
+        + '</div>'
+        + '<div style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:4px;">' + tied.length + ' groups reach this target equally well. Guardian will not pick one for you.</div>'
+        + '<div style="font-size:12px;color:var(--text-sec);line-height:1.6;">' + namesJoined + ' are both connected, both serve this target\'s protocol, and both already carry ' + tied[0].nodes + ' nodes each. The tiebreak — which one you want carrying this node\'s load, and which maintenance window it sits in — is not something Guardian can see. Pick either; nothing else in the flow changes.</div>'
+        + '</div></div>';
+    }
     function selectCM(id) {
       selectedCM = id;
       // Credentials are encrypted per Connection Manager — drop a vault pick that no longer belongs to this CM
@@ -16786,6 +16864,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (typeof driftRenderAiGroup === 'function') driftRenderAiGroup();
       if (typeof setScanFailType === 'function') setScanFailType(sfCurrentType);
       if (typeof peerInjectAiHints === 'function') peerInjectAiHints();
+      if (typeof renderConsequenceView === 'function' && typeof _peerGroup !== 'undefined' && _peerGroup === 'consequence') renderConsequenceView();
 
       aiLockCtaButtons();
 
@@ -27902,8 +27981,10 @@ function applySelectionConsensus(selectedNames) {
   // Show only OS view (relevant for selected nodes)
   var osView = document.getElementById('peer-os-view');
   var teamView = document.getElementById('peer-team-view');
+  var cqView = document.getElementById('peer-consequence-view');
   if (osView) osView.style.display = 'block';
   if (teamView) teamView.style.display = 'none';
+  if (cqView) cqView.style.display = 'none';
 
   // Filter group cards
   var groupCards = document.querySelectorAll('#peer-os-view > div');
@@ -28013,7 +28094,7 @@ var _peerGroup = 'os';
 function setPeerGroup(g) {
   _peerGroup = g;
   // Segmented control — appearance lives in the .seg-btn CSS, JS only flags the active segment.
-  ['os','team'].forEach(function(id) {
+  ['os','team','consequence'].forEach(function(id) {
     var btn = document.getElementById('pg-' + id);
     if (!btn) return;
     btn.classList.toggle('is-active', id === g);
@@ -28021,11 +28102,73 @@ function setPeerGroup(g) {
   });
   var osView   = document.getElementById('peer-os-view');
   var teamView = document.getElementById('peer-team-view');
+  var cqView   = document.getElementById('peer-consequence-view');
   // Єдина точка, що показує таблиці консенсусу, тому й перевірка стану живе тут:
   // clearSelectionConsensus кличе setPeerGroup при кожному вході на вкладку.
   var live = _nodesState !== 'empty';
   if (osView)   osView.style.display   = live && g === 'os'   ? 'block' : 'none';
   if (teamView) teamView.style.display = live && g === 'team' ? 'block' : 'none';
+  if (cqView) {
+    cqView.style.display = live && g === 'consequence' ? 'block' : 'none';
+    if (live && g === 'consequence') renderConsequenceView();
+  }
+}
+
+// "By Consequence" — MOMENT 10 in client review notes: re-slices the same real outlier rows
+// already computed for the Windows 11 OS-group card (win-*-body), grouped by what a difference
+// relates to instead of by platform. Clones the live DOM rows rather than re-authoring them, so
+// this view can never drift from the underlying fixture. Only the Windows 11 group is sourced —
+// mac/Linux have <3 nodes (no comparison possible) and Team groups partition the same node
+// population on a different axis, so folding them in would double-count the same node's findings.
+function renderConsequenceView() {
+  var cats = ['security','access','network','software'];
+  var byNode = {}; // node name -> {category label: true} it has a diff in
+  cats.forEach(function(cat) {
+    var srcBody = document.getElementById('win-' + cat + '-body');
+    var srcChev = document.getElementById('win-' + cat + '-chev');
+    var dstBody = document.getElementById('pcq-' + cat + '-body');
+    var dstCount = document.getElementById('pcq-' + cat + '-count');
+    if (!srcBody || !dstBody) return;
+    dstBody.innerHTML = srcBody.innerHTML;
+    var srcCountEl = srcChev && srcChev.parentElement ? srcChev.parentElement.querySelector('span[style*="font-weight:600"]') : null;
+    if (dstCount) dstCount.textContent = srcCountEl ? srcCountEl.textContent : '';
+    dstBody.querySelectorAll('.peer-row-diff').forEach(function(row) {
+      var cells = Array.from(row.children).filter(function(c){ return c.tagName === 'DIV'; });
+      if (cells.length !== 3) return;
+      cells[2].querySelectorAll('span[style*="border-radius:8px"]').forEach(function(b) {
+        var name = b.textContent.trim();
+        if (!byNode[name]) byNode[name] = {};
+        byNode[name][cat] = true;
+      });
+    });
+  });
+
+  var aiBox = document.getElementById('peer-consequence-ai');
+  if (!aiBox) return;
+  if (aiTierLocked()) {
+    aiBox.innerHTML = '<div class="ai-block" style="margin-bottom:16px;">' + _peerConsequenceIcon() + '<div style="flex:1;min-width:0;"><div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div><div class="ai-block-body">' + aiBlockLockedHtml() + '</div></div></div>';
+    return;
+  }
+  // Rank by how many distinct categories a node spans, not raw diff count — one node with
+  // six changes in one category is one bad config; the same node spread across Security AND
+  // Access Control is a compounding situation, which is the whole point of this view.
+  var names = Object.keys(byNode).sort(function(a, b) { return Object.keys(byNode[b]).length - Object.keys(byNode[a]).length; });
+  var top = names[0];
+  var topCats = top ? Object.keys(byNode[top]) : [];
+  var CAT_LABEL = {security:'Security', access:'Access Control', network:'Network', software:'Software'};
+  if (!top || topCats.length < 2) {
+    aiBox.innerHTML = '<div class="ai-block" style="margin-bottom:16px;">' + _peerConsequenceIcon() +
+      '<div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">Enterprise</span></div>' +
+      '<div class="ai-block-body">No single node combines differences across more than one category today — the outliers below are spread across separate nodes rather than stacking on one.</div></div></div>';
+    return;
+  }
+  var labelList = topCats.map(function(c){ return CAT_LABEL[c]; }).join(' and ');
+  aiBox.innerHTML = '<div class="ai-block" style="margin-bottom:16px;">' + _peerConsequenceIcon() +
+    '<div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">Enterprise</span></div>' +
+    '<div class="ai-block-body"><strong>' + top + '</strong> is the one node to look at first — its differences aren’t confined to one setting, they span ' + labelList + '. Any one of them alone reads as a config drift; together they describe a machine that’s harder to monitor and easier to move data off, which is a different level of risk than the same count spread across unrelated nodes.</div></div></div>';
+}
+function _peerConsequenceIcon() {
+  return '<svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="flex-shrink:0;margin-top:1px;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"></path></svg>';
 }
 
 // ── Compare section collapse/expand ──
@@ -31437,6 +31580,45 @@ function agentlessTestScenarios(ctx) {
     }
   };
 }
+// Kash's "what failed, and why" moment (client Guardian Prototype v3, M7 · Add a node, Universal
+// tier). The deterministic rows above already say WHAT failed; this explains WHY by reasoning
+// over which step got there (network vs. service vs. account), using only the real context this
+// modal already has (ctx.cm/target/proto) — no fabricated cross-node comparison we can't back.
+// Two keys carry no AI card: 'ready' (nothing to explain) and 'cm-offline' (the relay never
+// reached the target at all, so there's nothing about the target itself to reason over — an
+// honest omission, not a gap).
+function _agentlessAiExplain(key, ctx) {
+  var copy = {
+    unreachable: {
+      body: ctx.cm + ' never got a response from ' + ctx.target + ' — that reads as a network-path problem, not something about the host itself. A closed port would still refuse the connection quickly; no route at all usually means a firewall, a missing peering/VPN path, or the host sitting outside where ' + ctx.cm + ' can reach.',
+      cant: 'Whether the route is missing permanently or ' + ctx.target + ' is simply on a network ' + ctx.cm + ' was never given access to — that’s a network topology fact Guardian has no visibility into.'
+    },
+    timeout: {
+      body: ctx.target + ' never answered at all, rather than actively refusing the connection. That pattern usually points to a firewall silently dropping the packets — an explicit refusal would have come back immediately instead of running out the clock.',
+      cant: 'Whether that firewall is on the host or on a network device in between — both look identical as a timeout from here.'
+    },
+    'bad-credentials': {
+      body: ctx.cm + ' reached ' + ctx.target + ' over ' + ctx.proto + ' without trouble, so the network path and the service itself are fine. The credential was delivered and rejected — that rules out a connectivity problem.',
+      cant: 'Whether the username or password is simply wrong, or a credential that used to work was rotated or expired since it was saved — both produce the same rejection.'
+    },
+    'no-permissions': {
+      body: 'Authentication succeeded, so the credential itself is right. The account just cannot read the configuration Guardian checks — that’s a permissions boundary, not a connectivity or credential problem.',
+      cant: 'Whether that’s a deliberate least-privilege policy or an oversight from when the account was created.'
+    }
+  }[key];
+  if (!copy) return '';
+  return '<div class="ai-block" style="margin-top:12px;">'
+    + '<svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="flex-shrink:0;margin-top:1px;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">'
+    + '<span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">Universal · Onboarding assistance</span>'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">WHAT FAILED, AND WHY</span>'
+    + '</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);line-height:1.6;">' + copy.body + '</div>'
+    + '<div style="font-size:11px;font-weight:700;color:var(--text-default);margin-top:10px;">Can’t tell</div>'
+    + '<div style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:2px;">' + copy.cant + '</div>'
+    + '</div></div>';
+}
 /* Every scenario is played back rather than shown as a finished list: each check spins,
    resolves, and only then hands over to the next one. The chain stops at the first failure,
    so the reason a later step was never reached stays visible. */
@@ -31460,7 +31642,8 @@ function agentlessTestPaintResult(ov, kind, title, desc) {
 function agentlessTestSetScenario(key) {
   var ov = document.getElementById('agentless-setup-overlay');
   if (!ov) return;
-  var all = agentlessTestScenarios(agentlessTestContext());
+  var ctx = agentlessTestContext();
+  var all = agentlessTestScenarios(ctx);
   var scenario = all[key] || all.ready;
   ov._agentlessTestKey = key;
   AGENTLESS_TEST_TIMERS.forEach(clearTimeout);
@@ -31489,6 +31672,12 @@ function agentlessTestSetScenario(key) {
         agentlessTestPaintRow(rows[rest], scenario.rows[rest][0], scenario.rows[rest][1], scenario.rows[rest][2]);
       }
       agentlessTestPaintResult(ov, scenario.kind, scenario.title, scenario.desc);
+      var aiBox = ov.querySelector('.agentless-test-ai');
+      if (aiBox) {
+        var aiHtml = _agentlessAiExplain(key, ctx);
+        aiBox.innerHTML = aiHtml;
+        aiBox.style.display = aiHtml ? '' : 'none';
+      }
       if (addButton) addButton.disabled = key !== 'ready';
       if (retryButton) retryButton.style.display = scenario.kind === 'ok' ? 'none' : '';
     }, AGENTLESS_TEST_STEP_MS));
@@ -31653,7 +31842,8 @@ function openAgentlessTestingModal() {
     + states.map(function(state){ return '<button type="button" class="agentless-test-tab' + (state[0] === 'ready' ? ' is-active' : '') + '" data-agentless-test-state="' + state[0] + '" role="tab" aria-selected="' + (state[0] === 'ready' ? 'true' : 'false') + '" onclick="agentlessTestSetScenario(\'' + state[0] + '\')">' + state[1] + '</button>'; }).join('')
     + '</div></section><section class="agentless-test-content"><div class="agentless-test-list">'
     + [0,1,2].map(function(index){ return '<div class="agentless-test-row"><span class="agentless-test-status-icon">' + agentlessTestIcon('ok') + '</span><span class="agentless-test-copy"><span class="agentless-test-title"></span><span class="agentless-test-sub"></span></span></div>'; }).join('')
-    + '</div><div class="agentless-test-result" data-kind="ok"><span class="agentless-test-result-icon">' + agentlessTestIcon('ok') + '</span><span class="agentless-test-copy"><span class="agentless-test-result-title"></span><span class="agentless-test-result-desc"></span></span></div></section>';
+    + '</div><div class="agentless-test-result" data-kind="ok"><span class="agentless-test-result-icon">' + agentlessTestIcon('ok') + '</span><span class="agentless-test-copy"><span class="agentless-test-result-title"></span><span class="agentless-test-result-desc"></span></span></div>'
+    + '<div class="agentless-test-ai" style="display:none;"></div></section>';
   openModal({
     id:'agentless-setup-overlay', size:'lg', title:'Testing connection',
     subtitle:'Before the first scan, Guardian checks that <b>' + agentlessTestEscape(ctx.cm) + '</b> can reach <b>' + agentlessTestEscape(ctx.target) + '</b> and authenticate.',
@@ -31683,13 +31873,21 @@ function openAgentlessSetupModal() {
   var savedPass = (document.getElementById('al-pass') || {}).value || '';
   if (!groups.length && typeof CONNECTION_MANAGERS !== 'undefined') groups = CONNECTION_MANAGERS.slice(0,2);
   if (!selectedCM) selectedCM = recId || (groups[0] && groups[0].id) || null;
-  var cmHtml = groups.slice(0,2).map(function(c) {
+  var shownGroups = groups.slice(0,2);
+  var tiedGroups = (function() {
+    var t = cmTieCandidates();
+    if (!t) return null;
+    var shownIds = shownGroups.map(function(c){ return c.id; });
+    var visible = t.filter(function(c){ return shownIds.indexOf(c.id) !== -1; });
+    return visible.length >= 2 ? visible : null;
+  })();
+  var cmHtml = shownGroups.map(function(c) {
     var selected = c.id === selectedCM;
     var osList = (c.os || []).map(function(o){ return OS_LABEL[o] || o; }).join(', ');
     return '<label class="gm-radio-card' + (selected ? ' is-selected' : '') + '" data-agentless-cm="' + c.id + '" onclick="agentlessModalSelectCM(\'' + c.id + '\')">'
       + '<input type="radio" name="agentless-cm"' + (selected ? ' checked' : '') + '>'
       + '<span class="gm-radio-copy"><span class="gm-radio-title">' + c.name + '</span><span class="gm-radio-description">scans ' + osList + ' · ' + c.nodes + ' nodes</span></span>'
-      + (c.id === recId ? '<span class="agentless-modal-rec">Recommended</span>' : '') + '</label>';
+      + (c.id === recId && !tiedGroups ? '<span class="agentless-modal-rec">Recommended</span>' : '') + '</label>';
   }).join('');
   var body = '<section class="agentless-modal-section agentless-modal-section--target">'
     + '<h3 class="agentless-modal-heading">Target</h3>'
@@ -31698,7 +31896,9 @@ function openAgentlessSetupModal() {
     + '<div class="agentless-modal-field"><label class="form-label" for="agentless-modal-port">Port</label><input id="agentless-modal-port" type="text" value="' + agentlessTestEscape(savedPort) + '"></div></div>'
     + '<div class="agentless-modal-hint">' + (addNodeOS === 'windows' ? 'WinRM — default 5985 (HTTP) or 5986 (HTTPS).' : 'SSH — default 22.') + '</div></section>'
     + '<section class="agentless-modal-section"><h3 class="agentless-modal-heading">Connection Manager Group</h3><p class="agentless-modal-sub">Select a group that can reach this target.</p>'
-    + '<div class="agentless-modal-radios">' + cmHtml + '</div><button type="button" class="agentless-modal-link" onclick="openCmSetup(\'agentless\')">Don’t see a suitable one? Create a new group →</button></section>'
+    + '<div class="agentless-modal-radios">' + cmHtml + '</div>'
+    + (tiedGroups ? _cmTieCard(tiedGroups) : '')
+    + '<button type="button" class="agentless-modal-link" onclick="openCmSetup(\'agentless\')">Don’t see a suitable one? Create a new group →</button></section>'
     + '<section class="agentless-modal-section"><h3 class="agentless-modal-heading">Credentials</h3><p class="agentless-modal-sub">How the Connection Manager authenticates to this target. Enter them directly, or select a credential saved in the Guardian Credential Vault.</p>'
     + '<div class="gm-tab-block agentless-modal-tabs" role="tablist" aria-label="Credential source"><button type="button" class="gm-tab is-active" data-agentless-cred-tab="direct" aria-selected="true" onclick="agentlessModalCredentials(\'direct\')">Enter directly</button><button type="button" class="gm-tab" data-agentless-cred-tab="vault" aria-selected="false" onclick="agentlessModalCredentials(\'vault\')">Credential Vault</button></div>'
     + '<div id="agentless-modal-cred-direct" class="agentless-modal-credential"><div class="agentless-modal-row">'
