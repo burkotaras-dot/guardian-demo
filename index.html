@@ -6864,7 +6864,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     <!-- Search input row -->
     <div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid #e8edf2;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-      <input id="search-input" type="text" placeholder="Search nodes, benchmarks, scans… or type domain.field: value" style="flex:1;border:none;outline:none;font-size:14px;color:var(--text-default);background:transparent;" oninput="filterSearch(this.value)">
+      <input id="search-input" type="text" placeholder="Search nodes, benchmarks, scans… or ask about Guardian" style="flex:1;border:none;outline:none;font-size:14px;color:var(--text-default);background:transparent;" oninput="filterSearch(this.value)">
       <div style="position:relative;">
         <button id="search-filter-btn" class="action-cta search-filter-action dropdown-trigger" onclick="toggleFilterDropdown(event)" aria-label="Add search filter" style="width:28px;height:28px;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -6916,6 +6916,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
       <!-- Search results (shown when typing) -->
       <div id="search-results" style="display:none;"></div>
+      <!-- Ask Guardian answer. Deliberately BELOW the rows: ⌘K stays a search palette that
+           returns nodes, scans and changes first, and this only appears when the input reads
+           as a question. See askGuardianHtml(). -->
+      <div id="search-ask" style="display:none;"></div>
     </div>
     <div class="search-footer-bar" style="padding:10px 20px;border-top:1px solid var(--border-default);display:flex;gap:16px;align-items:center;">
       <span style="font-size:12px;color:var(--text-sec);"><kbd class="search-kbd"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M4.125 7.875L2.25 6L4.125 4.125M2.25 6H5.17613C5.59538 6 5.805 6 5.9655 5.91825C6.10662 5.84635 6.22135 5.73162 6.29325 5.5905C6.375 5.43 6.375 5.22038 6.375 4.80113V1.125" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></kbd> open</span>
@@ -6985,7 +6989,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     </button>
     <button onclick="openSearch()" id="nav-search-btn" style="display: flex; align-items: center; gap: 8px; background: var(--bg-surface); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 0px 14px; cursor: pointer; font-size: 12px; width: 280px; height: 32px; box-sizing: border-box; margin-right: 16px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-      <span class="nav-search-label" style="flex:1;text-align:left;">Search nodes, scans, changes…</span>
+      <span class="nav-search-label" style="flex:1;text-align:left;">Search or ask about Guardian…</span>
       <kbd style="font-size:8px;padding:1px 5px;flex-shrink:0;">⌘K</kbd>
     </button>
     <div class="nav-avatar">T</div>
@@ -33174,6 +33178,8 @@ function closeSearch() {
   document.getElementById('search-overlay').style.display = 'none';
   document.getElementById('search-input').value = '';
   document.getElementById('search-results').style.display = 'none';
+  var askBox = document.getElementById('search-ask');
+  askBox.style.display = 'none'; askBox.innerHTML = '';
   document.getElementById('search-nav-section').style.display = '';
   document.getElementById('search-alerts-section').style.display = '';
   document.getElementById('filter-dropdown').style.display = 'none';
@@ -33192,8 +33198,10 @@ function filterSearch(q) {
   const nav = document.getElementById('search-nav-section');
   const alerts = document.getElementById('search-alerts-section');
   const results = document.getElementById('search-results');
+  const ask = document.getElementById('search-ask');
   if (!q.trim()) {
     nav.style.display = ''; alerts.style.display = ''; results.style.display = 'none';
+    ask.style.display = 'none'; ask.innerHTML = '';
     return;
   }
   nav.style.display = 'none'; alerts.style.display = 'none';
@@ -33205,11 +33213,188 @@ function filterSearch(q) {
     {label:'Screen lock timeout modified',sub:'Change · Pending reconciliation',action:"showView('changes')"},
     {label:'Last scan — 2 hours ago',sub:'Scan · MACBOOK-TARAS',action:"showView('results')"},
   ].filter(i => i.label.toLowerCase().includes(q.toLowerCase()) || i.sub.toLowerCase().includes(q.toLowerCase()));
+  // A question rarely matches a row by substring, and "No results" would then be the only
+  // thing on screen while an answer is sitting right below it. So the empty state is
+  // suppressed for questions — the Ask Guardian section is the answer to that input.
+  const isQuestion = _askIsQuestion(q);
   results.innerHTML = items.length
     ? '<div style="font-size:10px;font-weight:700;color:var(--p-neutral-400);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Results</div>' +
       items.map(i=>`<div class="search-nav-item" onclick="${i.action};closeSearch()"><div style="font-size:12px;font-weight:600;color:var(--text-default);">${i.label}</div><div style="font-size:12px;color:var(--p-neutral-400);margin-top:1px;">${i.sub}</div></div>`).join('')
-    : '<div style="text-align:center;padding:32px;color:var(--p-neutral-400);font-size:12px;">No results for "<strong>' + q + '</strong>"</div>';
-  results.style.display = 'block';
+    : (isQuestion ? '' : '<div style="text-align:center;padding:32px;color:var(--p-neutral-400);font-size:12px;">No results for "<strong>' + q + '</strong>"</div>');
+  results.style.display = (items.length || !isQuestion) ? 'block' : 'none';
+  ask.innerHTML = isQuestion ? askGuardianHtml(q) : '';
+  ask.style.display = isQuestion ? 'block' : 'none';
+  // Only rule off the answer when rows sit above it; otherwise it would draw a second line
+  // directly beneath the input divider.
+  var ruled = isQuestion && items.length > 0;
+  ask.style.borderTop = ruled ? '1px solid var(--border)' : 'none';
+  ask.style.marginTop = ruled ? '14px' : '0';
+  ask.style.paddingTop = ruled ? '14px' : '0';
+}
+
+/* ── ASK GUARDIAN (inside ⌘K) ────────────────────────────────────────────────────
+   Ported from the Kash prototype's "Ask Guardian" moment. Kash gives it a page of its
+   own; we put it inside the existing ⌘K palette instead, because Kash's own packaging
+   map lists this capability as building on "⌘K search over rows", and the session note
+   is explicit that it must not become the way people use the product — "it shouldn't
+   become the default way someone just goes and interacts with Guardian." So: rows are
+   still returned first, this section only appears when the input reads as a question,
+   and it is advisory — it answers, it never acts on the estate. Universal tier, so it
+   is deliberately NOT behind aiTierLocked().
+
+   Two answer modes, kept visibly apart because they are trustworthy in different ways:
+   · about Guardian itself — a model over product documentation, so it is marked
+     AI-derived and always carries the section it came from;
+   · about this estate — an ordinary query over the very same rows the Managed Nodes
+     list uses, so it is marked Deterministic, returns rows, and the prose above them
+     says nothing the rows do not.
+   When neither can answer, it says so and hands back the nearest documentation section
+   rather than guessing. */
+function _askIsQuestion(q) {
+  var s = q.trim().toLowerCase();
+  if (s.length < 8) return false;
+  if (s.indexOf('?') !== -1) return true;
+  return /^(why|how|what|when|where|which|who|can|could|does|do|is|are|should|will|explain|tell me)\b/.test(s);
+}
+
+// Product documentation. Short on purpose: each entry is one answer to one recurring
+// question, with the section it is answered from, so an answer can never appear uncited.
+var ASK_DOCS = [
+  {
+    keys: ['connected', 'heartbeat', 'no scan data', 'not scanning', 'online but', 'agent report'],
+    section: 'Agent architecture §2.1, Collection lifecycle §4',
+    answer: 'The agent connection and the scan collection are two separate channels. The agent holds a heartbeat open to the platform, and that is what the <strong>connected</strong> state reports. Collection is a separate request from a Connection Manager to the collector on the host. A node can hold the heartbeat open while the collector fails, returns nothing, or is refused — so connected means reachable, not scanning.'
+  },
+  {
+    keys: ['reconcil', 'change request', 'unmatched', 'matched', 'drift mean'],
+    section: 'Change reconciliation §3',
+    answer: 'Reconciliation matches a detected change against the change request that authorised it. A change that matches an approved request is expected and closes itself; one with no matching request stays <strong>unreconciled</strong> and needs a person to say whether it was intended. Guardian never treats the absence of a request as approval.'
+  },
+  {
+    keys: ['policy', 'benchmark', 'cis', 'check do', 'baseline'],
+    section: 'Policies and benchmarks §1.2',
+    answer: 'A policy is a set of checks measured against a node on every scan. Checks come from a CIS benchmark or are written in Guardian, and each returns pass or fail with the value it actually read. A policy is assigned to nodes or groups — assigning it does not change anything on the host, it only starts measuring.'
+  },
+  {
+    keys: ['agentless', 'connection manager', 'scan method', 'agent or', 'credential'],
+    section: 'Scan methods §2, Connection Managers §5',
+    answer: 'Guardian scans either through an agent installed on the node or agentlessly through a Connection Manager, which opens the connection from inside the network using a stored credential. Agentless needs no software on the host but does need reachability and a working credential; the agent needs neither, because it connects outward itself.'
+  }
+];
+
+/* Estate queries. Each one reuses nodeMatchesState() rather than restating the rule, so
+   an answer here can never disagree with the State segment on Managed Nodes. */
+var ASK_ESTATE = [
+  {
+    keys: ['never scanned', 'unscanned', 'no scan data', 'not scanning', 'connected but', 'online but'],
+    state: 'unscanned',
+    title: 'Nodes that report online but have never returned scan data',
+    trace: 'list_nodes · get_scan_status',
+    none: 'Every monitored node has returned scan data at least once.'
+  },
+  {
+    keys: ['offline', 'unreachable', 'not reachable', 'down', 'lost connection'],
+    state: 'offline',
+    title: 'Nodes that are offline',
+    trace: 'list_nodes · get_node_connectivity',
+    none: 'No monitored node is offline.'
+  }
+];
+
+/* The same scoping updateNodeStateCounts() uses — every row present in the Managed Nodes
+   list, minus the AWS section while it is still hidden. Keeping one rule means the answer
+   and the "All / Offline / Unscanned" counters can never drift apart. */
+function _askEstateRows() {
+  var aws = document.getElementById('aws-device-rows');
+  var awsHidden = !aws || aws.style.display === 'none';
+  return Array.prototype.slice.call(document.querySelectorAll('#v-all-devices .node-row'))
+    .filter(function (row) { return !(awsHidden && row.closest('#aws-device-rows')); });
+}
+function _askRowName(row) { return (row.dataset.name || '').split(' ')[0]; }
+function _askRowScan(row) {
+  var el = row.querySelector('.node-scan');
+  return el ? el.textContent.trim() : '';
+}
+/* Topic keywords alone cannot tell the two modes apart: "why would an agent report connected
+   but no scan data arrive" and "which nodes are connected but not scanning" share every topic
+   word, yet the first is a question about the product and the second is a question about the
+   estate. What separates them is whether the sentence points at this installation, so an
+   estate answer additionally requires one of these deictic markers. */
+function _askIsEstate(q) {
+  return /\b(here|mine|my|our|ours|we|us|this estate|right now|currently|any|which|whose|how many|list|show me)\b/
+    .test(q.toLowerCase());
+}
+function _askMatch(list, q) {
+  var s = q.toLowerCase();
+  var best = null, bestScore = 0;
+  list.forEach(function (e) {
+    var score = e.keys.filter(function (k) { return s.indexOf(k) !== -1; }).length;
+    if (score > bestScore) { bestScore = score; best = e; }
+  });
+  return best;
+}
+function _askQuiet(txt) {
+  return '<div style="margin-top:8px;font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-muted);">' + txt + '</div>';
+}
+function askGuardianHtml(q) {
+  // No wrapper chrome here — the rule that separates this from the rows above is set on
+  // #search-ask by filterSearch(), which is the only place that knows whether there are
+  // any rows to separate it from.
+  var head = '<div>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+    +   '<svg class="ai-block-head-icon" width="15" height="15" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
+    +   '<span style="font-size:12px;font-weight:700;color:var(--text-default);">Ask Guardian</span>'
+    +   '<span style="font-size:12px;color:var(--text-muted);margin-left:auto;">Advisory — it answers, it does not act</span>'
+    + '</div>';
+  var foot = '</div>';
+
+  // Estate first: when a question really is about this installation, a row-backed answer
+  // beats a prose one, because the rows are the evidence rather than a claim about it.
+  var est = _askIsEstate(q) ? _askMatch(ASK_ESTATE, q) : null;
+  if (est) {
+    var rows = _askEstateRows();
+    var hits = rows.filter(function (r) { return nodeMatchesState(r, est.state); });
+    var withData = rows.filter(function (r) { return r.dataset.scan !== 'never'; });
+    var body = hits.length
+      ? '<div class="ai-block-body">' + est.title + ': <strong>' + hits.length + '</strong> of '
+        + rows.length + ' monitored nodes.</div>'
+        + hits.map(function (r) {
+            return '<div class="search-nav-item" onclick="showView(\'all-devices\');closeSearch()">'
+              + '<div style="font-size:12px;font-weight:600;color:var(--text-default);">' + _askRowName(r) + '</div>'
+              + '<div style="font-size:12px;color:var(--p-neutral-400);margin-top:1px;">Last scan · ' + _askRowScan(r) + '</div>'
+              + '</div>';
+          }).join('')
+      : '<div class="ai-block-body">' + est.none + '</div>';
+    return head
+      + '<div style="margin-bottom:8px;"><span class="bdg bdg--gray">Deterministic</span>'
+      +   '<span style="font-size:12px;color:var(--text-muted);margin-left:8px;">a query over your own rows</span></div>'
+      + body
+      + _askQuiet('Based on ' + withData.length + ' of ' + rows.length
+          + ' monitored nodes with scan data · ' + est.trace)
+      + foot;
+  }
+
+  var doc = _askMatch(ASK_DOCS, q);
+  if (doc) {
+    return head
+      + '<div style="margin-bottom:8px;"><span class="bdg bdg--purple">AI-derived</span>'
+      +   '<span style="font-size:12px;color:var(--text-muted);margin-left:8px;">answered from product documentation</span></div>'
+      + '<div class="ai-block-body">' + doc.answer + '</div>'
+      + _askQuiet('Guardian documentation · ' + doc.section)
+      + foot;
+  }
+
+  // No guess. Hand back what the documentation does cover and let the person pick.
+  return head
+    + '<div class="ai-block-body">I can\u2019t answer that from the documentation I have, and I won\u2019t guess. '
+    +   'These are the sections I can answer from:</div>'
+    + '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">'
+    +   ASK_DOCS.map(function (d) {
+          return '<span class="bdg bdg--gray">' + d.section.split(' \u00a7')[0] + '</span>';
+        }).join('')
+    + '</div>'
+    + _askQuiet('For a question about your own nodes, ask about offline or never-scanned nodes.')
+    + foot;
 }
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
