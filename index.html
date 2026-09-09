@@ -24066,7 +24066,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <input id="rep-ask-input" type="text" class="icx-input" style="flex:1;min-width:240px;" placeholder="e.g. Which policies are failing in production?" onkeydown="if(event.key==='Enter'){event.preventDefault();repAskSetFilters();}">
                 <button class="btn-primary btn-primary--s" style="flex-shrink:0;" onclick="repAskSetFilters()">Set filters</button>
               </div>
-              <div id="rep-ask-chips" style="display:none;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
+              <!-- Always-visible row: chips (hidden when empty) + a persistent "+ Add filter" trigger,
+                   so a filter can be added by hand even before any question is asked. The menu lists
+                   only the dimensions still at their default — once set, a dimension drops off the
+                   list and is only reachable through its own chip's ×. Single source of truth: both
+                   this menu and the chip row read the real rep-env/rep-group/rep-bench/report-view
+                   state, nothing tracked separately (_repChipsFromState()). -->
+              <div id="rep-ask-filters-row" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px;">
+                <div id="rep-ask-chips" style="display:none;"></div>
+                <div id="rep-add-filter-wrap" style="position:relative;">
+                  <button type="button" onclick="repToggleAddFilter(event)" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px dashed var(--border);border-radius:6px;background:transparent;font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;font-family:inherit;">
+                    <svg width="9" height="9" viewBox="0 0 8 8" fill="none"><path d="M4 0.629639V7.37038" stroke="currentColor" stroke-linecap="round"/><path d="M0.628906 4H7.36965" stroke="currentColor" stroke-linecap="round"/></svg>
+                    Add filter
+                  </button>
+                  <div id="rep-add-filter-menu" style="display:none;position:absolute;left:0;top:calc(100% + 6px);background:var(--bg-surface);border:1px solid var(--border-default);border-radius:8px;box-shadow:0 8px 12px rgba(0,0,0,0.12);padding:8px;min-width:170px;z-index:20;"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -24095,6 +24110,12 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <!-- Metadata -->
             <span id="rep-when-label" style="margin-left:auto;font-size:11px;color:var(--text-sec);">Based on latest completed scans · Updated at 14:22</span>
           </div>
+          <!-- Honest provenance caption (point 2, 07.09 gap audit vs Kash). Kash's own copy claims
+               a live per-node lookup; ours doesn't do that for this report — Production/Staging/
+               Development here is a severity-based approximation over the checks in scope, not a
+               join against the real data-env field nodes carry elsewhere (Managed Nodes, Detected
+               Drift). Say what's actually true about our wiring rather than porting their claim. -->
+          <div style="font-size:11px;color:var(--text-sec);margin-top:6px;">Environment uses the same Production / Staging / Development categories Guardian applies to nodes elsewhere (Managed Nodes, Detected Drift) — here it's approximated from failure severity within scope, not a live per-node lookup.</div>
         </div>
 
         <!-- Report results (summary + tables) -->
@@ -26564,46 +26585,68 @@ function _repCoverageRow(data, pid) {
   return '<div style="margin:10px 0 0;display:flex;align-items:flex-start;gap:10px;width:100%;">' + plate + btn + '</div>';
 }
 
-// Kash "Reports — Ask" pattern (point 4). A real, limited parser over our actual scope
-// vocabulary — not a live model call, this is a static prototype — applied straight onto the
-// existing rep-env/rep-group/rep-bench selects and the report-view segmented control. There is
-// no separate "AI scope" to keep in sync with the real one: removing a chip just resets that one
-// control and re-renders. Says so when nothing in the question maps to a real filter, rather than
-// guessing or silently doing nothing.
+// Kash "Reports — Ask" pattern (point 4) + manual "+ Add filter" (point 1, 07.09 gap audit vs
+// the Kash reference). Two entry points onto the SAME state — the real rep-env/rep-group/rep-bench
+// selects and the report-view segmented control. No separate "AI scope"/chip list is tracked in
+// JS: _repChipsFromState() reads the live controls every time, so the NL parser, the manual menu
+// and chip removal can never drift out of sync with each other or with what's actually applied.
 var REP_ASK_ENV = { production: 'Production', staging: 'Staging', development: 'Development', dev: 'Development' };
 var REP_ASK_GROUP = { 'windows 11': 'Windows 11', windows: 'Windows 11', servers: 'Servers', server: 'Servers', developer: 'Developer Macs', macs: 'Developer Macs', mac: 'Developer Macs' };
+var REP_FILTER_DIMS = {
+  env:   { label: 'Environment', selId: 'rep-env',  reset: 'All environments', options: ['Production', 'Staging', 'Development'] },
+  group: { label: 'Node group',  selId: 'rep-group', reset: 'All node groups',  options: ['Windows 11', 'Servers', 'Developer Macs'] },
+  bench: { label: 'Benchmark',   selId: 'rep-bench', reset: 'CIS Windows 11',   options: ['CIS Ubuntu 22.04', 'All benchmarks'] },
+  view:  { label: 'Report',      selId: null,        reset: 'All sections',     options: ['Summary', 'Failed checks'] }
+};
+function _repViewLabel() {
+  var summary = document.getElementById('rt-summary'), failed = document.getElementById('rt-failed');
+  if (summary && summary.classList.contains('is-active')) return 'Summary';
+  if (failed && failed.classList.contains('is-active')) return 'Failed checks';
+  return null; // "All sections" is the default — no chip for it
+}
+function _repChipsFromState() {
+  var chips = [];
+  ['env', 'group', 'bench'].forEach(function (dim) {
+    var d = REP_FILTER_DIMS[dim];
+    var sel = document.getElementById(d.selId);
+    if (sel && sel.value && sel.value !== d.reset) chips.push({ dim: dim, label: d.label + ': ' + sel.value });
+  });
+  var view = _repViewLabel();
+  if (view) chips.push({ dim: 'view', label: 'Report: ' + view });
+  return chips;
+}
 function repAskSetFilters() {
   var input = document.getElementById('rep-ask-input');
   var q = input ? input.value.trim() : '';
   if (!q) return;
   var ql = q.toLowerCase();
-  var applied = [];
+  var matched = false;
   Object.keys(REP_ASK_ENV).some(function (k) {
     if (ql.indexOf(k) === -1) return false;
     _repAskSet('rep-env', REP_ASK_ENV[k]);
-    applied.push({ dim: 'env', label: 'Environment: ' + REP_ASK_ENV[k] });
+    matched = true;
     return true;
   });
   Object.keys(REP_ASK_GROUP).some(function (k) {
     if (ql.indexOf(k) === -1) return false;
     _repAskSet('rep-group', REP_ASK_GROUP[k]);
-    applied.push({ dim: 'group', label: 'Node group: ' + REP_ASK_GROUP[k] });
+    matched = true;
     return true;
   });
   if (ql.indexOf('ubuntu') !== -1) {
     _repAskSet('rep-bench', 'CIS Ubuntu 22.04');
-    applied.push({ dim: 'bench', label: 'Benchmark: CIS Ubuntu 22.04' });
+    matched = true;
   }
   if (/\bfail(s|ed|ing)?\b/.test(ql)) {
     setReportType('failed');
-    applied.push({ dim: 'view', label: 'Report: Failed checks' });
+    matched = true;
   }
-  if (!applied.length) {
+  if (!matched) {
     showToast('Couldn\u2019t match that to a scope \u2014 try mentioning an environment, node group, benchmark, or "failing checks".', 'info');
     return;
   }
   renderReport();
-  _repAskRenderChips(applied);
+  _repAskRenderChips(_repChipsFromState());
 }
 function _repAskSet(id, value) {
   var sel = document.getElementById(id);
@@ -26611,37 +26654,86 @@ function _repAskSet(id, value) {
   sel.value = value;
   if (typeof refreshCsel === 'function') { try { refreshCsel(sel); } catch (e) {} }
 }
-function _repAskRenderChips(applied) {
+function _repAskRenderChips(chips) {
   var wrap = document.getElementById('rep-ask-chips');
   if (!wrap) return;
-  wrap.style.display = 'flex';
-  wrap.innerHTML = '<span style="font-size:11px;color:var(--text-sec);flex-shrink:0;">Set from your question</span>'
-    + applied.map(function (c) {
+  if (!chips.length) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'contents';
+  wrap.innerHTML = '<span style="font-size:11px;color:var(--text-sec);flex-shrink:0;">Active filters</span>'
+    + chips.map(function (c) {
         return '<span data-ask-chip="1" style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);">'
           + c.label
-          + '<span onclick="repAskRemoveChip(this,\'' + c.dim + '\')" title="Remove filter" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;">\u00d7</span>'
+          + '<span onclick="repAskRemoveChip(\'' + c.dim + '\')" title="Remove filter" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;">\u00d7</span>'
           + '</span>';
       }).join('')
     + '<span onclick="repAskClearAll()" style="font-size:12px;font-weight:600;color:var(--green1);cursor:pointer;flex-shrink:0;">Clear all</span>';
 }
-function repAskRemoveChip(el, dim) {
+function repAskRemoveChip(dim) {
   if (dim === 'env') _repAskSet('rep-env', 'All environments');
   if (dim === 'group') _repAskSet('rep-group', 'All node groups');
   if (dim === 'bench') _repAskSet('rep-bench', 'CIS Windows 11');
   if (dim === 'view') setReportType('full');
   renderReport();
-  var chip = el.closest('[data-ask-chip]');
-  if (chip) chip.remove();
-  var wrap = document.getElementById('rep-ask-chips');
-  if (wrap && !wrap.querySelector('[data-ask-chip]')) { wrap.style.display = 'none'; wrap.innerHTML = ''; }
+  _repAskRenderChips(_repChipsFromState());
 }
 function repAskClearAll() {
   reportResetScope();
-  var wrap = document.getElementById('rep-ask-chips');
-  if (wrap) { wrap.style.display = 'none'; wrap.innerHTML = ''; }
+  _repAskRenderChips([]);
   var input = document.getElementById('rep-ask-input');
   if (input) input.value = '';
 }
+// Manual "+ Add filter" menu — same dimensions as the Ask-bar, reached by hand instead of by
+// typing a question. Level 1 lists only dimensions still at their default (once set, a dimension
+// is reachable again only through its own chip's ×, not through this menu); level 2 lists that
+// dimension's values. Popover styling/list-item class reused from the Global Search filter
+// dropdown (#filter-dropdown / .search-filter-item), not invented fresh.
+var _repAddFilterStep = null;
+function repToggleAddFilter(e) {
+  if (e) e.stopPropagation();
+  var menu = document.getElementById('rep-add-filter-menu');
+  if (!menu) return;
+  var open = menu.style.display !== 'none';
+  if (open) { menu.style.display = 'none'; return; }
+  _repAddFilterStep = null;
+  _repRenderAddFilterMenu();
+  menu.style.display = 'block';
+}
+function _repRenderAddFilterMenu() {
+  var menu = document.getElementById('rep-add-filter-menu');
+  if (!menu) return;
+  if (!_repAddFilterStep) {
+    var active = _repChipsFromState().map(function (c) { return c.dim; });
+    var remaining = Object.keys(REP_FILTER_DIMS).filter(function (k) { return active.indexOf(k) === -1; });
+    if (!remaining.length) {
+      menu.innerHTML = '<div style="font-size:12px;color:var(--text-sec);padding:8px 12px;">All filters are already set.</div>';
+      return;
+    }
+    menu.innerHTML = '<div style="font-size:10px;font-weight:700;color:var(--p-neutral-400);letter-spacing:1px;padding:4px 8px 8px;text-transform:uppercase;">Add filter</div>'
+      + remaining.map(function (k) {
+          return '<div class="search-filter-item" onclick="event.stopPropagation();_repAddFilterStep=\'' + k + '\';_repRenderAddFilterMenu()">' + REP_FILTER_DIMS[k].label + '</div>';
+        }).join('');
+  } else {
+    var d = REP_FILTER_DIMS[_repAddFilterStep];
+    menu.innerHTML = '<div style="font-size:10px;font-weight:700;color:var(--p-neutral-400);letter-spacing:1px;padding:4px 8px 8px;text-transform:uppercase;">' + d.label + '</div>'
+      + d.options.map(function (v) {
+          return '<div class="search-filter-item" onclick="event.stopPropagation();repApplyAddFilter(\'' + _repAddFilterStep + '\',\'' + v.replace(/'/g, "\\'") + '\')">' + v + '</div>';
+        }).join('');
+  }
+}
+function repApplyAddFilter(dimKey, value) {
+  if (dimKey === 'view') { setReportType(value === 'Summary' ? 'summary' : 'failed'); }
+  else { _repAskSet(REP_FILTER_DIMS[dimKey].selId, value); }
+  renderReport();
+  _repAskRenderChips(_repChipsFromState());
+  var menu = document.getElementById('rep-add-filter-menu');
+  if (menu) menu.style.display = 'none';
+}
+document.addEventListener('click', function (e) {
+  var wrap = document.getElementById('rep-add-filter-wrap');
+  var menu = document.getElementById('rep-add-filter-menu');
+  if (!wrap || !menu || menu.style.display === 'none') return;
+  if (!wrap.contains(e.target)) menu.style.display = 'none';
+});
 
 // Einstein domain (change analysis/risk assessment). The full flow — Change Request ->
 // Implementation Plan -> Post-change Scan -> Expected vs Actual -> Risk Assessment -> Reconcile —
