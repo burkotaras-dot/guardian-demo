@@ -3002,6 +3002,10 @@ body.dark .ai-block-body strong { color:#A5B4FC; }
    for inputs sitting on a dark card. */
 body.dark .rep-ask-chip { background:rgba(255,255,255,0.06) !important; border-color:rgba(255,255,255,0.16) !important; }
 body.dark #rep-add-filter-wrap button { background:rgba(255,255,255,0.06) !important; border-color:rgba(255,255,255,0.25) !important; }
+/* Same case again on the Detected Drift promotion path: an unreached step's dot is --bg-subtle,
+   which in dark (#00262A) is all but identical to the .ai-block card (#062528), so the dot vanishes.
+   A translucent white overlay lifts it off any dark surface without depending on the exact hex. */
+body.dark .drift-promo-dot-todo { background:rgba(255,255,255,0.06) !important; border-color:rgba(255,255,255,0.22) !important; }
 /* Modifier for an .ai-block sitting on a white/near-white surface (e.g. inside a modal body)
    where the default var(--bg-surface) background would blend into the surrounding card. */
 .ai-block--tint { background:var(--bg-subtle); }
@@ -21153,6 +21157,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               </div>
             </div>
             <div id="drift-ai-group-result" style="display:none;padding-top:10px;"></div>
+            <!-- Promotion path — the client's "LANE 2 → LANE 1" strip on the Detected Changes
+                 moment. Checked against the client file's own MARKING legend (AI-DERIVED vs
+                 DETERMINISTIC): on that whole page only the roll-up card carries AI-DERIVED, so
+                 its Lane 1/Lane 2 count panels and the "rest of the 588" buckets are deliberately
+                 NOT ported — they are rule-based product structure, not AI. This trust lifecycle
+                 is, and it is the one AI gap that was left. Stage 3 shows a REAL in-session accept
+                 count; a persisted "4 of 5 accepted on this estate" history does not exist here and
+                 is not invented, which is the same honesty rule the rest of this card follows. -->
+            <div id="drift-ai-group-promo" style="border-top:1px solid var(--border);margin-top:12px;padding-top:10px;"></div>
             <div style="margin-top:10px;padding-top:2px;">
               <div class="fm-collapsed-toggle" style="color:var(--green2);" onclick="this.classList.toggle('is-open')">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
@@ -29982,6 +29995,8 @@ function driftRenderAiGroup() {
     if (covWrap) covWrap.style.display = 'none';
     if (childrenWrap) childrenWrap.style.display = 'none';
     if (confStat) confStat.textContent = '';
+    var promoLocked = document.getElementById('drift-ai-group-promo');
+    if (promoLocked) promoLocked.style.display = 'none';
     block.style.display = 'block';
     return;
   }
@@ -30044,6 +30059,12 @@ function driftRenderAiGroup() {
   block.dataset.allIdxs = block.dataset.idxs;
   var splitPicker = document.getElementById('drift-ai-group-split-picker');
   if (splitPicker) splitPicker.style.display = 'none';
+  // A re-render (filter change) puts the card back to its unreviewed state, so the path returns to
+  // Proposed — but _driftAiAcceptCount is not reset: those accepts really happened this session.
+  block.dataset.accepted = '';
+  var promo = document.getElementById('drift-ai-group-promo');
+  if (promo) promo.style.display = '';
+  driftRenderPromoTrack();
   block.style.display = 'block';
 }
 // Illustrative-example row for the (fabricated, clearly-labelled) parent/child breakdown above —
@@ -30058,6 +30079,39 @@ function _driftChildRow(count, title, desc, isLast) {
     + '</div>'
     + '<span class="bdg bdg--purple" style="flex-shrink:0;">Likely collateral</span>'
     + '</div>';
+}
+// Promotion path — how a model-proposed grouping earns the right to be applied without asking.
+// The counter is real: it only moves on an actual accept in this session, and Undo takes it back.
+// Stages 3 and 4 stay unreached because there is no persisted per-estate acceptance history to
+// read — inventing a "4 of 5" would be exactly the fabrication the rest of this card refuses.
+var _driftAiAcceptCount = 0;
+var DRIFT_PROMO_THRESHOLD = 5;
+function _driftPromoStep(label, caption, state, isLast) {
+  var dot;
+  if (state === 'done') dot = '<div style="width:14px;height:14px;border-radius:50%;background:var(--green1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>';
+  else if (state === 'current') dot = '<div style="width:14px;height:14px;border-radius:50%;background:var(--bg-surface);border:2px solid var(--green1);box-sizing:border-box;flex-shrink:0;"></div>';
+  else dot = '<div class="drift-promo-dot-todo" style="width:14px;height:14px;border-radius:50%;background:var(--bg-subtle);border:1px solid var(--border);box-sizing:border-box;flex-shrink:0;"></div>';
+  var reached = state !== 'todo';
+  return '<div style="flex:1 1 0;min-width:118px;">'
+    + '<div style="display:flex;align-items:center;gap:6px;">' + dot
+    + (isLast ? '' : '<div style="height:1px;flex:1;background:var(--border);"></div>') + '</div>'
+    + '<div style="font-size:11.5px;font-weight:700;color:' + (reached ? 'var(--text-default)' : 'var(--text-muted)') + ';margin-top:7px;">' + label + '</div>'
+    + '<div style="font-size:11px;line-height:16px;color:' + (reached ? 'var(--text-sec)' : 'var(--text-muted)') + ';margin-top:2px;">' + caption + '</div>'
+    + '</div>';
+}
+function driftRenderPromoTrack() {
+  var box = document.getElementById('drift-ai-group-promo');
+  if (!box) return;
+  var block = document.getElementById('drift-ai-group-block');
+  var reviewed = !!(block && block.dataset.accepted === '1');
+  box.innerHTML = '<div style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);margin-bottom:9px;">PROMOTION PATH</div>'
+    + '<div style="display:flex;align-items:flex-start;gap:12px;">'
+    + _driftPromoStep('Proposed', 'AI output — nothing applied', reviewed ? 'done' : 'current')
+    + _driftPromoStep('Reviewed', reviewed ? 'you accepted this grouping' : 'a person accepts it', reviewed ? 'current' : 'todo')
+    + _driftPromoStep('Pattern trusted', 'same shape accepted ' + DRIFT_PROMO_THRESHOLD + '\u00D7 on this estate — ' + _driftAiAcceptCount + ' of ' + DRIFT_PROMO_THRESHOLD + ' so far, this session only', 'todo')
+    + _driftPromoStep('Applied automatically', 'grouped without asking on this estate', 'todo', true)
+    + '</div>'
+    + '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:10px;">Promotion is per estate and reversible — it is what stops AI review being permanent extra work. Rejecting is recorded with the same weight as accepting, and never advances this path.</div>';
 }
 function driftSelectAiGroup() {
   var block = document.getElementById('drift-ai-group-block');
@@ -30087,6 +30141,9 @@ function driftAcceptAiGroup() {
       + '<span style="font-size:12px;color:var(--text-sec);">' + idxs.length + ' item' + (idxs.length === 1 ? '' : 's') + ' selected below for you to review together — nothing is approved yet.</span> '
       + '<span class="link-cta" style="font-size:11px;" onclick="driftUndoAiGroup()"><span class="lc-txt">Undo</span></span>';
   }
+  block.dataset.accepted = '1';
+  _driftAiAcceptCount++;
+  driftRenderPromoTrack();
 }
 function driftRejectAiGroup() {
   var actions = document.getElementById('drift-ai-group-actions');
@@ -30115,7 +30172,13 @@ function driftUndoAiGroup() {
       if (cb) cb.checked = false;
     });
     if (block.dataset.allIdxs) block.dataset.idxs = block.dataset.allIdxs;
+    // Undoing an accept takes the promotion counter back with it — the accept did not stand.
+    if (block.dataset.accepted === '1') {
+      _driftAiAcceptCount = Math.max(0, _driftAiAcceptCount - 1);
+      block.dataset.accepted = '';
+    }
   }
+  driftRenderPromoTrack();
   updateDriftBulkBar();
 }
 // Real "Split out some items" (user 08.09: make it work, not a no-op like the client's own
