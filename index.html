@@ -9707,33 +9707,28 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 24px;font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
                   <div>Attribute</div><div>Majority (93+/120)</div><div>Outlier nodes · value</div>
                 </div>
-                <div class="peer-sec">
-                  <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
-                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Security</span>
-                    <span id="pcq-security-count" style="font-size:11px;color:#d97706;font-weight:600;"></span>
+                <!-- Groups are built and ORDERED by renderConsequenceView(), not authored here:
+                     the ranking is the AI claim of this moment, so it has to follow the real rows
+                     rather than a fixed order in the markup. Each section is header + body, with
+                     the body's first child carrying the "why it ranks here" line — togglePeerSec()
+                     reads body.previousElementSibling as the header, so nothing may sit between. -->
+                <div id="pcq-groups"></div>
+                <!-- Unanimous attributes: real differences-free rows ("All 120 nodes match"). The
+                     client's own 04 group collapses its no-consequence bucket rather than deleting
+                     it — same here, so the arithmetic still adds up to the full attribute count. -->
+                <div class="peer-sec" id="pcq-agree-sec" style="display:none;">
+                  <div class="peer-sec-hdr is-collapsed" onclick="togglePeerSec(&#39;pcq-agree&#39;)" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">
+                    <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                      <span id="pcq-agree-ord" style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--text-muted);">05</span>
+                      <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">In agreement</span>
+                      <span class="bdg bdg--gray">No consequence</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span id="pcq-agree-count" style="font-size:11px;color:var(--text-sec);font-weight:600;"></span>
+                      <svg id="pcq-agree-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;transform:rotate(-90deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
                   </div>
-                  <div id="pcq-security-body"></div>
-                </div>
-                <div class="peer-sec">
-                  <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
-                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Access Control</span>
-                    <span id="pcq-access-count" style="font-size:11px;color:#d97706;font-weight:600;"></span>
-                  </div>
-                  <div id="pcq-access-body"></div>
-                </div>
-                <div class="peer-sec">
-                  <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
-                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Network</span>
-                    <span id="pcq-network-count" style="font-size:11px;color:#d97706;font-weight:600;"></span>
-                  </div>
-                  <div id="pcq-network-body"></div>
-                </div>
-                <div class="peer-sec">
-                  <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
-                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Software</span>
-                    <span id="pcq-software-count" style="font-size:11px;color:#d97706;font-weight:600;"></span>
-                  </div>
-                  <div id="pcq-software-body"></div>
+                  <div id="pcq-agree-body" style="display:none;"></div>
                 </div>
               </div>
             </div>
@@ -28242,28 +28237,152 @@ function setPeerGroup(g) {
 // this view can never drift from the underlying fixture. Only the Windows 11 group is sourced —
 // mac/Linux have <3 nodes (no comparison possible) and Team groups partition the same node
 // population on a different axis, so folding them in would double-count the same node's findings.
+var PCQ_CAT_LABEL = { security:'Security', access:'Access Control', network:'Network', software:'Software' };
+// A row counts as critical when one of its outlier nodes is drawn in the red outlier colour the
+// By-OS table already uses (#FB3C44) — the severity is read off the real rows, never assigned here.
+function _pcqRowIsCritical(row) {
+  var cells = Array.from(row.children).filter(function(c) { return c.tagName === 'DIV'; });
+  if (cells.length !== 3) return false;
+  return Array.from(cells[2].querySelectorAll('span[style*="border-radius:8px"]')).some(function(b) {
+    return /251, ?60, ?68|FB3C44/i.test(b.getAttribute('style') || '');
+  });
+}
+function _pcqRowNodes(row) {
+  var cells = Array.from(row.children).filter(function(c) { return c.tagName === 'DIV'; });
+  if (cells.length !== 3) return [];
+  return Array.from(cells[2].querySelectorAll('span[style*="border-radius:8px"]')).map(function(b) { return b.textContent.trim(); });
+}
+// A row where every outlier "value" is an absence of a reading rather than a reading. The fixture
+// already marks those values italic + muted (No value — not reported / Null — agent not responding),
+// so this reads the existing structure instead of pattern-matching the prose.
+function _pcqRowIsNoData(row) {
+  var cells = Array.from(row.children).filter(function(c) { return c.tagName === 'DIV'; });
+  if (cells.length !== 3) return false;
+  var vals = Array.from(cells[2].querySelectorAll('span[style*="border-radius:8px"]'))
+    .map(function(b) { return b.nextElementSibling; });
+  if (!vals.length || vals.indexOf(null) !== -1) return false;
+  return vals.every(function(v) { return /font-style:\s*italic/.test(v.getAttribute('style') || ''); });
+}
+function _pcqNodeValue(row, node) {
+  var cells = Array.from(row.children).filter(function(c) { return c.tagName === 'DIV'; });
+  if (cells.length !== 3) return '';
+  var badge = Array.from(cells[2].querySelectorAll('span[style*="border-radius:8px"]')).find(function(b) { return b.textContent.trim() === node; });
+  return badge && badge.nextElementSibling ? badge.nextElementSibling.textContent.trim() : '';
+}
+function _pcqSecHdr(id, ord, label, verdict, right) {
+  return '<div class="peer-sec-hdr" onclick="togglePeerSec(\'' + id + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;">'
+    + '<div style="display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap;">'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;color:var(--text-muted);">' + ord + '</span>'
+    + '<span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">' + label + '</span>'
+    + verdict + '</div>'
+    + '<div style="display:flex;align-items:center;gap:8px;">'
+    + '<span style="font-size:11px;color:var(--text-sec);font-weight:600;">' + right + '</span>'
+    + '<svg id="' + id + '-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>'
+    + '</div></div>';
+}
+function _pcqWhyLine(text) {
+  var el = document.createElement('div');
+  el.style.cssText = 'padding:9px 20px;font-size:11.5px;line-height:18px;color:var(--text-sec);border-bottom:1px solid var(--border);';
+  el.textContent = text;
+  return el;
+}
 function renderConsequenceView() {
   var cats = ['security','access','network','software'];
-  var byNode = {}; // node name -> {category label: true} it has a diff in
-  cats.forEach(function(cat) {
+  var groupsBox = document.getElementById('pcq-groups');
+  var agreeSec = document.getElementById('pcq-agree-sec');
+  var agreeBody = document.getElementById('pcq-agree-body');
+  var agreeCount = document.getElementById('pcq-agree-count');
+  if (!groupsBox) return;
+
+  // Read the real rows out of the By-OS Windows 11 card. Everything below — counts, severity,
+  // ordering — is derived from these; nothing is authored twice.
+  // Rows whose outlier value is an absence of a reading are pulled out before anything is counted:
+  // a node that never reported is not disagreeing, and it is not agreeing either, so it cannot sit
+  // in the difference total or in the unanimous bucket.
+  var unknown = [];
+  var groups = cats.map(function(cat) {
     var srcBody = document.getElementById('win-' + cat + '-body');
-    var srcChev = document.getElementById('win-' + cat + '-chev');
-    var dstBody = document.getElementById('pcq-' + cat + '-body');
-    var dstCount = document.getElementById('pcq-' + cat + '-count');
-    if (!srcBody || !dstBody) return;
-    dstBody.innerHTML = srcBody.innerHTML;
-    var srcCountEl = srcChev && srcChev.parentElement ? srcChev.parentElement.querySelector('span[style*="font-weight:600"]') : null;
-    if (dstCount) dstCount.textContent = srcCountEl ? srcCountEl.textContent : '';
-    dstBody.querySelectorAll('.peer-row-diff').forEach(function(row) {
-      var cells = Array.from(row.children).filter(function(c){ return c.tagName === 'DIV'; });
-      if (cells.length !== 3) return;
-      cells[2].querySelectorAll('span[style*="border-radius:8px"]').forEach(function(b) {
-        var name = b.textContent.trim();
-        if (!byNode[name]) byNode[name] = {};
-        byNode[name][cat] = true;
-      });
+    var all = srcBody ? Array.from(srcBody.querySelectorAll('.peer-row-diff')) : [];
+    var matches = srcBody ? Array.from(srcBody.querySelectorAll('.peer-row-match')) : [];
+    var diffs = all.filter(function(r) {
+      if (_pcqRowIsNoData(r)) { unknown.push(r); return false; }
+      return true;
     });
+    var crit = diffs.filter(_pcqRowIsCritical);
+    return { cat: cat, label: PCQ_CAT_LABEL[cat], diffs: diffs, matches: matches, crit: crit };
   });
+  var totalDiffs = groups.reduce(function(n, g) { return n + g.diffs.length; }, 0);
+  var totalCrit = groups.reduce(function(n, g) { return n + g.crit.length; }, 0);
+  var totalMatches = groups.reduce(function(n, g) { return n + g.matches.length; }, 0);
+
+  // The ranking IS the AI claim: groups holding a node that lost a control the rest of the estate
+  // still has come first. Ties fall back to plain arithmetic (more differences first) so the order
+  // is reproducible rather than an opinion applied twice.
+  groups.sort(function(a, b) { return (b.crit.length - a.crit.length) || (b.diffs.length - a.diffs.length); });
+
+  groupsBox.innerHTML = '';
+  var ord = 0;
+  var pad = function(n) { return (n < 10 ? '0' : '') + n; };
+  groups.forEach(function(g) {
+    if (!g.diffs.length) return;
+    ord++;
+    var isCrit = g.crit.length > 0;
+    var verdict = isCrit
+      ? '<span class="bdg bdg--red">' + g.crit.length + ' change what an attacker could reach</span>'
+      : '<span class="bdg bdg--orange">Worth checking</span>';
+    var why = isCrit
+      ? g.crit.length + ' of these leave a node without a control the other nodes still have — ' + g.crit.map(function(r) { return r.children[0].textContent.trim(); }).join(', ') + '. Whichever value is correct, those nodes are not configured like the rest, and the difference is not cosmetic.'
+      : 'No node here is missing a control outright — these are version and policy differences, usually a build-date difference rather than a decision.';
+    var sec = document.createElement('div');
+    sec.className = 'peer-sec';
+    sec.innerHTML = _pcqSecHdr('pcq-' + g.cat, pad(ord), g.label, verdict, g.diffs.length + ' of ' + totalDiffs)
+      + '<div id="pcq-' + g.cat + '-body"></div>';
+    var body = sec.querySelector('#pcq-' + g.cat + '-body');
+    body.appendChild(_pcqWhyLine(why));
+    g.diffs.forEach(function(r) { body.appendChild(r.cloneNode(true)); });
+    groupsBox.appendChild(sec);
+  });
+
+  // "Can't tell" — attributes where at least one node returned nothing. Kept visible so the estate
+  // can see the gap, but drawn neutral rather than as an amber difference: the node badges are
+  // recoloured on the CLONES only, so the By-OS table this reads from is untouched.
+  if (unknown.length) {
+    ord++;
+    var uSec = document.createElement('div');
+    uSec.className = 'peer-sec';
+    uSec.innerHTML = _pcqSecHdr('pcq-unknown', pad(ord), 'Can\u2019t tell', '<span class="bdg bdg--gray">No current reading</span>', unknown.length + (unknown.length === 1 ? ' attribute' : ' attributes'))
+      + '<div id="pcq-unknown-body"></div>';
+    var uBody = uSec.querySelector('#pcq-unknown-body');
+    uBody.appendChild(_pcqWhyLine('At least one node returned no value for these attributes. Silence from a node that is not reporting is not a vote, so they are drawn as no-data rather than as agreement, and they are left out of the difference count above.'));
+    unknown.forEach(function(r) {
+      var c = r.cloneNode(true);
+      Array.from(c.querySelectorAll('span[style*="border-radius:8px"]')).forEach(function(b) {
+        var s = 'font-size:11px;font-weight:600;background:var(--bdg-gray-bg);color:var(--bdg-gray-txt);padding:2px 8px;border-radius:8px;border:1px solid var(--bdg-gray-bd);';
+        b.setAttribute('style', s);
+        // _syncInlineTheme restores backgrounds from data-ls, so the cached light value has to move
+        // with the element or the amber comes back the first time the theme is toggled.
+        if (b.hasAttribute('data-ls')) b.setAttribute('data-ls', s);
+      });
+      uBody.appendChild(c);
+    });
+    groupsBox.appendChild(uSec);
+  }
+  var agreeOrd = document.getElementById('pcq-agree-ord');
+  if (agreeOrd) agreeOrd.textContent = pad(ord + 1);
+
+  // Unanimous rows are kept, not dropped — collapsed under their own heading so the totals below
+  // still describe every attribute the comparison looked at.
+  if (agreeSec && agreeBody) {
+    agreeBody.innerHTML = '';
+    if (totalMatches) {
+      agreeBody.appendChild(_pcqWhyLine('Attributes every node in the comparison reports the same value for. Real readings, correctly collected, with nothing following from them — collapsed rather than deleted.'));
+      groups.forEach(function(g) { g.matches.forEach(function(r) { agreeBody.appendChild(r.cloneNode(true)); }); });
+      if (agreeCount) agreeCount.textContent = totalMatches + ' of ' + (totalDiffs + totalMatches + unknown.length) + ' attributes';
+      agreeSec.style.display = '';
+    } else {
+      agreeSec.style.display = 'none';
+    }
+  }
 
   var aiBox = document.getElementById('peer-consequence-ai');
   if (!aiBox) return;
@@ -28271,23 +28390,101 @@ function renderConsequenceView() {
     aiBox.innerHTML = '<div class="ai-block" style="margin-bottom:16px;">' + _peerConsequenceIcon() + '<div style="flex:1;min-width:0;"><div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div><div class="ai-block-body">' + aiBlockLockedHtml() + '</div></div></div>';
     return;
   }
-  // Rank by how many distinct categories a node spans, not raw diff count — one node with
-  // six changes in one category is one bad config; the same node spread across Security AND
-  // Access Control is a compounding situation, which is the whole point of this view.
-  var names = Object.keys(byNode).sort(function(a, b) { return Object.keys(byNode[b]).length - Object.keys(byNode[a]).length; });
-  var top = names[0];
-  var topCats = top ? Object.keys(byNode[top]) : [];
-  var CAT_LABEL = {security:'Security', access:'Access Control', network:'Network', software:'Software'};
-  if (!top || topCats.length < 2) {
-    aiBox.innerHTML = '<div class="ai-block" style="margin-bottom:16px;">' + _peerConsequenceIcon() +
-      '<div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">Enterprise</span></div>' +
-      '<div class="ai-block-body">No single node combines differences across more than one category today — the outliers below are spread across separate nodes rather than stacking on one.</div></div></div>';
-    return;
-  }
-  var labelList = topCats.map(function(c){ return CAT_LABEL[c]; }).join(' and ');
-  aiBox.innerHTML = '<div class="ai-block" style="margin-bottom:16px;">' + _peerConsequenceIcon() +
-    '<div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">Enterprise</span></div>' +
-    '<div class="ai-block-body"><strong>' + top + '</strong> is the one node to look at first — its differences aren’t confined to one setting, they span ' + labelList + '. Any one of them alone reads as a config drift; together they describe a machine that’s harder to monitor and easier to move data off, which is a different level of risk than the same count spread across unrelated nodes.</div></div></div>';
+
+  var critGroups = groups.filter(function(g) { return g.crit.length; });
+  var headline = totalCrit
+    ? '<strong>' + totalCrit + ' of ' + totalDiffs + '</strong> differences change what an attacker could reach on these nodes — they sit in ' + critGroups.map(function(g) { return '<strong>' + g.label + '</strong>'; }).join(' and ') + '. The remaining <strong>' + (totalDiffs - totalCrit) + '</strong> are version and policy variance across the estate.'
+    : 'None of the <strong>' + totalDiffs + '</strong> differences leaves a node without a control the others have — what is left is version and policy variance across the estate.';
+
+  // Counter-evidence, computed rather than asserted: a node showing up critical in more than one
+  // group means the headline count is not the same as a count of independent problems.
+  var critByNode = {};
+  groups.forEach(function(g) {
+    g.crit.forEach(function(r) {
+      _pcqRowNodes(r).forEach(function(n) {
+        if (!critByNode[n]) critByNode[n] = {};
+        critByNode[n][g.label] = true;
+      });
+    });
+  });
+  var repeat = Object.keys(critByNode).filter(function(n) { return Object.keys(critByNode[n]).length > 1; });
+  var counter = repeat.length
+    ? repeat.join(', ') + ' account' + (repeat.length === 1 ? 's' : '') + ' for a critical value in more than one group, so the ' + totalCrit + ' are not ' + totalCrit + ' independent problems — fixing one machine closes several rows.'
+    : 'Each critical row belongs to a different node, so the count is not concentrated on one machine — there is no single fix that closes several rows at once.';
+
+  aiBox.innerHTML = '<div class="ai-block" style="margin-bottom:16px;">' + _peerConsequenceIcon()
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">' + _currentTier + '</span>'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">GROUPED AND RANKED</span></div>'
+    + '<div class="ai-block-body">' + headline + '</div>'
+    + '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:8px;">Grouping is by what a difference affects, not by which collector produced it. The ranking is a claim about consequence — the counts and the diffs beneath it are Guardian’s own arithmetic and are not.</div>'
+    + (unknown.length ? '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:6px;">' + unknown.length + (unknown.length === 1 ? ' further attribute is' : ' further attributes are') + ' not counted above: at least one node returned no value, and a reading that never arrived is not a node agreeing with the majority.</div>' : '')
+    + '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">'
+    + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>'
+    + '<span style="color:var(--text-sec);flex:1;min-width:0;"><strong style="color:var(--text-default);">Coverage</strong> — Based on the Windows 11 group only · the mac and Linux groups have fewer than 3 nodes, so no consensus is computed for them.</span></div>'
+    + '<div style="margin-top:10px;padding-top:2px;">'
+    + '<div class="fm-collapsed-toggle" style="color:var(--green2);" onclick="this.classList.toggle(\'is-open\')">'
+    + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg> Show the working out'
+    + '</div>'
+    // The trace must be the toggle's NEXT SIBLING with .fm-collapsed-body — that adjacency is what
+    // .fm-collapsed-toggle.is-open + .fm-collapsed-body keys off. Nesting it inside the toggle
+    // leaves it permanently visible and makes the chevron do nothing.
+    + '<div class="fm-collapsed-body dash-nested-box" style="margin-top:9px;padding:11px 13px;">'
+    + _dashAiTraceRow('RANKED BY', 'Groups holding a node that lost a control the rest still have, first; ties broken by difference count.')
+    + _dashAiTraceRow('SEVERITY SOURCE', 'Read off the outlier values already computed for the By OS table — not re-scored here.')
+    + _dashAiTraceRow('IN AGREEMENT', totalMatches + ' attributes every node reports identically — collapsed, not removed.')
+    + (unknown.length ? _dashAiTraceRow('NOT COUNTED', unknown.length + ' attribute' + (unknown.length === 1 ? '' : 's') + ' with no current reading on at least one node — excluded from the ranking, not resolved either way.') : '')
+    + _dashAiTraceRow('COUNTER-EVIDENCE', counter)
+    + '</div></div>'
+    + '</div></div>'
+    + _pcqWorkedExample(groups);
+}
+// The argument for why ranking needs a model at all: one row that is uninteresting read alone and
+// consequential read next to the other rows the same node appears in. Which node and which row get
+// named is fixture-specific, so every claim made about them is read back out of the real rows, and
+// the block refuses to render if the node stops spanning three groups or loses either of the two
+// attributes the prose depends on. Better to show nothing than to keep asserting a story the data
+// no longer supports.
+var PCQ_EXAMPLE_NODE = 'SRV-WIN-APP-17';
+var PCQ_EXAMPLE_ATTR = 'Open inbound ports';
+var PCQ_EXAMPLE_NEEDS = ['Remote Desktop (RDP)', 'Local admin accounts'];
+function _pcqExampleCol(label, claim, body) {
+  return '<div class="dash-nested-box" style="flex:1 1 280px;min-width:240px;padding:11px 13px;">'
+    + '<div style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);margin-bottom:6px;">' + label + '</div>'
+    + '<div style="font-size:12px;font-weight:600;line-height:17px;color:var(--text-default);">' + claim + '</div>'
+    + '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:5px;">' + body + '</div>'
+    + '</div>';
+}
+function _pcqWorkedExample(groups) {
+  var node = PCQ_EXAMPLE_NODE, seed = null, others = [], spread = {};
+  groups.forEach(function(g) {
+    g.diffs.forEach(function(r) {
+      if (_pcqRowNodes(r).indexOf(node) === -1) return;
+      spread[g.label] = true;
+      var attr = r.children[0].textContent.trim();
+      if (attr === PCQ_EXAMPLE_ATTR) seed = r; else others.push(attr);
+    });
+  });
+  var haveAll = PCQ_EXAMPLE_NEEDS.every(function(a) { return others.indexOf(a) !== -1; });
+  if (!seed || Object.keys(spread).length < 3 || !haveAll) return '';
+  var cells = Array.from(seed.children).filter(function(c) { return c.tagName === 'DIV'; });
+  var majority = cells[1].textContent.trim();
+  var value = _pcqNodeValue(seed, node);
+  return '<div class="ai-block">' + _peerConsequenceIcon()
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span>'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:0.07em;color:var(--text-sec);">WHY RANKING IS THE HARD PART</span></div>'
+    + '<div class="ai-block-body">' + PCQ_EXAMPLE_ATTR + ' on <strong>' + node + '</strong>, worked through.</div>'
+    + '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;">'
+    + _pcqExampleCol('ON ITS OWN',
+        'The majority reports ' + majority + '; this node reports ' + value + '.',
+        'Uninteresting alone. Extra ports on an application server are a fact about how it was deployed, and a rule that flagged every additional port would fire across most of the estate.')
+    + _pcqExampleCol('IN CONTEXT',
+        'The same node is the outlier in ' + others.length + ' other attributes: ' + others.join(', ') + '.',
+        '3389 is the Remote Desktop port, and this is also the node with Remote Desktop enabled and a local admin account Guardian does not manage. The open port is not the finding — it is the route to that account, and it is what has to change for the finding to stay fixed.')
+    + '</div>'
+    + '<div style="font-size:11.5px;line-height:18px;color:var(--text-sec);margin-top:10px;">Read row by row, this is one of the lower-priority differences. It ranks where it does only because of the other rows the same node appears in — a judgement about combinations, which is what a fixed per-attribute threshold cannot express.</div>'
+    + '</div></div>';
 }
 function _peerConsequenceIcon() {
   return '<svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="flex-shrink:0;margin-top:1px;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"></path></svg>';
