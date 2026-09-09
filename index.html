@@ -17440,6 +17440,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryAct: "go('secret-server-config')",
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 FAILED\n[2026-07-03 09:14:03] error: credentials rejected by server (0x8009030E)\n[2026-07-03 09:14:03] scan aborted \u2014 0 attributes collected',
         aiHelp: 'The credential was accepted for the WinRM handshake but rejected at authentication (0x8009030E) \u2014 that pattern usually means the password rotated in Secret Server without the scan credential being updated to match, rather than a network or permission problem.',
+        where: {
+          sameSig: ['SARAH-LAPTOP-01'],
+          shared: 'the svc-guardian-scan credential',
+          lookalike: { nodes: ['DEV-MACPRO-03'], why: 'it has been offline for 3 days and never opened a connection at all' }
+        },
         steps: [
           { title: 'Update the credential', desc: 'Check the credential in Secret Server is current and not expired.', linkLabel: 'Open Secret Server', linkAct: "go('secret-server-config')", status: 'needs' },
           { title: 'Verify the account status', desc: 'Confirm the account isn\u2019t locked out or disabled on the target node.', status: 'notchecked' },
@@ -17461,6 +17466,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryAct: '',
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 FAILED\n[2026-07-03 09:14:32] error: connection timed out after 30s (WSAETIMEDOUT)\n[2026-07-03 09:14:32] scan aborted \u2014 target unreachable',
         aiHelp: 'The scan never reached the authentication stage \u2014 the connection attempt to 10.4.12.31 timed out after 30s, which points to the node being offline, moved to a different address, or blocked by a firewall rule rather than a credential issue.',
+        where: {
+          sameSig: ['DEV-MACPRO-03'],
+          shared: 'Connection Manager CM-EU-WEST-01',
+          lookalike: { nodes: ['SARAH-LAPTOP-01'], why: 'it answers and then fails at authentication \u2014 a credential fault, not a route' }
+        },
         steps: [
           { title: 'Confirm the node is reachable', desc: 'Verify the node is powered on and reachable from your network.', status: 'needs' },
           { title: 'Check firewall ports', desc: 'Port 5985 (WinRM HTTP) or 5986 (HTTPS) must be open on the target.', status: 'notchecked' },
@@ -17482,6 +17492,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryAct: '',
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:03] collecting attributes \u2026 47/96\n[2026-07-03 09:19:03] error: scan exceeded 300s limit (timeout)\n[2026-07-03 09:19:03] scan aborted \u2014 partial collection discarded',
         aiHelp: 'Guardian authenticated successfully and started collecting attributes, but only reached 47 of 96 before hitting the 300s limit \u2014 that\u2019s a partial-progress timeout, not a connectivity or credential failure. This usually means the node is under heavy load or the scan scope is larger than the timeout allows.',
+        // Deliberately alone: no other node timed out in the last run. Kash finds a cluster every
+        // time; inventing one here would be the fabrication the whole port is meant to avoid, and
+        // "you are on your own with this one" is itself the answer that changes the next action.
+        where: {
+          sameSig: [],
+          shared: '',
+          lookalike: { nodes: [], why: '' }
+        },
         steps: [
           { title: 'Check node load', desc: 'A node under heavy load can respond too slowly and cause timeouts.', status: 'needs' },
           { title: 'Review the scan scope', desc: 'Reduce the number of policies or checks if the node has many attributes.', status: 'notchecked' },
@@ -17503,6 +17521,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryAct: "go('secret-server-config')",
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:04] reading registry HKLM\\SOFTWARE\\Policies \u2026 ACCESS DENIED\n[2026-07-03 09:14:04] error: insufficient privileges (0x80070005)\n[2026-07-03 09:14:04] scan aborted \u2014 3 of 12 attributes inaccessible',
         aiHelp: 'Authentication succeeded, but the account was denied while reading a specific registry path (HKLM\\SOFTWARE\\Policies) \u2014 narrower than a full permissions failure, since 9 of 12 attributes were read successfully. The most likely cause is the scan account has standard access but not local administrator rights.',
+        where: {
+          sameSig: ['BUILD-AGENT-02'],
+          shared: 'the svc-guardian-scan account',
+          lookalike: { nodes: ['DEV-MACPRO-03'], why: 'it is offline and never reached the account at all' }
+        },
         steps: [
           { title: 'Grant local administrator', desc: 'Verify the scan account has local admin privileges on the target node.', status: 'needs' },
           { title: 'Check group policy', desc: 'Ensure GPO allows WinRM remote access for the account.', status: 'notchecked' },
@@ -17512,6 +17535,91 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }
     };
     var sfCurrentType = 'auth';
+
+    // "Where to look" — the one AI-derived block on Kash's Scan Troubleshooting page (Universal ·
+    // Scanning assistance). The page below already answers "what broke on this node"; this answers
+    // the two questions an engineer asks next and that no single row can: which layer to stop
+    // suspecting, and whether this node is alone. Kash's own example is the shape being ported —
+    // "eight nodes report their agent as connected and are still offline for scanning; the failure
+    // is in collection, not reachability" — i.e. the healthy-looking column is the one that misleads.
+    // Every claim here is read off the same SCAN_FAIL_TYPES entry driving the rest of the page:
+    // the layer clause comes from d.diag, the cluster from d.where, and the confidence from three
+    // real checks rather than a number.
+    function sfWhereToLookHtml(d) {
+      var w = d && d.where;
+      if (!w) return '';
+      var diag = d.diag || [];
+      var badIdx = -1;
+      for (var i = 0; i < diag.length; i++) {
+        if (diag[i].state !== 'pass' && diag[i].state !== 'skip') { badIdx = i; break; }
+      }
+      // The diag stages are named for the pipeline ("Scan"); in a sentence about where the fault
+      // sits they need the layer's name instead, which is also the wording Kash uses.
+      var layerName = { Connection: 'reachability', Authentication: 'authentication', Scan: 'collection' };
+      var passed = diag.slice(0, Math.max(0, badIdx))
+        .filter(function (s) { return s.state === 'pass'; })
+        .map(function (s) { return layerName[s.stage] || s.stage.toLowerCase(); });
+      var bad = badIdx >= 0 ? (layerName[diag[badIdx].stage] || diag[badIdx].stage.toLowerCase()) : 'collection';
+
+      // Three checks against this failure's own data — the same "signals, not a score" rule the
+      // Detected Drift grouping block already follows (driftRenderAiGroup).
+      var isolated = passed.length > 0;      // a stage that demonstrably worked rules itself out
+      var clustered = w.sameSig.length > 0;  // the signature repeats on more than one node
+      var hasShared = !!w.shared;            // there is a named common factor to go and look at
+      var signals = (isolated ? 1 : 0) + (clustered ? 1 : 0) + (hasShared ? 1 : 0);
+      var conf = signals >= 3 ? 'High' : (signals === 2 ? 'Medium' : 'Low');
+
+      var passedTxt = _sfList(passed);
+      var layerTxt = isolated
+        ? passedTxt.charAt(0).toUpperCase() + passedTxt.slice(1) + ' passed on this node. The failure is in <strong>' + bad
+          + '</strong>, not in ' + passed[passed.length - 1] + ' \u2014 so the column that looks healthy is the one to stop reading.'
+        : 'The scan never got past <strong>' + bad + '</strong>, so nothing beyond that layer has been tested yet.';
+
+      var scopeTxt = clustered
+        ? '<strong>' + (w.sameSig.length + 1) + '</strong> of 5 monitored nodes failed their last scan with this same signature \u2014 this node and '
+          + _sfList(w.sameSig) + '. They share <strong>' + w.shared + '</strong>; fixing that clears all of them, fixing the node clears one.'
+        : 'No other node failed this way in the last run \u2014 this one is local to MACBOOK-TARAS, so there is no shared cause to chase.';
+
+      var sepTxt = (w.lookalike && w.lookalike.nodes.length)
+        ? '<strong>' + _sfList(w.lookalike.nodes) + '</strong> looks the same in the node list but is a separate fault: '
+          + w.lookalike.why + '. Do not fold it into this fix.'
+        : '';
+
+      var link = clustered
+        ? '<div style="margin-top:10px;"><button type="button" class="ai-inline-cta" onclick="showView(\'all-devices\')">View the affected nodes \u2192</button></div>'
+        : '';
+
+      var locked = aiTierLocked();
+      return '<div class="ai-block" style="margin:0;padding:0;display:block;">'
+        + '<div class="ai-block-head-band" style="padding-left:20px;">'
+        +   '<div style="display:flex;align-items:center;gap:8px;min-width:0;">'
+        +     '<svg class="ai-block-head-icon" width="15" height="15" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
+        +     '<span style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Where to look</span>'
+        +   '</div>'
+        +   (locked ? '' : '<span style="font-size:12px;color:var(--text-sec);white-space:nowrap;">' + conf + ' confidence \u00b7 ' + signals + ' of 3 signals</span>')
+        + '</div>'
+        + '<div style="padding:14px 18px 14px 20px;">'
+        + (locked
+            ? '<div class="ai-block-body">' + aiBlockLockedHtml() + '</div>'
+            : '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">'
+              + '<span class="bdg bdg--purple">AI-derived</span>'
+              + '<span class="bdg bdg--gray">Universal \u00b7 Scanning assistance</span>'
+              + '</div>'
+              + '<div class="ai-block-body">' + layerTxt + ' ' + scopeTxt + '</div>'
+              + (sepTxt
+                  ? '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">'
+                    + '<span style="width:5px;height:5px;border-radius:50%;background:#D97706;flex-shrink:0;margin-top:7px;"></span>'
+                    + '<span style="color:var(--text-sec);flex:1;min-width:0;">' + sepTxt + '</span></div>'
+                  : '')
+              + link)
+        + '</div>'
+        + '</div>';
+    }
+    function _sfList(names) {
+      if (names.length === 1) return names[0];
+      return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+    }
+
     function setScanFailType(type) {
       var d = SCAN_FAIL_TYPES[type];
       if (!d) return;
@@ -17548,6 +17656,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       // Primary recommended action (varies per failure type)
       var pb = document.getElementById('sf-primary-btn');
       if (pb) { pb.textContent = d.primaryLabel; pb.setAttribute('onclick', d.primaryAct); }
+      var whereBox = document.getElementById('sf-where');
+      if (whereBox) whereBox.innerHTML = sfWhereToLookHtml(d);
       // Close the <details> so raw output starts collapsed
       var wrap = document.getElementById('sf-raw-wrap');
       if (wrap) wrap.removeAttribute('open');
@@ -23101,6 +23211,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em;">Connection Manager</span><span style="font-size:12px;color:var(--text-default);font-weight:600;">CM-EU-WEST-01</span></div>
             <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em;">Schedule</span><span style="font-size:12px;color:var(--text-default);font-weight:600;">Daily · 02:00</span></div>
           </div>
+
+          <!-- Where to look — sits between "what happened here" and "how to fix", because it is the
+               step that decides whether the fix below is aimed at one node or at a shared cause.
+               Rendered by sfWhereToLookHtml() from the same SCAN_FAIL_TYPES entry as everything else. -->
+          <div id="sf-where"></div>
 
           <!-- How to fix (compact checklist) — Bertha lives HERE now, as an always-on strip attached
                to the step it applies to (setScanFailType), not a button+dropdown like Einstein/Jupiter.
