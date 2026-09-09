@@ -2995,6 +2995,13 @@ body.dark .ai-block { border-left-color:#A5B4FC; box-shadow:0 2px 8px rgba(0,0,0
 body.dark .ai-block > svg { color:#A5B4FC; }
 body.dark .ai-block-label { color:#A5B4FC; }
 body.dark .ai-block-body strong { color:#A5B4FC; }
+/* Reports Ask-bar chips + "+Add filter" trigger: light var(--bg-subtle) reads as a clear step
+   down from the .ai-block card (#fff vs #F1F5F9), but in dark --bg-subtle (#00262A) is nearly
+   the same colour as the card (#062528) and the two blend together. A translucent white overlay
+   lightens reliably regardless of the underlying dark hex — same treatment CLAUDE.md specifies
+   for inputs sitting on a dark card. */
+body.dark .rep-ask-chip { background:rgba(255,255,255,0.06) !important; border-color:rgba(255,255,255,0.16) !important; }
+body.dark #rep-add-filter-wrap button { background:rgba(255,255,255,0.06) !important; border-color:rgba(255,255,255,0.25) !important; }
 /* Modifier for an .ai-block sitting on a white/near-white surface (e.g. inside a modal body)
    where the default var(--bg-surface) background would blend into the surrounding card. */
 .ai-block--tint { background:var(--bg-subtle); }
@@ -24075,7 +24082,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
               <div id="rep-ask-filters-row" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px;">
                 <div id="rep-ask-chips" style="display:none;"></div>
                 <div id="rep-add-filter-wrap" style="position:relative;">
-                  <button type="button" onclick="repToggleAddFilter(event)" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px dashed var(--border);border-radius:6px;background:transparent;font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;font-family:inherit;">
+                  <button type="button" onclick="repToggleAddFilter(event)" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px dashed var(--border);border-radius:6px;background:var(--bg-subtle);font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;font-family:inherit;">
                     <svg width="9" height="9" viewBox="0 0 8 8" fill="none"><path d="M4 0.629639V7.37038" stroke="currentColor" stroke-linecap="round"/><path d="M0.628906 4H7.36965" stroke="currentColor" stroke-linecap="round"/></svg>
                     Add filter
                   </button>
@@ -26661,7 +26668,7 @@ function _repAskRenderChips(chips) {
   wrap.style.display = 'contents';
   wrap.innerHTML = '<span style="font-size:11px;color:var(--text-sec);flex-shrink:0;">Active filters</span>'
     + chips.map(function (c) {
-        return '<span data-ask-chip="1" style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text-default);">'
+        return '<span data-ask-chip="1" class="rep-ask-chip" style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-subtle);font-size:12px;font-weight:600;color:var(--text-default);">'
           + c.label
           + '<span onclick="repAskRemoveChip(\'' + c.dim + '\')" title="Remove filter" style="cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;">\u00d7</span>'
           + '</span>';
