@@ -9689,7 +9689,13 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 <span style="font-size:13px;font-weight:700;color:var(--text-default);">All differences, grouped by what they affect</span>
                 <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">Same outliers as Windows 11 under By OS — organised by domain instead of by platform.</div>
               </div>
-              <div id="peer-consequence-body">
+              <div id="peer-consequence-body" style="padding-bottom:20px;">
+                <!-- Figma 4123:20781 — same col-thead canon as By OS/By Team (index.html:9269);
+                     ratio is Windows 11's real 93+/120 since that's the real dataset this view
+                     re-slices, not a placeholder. -->
+                <div class="col-thead" style="display:grid;grid-template-columns:2fr 1.5fr 2fr;padding:8px 24px;font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;">
+                  <div>Attribute</div><div>Majority (93+/120)</div><div>Outlier nodes · value</div>
+                </div>
                 <div class="peer-sec">
                   <div class="peer-sec-hdr" style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:rgba(100,116,139,0.05);border-bottom:1px solid var(--border);">
                     <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.6px;">Security</span>
@@ -24103,9 +24109,6 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div class="ai-block-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">AI Insight</div>
             <div id="rep-ai-block-body" class="ai-block-body"></div>
           </div>
-          <!-- Only shown by reportRenderAiBlock() when there's a specific worst policy to jump to —
-               hidden for the empty-scope and 100%-passing cases, which have nothing to act on. -->
-          <button type="button" id="rep-ai-block-action" class="ai-block-cta" style="display:none;"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>Open policy</button>
         </div>
 
         <!-- Summary band — KPI donut cards rendered by _repRenderKpis() -->
@@ -26521,20 +26524,14 @@ var REP_POL_TO_PID = { compliance: 'cis-win11', endpoint: 'endpoint-protection',
 // app-wide total node count (dash-sub, KPI card "Nodes Monitored"), not a fabricated figure.
 function reportRenderAiBlock(data, passed, failed, score) {
   var body = document.getElementById('rep-ai-block-body');
-  var action = document.getElementById('rep-ai-block-action');
   if (!body) return;
-  if (action) action.style.display = 'none';
   if (aiTierLocked()) { body.innerHTML = aiBlockLockedHtml(); return; }
   if (!data || !data.nodes) { body.innerHTML = '<div>There is nothing scanned in the current scope yet, so there is nothing to summarise — adjust the scope filters or scan a node first.</div>'; return; }
 
-  var coverage = '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">'
-    + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>'
-    + '<span style="color:var(--text-sec);flex:1;min-width:0;"><strong style="color:var(--text-default);">Coverage</strong> \u2014 Based on ' + data.nodes + ' of 14 nodes monitored \u00b7 ' + data.benchmark + '</span>'
-    + '</div>';
   var feedback = '<div style="padding-top:10px;"><span style="font-size:11.5px;font-weight:600;color:var(--text-sec);cursor:pointer;" onclick="showToast(\'Feedback noted \u2014 thanks.\',\'info\')">This summary looks wrong</span></div>';
 
   if (!failed) {
-    body.innerHTML = '<div>Every check in this scope is passing (<strong>100%</strong> across ' + data.policies.length + ' polic' + (data.policies.length === 1 ? 'y' : 'ies') + ', ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ') — nothing here needs attention right now.</div>' + coverage + feedback;
+    body.innerHTML = '<div>Every check in this scope is passing (<strong>100%</strong> across ' + data.policies.length + ' polic' + (data.policies.length === 1 ? 'y' : 'ies') + ', ' + data.nodes + ' node' + (data.nodes === 1 ? '' : 's') + ') — nothing here needs attention right now.</div>' + _repCoverageRow(data, null) + feedback;
     return;
   }
   var worst = null;
@@ -26549,9 +26546,22 @@ function reportRenderAiBlock(data, passed, failed, score) {
   if (worstName) html += ', and <strong>' + worstName + '</strong> is the weakest policy in scope at ' + worst.score + '%';
   html += '. <strong>Start with ' + (worstName || 'the failed checks table') + '</strong> — fixing its most common failure will move the score the most.';
   var link = '<div style="padding-top:6px;"><span style="font-size:11.5px;font-weight:600;color:var(--green2);cursor:pointer;" onclick="document.getElementById(\'rep-failed-section\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">See the ' + failed + ' failed check' + (failed === 1 ? '' : 's') + ' \u2192</span></div>';
-  body.innerHTML = '<div>' + html + '</div>' + coverage + link + feedback;
   var pid = worst && REP_POL_TO_PID[worst.p.pol];
-  if (action && pid) { action.style.display = ''; action.setAttribute('onclick', "showPolicyDetail('" + pid + "')"); }
+  body.innerHTML = '<div>' + html + '</div>' + _repCoverageRow(data, pid) + link + feedback;
+}
+// Coverage banner + (when there's a specific worst policy to jump to) the "Open policy" action —
+// Figma 4124:21648. The button is its OWN box (.ai-block-cta), a sibling of the Coverage plate in
+// a shared flex row, not nested inside the plate — both fixed at 32px so they read as a matched
+// pair. Earlier passes had the button living in the outer .ai-block row (vertically centered
+// against the whole card, disconnected from the plate), then nested inside the plate itself
+// (sharing its padding/border); neither matches the design-system component.
+function _repCoverageRow(data, pid) {
+  var plate = '<div class="assign-notice" style="flex:1;min-width:0;height:32px;box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:12px;">'
+    + '<span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;"></span>'
+    + '<span style="color:var(--text-sec);min-width:0;"><strong style="color:var(--text-default);">Coverage</strong> — Based on ' + data.nodes + ' of 14 nodes monitored · ' + data.benchmark + '</span>'
+    + '</div>';
+  var btn = pid ? ('<button type="button" class="ai-block-cta" style="flex-shrink:0;padding:0 22px;" onclick="showPolicyDetail(\'' + pid + '\')"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M10.054 5.771C10.362 4.869 11.638 4.869 11.946 5.771L12.752 8.131C12.9987 8.85409 13.4079 9.51102 13.948 10.0514C14.4882 10.5917 15.145 11.001 15.868 11.248L18.228 12.054C19.131 12.362 19.131 13.638 18.228 13.946L15.868 14.752C15.1451 14.9988 14.4884 15.4081 13.9482 15.9482C13.4081 16.4884 12.9988 17.1451 12.752 17.868L11.946 20.228C11.638 21.131 10.362 21.131 10.054 20.228L9.248 17.868C9.00115 17.1451 8.59194 16.4884 8.05179 15.9482C7.51164 15.4081 6.85491 14.9988 6.132 14.752L3.772 13.946C2.869 13.638 2.869 12.362 3.772 12.054L6.132 11.248C6.85491 11.0012 7.51164 10.5919 8.05179 10.0518C8.59194 9.51164 9.00115 8.85491 9.248 8.132L10.054 5.771ZM19 3L19.51 4.49L21 5L19.51 5.51L19 7L18.49 5.51L17 5L18.49 4.49L19 3Z"/></svg>Open policy</button>') : '';
+  return '<div style="margin:10px 0 0;display:flex;align-items:flex-start;gap:10px;width:100%;">' + plate + btn + '</div>';
 }
 
 // Kash "Reports — Ask" pattern (point 4). A real, limited parser over our actual scope
