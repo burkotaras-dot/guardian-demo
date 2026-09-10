@@ -7075,6 +7075,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         <span class="sidebar-item-label">Scan Schedules</span>
       </div>
+      <!-- Watchers sits directly under Scan Schedules because the two answer the same question from
+           opposite ends: a schedule scans on a clock, a watcher scans on an event. Kash ships these
+           as two nav items (Watchers, Change Feed); here they are one destination with two tabs,
+           since the feed is simply what the watchers detected. -->
+      <div class="sidebar-item" id="sb-watchers" data-tip="Watchers" onclick="showView(&#39;watchers&#39;)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <span class="sidebar-item-label">Watchers</span>
+      </div>
       <div class="sidebar-item" id="sb-cm-list" data-tip="CM Groups" onclick="showView(&#39;cm-list&#39;)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"></circle><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"></circle></svg>
         <span class="sidebar-item-label">CM Groups</span>
@@ -16902,6 +16910,22 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         });
       }
 
+      // Watchers — той самий дозвіл, що й Scan Schedules: перемикач Watch / Scan only змінює,
+      // ЩО саме сканується в реальному часі, тобто це конфігурація сканування, а не окрема область.
+      // Пропозиції AI теж вимикаються — інакше кнопка «Watch» у панелі обходила б обмеження рядка.
+      var wlBody = document.getElementById('wl-tbody');
+      if (wlBody) {
+        var watchAllowed = perms.schedules === 'full';
+        wlBody.querySelectorAll('.watch-item-row').forEach(function(row) {
+          row.querySelectorAll('button').forEach(function(b) { b.disabled = !watchAllowed; });
+          row.classList.toggle('tip-wrap', !watchAllowed);
+          if (!watchAllowed) row.setAttribute('data-tip', 'Your role (' + roleName + ') can review what this node watches but not change it — ask ' + rolesWithFull('schedules') + ' to adjust it.');
+          else row.removeAttribute('data-tip');
+        });
+        var wlAi = document.getElementById('wl-ai-body');
+        if (wlAi) wlAi.querySelectorAll('.action-cta').forEach(function(b) { b.disabled = !watchAllowed; });
+      }
+
       // Policy Detail — read-only для Viewer: банер + edit/assign дізейблені разом, як один стан сторінки.
       var pdReadonly = perms.policies !== 'full';
       var pdBanner = document.getElementById('pd-readonly-banner');
@@ -24609,6 +24633,110 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
     </div>
 
+    <!-- ── WATCHERS (event-driven scanning) ── -->
+    <!-- The counterpart of Scan Schedules: a schedule scans on a clock, a watcher scans the moment
+         a watched item changes. Two tabs, because the feed is the evidence of what the watchers on
+         the first tab actually detected — Kash cross-links its two pages for exactly this reason.
+         Nothing here is inferred: a checksum changed or it did not, so the page carries a
+         Deterministic badge and the only AI on the whole feature is the recommendation panel on a
+         node's watch list. -->
+    <div class="view" id="v-watchers" style="display: none;">
+      <div id="watchers-body" class="dash-main" style="max-width:100%;">
+
+        <div style="margin-bottom:12px;">
+          <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Watchers</div>
+          <div id="wt-sub" style="font-size:12px;color:var(--text-sec);margin-top:3px;"></div>
+        </div>
+
+        <div class="policies-tabs" style="margin-bottom:22px;">
+          <button id="wt-tab-nodes" class="pol-tab pol-tab-active" onclick="setWatchTab(&#39;nodes&#39;)" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--green2);background:none;border:none;border-bottom:2px solid var(--green2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Watched nodes <span class="pol-tab-count" id="wt-tab-nodes-count">0</span></button>
+          <button id="wt-tab-feed" class="pol-tab" onclick="setWatchTab(&#39;feed&#39;)" style="padding:12px 16px;font-size:12px;font-weight:500;color:var(--text-sec);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;white-space:nowrap;font-family:inherit;">Change feed <span class="pol-tab-count" id="wt-tab-feed-count">0</span></button>
+        </div>
+
+        <!-- ── Tab 1: watched nodes ── -->
+        <div id="wt-nodes-pane">
+          <div class="dash-nested-box" style="padding:12px 16px;margin-bottom:16px;background:var(--bg-surface);">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;"><span class="bdg bdg--blue">Deterministic</span><span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.07em;color:var(--text-sec);">EVENT-DRIVEN SCANNING</span></div>
+            <div style="font-size:12px;color:var(--text-sec);line-height:1.6;">A watcher tells the scan engine to run the moment something on its list changes, instead of waiting for the next scheduled run. It watches a short list of files, registry keys, ports and services <strong>derived from the node's existing scan options</strong> — there is nothing extra to configure. No model is involved: a checksum changed, or it did not.</div>
+          </div>
+
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+            <div class="col-thead" style="display:grid;grid-template-columns:minmax(200px,1.4fr) minmax(140px,1fr) 110px 90px minmax(220px,1.6fr) 120px;column-gap:24px;padding:10px 20px;background:var(--table-header-bg);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+              <div>Node</div><div>OS</div><div>Watcher</div><div>Items</div><div>Last change detected</div><div>Last scan</div>
+            </div>
+            <div id="wt-nodes-tbody"></div>
+          </div>
+
+          <div id="wt-nodes-note" style="font-size:12px;color:var(--text-muted);margin-top:14px;line-height:1.6;"></div>
+        </div>
+
+        <!-- ── Tab 2: change feed ── -->
+        <div id="wt-feed-pane" style="display:none;">
+          <div class="dash-nested-box" style="padding:12px 16px;margin-bottom:16px;background:var(--bg-surface);">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;"><span class="bdg bdg--blue">Deterministic</span><span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.07em;color:var(--text-sec);">EVENT &rarr; SCAN</span></div>
+            <div style="font-size:12px;color:var(--text-sec);line-height:1.6;">Every event that asked the engine for a scan, newest first. The path from event to scan does not care what raised the event, so a security-tool alert or a ServiceNow CI update arrives the same way an agent watcher does. Select an entry for its event-to-scan timeline.</div>
+          </div>
+
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+            <div id="wt-feed-body"></div>
+          </div>
+
+          <div style="font-size:12px;color:var(--text-muted);margin-top:14px;line-height:1.6;">Only the agent watcher is proven end to end. The security-stream and ServiceNow producers are drawn against the same event contract but are not implemented yet.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── NODE WATCH LIST ── -->
+    <!-- The list is a reading of the node's existing scan options, so there is deliberately no
+         "add an item" form anywhere in this flow: a path enters here by being added to a policy or
+         a node group, and the only choice on this screen is whether an item Guardian already scans
+         is also watched in real time. -->
+    <div class="view" id="v-watch-list" style="display: none;">
+      <div id="watch-list-body" class="dash-main" style="max-width:100%;">
+
+        <!-- DS §6.5 / §1.2: повернення з підписом на full-page екрані — це `Third`
+             (квадрат 32×32 + текст ЗЗОВНІ), а не саморобний `.back-link`. -->
+        <button type="button" class="btn-third" onclick="showView(&#39;watchers&#39;)" style="margin-bottom:20px;">
+          <span class="bt-ico"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span>Back to Watchers
+        </button>
+
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+          <div>
+            <div id="wl-title" style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;"></div>
+            <div id="wl-sub" style="font-size:12px;color:var(--text-sec);margin-top:3px;"></div>
+          </div>
+          <div id="wl-state" style="flex-shrink:0;"></div>
+        </div>
+
+        <div id="wl-derived-note" class="assign-notice" style="margin:0 0 16px;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;background:var(--bg-surface);">
+          <span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;margin-top:7px;"></span>
+          <span style="color:var(--text-sec);flex:1;min-width:0;"><strong style="color:var(--text-default);">Derived, not configured</strong> — this list is read from the node's scan options. Adding a path to a policy adds it here; removing the policy takes it away. Watching sets Guardian's real-time flag centrally, so no access to the machine is needed.</span>
+        </div>
+
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+          <div class="col-thead" style="display:grid;grid-template-columns:minmax(260px,2fr) 110px minmax(200px,1.2fr) 190px;column-gap:24px;padding:10px 20px;background:var(--table-header-bg);font-size:10px;font-weight:700;color:var(--text-sec);letter-spacing:0.5px;text-transform:uppercase;align-items:center;">
+            <div>Watched item</div><div>Type</div><div>Comes from</div><div>Watching</div>
+          </div>
+          <div id="wl-tbody"></div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap;">
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Watching costs one file handle per item. The watcher reads; it never writes to the machine.</div>
+          <span class="link-cta" style="font-size:12px;flex-shrink:0;" onclick="showView('watchers');setWatchTab('feed')"><span class="lc-txt">See what these have detected</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></span>
+        </div>
+
+        <!-- The one AI surface in the whole feature: it proposes items already in the node's scan
+             options that are not watched yet. Accepting one only sets the real-time flag — the
+             policy and the node group stay the source of truth for what is scanned at all. -->
+        <div id="wl-ai-block" class="ai-block" style="margin-top:18px;">
+          <svg width="18" height="18" viewBox="0 0 18.921 18.921" fill="currentColor" style="flex-shrink:0;"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>
+          <div style="flex:1;min-width:0;" id="wl-ai-body"></div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- Edit-schedule modal -->
     <!-- schedule-modal migrated to unified openModal shell (see openScheduleModal) -->
 
@@ -26193,7 +26321,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 <!-- incident-modal migrated to unified openModal shell (see openIncidentModal) -->
 
 <script>
-const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','report-changed','report-baseline','report-investigation','reports','cm-list','cm-detail','credentials','roles'];
+const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','report-changed','report-baseline','report-investigation','reports','cm-list','cm-detail','credentials','roles','watchers','watch-list'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Node',
   s05:'s05 · Install Agent',
@@ -26226,7 +26354,7 @@ const LABELS = {
 ,'j4-connect':'J4 · Configure ServiceNow','j4-connecting':'J4 · Connecting','j4-connected':'J4 · Connected','j4-syncing':'J4 · Syncing Nodes','j4-match':'J4 · Match Nodes','j4-active':'J4 · Recon Active','j4-summary':'J4 · Summary','j4-connect-failed':'J4 · Connection Failed','j4-no-crs':'J4 · No CRs Found','j4-partial-match':'J4 · Partial Match'
 ,'cmdb-connect':'CMDB · Connect','cmdb-connecting':'CMDB · Connecting','cmdb-connect-failed':'CMDB · Connection Failed','cmdb-browse':'CMDB · Select Nodes','cmdb-credentials':'CMDB · Credentials','cmdb-importing':'CMDB · Importing','cmdb-complete':'CMDB · Complete'
 ,'csv-import':'CSV · Upload','csv-preview':'CSV · Review','csv-importing':'CSV · Importing','csv-complete':'CSV · Complete'
-,'roles':'Roles & Permissions'};
+,'roles':'Roles & Permissions','watchers':'Watchers','watch-list':'Watchers · Node watch list'};
 const STEPS = {
   s02:{done:[],active:[0]}, s05:{done:[0],active:[1]},
   s07:{done:[0,1],active:[2]}, 's-scan-complete':{done:[0,1,2],active:[3]},
@@ -27449,13 +27577,15 @@ function showView(name) {
     'policy-assign':'sb-policies', 'add-check':'sb-policies', 'edit-check':'sb-policies', 'reports-list':'sb-reports', 'report-changed':'sb-reports', 'report-baseline':'sb-reports', 'report-investigation':'sb-reports', 'reports':'sb-reports',
     'settings-integrations':'sb-integrations', 'integration-connect':'sb-integrations', 'secret-server-config':'sb-integrations',
     'scan-schedule':'sb-scan-schedule', 'cm-list':'sb-cm-list', 'cm-detail':'sb-cm-list',
-    'credentials':'sb-credentials', 'roles':'sb-roles' };
+    'credentials':'sb-credentials', 'roles':'sb-roles',
+    'watchers':'sb-watchers', 'watch-list':'sb-watchers' };
   const sb = document.getElementById(map[name]);
   if (name === 'secret-server-config') renderSSFolders();
   if (name === 'scan-schedule') renderSchedules();
   if (name === 'cm-list') renderCMList();
   if (name === 'credentials') renderCredentials();
   if (name === 'roles') renderRolesView();
+  if (name === 'watchers') renderWatchers();
   if (name === 'reports') renderReport();
   if (name === 'report-changed' || name === 'report-baseline' || name === 'report-investigation') repPreviewLoad(name);
   if (sb) sb.classList.add('active');
@@ -29420,6 +29550,361 @@ function renderSchedules() {
   // scope-вкладки повертали б Viewer'у активні кнопки.
   roleApply();
 }
+
+// ══ WATCHERS — event-driven scanning ══════════════════════════════════════════
+// Ported from the client's Guardian Prototype v3 (Watchers · M13 and Change Feed · M14), both
+// tagged DETERMINISTIC there: this feature contains no model except the recommendation panel on a
+// node's watch list.
+//
+// Every row below is derived from state this app already holds, so the two pages cannot contradict
+// the rest of the product:
+//   · MACBOOK-TARAS  — the Defender registry key and its service are in scan options but NOT
+//     watched, which is exactly why CHANGE_DATA[0] ("Real-time protection disabled") had to wait
+//     for the 14:23 scheduled scan. That real, still-open change is what the AI panel cites.
+//   · SARAH-LAPTOP-01 — nodeScanFails() is true for this node, so its event honestly ends in a
+//     failed scan rather than a diff. An event-driven scan is still a scan; it fails the same way.
+//   · DEV-MACPRO-03  — data-net="offline-long" (3 days), so the watcher cannot report at all.
+//   · BUILD-AGENT-02 — data-scan="never": nothing has ever been collected, so no watcher exists.
+var WATCH_NODES = [
+  {
+    node: 'MACBOOK-TARAS', os: 'Windows 11', group: 'Windows Laptops', policy: 'CIS Windows 11',
+    state: 'active', lastScan: '2 minutes ago',
+    last: 'Today 09:12 — hosts file modified',
+    items: [
+      { name: 'HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender', type: 'Registry', from: 'policy: CIS Windows 11', watch: false },
+      { name: 'WinDefend', type: 'Service', from: 'policy: CIS Windows 11', watch: false },
+      { name: 'tcp/3389', type: 'Port', from: 'node group: Windows Laptops', watch: false },
+      { name: 'C:\\Windows\\System32\\drivers\\etc\\hosts', type: 'File', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa', type: 'Registry', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run', type: 'Registry', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'tcp/445', type: 'Port', from: 'node group: Windows Laptops', watch: true },
+      { name: 'RemoteRegistry', type: 'Service', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'BDESVC', type: 'Service', from: 'policy: CIS Windows 11', watch: true }
+    ],
+    // Each proposal points at something already visible elsewhere in the product — the open
+    // Defender change, the check behind it, and the port the security stream reported yesterday.
+    recs: [
+      { name: 'HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender', why: 'Real-time protection was turned off on this node and the change only surfaced at the 14:23 scheduled scan. The key is already in the node\'s scan options — watching it would have raised the event when it happened.' },
+      { name: 'WinDefend', why: 'The service behind CIS control 8.1. Stopping it produces the same outcome as the registry change above, and would otherwise wait for the next scheduled run.' },
+      { name: 'tcp/3389', why: 'Opened on JAMES-WIN-DESK yesterday and present in this node\'s port list too. Unexpected on a laptop, and worth knowing the moment it opens.' }
+    ]
+  },
+  {
+    node: 'JAMES-WIN-DESK', os: 'Windows 10 Enterprise', group: 'Windows Desktops', policy: 'CIS Windows 11',
+    state: 'active', lastScan: 'Today 08:41',
+    last: 'Yesterday 21:40 — tcp/3389 opened',
+    items: [
+      { name: 'C:\\Windows\\System32\\drivers\\etc\\hosts', type: 'File', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'C:\\ProgramData\\deploy', type: 'File', from: 'node group: Windows Desktops', watch: true },
+      { name: 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa', type: 'Registry', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run', type: 'Registry', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'tcp/3389', type: 'Port', from: 'node group: Windows Desktops', watch: true },
+      { name: 'tcp/445', type: 'Port', from: 'node group: Windows Desktops', watch: true },
+      { name: 'WinDefend', type: 'Service', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'RemoteRegistry', type: 'Service', from: 'policy: CIS Windows 11', watch: true }
+    ],
+    recs: []
+  },
+  {
+    node: 'SARAH-LAPTOP-01', os: 'Windows 11 Pro', group: 'Windows Laptops', policy: 'CIS Windows 11',
+    state: 'active', lastScan: 'Failed today 11:07',
+    last: 'Today 11:06 — WinDefend restarted',
+    items: [
+      { name: 'C:\\Windows\\System32\\drivers\\etc\\hosts', type: 'File', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa', type: 'Registry', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender', type: 'Registry', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'tcp/445', type: 'Port', from: 'node group: Windows Laptops', watch: true },
+      { name: 'WinDefend', type: 'Service', from: 'policy: CIS Windows 11', watch: true },
+      { name: 'tcp/3389', type: 'Port', from: 'node group: Windows Laptops', watch: false },
+      { name: 'BDESVC', type: 'Service', from: 'policy: CIS Windows 11', watch: false }
+    ],
+    recs: []
+  },
+  {
+    node: 'DEV-MACPRO-03', os: 'macOS Ventura', group: 'Developer Macs', policy: 'CIS macOS Ventura Benchmark',
+    state: 'offline', lastScan: '3 days ago',
+    last: 'No events for 3 days — node offline',
+    items: [
+      { name: '/etc/ssh/sshd_config', type: 'File', from: 'policy: CIS macOS Ventura Benchmark', watch: true },
+      { name: '/etc/sudoers', type: 'File', from: 'policy: CIS macOS Ventura Benchmark', watch: true },
+      { name: '/Library/LaunchDaemons', type: 'File', from: 'node group: Developer Macs', watch: true },
+      { name: 'tcp/22', type: 'Port', from: 'policy: CIS macOS Ventura Benchmark', watch: true },
+      { name: 'com.apple.screensharing', type: 'Service', from: 'node group: Developer Macs', watch: true },
+      { name: 'sshd', type: 'Service', from: 'policy: CIS macOS Ventura Benchmark', watch: true }
+    ],
+    recs: []
+  },
+  {
+    node: 'BUILD-AGENT-02', os: 'Windows Server 2022', group: 'Windows Desktops', policy: 'CIS Windows 11',
+    state: 'none', lastScan: 'Never scanned',
+    last: '—',
+    items: [],
+    recs: []
+  }
+];
+
+// Three producers, one event contract — that is the whole point of the feed. Only `watcher`
+// is implemented; the other two are drawn against the same contract.
+var WATCH_FEED = [
+  { time: 'Today 11:06:12', kind: 'Modified', target: 'WinDefend', src: 'watcher', srcLabel: 'Watcher · agent',
+    detail: 'service restarted · pid changed', node: 'SARAH-LAPTOP-01', outcome: 'failed' },
+  { time: 'Today 09:12:48', kind: 'Modified', target: 'C:\\Windows\\System32\\drivers\\etc\\hosts', src: 'watcher', srcLabel: 'Watcher · agent',
+    detail: 'sha256 changed · one entry added', node: 'MACBOOK-TARAS', outcome: 'diff', diffs: 1 },
+  { time: 'Yesterday 21:40:03', kind: 'Port opened', target: 'tcp/3389', src: 'security', srcLabel: 'Security stream · Defender/XDR',
+    detail: 'listening process unsigned', node: 'JAMES-WIN-DESK', outcome: 'diff', diffs: 1 },
+  { time: 'Yesterday 18:02:20', kind: 'Modified', target: 'CHG0012345', src: 'itsm', srcLabel: 'ServiceNow · CI change',
+    detail: 'CI moved to Implemented', node: 'MACBOOK-TARAS', outcome: 'triggered' },
+  { time: 'Yesterday 08:30:55', kind: 'Added', target: 'C:\\ProgramData\\deploy\\config.bak', src: 'watcher', srcLabel: 'Watcher · agent',
+    detail: 'new file in a watched directory', node: 'JAMES-WIN-DESK', outcome: 'nochange' }
+];
+
+var _watchTab = 'nodes';
+var _wlNode = 'MACBOOK-TARAS';
+
+function watchNode(name) {
+  return WATCH_NODES.filter(function (n) { return n.node === name; })[0];
+}
+function watchCounts(n) {
+  return { on: n.items.filter(function (i) { return i.watch; }).length, all: n.items.length };
+}
+
+// The two OS glyphs the app already uses (index.html:12340): four squares = Windows desktop,
+// monitor = macOS or a server. No third glyph is invented here.
+function wtOsGlyph(os) {
+  var path = /^Windows (1[01]|7|8)\b/.test(os)
+    ? '<rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect>'
+    : '<rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path>';
+  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.75;">' + path + '</svg>';
+}
+
+function setWatchTab(tab) {
+  _watchTab = tab;
+  ['nodes', 'feed'].forEach(function (t) {
+    var btn = document.getElementById('wt-tab-' + t), pane = document.getElementById('wt-' + t + '-pane');
+    var on = t === tab;
+    if (btn) {
+      btn.classList.toggle('pol-tab-active', on);
+      btn.style.color = on ? 'var(--green2)' : 'var(--text-sec)';
+      btn.style.fontWeight = on ? '600' : '500';
+      btn.style.borderBottom = '2px solid ' + (on ? 'var(--green2)' : 'transparent');
+    }
+    if (pane) pane.style.display = on ? 'block' : 'none';
+  });
+}
+
+function renderWatchers() {
+  var tb = document.getElementById('wt-nodes-tbody');
+  if (!tb) return;
+  var watched = WATCH_NODES.filter(function (n) { return n.state === 'active'; });
+  var itemCount = watched.reduce(function (a, n) { return a + watchCounts(n).on; }, 0);
+  var sub = document.getElementById('wt-sub');
+  if (sub) sub.textContent = watched.length + ' of ' + WATCH_NODES.length + ' nodes watched · ' + itemCount
+    + ' items watched · measured on the proof of concept: change to visible diff in 78 seconds';
+  var nc = document.getElementById('wt-tab-nodes-count'); if (nc) nc.textContent = WATCH_NODES.length;
+  var fc = document.getElementById('wt-tab-feed-count'); if (fc) fc.textContent = WATCH_FEED.length;
+
+  var grid = 'display:grid;grid-template-columns:minmax(200px,1.4fr) minmax(140px,1fr) 110px 90px minmax(220px,1.6fr) 120px;column-gap:24px;padding:14px 20px;border-top:1px solid var(--border);align-items:center;cursor:pointer;';
+  tb.innerHTML = WATCH_NODES.map(function (n) {
+    var c = watchCounts(n);
+    // Two different facts, so two different glyphs — the Node cell says whether a watcher runs
+    // there (the sidebar's own eye, stroked by row status exactly as All Nodes strokes .node-ico),
+    // the OS cell says which platform. Reusing the OS glyph in both would encode one fact twice.
+    var stroke = n.state === 'active' ? '#3FC878' : n.state === 'offline' ? '#d97706' : 'var(--text-muted)';
+    // The watcher column is the row's status, so it takes the pill; everything else stays a value.
+    var pill = n.state === 'active' ? '<span class="bdg bdg--dot bdg--green">Active</span>'
+      : n.state === 'offline' ? '<span class="bdg bdg--dot bdg--orange">Not reporting</span>'
+      : '<span class="bdg bdg--dot bdg--gray">No watcher</span>';
+    return '<div class="watch-node-row" data-node="' + n.node + '" style="' + grid + '" onclick="openWatchList(\'' + n.node + '\')"'
+      + ' onmouseover="this.style.background=document.body.classList.contains(\'dark\')?\'rgba(255,255,255,0.05)\':\'#f8fafc\'"'
+      + ' onmouseout="this.style.background=\'\'">'
+      + '<div style="display:flex;align-items:center;gap:10px;min-width:0;">'
+      +   '<div class="node-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + stroke + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>'
+      +   '<div style="font-size:12px;font-weight:600;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;">' + n.node + '</div>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-sec);min-width:0;">' + wtOsGlyph(n.os)
+      +   '<span style="overflow:hidden;text-overflow:ellipsis;">' + n.os + '</span></div>'
+      + '<div>' + pill + '</div>'
+      + '<div style="font-size:12px;color:var(--text-sec);">' + (n.state === 'none' ? '—' : c.on + ' of ' + c.all) + '</div>'
+      + '<div style="font-size:12px;color:var(--text-sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + n.last + '</div>'
+      + '<div style="font-size:12px;color:var(--text-sec);">' + n.lastScan + '</div>'
+      + '</div>';
+  }).join('');
+
+  var note = document.getElementById('wt-nodes-note');
+  if (note) {
+    var without = WATCH_NODES.filter(function (n) { return n.state !== 'active'; }).map(function (n) { return n.node; });
+    note.innerHTML = without.length
+      ? 'No watcher is reporting on ' + without.join(' and ') + '. Changes there are only visible at the next scheduled scan, which is the gap this closes.'
+      : 'Every node is reporting.';
+  }
+  renderWatchFeed();
+}
+
+function renderWatchFeed() {
+  var body = document.getElementById('wt-feed-body');
+  if (!body) return;
+  body.innerHTML = WATCH_FEED.map(function (e, i) {
+    var srcColour = e.src === 'watcher' ? 'green' : e.src === 'security' ? 'orange' : 'blue';
+    // The outcome is what the row is for — it says whether the event actually produced a diff.
+    var outcome = e.outcome === 'failed' ? '<span class="bdg bdg--dot bdg--red">Scan failed</span>'
+      : e.outcome === 'diff' ? '<span class="bdg bdg--dot bdg--green">Diff: ' + e.diffs + ' change' + (e.diffs === 1 ? '' : 's') + '</span>'
+      : e.outcome === 'nochange' ? '<span class="bdg bdg--dot bdg--gray">Diff: no change</span>'
+      : '<span class="bdg bdg--dot bdg--blue">Scan triggered</span>';
+    return '<div class="watch-feed-row" data-i="' + i + '" style="padding:14px 20px;border-top:1px solid var(--border);cursor:pointer;" onclick="wtToggleTimeline(' + i + ')"'
+      + ' onmouseover="this.style.background=document.body.classList.contains(\'dark\')?\'rgba(255,255,255,0.05)\':\'#f8fafc\'"'
+      + ' onmouseout="this.style.background=\'\'">'
+      + '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'
+      +   '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-muted);flex-shrink:0;min-width:120px;">' + e.time + '</span>'
+      +   '<span class="bdg bdg--' + srcColour + '">' + e.kind + '</span>'
+      +   '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-default);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;">' + e.target + '</span>'
+      +   outcome
+      +   '<span style="font-size:12px;font-weight:600;color:var(--text-default);flex-shrink:0;">' + e.node + '</span>'
+      + '</div>'
+      + '<div style="font-size:12px;color:var(--text-sec);margin-top:4px;padding-left:132px;">' + e.srcLabel + ' · ' + e.detail + '</div>'
+      + '<div id="wt-tl-' + i + '" style="display:none;padding-left:132px;margin-top:10px;"></div>'
+      + '</div>';
+  }).join('');
+}
+
+// The timeline exists to keep the fast number from being mistaken for the whole: 8 ms is the
+// watcher noticing, 78 seconds is what a person experiences, and most of that is Guardian's own
+// scan — which is why each step is labelled with whose time it is.
+function wtToggleTimeline(i) {
+  var host = document.getElementById('wt-tl-' + i);
+  if (!host) return;
+  if (host.style.display !== 'none') { host.style.display = 'none'; host.innerHTML = ''; return; }
+  var e = WATCH_FEED[i];
+  var steps = [
+    { label: 'Changed on the host', at: e.time.split(' ').pop(), who: e.src === 'watcher' ? 'WATCHER' : e.src === 'security' ? 'SECURITY TOOL' : 'SERVICENOW',
+      txt: e.src === 'watcher' ? 'A write lands on a watched item.' : e.src === 'security' ? 'The endpoint tool sees a listening process it cannot verify.' : 'The configuration item moves to Implemented in the change request.' },
+    { label: 'Detected', at: '+8 ms', who: 'WATCHER', txt: 'The watcher notices and computes the new checksum. This is the only part that is new software on the machine.' },
+    { label: 'Reported', at: '+0.2 s', who: 'WATCHER', txt: 'An event is posted to the appliance. The watcher\'s work ends here — it holds no rules and decides nothing.' },
+    { label: 'Guardian reacts', at: '~10 s', who: 'GUARDIAN', txt: 'The engine queues and starts a scan of that node.' },
+    { label: 'Scanned', at: '~60 s', who: 'GUARDIAN', txt: 'A normal collection, unchanged from a scheduled run.' },
+    { label: 'Diff visible', at: '78 s total', who: 'GUARDIAN', txt: 'The change appears in Detected Drift and reconciliation can run against it.' }
+  ];
+  if (e.src !== 'watcher') {
+    // A producer that is not the agent has no checksum step of its own — saying otherwise would
+    // claim a measurement that only the watcher makes.
+    steps.splice(1, 2, { label: 'Reported', at: '+1 s', who: steps[0].who, txt: 'The producer posts an event to the appliance over the same contract the watcher uses.' });
+  }
+  if (e.outcome === 'failed') {
+    steps = steps.slice(0, 4).concat([
+      { label: 'Scan failed', at: '~30 s', who: 'GUARDIAN', txt: 'The scan started and could not complete on this node. An event-driven scan is still a scan — it fails the same way a scheduled one does.' },
+      { label: 'No diff', at: '—', who: 'GUARDIAN', txt: 'Nothing was collected, so there is nothing to compare. The event is kept so the retry has a reason.' }
+    ]);
+  }
+  host.innerHTML = '<div class="dash-nested-box" style="padding:12px 14px;" onclick="event.stopPropagation()">'
+    + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;"><span class="bdg bdg--blue">Deterministic</span><span style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:0.07em;color:var(--text-sec);">EVENT &rarr; SCAN</span></div>'
+    + steps.map(function (s) {
+        return '<div style="display:flex;gap:12px;align-items:flex-start;padding:6px 0;">'
+          + '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-muted);flex-shrink:0;width:84px;">' + s.at + '</span>'
+          + '<span style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:0.07em;color:var(--text-sec);flex-shrink:0;width:104px;padding-top:2px;">' + s.who + '</span>'
+          + '<span style="font-size:12px;color:var(--text-sec);line-height:1.6;flex:1;min-width:0;"><strong style="color:var(--text-default);">' + s.label + '.</strong> ' + s.txt + '</span>'
+          + '</div>';
+      }).join('')
+    // The footnote may only cite numbers this particular timeline actually shows. A non-watcher
+    // producer never renders the 8 ms step, and a failed scan never reaches 78 seconds — claiming
+    // either there would be a measurement the reader cannot see.
+    + '<div style="font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;">'
+    +   (e.src === 'watcher'
+          ? (e.outcome === 'failed'
+              ? 'The 8 ms is measured on the proof of concept. The 78 seconds to a visible diff does not apply here — the scan never completed.'
+              : 'Two of these numbers are measured on the proof of concept: 8 ms to detect and 78 seconds to a visible diff.')
+          : 'The measured numbers belong to the watcher and are not claimed here — this event came from another producer over the same contract.')
+    +   ' Everything between reported and scanned is Guardian\'s existing chain and behaves exactly as a scheduled scan does.</div>'
+    + '</div>';
+  host.style.display = 'block';
+}
+
+function openWatchList(name) {
+  var n = watchNode(name);
+  if (!n) return;
+  if (n.state === 'none') {
+    showToast(name + ' has never been scanned, so there are no scan options to derive a watch list from.', 'info');
+    return;
+  }
+  _wlNode = name;
+  showView('watch-list');
+  renderWatchList();
+}
+
+function renderWatchList() {
+  var n = watchNode(_wlNode), tb = document.getElementById('wl-tbody');
+  if (!n || !tb) return;
+  var c = watchCounts(n);
+  document.getElementById('wl-title').textContent = n.node;
+  document.getElementById('wl-sub').textContent = n.os + ' · ' + c.on + ' of ' + c.all + ' items watched continuously · ' + n.group;
+  document.getElementById('wl-state').innerHTML = n.state === 'active'
+    ? '<span class="bdg bdg--dot bdg--green">Active</span>'
+    : '<span class="bdg bdg--dot bdg--orange">Not reporting</span>';
+
+  var grid = 'display:grid;grid-template-columns:minmax(260px,2fr) 110px minmax(200px,1.2fr) 190px;column-gap:24px;padding:12px 20px;border-top:1px solid var(--border);align-items:center;';
+  tb.innerHTML = n.items.map(function (it, i) {
+    return '<div class="watch-item-row" style="' + grid + '">'
+      + '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;">' + it.name + '</div>'
+      + '<div style="font-size:12px;color:var(--text-sec);">' + it.type + '</div>'
+      + '<div style="font-size:12px;color:var(--text-sec);overflow:hidden;text-overflow:ellipsis;">' + it.from + '</div>'
+      // `.toggle-group` / `.toggle-btn` is the app's equal-share variant of the same segmented
+      // control (index.html:3149) — the two halves share a fixed track, so neither choice looks
+      // like the bigger one. Plain `.seg` sizes each segment to its own label instead.
+      + '<div class="toggle-group" role="group" aria-label="Watching" style="width:172px;">'
+      +   '<button class="toggle-btn' + (it.watch ? ' active' : '') + '" aria-pressed="' + it.watch + '" onclick="wlSetWatch(' + i + ',true)">Watch</button>'
+      +   '<button class="toggle-btn' + (it.watch ? '' : ' active') + '" aria-pressed="' + (!it.watch) + '" onclick="wlSetWatch(' + i + ',false)">Scan only</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+  wlRenderAiBlock();
+  // Rows were just rebuilt, so the simulated role has to be reapplied — the watch toggle is a
+  // scan-configuration action and belongs to the same permission area as Scan Schedules.
+  roleApply();
+}
+
+function wlSetWatch(i, on) {
+  var n = watchNode(_wlNode);
+  if (!n || n.items[i].watch === on) return;
+  n.items[i].watch = on;
+  renderWatchList();
+  renderWatchers();
+}
+
+// The only AI on the feature. It proposes items that are already in the node's scan options and
+// not watched yet — accepting one sets the real-time flag and nothing else, so the policy and the
+// node group remain the source of truth for what is scanned at all.
+function wlRenderAiBlock() {
+  var n = watchNode(_wlNode), box = document.getElementById('wl-ai-block'), body = document.getElementById('wl-ai-body');
+  if (!n || !box || !body) return;
+  var open = n.recs.filter(function (r) {
+    var it = n.items.filter(function (x) { return x.name === r.name; })[0];
+    return it && !it.watch;
+  });
+  var header = '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span class="bdg bdg--purple">AI-derived</span><span class="bdg bdg--gray">' + _currentTier + '</span>'
+    + '<span style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:0.07em;color:var(--text-sec);">RECOMMENDED TO WATCH ON THIS NODE</span></div>';
+  if (aiTierLocked()) { box.style.display = ''; body.innerHTML = header + aiBlockLockedHtml(); return; }
+  if (!open.length) {
+    // Nothing to propose is a real answer, not an empty box: say why and stop.
+    box.style.display = '';
+    body.innerHTML = header + '<div class="ai-block-body">Nothing to propose here. '
+      + (n.state === 'offline' ? 'The node has not reported for three days, so there is no recent activity to reason from.'
+        : 'Every item in this node\'s scan options that would benefit from real-time watching is already watched.') + '</div>';
+    return;
+  }
+  box.style.display = '';
+  body.innerHTML = header
+    + '<div class="ai-block-body">' + open.length + ' open · proposals only</div>'
+    + open.map(function (r) {
+        var idx = n.items.map(function (x) { return x.name; }).indexOf(r.name);
+        return '<div class="dash-nested-box" style="padding:10px 12px;margin-top:8px;display:flex;align-items:flex-start;gap:12px;">'
+          + '<div style="flex:1;min-width:0;">'
+          +   '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-default);word-break:break-all;">' + r.name + '</div>'
+          +   '<div style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-top:4px;">' + r.why + '</div>'
+          + '</div>'
+          + '<button class="action-cta" style="flex-shrink:0;" onclick="wlSetWatch(' + idx + ',true)">Watch</button>'
+          + '</div>';
+      }).join('')
+    + '<div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-top:10px;">Proposals only. Accepting one sets the real-time flag on an item that is already in the node\'s scan options — it does not change what is scanned.</div>';
+}
+
 // Bertha domain (general AI assistance) — Scan Schedules coverage-gap + cadence rollup. Always-on block, no
 // trigger, no loading state: renders directly off schedSet() + SCHED_DRIFT_ACTIVITY for
 // whichever scope tab (group/env) is active, called from renderSchedules() so it never
