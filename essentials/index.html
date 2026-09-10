@@ -4429,6 +4429,11 @@ body.dark .role-user-row:hover { background:#012F32; }
 .role-user-name { display:flex; align-items:center; gap:8px; }
 .role-user-email { display:flex; align-items:center; gap:6px; color:var(--text-sec); overflow:hidden; }
 .role-user-email svg { flex-shrink:0; color:var(--text-muted); }
+/* Pending access requests — same card chrome and row rhythm as the user table below it, because
+   it is that same list read one step earlier: people who do not have the access yet. */
+.access-req-row { display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid var(--border); font-size:12px; }
+.access-req-row:last-child { border-bottom:none; }
+.access-req-acts { margin-left:auto; display:flex; gap:8px; flex-shrink:0; }
 .role-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; box-shadow:0 1px 1px rgba(15,23,42,0.04); display:flex; flex-direction:column; gap:10px; }
 .role-card-desc { display:flex; align-items:flex-start; gap:4px; font-size:12px; color:var(--text-sec); line-height:1.5; }
 .role-card-desc svg { flex-shrink:0; margin-top:2px; }
@@ -16579,6 +16584,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       renderUserRows();
       renderRoleCards();
       renderPermMatrix();
+      renderAccessRequests();
     }
 
     /* Areas down, roles across. Built from the same ROLES / PERM_PAGES / STATE_META that the
@@ -16603,6 +16609,64 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                 }).join('')
               + '</div>';
           }).join('');
+    }
+
+    // ── Block 6: Pending access requests ────────────────────────────────
+    // Блок 4 обіцяє «your admin can approve it from Roles & Permissions» — досі там не було чого
+    // схвалювати. Запит потрапляє сюди, а Approve означає одну конкретну річ: людина отримує
+    // найдешевшу роль, яка реально дає цю область (з ROLES), тож результат збігається з матрицею.
+    var ACCESS_REQUESTS = [];
+    var _accessReqSeq = 0;
+
+    function renderAccessRequests() {
+      var wrap = document.getElementById('roles-requests');
+      if (!wrap) return;
+      if (!ACCESS_REQUESTS.length) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+      wrap.style.display = '';
+      wrap.innerHTML = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">'
+        + '<div class="col-thead" style="padding:10px 18px;background:var(--table-header-bg);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Pending access requests (' + ACCESS_REQUESTS.length + ')</div>'
+        + ACCESS_REQUESTS.map(function(req) {
+            var u = USERS.filter(function(x){ return x.id === req.userId; })[0];
+            var grant = rolesWithFullList(req.area).slice(-1)[0];
+            var initials = u ? u.name.split(' ').map(function(p){ return p[0]; }).join('').slice(0, 2).toUpperCase() : '?';
+            return '<div class="access-req-row">'
+              + '<div class="role-user-avatar">' + initials + '</div>'
+              + '<div style="min-width:0;">'
+              +   '<div style="font-weight:600;color:var(--text-default);">' + (u ? u.name : 'Unknown user') + ' — ' + req.title + '</div>'
+              // Наслідок схвалення названий у самому рядку: admin вирішує не «дати доступ», а
+              // «підняти роль», і має бачити яку саме, перш ніж натиснути.
+              +   '<div style="color:var(--text-sec);margin-top:2px;">Requested ' + req.when + ' · approving moves ' + (u ? u.name.split(' ')[0] : 'them') + ' to <span class="bdg bdg--' + ROLE_COLOR[grant.id] + '">' + grant.name + '</span></div>'
+              + '</div>'
+              + '<div class="access-req-acts">'
+              +   '<button class="action-cta action-cta--neutral" onclick="accessReqDeny(\'' + req.id + '\')">Deny</button>'
+              +   '<button class="action-cta" onclick="accessReqApprove(\'' + req.id + '\')">Approve</button>'
+              + '</div>'
+              + '</div>';
+          }).join('')
+        + '</div>';
+    }
+
+    function accessReqSubmit(area, title) {
+      // Запит подає та людина, чию роль зараз симулює верхня навігація — інакше в черзі стояв би
+      // безіменний запит, і admin не мав би кому підняти роль.
+      var requester = USERS.filter(function(u){ return u.role === _currentRole; })[0];
+      ACCESS_REQUESTS.push({ id:'req' + (++_accessReqSeq), area:area, title:title, userId:requester ? requester.id : null, when:'just now' });
+      renderAccessRequests();
+    }
+
+    function accessReqApprove(id) {
+      var req = ACCESS_REQUESTS.filter(function(r){ return r.id === id; })[0];
+      if (!req) return;
+      var grant = rolesWithFullList(req.area).slice(-1)[0];
+      var u = USERS.filter(function(x){ return x.id === req.userId; })[0];
+      if (u && grant) u.role = grant.id;
+      ACCESS_REQUESTS = ACCESS_REQUESTS.filter(function(r){ return r.id !== id; });
+      renderRolesView();
+    }
+
+    function accessReqDeny(id) {
+      ACCESS_REQUESTS = ACCESS_REQUESTS.filter(function(r){ return r.id !== id; });
+      renderAccessRequests();
     }
 
     function rolesSetTab(tab) {
@@ -16792,9 +16856,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
 
     // Хто реально має full-доступ до області — читається з ROLES, тож пояснення не може назвати
-    // роль, з якою матриця не згодна.
+    // роль, з якою матриця не згодна. ROLES впорядковані від найбільш до найменш привілейованої,
+    // тож остання в списку — найдешевша роль, якою запит можна задовольнити.
+    function rolesWithFullList(key) {
+      return ROLES.filter(function(r) { return r.perms[key] === 'full'; });
+    }
+
     function rolesWithFull(key) {
-      var names = ROLES.filter(function(r) { return r.perms[key] === 'full'; }).map(function(r) { return r.name; });
+      var names = rolesWithFullList(key).map(function(r) { return r.name; });
       return names.length > 1 ? names.slice(0, -1).join(', ') + ' or ' + names[names.length - 1] : names[0];
     }
 
@@ -16859,14 +16928,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     }
 
     function credNewClick() {
-      if (roleMeta(_currentRole).perms.credentials !== 'full') { openRestrictedFlow('Create credentials', 'Creating and storing scan credentials needs the ' + rolesWithFull('credentials') + ' role, so every new secret can be traced to who approved it.'); return; }
+      if (roleMeta(_currentRole).perms.credentials !== 'full') { openRestrictedFlow('Create credentials', 'Creating and storing scan credentials needs the ' + rolesWithFull('credentials') + ' role, so every new secret can be traced to who approved it.', 'credentials'); return; }
       credOpenEditor(null);
     }
 
     // ── Block 4: Restricted content flow ────────────────────────────────
     // User opens a restricted action → sees WHY → Request access → confirmation. Reuses openModal(),
     // не нова верстка: та сама оболонка, що й Assign role / Role audit.
-    function openRestrictedFlow(title, reason) {
+    function openRestrictedFlow(title, reason, area) {
       var body = '<div class="restricted-banner">'
         +   '<div class="restricted-banner-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>'
         +   '<div><div class="restricted-banner-title">Restricted — ' + title + '</div>'
@@ -16878,7 +16947,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         title: 'Access restricted',
         bodyHtml: body,
         buttons: [
-          { kind:'primary', id:'rf-request', label:'Request access', onClick:function(){ rfShowConfirmation(); } }
+          { kind:'primary', id:'rf-request', label:'Request access', onClick:function(){ accessReqSubmit(area, title); rfShowConfirmation(); } }
         ]
       });
     }
@@ -24786,6 +24855,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Users tab — admin sees every user, their role, and can change it -->
         <div id="roles-pane-users">
+          <!-- Anything a user asked for from a restricted action lands here. Hidden while the queue
+               is empty: an empty box would be a permanent reminder of work that does not exist. -->
+          <div id="roles-requests" style="display:none;margin-bottom:16px;"></div>
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
             <div class="col-thead" style="display:grid;grid-template-columns:1.6fr 1.4fr 1fr 0.9fr 50px;min-width:760px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
               <div>Name</div>
