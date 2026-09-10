@@ -822,6 +822,7 @@ body.dark .btn-danger-outline:hover { background:#FB3C44; color:#fff; border-col
 .col-thead,
 .compare-thead,
 .drift-thead,
+.perm-row.perm-head,
 table thead,
 table thead th {
   background:var(--table-header-bg) !important;
@@ -4434,15 +4435,28 @@ body.dark .role-user-row:hover { background:#012F32; }
 
 /* Preview-impact grid inside Assign-role modal — pages × states, neutral chrome, colour only
    on the small status glyph (same discipline as severity dots / status boxes elsewhere). */
-.perm-grid { border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; }
+/* Surface, not transparent: on a page the rows would otherwise sit straight on --bg-page and the
+   header would be the only thing that looked like a table. Same pairing every other table in the
+   app uses — body on --bg-surface, header on --bg-canvas. Inside a modal this is a no-op, because
+   the modal card is already that same surface value. */
+.perm-grid { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; }
 .perm-row { display:grid; grid-template-columns:1.3fr 0.85fr 0.85fr; align-items:center; padding:8px 12px; font-size:12px; border-bottom:1px solid var(--border); }
 .perm-row:last-child { border-bottom:none; }
-.perm-row.perm-head { background:var(--bg-canvas); font-weight:700; font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--text-sec); }
-/* App-wide rule: table column-header rows use #063135 in dark (never black/--bg-canvas). */
-body.dark .perm-row.perm-head { background:#063135; }
+/* No background here — .perm-head is listed with the other column-header rows near the top of the
+   sheet, so it takes --table-header-bg (light #F1F5F9 / dark #063135) like every table in the app. */
+.perm-row.perm-head { font-weight:700; font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--text-sec); }
 .perm-cell { display:flex; align-items:center; gap:6px; color:var(--text-default); }
 .perm-cell.is-muted { color:var(--text-muted); }
 .perm-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+/* Area glyph — the sidebar's own icon for that page, so a row is recognisable as the destination
+   it names. Muted on purpose: the icon identifies the row, the coloured dot carries the state. */
+.perm-area-ico { width:14px; height:14px; flex-shrink:0; color:var(--text-muted); }
+/* Matrix variant — the same grid read the other way round: areas down, every role across.
+   The two modal uses answer "what changes for this one person"; this answers "which role does
+   someone need in order to do X", which is the question that comes before any assignment.
+   Column count arrives as --perm-cols from ROLES.length, so adding a role needs no CSS. */
+.perm-grid--matrix { min-width:620px; }
+.perm-grid--matrix .perm-row { grid-template-columns:1.3fr repeat(var(--perm-cols,3),1fr); }
 
 /* Restricted-content flow (Block 4) — neutral surface, no red/amber fill (same rule as
    status-boxes): a locked action explains itself, offers Request access, never just disappears
@@ -16518,13 +16532,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       { id:'viewer', name:'Viewer', desc:'Can review findings across Guardian — but can’t change anything.',
         perms:{ policies:'readonly', drift:'readonly', nodes:'readonly', credentials:'restricted', schedules:'restricted' } }
     ];
+    // `icon` — the exact glyph the sidebar uses for that destination (Node Detail borrows All Nodes,
+    // which is where it is reached from). Copied as inner markup so one `permAreaCell()` wraps them all.
     var PERM_PAGES = [
-      { key:'policies', label:'Policies' },
-      { key:'drift', label:'Detected Drift' },
-      { key:'nodes', label:'Node Detail' },
-      { key:'credentials', label:'Credentials' },
-      { key:'schedules', label:'Scan Schedules' }
+      { key:'policies', label:'Policies', icon:'<path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path>' },
+      { key:'drift', label:'Detected Drift', icon:'<path d="M4 7h16M4 7l3-3M4 7l3 3M20 17H4M20 17l-3-3M20 17l-3 3"></path>' },
+      { key:'nodes', label:'Node Detail', icon:'<rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path><path d="M2 10h20"></path>' },
+      { key:'credentials', label:'Credentials', icon:'<circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path>' },
+      { key:'schedules', label:'Scan Schedules', icon:'<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>' }
     ];
+    // The Area column is the same object in all three permission grids (matrix, assign preview,
+    // role audit) — emitted from one place so they cannot drift apart.
+    function permAreaCell(p) {
+      return '<div class="perm-cell"><svg class="perm-area-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        + 'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + p.icon + '</svg>' + p.label + '</div>';
+    }
     var STATE_META = {
       full:       { label:'Full access', dot:'#10B981' },
       readonly:   { label:'Read-only',   dot:'#3B82F6' },
@@ -16546,6 +16568,31 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (counter) counter.textContent = ROLES.length;
       renderUserRows();
       renderRoleCards();
+      renderPermMatrix();
+    }
+
+    /* Areas down, roles across. Built from the same ROLES / PERM_PAGES / STATE_META that the
+       Assign-role preview and the access review already read, so the matrix cannot state a
+       permission the rest of the page disagrees with. Cells stay neutral and carry a coloured
+       dot — the app-wide rule for a state, and the one the preview grid already follows. */
+    function renderPermMatrix() {
+      var grid = document.getElementById('role-perm-matrix');
+      if (!grid) return;
+      grid.style.setProperty('--perm-cols', ROLES.length);
+      grid.innerHTML = '<div class="perm-row perm-head"><div>Area</div>'
+        + ROLES.map(function(r) {
+            return '<div><span class="bdg bdg--' + ROLE_COLOR[r.id] + '">' + r.name + '</span></div>';
+          }).join('')
+        + '</div>'
+        + PERM_PAGES.map(function(p) {
+            return '<div class="perm-row">'
+              + permAreaCell(p)
+              + ROLES.map(function(r) {
+                  var st = STATE_META[r.perms[p.key]];
+                  return '<div class="perm-cell"><span class="perm-dot" style="background:' + st.dot + ';"></span>' + st.label + '</div>';
+                }).join('')
+              + '</div>';
+          }).join('');
     }
 
     function rolesSetTab(tab) {
@@ -16656,7 +16703,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var toState = STATE_META[toRole.perms[p.key]];
         var changed = fromRole.perms[p.key] !== toRole.perms[p.key];
         return '<div class="perm-row">'
-          + '<div class="perm-cell">' + p.label + '</div>'
+          + permAreaCell(p)
           + '<div class="perm-cell is-muted"><span class="perm-dot" style="background:' + fromState.dot + ';"></span>' + fromState.label + '</div>'
           + '<div class="perm-cell" style="' + (changed ? 'font-weight:600;' : '') + '"><span class="perm-dot" style="background:' + toState.dot + ';"></span>' + toState.label + '</div>'
           + '</div>';
@@ -16700,7 +16747,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + PERM_PAGES.map(function(p) {
             var st = STATE_META[r.perms[p.key]];
             return '<div class="perm-row">'
-              + '<div class="perm-cell">' + p.label + '</div>'
+              + permAreaCell(p)
               + '<div class="perm-cell" style="grid-column:span 2;"><span class="perm-dot" style="background:' + st.dot + ';"></span>' + st.label + '</div>'
               + '</div>';
           }).join('')
@@ -24717,6 +24764,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Roles tab — role definitions + audit (who has it, why, impact of removal) -->
         <div id="roles-pane-roles" style="display:none;">
           <div id="role-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;"></div>
+          <!-- The cards above say who holds each role. This says what holding it actually grants,
+               across every area at once — the thing an admin needs before deciding which role to
+               give someone, and the only place in the product where the permissions can be
+               compared side by side rather than one user at a time. -->
+          <div style="margin-top:22px;margin-bottom:10px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">What each role can do</div>
+            <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">The same permissions the assign-role preview compares, laid out in full — read down a column for one role, across a row to see which role grants the access you need.</div>
+          </div>
+          <div style="overflow-x:auto;">
+            <div class="perm-grid perm-grid--matrix" id="role-perm-matrix"></div>
+          </div>
         </div>
 
       </div>
