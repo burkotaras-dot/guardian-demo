@@ -822,6 +822,7 @@ body.dark .btn-danger-outline:hover { background:#FB3C44; color:#fff; border-col
 .col-thead,
 .compare-thead,
 .drift-thead,
+.perm-row.perm-head,
 table thead,
 table thead th {
   background:var(--table-header-bg) !important;
@@ -1738,6 +1739,11 @@ body.dark .btn-third { color:#FFFFFF; }
 .bdg--quiet,
 .intg-status.bdg--quiet,
 .drift-type, .rc-chg { padding:0; background:none; border-color:transparent; }
+
+/* Пігулка, яка водночас є перемикачем (Active/Paused у розкладах). Коли роль не має права її
+   змінити, вона лишається СТАТУСОМ рядка — тож колір зберігає, зникає лише афорданс кліку. */
+button.bdg { cursor:pointer; }
+button.bdg:disabled { cursor:default; }
 
 /* ═══════════════════════════════════════════════════════════════════
    CODE TAG — друга (і остання) родина чипів. Це НЕ бадж.
@@ -2851,7 +2857,12 @@ body.dark .policy-card[data-pol-type="archived"]:hover { background:var(--bg-sur
    The button never repeats the surface under it: on the white card the fill drops to the canvas
    grey, on the page canvas it stays white (the base rule). Dark needs no pair — the base
    rgba(255,255,255,.05) is already lighter than the card. */
-.policy-card .btn-icon { background:#F8FAFC; }
+/* DS §6.5 Only icon — на БІЛІЙ поверхні (картка, рядок таблиці) заливка кнопки сіра: інакше
+   вона зливається з карткою і від кнопки лишається сама рамка. На сірій сторінці
+   (--bg-canvas) база навпаки біла, тож тут перелічені саме білі контейнери. */
+.policy-card .btn-icon,
+.pe-check-card .btn-icon,
+.role-user-row .btn-icon { background:var(--bg-canvas); }
 /* Nodes table (All Nodes) row action buttons — DS §6.5 "Secondary" (s=32) */
 .action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
 .action-ico { width:34px; height:34px; padding:8px; box-sizing:border-box; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--bg-surface); border:1px solid var(--border); }
@@ -3044,7 +3055,10 @@ body.dark .ai-block-head-icon { color:#A5B4FC; }
    overflow:hidden. */
 #dash-ai-block { border-left-width:3px; border-radius:22px var(--radius-lg) var(--radius-lg) 22px; }
 #dash-ai-block .ai-block-head-band { border-radius:19px calc(var(--radius-lg) - 1px) 0 0; }
-.ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#6366F1; background:none; border:none; cursor:pointer; padding:0; }
+/* Inline AI call-to-action link. Uses the app-wide green link colour (--green1), the same value
+   the step links on the very same Scan Troubleshooting card use, so a text CTA never introduces a
+   second accent hue. Works unchanged in dark — --green1 is #10B981 in both themes. */
+.ai-inline-cta { display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:var(--green1); background:none; border:none; cursor:pointer; padding:0; }
 /* Auto-remediation diff preview (Remediation page) — AI proposes a config change as a
    git-style diff, human reviews and presses Apply; colours are rgba-tinted so they read
    correctly in both themes without a separate body.dark override. */
@@ -3055,7 +3069,6 @@ body.dark .ai-block-head-icon { color:#A5B4FC; }
 .remed-diff-line.add { background:rgba(0,175,115,0.08); }
 .remed-diff-line.add::before { content:"+ "; color:#00AF73; font-weight:700; }
 .ai-inline-cta:hover { text-decoration:underline; }
-body.dark .ai-inline-cta { color:#818CF8; }
 /* AI command bar input — needs its own visible field chrome (bg+border), distinct from the
    .ai-block-style outer wrapper, so it doesn't read as a static info panel like other Jupiter
    blocks. Follows the canonical card-input convention (CLAUDE.md §2). */
@@ -3731,8 +3744,10 @@ body.dark .radio-item.selected:hover .radio-dot { border-color:#059669; }
   background:#059669;
 }
 .gm-overlay .gm-radio-copy { flex:1; min-width:0; }
-.gm-overlay .gm-radio-title { color:#0F172A; font-size:12px; font-weight:600; line-height:normal; }
-.gm-overlay .gm-radio-description { margin-top:2px; color:#475569; font-size:12px; font-weight:400; line-height:normal; }
+/* Both are authored as <span>, so without display:block they run together on one line and the
+   margin-top below silently does nothing — the description reads as part of the title. */
+.gm-overlay .gm-radio-title { display:block; color:#0F172A; font-size:12px; font-weight:600; line-height:normal; }
+.gm-overlay .gm-radio-description { display:block; margin-top:2px; color:#475569; font-size:12px; font-weight:400; line-height:normal; }
 .gm-overlay .gm-radio-dropdown { display:none; margin-top:10px; }
 .gm-overlay .gm-radio-card:has(input[type="radio"]:checked) .gm-radio-dropdown,
 .gm-overlay .gm-radio-card.is-selected .gm-radio-dropdown { display:block; }
@@ -4414,6 +4429,11 @@ body.dark .role-user-row:hover { background:#012F32; }
 .role-user-name { display:flex; align-items:center; gap:8px; }
 .role-user-email { display:flex; align-items:center; gap:6px; color:var(--text-sec); overflow:hidden; }
 .role-user-email svg { flex-shrink:0; color:var(--text-muted); }
+/* Pending access requests — same card chrome and row rhythm as the user table below it, because
+   it is that same list read one step earlier: people who do not have the access yet. */
+.access-req-row { display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid var(--border); font-size:12px; }
+.access-req-row:last-child { border-bottom:none; }
+.access-req-acts { margin-left:auto; display:flex; gap:8px; flex-shrink:0; }
 .role-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; box-shadow:0 1px 1px rgba(15,23,42,0.04); display:flex; flex-direction:column; gap:10px; }
 .role-card-desc { display:flex; align-items:flex-start; gap:4px; font-size:12px; color:var(--text-sec); line-height:1.5; }
 .role-card-desc svg { flex-shrink:0; margin-top:2px; }
@@ -4430,15 +4450,28 @@ body.dark .role-user-row:hover { background:#012F32; }
 
 /* Preview-impact grid inside Assign-role modal — pages × states, neutral chrome, colour only
    on the small status glyph (same discipline as severity dots / status boxes elsewhere). */
-.perm-grid { border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; }
+/* Surface, not transparent: on a page the rows would otherwise sit straight on --bg-page and the
+   header would be the only thing that looked like a table. Same pairing every other table in the
+   app uses — body on --bg-surface, header on --bg-canvas. Inside a modal this is a no-op, because
+   the modal card is already that same surface value. */
+.perm-grid { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; }
 .perm-row { display:grid; grid-template-columns:1.3fr 0.85fr 0.85fr; align-items:center; padding:8px 12px; font-size:12px; border-bottom:1px solid var(--border); }
 .perm-row:last-child { border-bottom:none; }
-.perm-row.perm-head { background:var(--bg-canvas); font-weight:700; font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--text-sec); }
-/* App-wide rule: table column-header rows use #063135 in dark (never black/--bg-canvas). */
-body.dark .perm-row.perm-head { background:#063135; }
+/* No background here — .perm-head is listed with the other column-header rows near the top of the
+   sheet, so it takes --table-header-bg (light #F1F5F9 / dark #063135) like every table in the app. */
+.perm-row.perm-head { font-weight:700; font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--text-sec); }
 .perm-cell { display:flex; align-items:center; gap:6px; color:var(--text-default); }
 .perm-cell.is-muted { color:var(--text-muted); }
 .perm-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+/* Area glyph — the sidebar's own icon for that page, so a row is recognisable as the destination
+   it names. Muted on purpose: the icon identifies the row, the coloured dot carries the state. */
+.perm-area-ico { width:14px; height:14px; flex-shrink:0; color:var(--text-muted); }
+/* Matrix variant — the same grid read the other way round: areas down, every role across.
+   The two modal uses answer "what changes for this one person"; this answers "which role does
+   someone need in order to do X", which is the question that comes before any assignment.
+   Column count arrives as --perm-cols from ROLES.length, so adding a role needs no CSS. */
+.perm-grid--matrix { min-width:620px; }
+.perm-grid--matrix .perm-row { grid-template-columns:1.3fr repeat(var(--perm-cols,3),1fr); }
 
 /* Restricted-content flow (Block 4) — neutral surface, no red/amber fill (same rule as
    status-boxes): a locked action explains itself, offers Request access, never just disappears
@@ -6860,7 +6893,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     <!-- Search input row -->
     <div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid #e8edf2;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-      <input id="search-input" type="text" placeholder="Search nodes, benchmarks, scans… or type domain.field: value" style="flex:1;border:none;outline:none;font-size:14px;color:var(--text-default);background:transparent;" oninput="filterSearch(this.value)">
+      <input id="search-input" type="text" placeholder="Search nodes, benchmarks, scans… or ask about Guardian" style="flex:1;border:none;outline:none;font-size:14px;color:var(--text-default);background:transparent;" oninput="filterSearch(this.value)">
       <div style="position:relative;">
         <button id="search-filter-btn" class="action-cta search-filter-action dropdown-trigger" onclick="toggleFilterDropdown(event)" aria-label="Add search filter" style="width:28px;height:28px;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -6912,6 +6945,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
       <!-- Search results (shown when typing) -->
       <div id="search-results" style="display:none;"></div>
+      <!-- Ask Guardian answer. Deliberately BELOW the rows: ⌘K stays a search palette that
+           returns nodes, scans and changes first, and this only appears when the input reads
+           as a question. See askGuardianHtml(). -->
+      <div id="search-ask" style="display:none;"></div>
     </div>
     <div class="search-footer-bar" style="padding:10px 20px;border-top:1px solid var(--border-default);display:flex;gap:16px;align-items:center;">
       <span style="font-size:12px;color:var(--text-sec);"><kbd class="search-kbd"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M4.125 7.875L2.25 6L4.125 4.125M2.25 6H5.17613C5.59538 6 5.805 6 5.9655 5.91825C6.10662 5.84635 6.22135 5.73162 6.29325 5.5905C6.375 5.43 6.375 5.22038 6.375 4.80113V1.125" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></kbd> open</span>
@@ -6981,7 +7018,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     </button>
     <button onclick="openSearch()" id="nav-search-btn" style="display: flex; align-items: center; gap: 8px; background: var(--bg-surface); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 0px 14px; cursor: pointer; font-size: 12px; width: 280px; height: 32px; box-sizing: border-box; margin-right: 16px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-      <span class="nav-search-label" style="flex:1;text-align:left;">Search nodes, scans, changes…</span>
+      <span class="nav-search-label" style="flex:1;text-align:left;">Search or ask about Guardian…</span>
       <kbd style="font-size:8px;padding:1px 4px;flex-shrink:0;">⌘K</kbd>
     </button>
     <div class="nav-avatar">T</div>
@@ -7979,7 +8016,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-dasharray="50 238.8" stroke-dashoffset="-175" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,&#39;Removed: 1 item&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;" id="dash-unreconciled-val">186</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;" id="dash-unreconciled-val">186</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">drift</div>
                 </div>
               </div>
@@ -8017,7 +8054,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-dasharray="47 238.8" stroke-dashoffset="-182" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView(&#39;results&#39;)" onmouseenter="showDonutTip(event,&#39;✗ Fail: 22 checks&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">78</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">78</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">/100</div>
                 </div>
               </div>
@@ -8052,7 +8089,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-dasharray="45.5 238.8" stroke-dashoffset="-183" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onclick="showView(&#39;results&#39;)" onmouseenter="showDonutTip(event,&#39;Low: 6 issues&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">27</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">27</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">issues</div>
                 </div>
               </div>
@@ -8090,7 +8127,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#6366f1" stroke-width="8" stroke-dasharray="158 238.8" stroke-dashoffset="-71" transform="rotate(-90 50 50)" class="donut-seg" style="cursor:pointer;" onmouseenter="showDonutTip(event,&#39;Cloud: 10 nodes&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">14</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">14</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">nodes</div>
                 </div>
               </div>
@@ -8138,7 +8175,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">0</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">0</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">drift</div>
                 </div>
               </div>
@@ -8163,7 +8200,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">0</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">0</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">/100</div>
                 </div>
               </div>
@@ -8187,7 +8224,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">0</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">0</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">issues</div>
                 </div>
               </div>
@@ -8212,7 +8249,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="var(--border)" stroke-width="8"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">0</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">0</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">nodes</div>
                 </div>
               </div>
@@ -13437,7 +13474,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           { name:'AZ-WIN-01', os:'Windows Server 2022', status:'online', lastScan:'30 sec ago' },
           { name:'AZ-LNX-01', os:'Ubuntu 22.04', status:'online', lastScan:'45 sec ago' },
           { name:'AZ-WIN-02', os:'Windows Server 2022', status:'online', lastScan:'1 min ago' }
-        ], nodeCount: 15 },
+        // Deliberately equal to London DC Group's 28. cmTieCandidates() finds a tie by node count,
+        // and with every group on a different count the ambiguity block below could never render —
+        // the one pattern that admits Guardian cannot choose was the one nobody could see.
+        ], nodeCount: 28 },
       { id: 'grp5', name: 'Staging Lab', state: 'disabled', apiKey: 'grd_t7z…masked', location: 'On-prem · Staging',
         instances: [
           { id:'cm7', reportedName:'CM-STAGING-01', status:'offline', lastContact:'2 days ago', host:'10.5.2.8', protocols:['WinRM'] }
@@ -16507,13 +16547,21 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       { id:'viewer', name:'Viewer', desc:'Can review findings across Guardian — but can’t change anything.',
         perms:{ policies:'readonly', drift:'readonly', nodes:'readonly', credentials:'restricted', schedules:'restricted' } }
     ];
+    // `icon` — the exact glyph the sidebar uses for that destination (Node Detail borrows All Nodes,
+    // which is where it is reached from). Copied as inner markup so one `permAreaCell()` wraps them all.
     var PERM_PAGES = [
-      { key:'policies', label:'Policies' },
-      { key:'drift', label:'Detected Drift' },
-      { key:'nodes', label:'Node Detail' },
-      { key:'credentials', label:'Credentials' },
-      { key:'schedules', label:'Scan Schedules' }
+      { key:'policies', label:'Policies', icon:'<path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path>' },
+      { key:'drift', label:'Detected Drift', icon:'<path d="M4 7h16M4 7l3-3M4 7l3 3M20 17H4M20 17l-3-3M20 17l-3 3"></path>' },
+      { key:'nodes', label:'Node Detail', icon:'<rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path><path d="M2 10h20"></path>' },
+      { key:'credentials', label:'Credentials', icon:'<circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2m-4 0 3 3-3.5 3.5L16 6"></path>' },
+      { key:'schedules', label:'Scan Schedules', icon:'<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>' }
     ];
+    // The Area column is the same object in all three permission grids (matrix, assign preview,
+    // role audit) — emitted from one place so they cannot drift apart.
+    function permAreaCell(p) {
+      return '<div class="perm-cell"><svg class="perm-area-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        + 'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + p.icon + '</svg>' + p.label + '</div>';
+    }
     var STATE_META = {
       full:       { label:'Full access', dot:'#10B981' },
       readonly:   { label:'Read-only',   dot:'#3B82F6' },
@@ -16535,6 +16583,90 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       if (counter) counter.textContent = ROLES.length;
       renderUserRows();
       renderRoleCards();
+      renderPermMatrix();
+      renderAccessRequests();
+    }
+
+    /* Areas down, roles across. Built from the same ROLES / PERM_PAGES / STATE_META that the
+       Assign-role preview and the access review already read, so the matrix cannot state a
+       permission the rest of the page disagrees with. Cells stay neutral and carry a coloured
+       dot — the app-wide rule for a state, and the one the preview grid already follows. */
+    function renderPermMatrix() {
+      var grid = document.getElementById('role-perm-matrix');
+      if (!grid) return;
+      grid.style.setProperty('--perm-cols', ROLES.length);
+      grid.innerHTML = '<div class="perm-row perm-head"><div>Area</div>'
+        + ROLES.map(function(r) {
+            return '<div><span class="bdg bdg--' + ROLE_COLOR[r.id] + '">' + r.name + '</span></div>';
+          }).join('')
+        + '</div>'
+        + PERM_PAGES.map(function(p) {
+            return '<div class="perm-row">'
+              + permAreaCell(p)
+              + ROLES.map(function(r) {
+                  var st = STATE_META[r.perms[p.key]];
+                  return '<div class="perm-cell"><span class="perm-dot" style="background:' + st.dot + ';"></span>' + st.label + '</div>';
+                }).join('')
+              + '</div>';
+          }).join('');
+    }
+
+    // ── Block 6: Pending access requests ────────────────────────────────
+    // Блок 4 обіцяє «your admin can approve it from Roles & Permissions» — досі там не було чого
+    // схвалювати. Запит потрапляє сюди, а Approve означає одну конкретну річ: людина отримує
+    // найдешевшу роль, яка реально дає цю область (з ROLES), тож результат збігається з матрицею.
+    var ACCESS_REQUESTS = [];
+    var _accessReqSeq = 0;
+
+    function renderAccessRequests() {
+      var wrap = document.getElementById('roles-requests');
+      if (!wrap) return;
+      if (!ACCESS_REQUESTS.length) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+      wrap.style.display = '';
+      wrap.innerHTML = '<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.04);">'
+        + '<div class="col-thead" style="padding:10px 18px;background:var(--table-header-bg);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;">Pending access requests (' + ACCESS_REQUESTS.length + ')</div>'
+        + ACCESS_REQUESTS.map(function(req) {
+            var u = USERS.filter(function(x){ return x.id === req.userId; })[0];
+            var grant = rolesWithFullList(req.area).slice(-1)[0];
+            var initials = u ? u.name.split(' ').map(function(p){ return p[0]; }).join('').slice(0, 2).toUpperCase() : '?';
+            return '<div class="access-req-row">'
+              + '<div class="role-user-avatar">' + initials + '</div>'
+              + '<div style="min-width:0;">'
+              +   '<div style="font-weight:600;color:var(--text-default);">' + (u ? u.name : 'Unknown user') + ' — ' + req.title + '</div>'
+              // Наслідок схвалення названий у самому рядку: admin вирішує не «дати доступ», а
+              // «підняти роль», і має бачити яку саме, перш ніж натиснути.
+              +   '<div style="color:var(--text-sec);margin-top:2px;">Requested ' + req.when + ' · approving moves ' + (u ? u.name.split(' ')[0] : 'them') + ' to <span class="bdg bdg--' + ROLE_COLOR[grant.id] + '">' + grant.name + '</span></div>'
+              + '</div>'
+              + '<div class="access-req-acts">'
+              +   '<button class="action-cta action-cta--neutral" onclick="accessReqDeny(\'' + req.id + '\')">Deny</button>'
+              +   '<button class="action-cta" onclick="accessReqApprove(\'' + req.id + '\')">Approve</button>'
+              + '</div>'
+              + '</div>';
+          }).join('')
+        + '</div>';
+    }
+
+    function accessReqSubmit(area, title) {
+      // Запит подає та людина, чию роль зараз симулює верхня навігація — інакше в черзі стояв би
+      // безіменний запит, і admin не мав би кому підняти роль.
+      var requester = USERS.filter(function(u){ return u.role === _currentRole; })[0];
+      ACCESS_REQUESTS.push({ id:'req' + (++_accessReqSeq), area:area, title:title, userId:requester ? requester.id : null, when:'just now' });
+      renderAccessRequests();
+    }
+
+    function accessReqApprove(id) {
+      var req = ACCESS_REQUESTS.filter(function(r){ return r.id === id; })[0];
+      if (!req) return;
+      var grant = rolesWithFullList(req.area).slice(-1)[0];
+      var u = USERS.filter(function(x){ return x.id === req.userId; })[0];
+      if (u && grant) u.role = grant.id;
+      ACCESS_REQUESTS = ACCESS_REQUESTS.filter(function(r){ return r.id !== id; });
+      renderRolesView();
+    }
+
+    function accessReqDeny(id) {
+      ACCESS_REQUESTS = ACCESS_REQUESTS.filter(function(r){ return r.id !== id; });
+      renderAccessRequests();
     }
 
     function rolesSetTab(tab) {
@@ -16645,7 +16777,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         var toState = STATE_META[toRole.perms[p.key]];
         var changed = fromRole.perms[p.key] !== toRole.perms[p.key];
         return '<div class="perm-row">'
-          + '<div class="perm-cell">' + p.label + '</div>'
+          + permAreaCell(p)
           + '<div class="perm-cell is-muted"><span class="perm-dot" style="background:' + fromState.dot + ';"></span>' + fromState.label + '</div>'
           + '<div class="perm-cell" style="' + (changed ? 'font-weight:600;' : '') + '"><span class="perm-dot" style="background:' + toState.dot + ';"></span>' + toState.label + '</div>'
           + '</div>';
@@ -16689,7 +16821,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         + PERM_PAGES.map(function(p) {
             var st = STATE_META[r.perms[p.key]];
             return '<div class="perm-row">'
-              + '<div class="perm-cell">' + p.label + '</div>'
+              + permAreaCell(p)
               + '<div class="perm-cell" style="grid-column:span 2;"><span class="perm-dot" style="background:' + st.dot + ';"></span>' + st.label + '</div>'
               + '</div>';
           }).join('')
@@ -16723,23 +16855,55 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       roleApply();
     }
 
+    // Хто реально має full-доступ до області — читається з ROLES, тож пояснення не може назвати
+    // роль, з якою матриця не згодна. ROLES впорядковані від найбільш до найменш привілейованої,
+    // тож остання в списку — найдешевша роль, якою запит можна задовольнити.
+    function rolesWithFullList(key) {
+      return ROLES.filter(function(r) { return r.perms[key] === 'full'; });
+    }
+
+    function rolesWithFull(key) {
+      var names = rolesWithFullList(key).map(function(r) { return r.name; });
+      return names.length > 1 ? names.slice(0, -1).join(', ') + ' or ' + names[names.length - 1] : names[0];
+    }
+
     function roleApply() {
+      // Стани нижче читають ROLES[].perms — ту саму таблицю, яку показує матриця на вкладці Roles.
+      // Раніше кожен був окремим `_currentRole === 'viewer'`, тож симулятор і матриця могли
+      // розійтись від однієї правки даних.
+      var perms = roleMeta(_currentRole).perms;
+      var roleName = roleMeta(_currentRole).name;
+
       // Node Detail — AI Insight block: hidden, не сіре.
       var ndAi = document.getElementById('nd-ai-block');
-      if (ndAi) ndAi.style.display = (_currentRole === 'viewer') ? 'none' : '';
+      if (ndAi) ndAi.style.display = (perms.nodes !== 'full') ? 'none' : '';
 
       // Detected Drift — Approve/Flag/Skip: disabled + explanation, лишається видимим.
       var exec = document.getElementById('cd-exec-row');
       if (exec) {
-        var execAllowed = _currentRole !== 'viewer';
+        var execAllowed = perms.drift === 'full';
         exec.querySelectorAll('button').forEach(function(b) { b.disabled = !execAllowed; });
         exec.classList.toggle('tip-wrap', !execAllowed);
-        if (!execAllowed) exec.setAttribute('data-tip', 'Your role (Viewer) can review this drift but not act on it — ask an Admin or Analyst to reconcile it.');
+        if (!execAllowed) exec.setAttribute('data-tip', 'Your role (' + roleName + ') can review this drift but not act on it — ask ' + rolesWithFull('drift') + ' to reconcile it.');
         else exec.removeAttribute('data-tip');
       }
 
+      // Scan Schedules — пʼята область, яку називає матриця. Усе, що нижче за full, не може
+      // змінити каденцію, тож контроли рядка (Set/Edit і пігулка Active/Paused) переходять
+      // у той самий disabled+explanation, що й Detected Drift.
+      var schedBody = document.getElementById('schedule-tbody');
+      if (schedBody) {
+        var schedAllowed = perms.schedules === 'full';
+        schedBody.querySelectorAll('.schedule-table-row').forEach(function(row) {
+          row.querySelectorAll('button').forEach(function(b) { b.disabled = !schedAllowed; });
+          row.classList.toggle('tip-wrap', !schedAllowed);
+          if (!schedAllowed) row.setAttribute('data-tip', 'Your role (' + roleName + ') can review scan schedules but not change them — ask ' + rolesWithFull('schedules') + ' to adjust the cadence.');
+          else row.removeAttribute('data-tip');
+        });
+      }
+
       // Policy Detail — read-only для Viewer: банер + edit/assign дізейблені разом, як один стан сторінки.
-      var pdReadonly = _currentRole === 'viewer';
+      var pdReadonly = perms.policies !== 'full';
       var pdBanner = document.getElementById('pd-readonly-banner');
       var pdEdit = document.getElementById('pd-edit-btn');
       var pdAssign = document.getElementById('pd-assign-btn');
@@ -16751,27 +16915,27 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       // від plain disabled) і тултипом-поясненням; клік відкриває Block 4 (Request access).
       var credNew = document.getElementById('cred-new-btn');
       var credTip = document.getElementById('cred-new-tipwrap');
-      var credRestricted = _currentRole !== 'admin';
+      var credRestricted = perms.credentials !== 'full';
       if (credNew) {
         credNew.innerHTML = credRestricted
           ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-1px;"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>New credential'
           : '+ New credential';
       }
       if (credTip) {
-        if (credRestricted) credTip.setAttribute('data-tip', 'Permission required — creating credentials needs Admin access.');
+        if (credRestricted) credTip.setAttribute('data-tip', 'Permission required — creating credentials needs ' + rolesWithFull('credentials') + ' access.');
         else credTip.removeAttribute('data-tip');
       }
     }
 
     function credNewClick() {
-      if (_currentRole !== 'admin') { openRestrictedFlow('Create credentials', 'Creating and storing scan credentials needs the Admin role, so every new secret can be traced to who approved it.'); return; }
+      if (roleMeta(_currentRole).perms.credentials !== 'full') { openRestrictedFlow('Create credentials', 'Creating and storing scan credentials needs the ' + rolesWithFull('credentials') + ' role, so every new secret can be traced to who approved it.', 'credentials'); return; }
       credOpenEditor(null);
     }
 
     // ── Block 4: Restricted content flow ────────────────────────────────
     // User opens a restricted action → sees WHY → Request access → confirmation. Reuses openModal(),
     // не нова верстка: та сама оболонка, що й Assign role / Role audit.
-    function openRestrictedFlow(title, reason) {
+    function openRestrictedFlow(title, reason, area) {
       var body = '<div class="restricted-banner">'
         +   '<div class="restricted-banner-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>'
         +   '<div><div class="restricted-banner-title">Restricted — ' + title + '</div>'
@@ -16783,7 +16947,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         title: 'Access restricted',
         bodyHtml: body,
         buttons: [
-          { kind:'primary', id:'rf-request', label:'Request access', onClick:function(){ rfShowConfirmation(); } }
+          { kind:'primary', id:'rf-request', label:'Request access', onClick:function(){ accessReqSubmit(area, title); rfShowConfirmation(); } }
         ]
       });
     }
@@ -17435,6 +17599,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryAct: "go('secret-server-config')",
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 FAILED\n[2026-07-03 09:14:03] error: credentials rejected by server (0x8009030E)\n[2026-07-03 09:14:03] scan aborted \u2014 0 attributes collected',
         aiHelp: 'The credential was accepted for the WinRM handshake but rejected at authentication (0x8009030E) \u2014 that pattern usually means the password rotated in Secret Server without the scan credential being updated to match, rather than a network or permission problem.',
+        where: {
+          sameSig: ['SARAH-LAPTOP-01'],
+          shared: 'the svc-guardian-scan credential',
+          lookalike: { nodes: ['DEV-MACPRO-03'], why: 'it has been offline for 3 days and never opened a connection at all' }
+        },
         steps: [
           { title: 'Update the credential', desc: 'Check the credential in Secret Server is current and not expired.', linkLabel: 'Open Secret Server', linkAct: "go('secret-server-config')", status: 'needs' },
           { title: 'Verify the account status', desc: 'Confirm the account isn\u2019t locked out or disabled on the target node.', status: 'notchecked' },
@@ -17456,6 +17625,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryAct: '',
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 FAILED\n[2026-07-03 09:14:32] error: connection timed out after 30s (WSAETIMEDOUT)\n[2026-07-03 09:14:32] scan aborted \u2014 target unreachable',
         aiHelp: 'The scan never reached the authentication stage \u2014 the connection attempt to 10.4.12.31 timed out after 30s, which points to the node being offline, moved to a different address, or blocked by a firewall rule rather than a credential issue.',
+        where: {
+          sameSig: ['DEV-MACPRO-03'],
+          shared: 'Connection Manager CM-EU-WEST-01',
+          lookalike: { nodes: ['SARAH-LAPTOP-01'], why: 'it answers and then fails at authentication \u2014 a credential fault, not a route' }
+        },
         steps: [
           { title: 'Confirm the node is reachable', desc: 'Verify the node is powered on and reachable from your network.', status: 'needs' },
           { title: 'Check firewall ports', desc: 'Port 5985 (WinRM HTTP) or 5986 (HTTPS) must be open on the target.', status: 'notchecked' },
@@ -17477,6 +17651,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryAct: '',
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:03] collecting attributes \u2026 47/96\n[2026-07-03 09:19:03] error: scan exceeded 300s limit (timeout)\n[2026-07-03 09:19:03] scan aborted \u2014 partial collection discarded',
         aiHelp: 'Guardian authenticated successfully and started collecting attributes, but only reached 47 of 96 before hitting the 300s limit \u2014 that\u2019s a partial-progress timeout, not a connectivity or credential failure. This usually means the node is under heavy load or the scan scope is larger than the timeout allows.',
+        // Deliberately alone: no other node timed out in the last run. Kash finds a cluster every
+        // time; inventing one here would be the fabrication the whole port is meant to avoid, and
+        // "you are on your own with this one" is itself the answer that changes the next action.
+        where: {
+          sameSig: [],
+          shared: '',
+          lookalike: { nodes: [], why: '' }
+        },
         steps: [
           { title: 'Check node load', desc: 'A node under heavy load can respond too slowly and cause timeouts.', status: 'needs' },
           { title: 'Review the scan scope', desc: 'Reduce the number of policies or checks if the node has many attributes.', status: 'notchecked' },
@@ -17498,6 +17680,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         tertiaryAct: "go('secret-server-config')",
         raw: '[2026-07-03 09:14:02] connecting to 10.4.12.31:5985 \u2026 ok\n[2026-07-03 09:14:03] WinRM negotiate auth \u2026 ok\n[2026-07-03 09:14:04] reading registry HKLM\\SOFTWARE\\Policies \u2026 ACCESS DENIED\n[2026-07-03 09:14:04] error: insufficient privileges (0x80070005)\n[2026-07-03 09:14:04] scan aborted \u2014 3 of 12 attributes inaccessible',
         aiHelp: 'Authentication succeeded, but the account was denied while reading a specific registry path (HKLM\\SOFTWARE\\Policies) \u2014 narrower than a full permissions failure, since 9 of 12 attributes were read successfully. The most likely cause is the scan account has standard access but not local administrator rights.',
+        where: {
+          sameSig: ['BUILD-AGENT-02'],
+          shared: 'the svc-guardian-scan account',
+          lookalike: { nodes: ['DEV-MACPRO-03'], why: 'it is offline and never reached the account at all' }
+        },
         steps: [
           { title: 'Grant local administrator', desc: 'Verify the scan account has local admin privileges on the target node.', status: 'needs' },
           { title: 'Check group policy', desc: 'Ensure GPO allows WinRM remote access for the account.', status: 'notchecked' },
@@ -17507,6 +17694,91 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }
     };
     var sfCurrentType = 'auth';
+
+    // "Where to look" — the one AI-derived block on Kash's Scan Troubleshooting page (Universal ·
+    // Scanning assistance). The page below already answers "what broke on this node"; this answers
+    // the two questions an engineer asks next and that no single row can: which layer to stop
+    // suspecting, and whether this node is alone. Kash's own example is the shape being ported —
+    // "eight nodes report their agent as connected and are still offline for scanning; the failure
+    // is in collection, not reachability" — i.e. the healthy-looking column is the one that misleads.
+    // Every claim here is read off the same SCAN_FAIL_TYPES entry driving the rest of the page:
+    // the layer clause comes from d.diag, the cluster from d.where, and the confidence from three
+    // real checks rather than a number.
+    function sfWhereToLookHtml(d) {
+      var w = d && d.where;
+      if (!w) return '';
+      var diag = d.diag || [];
+      var badIdx = -1;
+      for (var i = 0; i < diag.length; i++) {
+        if (diag[i].state !== 'pass' && diag[i].state !== 'skip') { badIdx = i; break; }
+      }
+      // The diag stages are named for the pipeline ("Scan"); in a sentence about where the fault
+      // sits they need the layer's name instead, which is also the wording Kash uses.
+      var layerName = { Connection: 'reachability', Authentication: 'authentication', Scan: 'collection' };
+      var passed = diag.slice(0, Math.max(0, badIdx))
+        .filter(function (s) { return s.state === 'pass'; })
+        .map(function (s) { return layerName[s.stage] || s.stage.toLowerCase(); });
+      var bad = badIdx >= 0 ? (layerName[diag[badIdx].stage] || diag[badIdx].stage.toLowerCase()) : 'collection';
+
+      // Three checks against this failure's own data — the same "signals, not a score" rule the
+      // Detected Drift grouping block already follows (driftRenderAiGroup).
+      var isolated = passed.length > 0;      // a stage that demonstrably worked rules itself out
+      var clustered = w.sameSig.length > 0;  // the signature repeats on more than one node
+      var hasShared = !!w.shared;            // there is a named common factor to go and look at
+      var signals = (isolated ? 1 : 0) + (clustered ? 1 : 0) + (hasShared ? 1 : 0);
+      var conf = signals >= 3 ? 'High' : (signals === 2 ? 'Medium' : 'Low');
+
+      var passedTxt = _sfList(passed);
+      var layerTxt = isolated
+        ? passedTxt.charAt(0).toUpperCase() + passedTxt.slice(1) + ' passed on this node. The failure is in <strong>' + bad
+          + '</strong>, not in ' + passed[passed.length - 1] + ' \u2014 so the column that looks healthy is the one to stop reading.'
+        : 'The scan never got past <strong>' + bad + '</strong>, so nothing beyond that layer has been tested yet.';
+
+      var scopeTxt = clustered
+        ? '<strong>' + (w.sameSig.length + 1) + '</strong> of 5 monitored nodes failed their last scan with this same signature \u2014 this node and '
+          + _sfList(w.sameSig) + '. They share <strong>' + w.shared + '</strong>; fixing that clears all of them, fixing the node clears one.'
+        : 'No other node failed this way in the last run \u2014 this one is local to MACBOOK-TARAS, so there is no shared cause to chase.';
+
+      var sepTxt = (w.lookalike && w.lookalike.nodes.length)
+        ? '<strong>' + _sfList(w.lookalike.nodes) + '</strong> looks the same in the node list but is a separate fault: '
+          + w.lookalike.why + '. Do not fold it into this fix.'
+        : '';
+
+      var link = clustered
+        ? '<div style="margin-top:10px;"><button type="button" class="ai-inline-cta" onclick="showView(\'all-devices\')">View the affected nodes \u2192</button></div>'
+        : '';
+
+      var locked = aiTierLocked();
+      return '<div class="ai-block" style="margin:0;padding:0;display:block;">'
+        + '<div class="ai-block-head-band" style="padding-left:20px;">'
+        +   '<div style="display:flex;align-items:center;gap:8px;min-width:0;">'
+        +     '<svg class="ai-block-head-icon" width="15" height="15" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
+        +     '<span style="font-size:14px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">Where to look</span>'
+        +   '</div>'
+        +   (locked ? '' : '<span style="font-size:12px;color:var(--text-sec);white-space:nowrap;">' + conf + ' confidence \u00b7 ' + signals + ' of 3 signals</span>')
+        + '</div>'
+        + '<div style="padding:14px 18px 14px 20px;">'
+        + (locked
+            ? '<div class="ai-block-body">' + aiBlockLockedHtml() + '</div>'
+            : '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">'
+              + '<span class="bdg bdg--purple">AI-derived</span>'
+              + '<span class="bdg bdg--gray">Universal \u00b7 Scanning assistance</span>'
+              + '</div>'
+              + '<div class="ai-block-body">' + layerTxt + ' ' + scopeTxt + '</div>'
+              + (sepTxt
+                  ? '<div class="assign-notice" style="margin:10px 0 0;display:flex;align-items:flex-start;gap:8px;padding:9px 14px;font-size:12px;">'
+                    + '<span style="width:5px;height:5px;border-radius:50%;background:#D97706;flex-shrink:0;margin-top:7px;"></span>'
+                    + '<span style="color:var(--text-sec);flex:1;min-width:0;">' + sepTxt + '</span></div>'
+                  : '')
+              + link)
+        + '</div>'
+        + '</div>';
+    }
+    function _sfList(names) {
+      if (names.length === 1) return names[0];
+      return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+    }
+
     function setScanFailType(type) {
       var d = SCAN_FAIL_TYPES[type];
       if (!d) return;
@@ -17543,6 +17815,8 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       // Primary recommended action (varies per failure type)
       var pb = document.getElementById('sf-primary-btn');
       if (pb) { pb.textContent = d.primaryLabel; pb.setAttribute('onclick', d.primaryAct); }
+      var whereBox = document.getElementById('sf-where');
+      if (whereBox) whereBox.innerHTML = sfWhereToLookHtml(d);
       // Close the <details> so raw output starts collapsed
       var wrap = document.getElementById('sf-raw-wrap');
       if (wrap) wrap.removeAttribute('open');
@@ -19709,7 +19983,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       });
       return '<div style="position:relative;width:76px;height:76px;flex-shrink:0;"><svg width="76" height="76" viewBox="0 0 100 100">' + circ + '</svg>' +
         '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">' +
-        '<div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">' + big + '</div>' +
+        '<div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">' + big + '</div>' +
         '<div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">' + small + '</div></div></div>';
     }
     function _repLegRow(color, label, val) {
@@ -23097,6 +23371,11 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
             <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em;">Schedule</span><span style="font-size:12px;color:var(--text-default);font-weight:600;">Daily · 02:00</span></div>
           </div>
 
+          <!-- Where to look — sits between "what happened here" and "how to fix", because it is the
+               step that decides whether the fix below is aimed at one node or at a shared cause.
+               Rendered by sfWhereToLookHtml() from the same SCAN_FAIL_TYPES entry as everything else. -->
+          <div id="sf-where"></div>
+
           <!-- How to fix (compact checklist) — Bertha lives HERE now, as an always-on strip attached
                to the step it applies to (setScanFailType), not a button+dropdown like Einstein/Jupiter.
                Guided remediation shouldn't need to be asked for — see index.html "Bertha differentiation". -->
@@ -23311,7 +23590,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-linecap="round" stroke-dasharray="37.2 238.8" stroke-dashoffset="-194.6" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed: 3 items&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">14</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">14</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">changes</div>
                 </div>
               </div>
@@ -23349,7 +23628,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="8" stroke-linecap="round" stroke-dasharray="105.4 238.8" stroke-dashoffset="-126.4" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Unchanged: 2 nodes&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">2</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">2</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">of 4</div>
                 </div>
               </div>
@@ -23384,7 +23663,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-linecap="round" stroke-dasharray="45.7 238.8" stroke-dashoffset="-186" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed: 2 items&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">8</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">8</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">changes</div>
                 </div>
               </div>
@@ -23426,7 +23705,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" stroke-dasharray="65.6 238.8" stroke-dashoffset="-166.2" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed settings: 1&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">3</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">3</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">to review</div>
                 </div>
               </div>
@@ -23570,7 +23849,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-linecap="round" stroke-dasharray="37.2 238.8" stroke-dashoffset="-194.6" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed: 3 settings&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">14</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">14</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">off base</div>
                 </div>
               </div>
@@ -23608,7 +23887,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="8" stroke-linecap="round" stroke-dasharray="105.4 238.8" stroke-dashoffset="-126.4" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;On baseline: 2 nodes&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">2</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">2</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">of 4</div>
                 </div>
               </div>
@@ -23643,7 +23922,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#FB3C44" stroke-width="8" stroke-linecap="round" stroke-dasharray="45.7 238.8" stroke-dashoffset="-186" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed: 2 settings&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">8</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">8</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">off base</div>
                 </div>
               </div>
@@ -23685,7 +23964,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" stroke-dasharray="65.6 238.8" stroke-dashoffset="-166.2" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Removed protection: 1&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">3</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">3</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">to review</div>
                 </div>
               </div>
@@ -23827,7 +24106,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" stroke-dasharray="15.9 238.8" stroke-dashoffset="-216" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Scan failures: 1&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">8</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">8</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">items</div>
                 </div>
               </div>
@@ -23865,7 +24144,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#3FC878" stroke-width="8" stroke-linecap="round" stroke-dasharray="45.7 238.8" stroke-dashoffset="-186" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Clean: 1 node&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">3</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">3</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">of 4</div>
                 </div>
               </div>
@@ -23904,7 +24183,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" stroke-dasharray="15.9 238.8" stroke-dashoffset="-216" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Low: 1&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">4</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">4</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">critical</div>
                 </div>
               </div>
@@ -23946,7 +24225,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
                   <circle cx="50" cy="50" r="38" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" stroke-dasharray="135.3 238.8" stroke-dashoffset="-96.5" transform="rotate(-90 50 50)" class="donut-seg" onmouseenter="showDonutTip(event,&#39;Under 24h: 5&#39;)" onmouseleave="hideDonutTip()" onmousemove="moveDonutTip(event)"></circle>
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                  <div style="font-size:28px;font-weight:700;color:var(--text-default);line-height:1;">3</div>
+                  <div style="font-size:17px;font-weight:800;color:var(--text-default);line-height:1;">3</div>
                   <div style="font-size:8px;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">overdue</div>
                 </div>
               </div>
@@ -24576,6 +24855,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 
         <!-- Users tab — admin sees every user, their role, and can change it -->
         <div id="roles-pane-users">
+          <!-- Anything a user asked for from a restricted action lands here. Hidden while the queue
+               is empty: an empty box would be a permanent reminder of work that does not exist. -->
+          <div id="roles-requests" style="display:none;margin-bottom:16px;"></div>
           <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow-x:auto;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
             <div class="col-thead" style="display:grid;grid-template-columns:1.6fr 1.4fr 1fr 0.9fr 50px;min-width:760px;padding:10px 18px;background:var(--bg-canvas);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.5px;align-items:center;">
               <div>Name</div>
@@ -24591,6 +24873,17 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         <!-- Roles tab — role definitions + audit (who has it, why, impact of removal) -->
         <div id="roles-pane-roles" style="display:none;">
           <div id="role-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;"></div>
+          <!-- The cards above say who holds each role. This says what holding it actually grants,
+               across every area at once — the thing an admin needs before deciding which role to
+               give someone, and the only place in the product where the permissions can be
+               compared side by side rather than one user at a time. -->
+          <div style="margin-top:22px;margin-bottom:10px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-default);letter-spacing:-0.2px;">What each role can do</div>
+            <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">The same permissions the assign-role preview compares, laid out in full — read down a column for one role, across a row to see which role grants the access you need.</div>
+          </div>
+          <div style="overflow-x:auto;">
+            <div class="perm-grid perm-grid--matrix" id="role-perm-matrix"></div>
+          </div>
         </div>
 
       </div>
@@ -29112,8 +29405,8 @@ function renderSchedules() {
         + '</div>';
     }
     const pill = s.enabled
-      ? '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--green" style="cursor:pointer;font-family:inherit;">Active</button>'
-      : '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--gray" style="cursor:pointer;font-family:inherit;">Paused</button>';
+      ? '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--green" style="font-family:inherit;">Active</button>'
+      : '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--gray" style="font-family:inherit;">Paused</button>';
     return '<div class="schedule-table-row" style="' + grid + '">' + nameCell
       + '<div>' + pill + '</div>'
       + '<div style="font-size:12px;color:var(--text-default);">' + s.freq + '</div>'
@@ -29123,6 +29416,9 @@ function renderSchedules() {
       + '<div><button class="btn-secondary schedule-action-cta" onclick="openScheduleModal(\'' + g + '\')">Edit ' + actionArrow + '</button></div>'
       + '</div>';
   }).join('');
+  // Рядки щойно перестворені — застосувати стан поточної ролі, інакше сортування чи зміна
+  // scope-вкладки повертали б Viewer'у активні кнопки.
+  roleApply();
 }
 // Bertha domain (general AI assistance) — Scan Schedules coverage-gap + cadence rollup. Always-on block, no
 // trigger, no loading state: renders directly off schedSet() + SCHED_DRIFT_ACTIVITY for
@@ -33052,6 +33348,8 @@ function closeSearch() {
   document.getElementById('search-overlay').style.display = 'none';
   document.getElementById('search-input').value = '';
   document.getElementById('search-results').style.display = 'none';
+  var askBox = document.getElementById('search-ask');
+  askBox.style.display = 'none'; askBox.innerHTML = '';
   document.getElementById('search-nav-section').style.display = '';
   document.getElementById('search-alerts-section').style.display = '';
   document.getElementById('filter-dropdown').style.display = 'none';
@@ -33070,8 +33368,10 @@ function filterSearch(q) {
   const nav = document.getElementById('search-nav-section');
   const alerts = document.getElementById('search-alerts-section');
   const results = document.getElementById('search-results');
+  const ask = document.getElementById('search-ask');
   if (!q.trim()) {
     nav.style.display = ''; alerts.style.display = ''; results.style.display = 'none';
+    ask.style.display = 'none'; ask.innerHTML = '';
     return;
   }
   nav.style.display = 'none'; alerts.style.display = 'none';
@@ -33083,11 +33383,188 @@ function filterSearch(q) {
     {label:'Screen lock timeout modified',sub:'Change · Pending reconciliation',action:"showView('changes')"},
     {label:'Last scan — 2 hours ago',sub:'Scan · MACBOOK-TARAS',action:"showView('results')"},
   ].filter(i => i.label.toLowerCase().includes(q.toLowerCase()) || i.sub.toLowerCase().includes(q.toLowerCase()));
+  // A question rarely matches a row by substring, and "No results" would then be the only
+  // thing on screen while an answer is sitting right below it. So the empty state is
+  // suppressed for questions — the Ask Guardian section is the answer to that input.
+  const isQuestion = _askIsQuestion(q);
   results.innerHTML = items.length
     ? '<div style="font-size:10px;font-weight:700;color:var(--p-neutral-400);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Results</div>' +
       items.map(i=>`<div class="search-nav-item" onclick="${i.action};closeSearch()"><div style="font-size:12px;font-weight:600;color:var(--text-default);">${i.label}</div><div style="font-size:12px;color:var(--p-neutral-400);margin-top:1px;">${i.sub}</div></div>`).join('')
-    : '<div style="text-align:center;padding:32px;color:var(--p-neutral-400);font-size:12px;">No results for "<strong>' + q + '</strong>"</div>';
-  results.style.display = 'block';
+    : (isQuestion ? '' : '<div style="text-align:center;padding:32px;color:var(--p-neutral-400);font-size:12px;">No results for "<strong>' + q + '</strong>"</div>');
+  results.style.display = (items.length || !isQuestion) ? 'block' : 'none';
+  ask.innerHTML = isQuestion ? askGuardianHtml(q) : '';
+  ask.style.display = isQuestion ? 'block' : 'none';
+  // Only rule off the answer when rows sit above it; otherwise it would draw a second line
+  // directly beneath the input divider.
+  var ruled = isQuestion && items.length > 0;
+  ask.style.borderTop = ruled ? '1px solid var(--border)' : 'none';
+  ask.style.marginTop = ruled ? '14px' : '0';
+  ask.style.paddingTop = ruled ? '14px' : '0';
+}
+
+/* ── ASK GUARDIAN (inside ⌘K) ────────────────────────────────────────────────────
+   Ported from the Kash prototype's "Ask Guardian" moment. Kash gives it a page of its
+   own; we put it inside the existing ⌘K palette instead, because Kash's own packaging
+   map lists this capability as building on "⌘K search over rows", and the session note
+   is explicit that it must not become the way people use the product — "it shouldn't
+   become the default way someone just goes and interacts with Guardian." So: rows are
+   still returned first, this section only appears when the input reads as a question,
+   and it is advisory — it answers, it never acts on the estate. Universal tier, so it
+   is deliberately NOT behind aiTierLocked().
+
+   Two answer modes, kept visibly apart because they are trustworthy in different ways:
+   · about Guardian itself — a model over product documentation, so it is marked
+     AI-derived and always carries the section it came from;
+   · about this estate — an ordinary query over the very same rows the Managed Nodes
+     list uses, so it is marked Deterministic, returns rows, and the prose above them
+     says nothing the rows do not.
+   When neither can answer, it says so and hands back the nearest documentation section
+   rather than guessing. */
+function _askIsQuestion(q) {
+  var s = q.trim().toLowerCase();
+  if (s.length < 8) return false;
+  if (s.indexOf('?') !== -1) return true;
+  return /^(why|how|what|when|where|which|who|can|could|does|do|is|are|should|will|explain|tell me)\b/.test(s);
+}
+
+// Product documentation. Short on purpose: each entry is one answer to one recurring
+// question, with the section it is answered from, so an answer can never appear uncited.
+var ASK_DOCS = [
+  {
+    keys: ['connected', 'heartbeat', 'no scan data', 'not scanning', 'online but', 'agent report'],
+    section: 'Agent architecture §2.1, Collection lifecycle §4',
+    answer: 'The agent connection and the scan collection are two separate channels. The agent holds a heartbeat open to the platform, and that is what the <strong>connected</strong> state reports. Collection is a separate request from a Connection Manager to the collector on the host. A node can hold the heartbeat open while the collector fails, returns nothing, or is refused — so connected means reachable, not scanning.'
+  },
+  {
+    keys: ['reconcil', 'change request', 'unmatched', 'matched', 'drift mean'],
+    section: 'Change reconciliation §3',
+    answer: 'Reconciliation matches a detected change against the change request that authorised it. A change that matches an approved request is expected and closes itself; one with no matching request stays <strong>unreconciled</strong> and needs a person to say whether it was intended. Guardian never treats the absence of a request as approval.'
+  },
+  {
+    keys: ['policy', 'benchmark', 'cis', 'check do', 'baseline'],
+    section: 'Policies and benchmarks §1.2',
+    answer: 'A policy is a set of checks measured against a node on every scan. Checks come from a CIS benchmark or are written in Guardian, and each returns pass or fail with the value it actually read. A policy is assigned to nodes or groups — assigning it does not change anything on the host, it only starts measuring.'
+  },
+  {
+    keys: ['agentless', 'connection manager', 'scan method', 'agent or', 'credential'],
+    section: 'Scan methods §2, Connection Managers §5',
+    answer: 'Guardian scans either through an agent installed on the node or agentlessly through a Connection Manager, which opens the connection from inside the network using a stored credential. Agentless needs no software on the host but does need reachability and a working credential; the agent needs neither, because it connects outward itself.'
+  }
+];
+
+/* Estate queries. Each one reuses nodeMatchesState() rather than restating the rule, so
+   an answer here can never disagree with the State segment on Managed Nodes. */
+var ASK_ESTATE = [
+  {
+    keys: ['never scanned', 'unscanned', 'no scan data', 'not scanning', 'connected but', 'online but'],
+    state: 'unscanned',
+    title: 'Nodes that report online but have never returned scan data',
+    trace: 'list_nodes · get_scan_status',
+    none: 'Every monitored node has returned scan data at least once.'
+  },
+  {
+    keys: ['offline', 'unreachable', 'not reachable', 'down', 'lost connection'],
+    state: 'offline',
+    title: 'Nodes that are offline',
+    trace: 'list_nodes · get_node_connectivity',
+    none: 'No monitored node is offline.'
+  }
+];
+
+/* The same scoping updateNodeStateCounts() uses — every row present in the Managed Nodes
+   list, minus the AWS section while it is still hidden. Keeping one rule means the answer
+   and the "All / Offline / Unscanned" counters can never drift apart. */
+function _askEstateRows() {
+  var aws = document.getElementById('aws-device-rows');
+  var awsHidden = !aws || aws.style.display === 'none';
+  return Array.prototype.slice.call(document.querySelectorAll('#v-all-devices .node-row'))
+    .filter(function (row) { return !(awsHidden && row.closest('#aws-device-rows')); });
+}
+function _askRowName(row) { return (row.dataset.name || '').split(' ')[0]; }
+function _askRowScan(row) {
+  var el = row.querySelector('.node-scan');
+  return el ? el.textContent.trim() : '';
+}
+/* Topic keywords alone cannot tell the two modes apart: "why would an agent report connected
+   but no scan data arrive" and "which nodes are connected but not scanning" share every topic
+   word, yet the first is a question about the product and the second is a question about the
+   estate. What separates them is whether the sentence points at this installation, so an
+   estate answer additionally requires one of these deictic markers. */
+function _askIsEstate(q) {
+  return /\b(here|mine|my|our|ours|we|us|this estate|right now|currently|any|which|whose|how many|list|show me)\b/
+    .test(q.toLowerCase());
+}
+function _askMatch(list, q) {
+  var s = q.toLowerCase();
+  var best = null, bestScore = 0;
+  list.forEach(function (e) {
+    var score = e.keys.filter(function (k) { return s.indexOf(k) !== -1; }).length;
+    if (score > bestScore) { bestScore = score; best = e; }
+  });
+  return best;
+}
+function _askQuiet(txt) {
+  return '<div style="margin-top:8px;font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text-muted);">' + txt + '</div>';
+}
+function askGuardianHtml(q) {
+  // No wrapper chrome here — the rule that separates this from the rows above is set on
+  // #search-ask by filterSearch(), which is the only place that knows whether there are
+  // any rows to separate it from.
+  var head = '<div>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+    +   '<svg class="ai-block-head-icon" width="15" height="15" viewBox="0 0 18.921 18.921" fill="currentColor"><path d="M7.79937 4.30917C8.05604 3.5575 9.11937 3.5575 9.37604 4.30917L10.0477 6.27583C10.2533 6.87841 10.5943 7.42585 11.0444 7.87617C11.4945 8.32642 12.0419 8.6675 12.6444 8.87333L14.611 9.545C15.3635 9.80167 15.3635 10.865 14.611 11.1217L12.6444 11.7933C12.042 11.999 11.4947 12.3401 11.0445 12.7902C10.5945 13.2403 10.2534 13.7876 10.0477 14.39L9.37604 16.3567C9.11937 17.1092 8.05604 17.1092 7.79937 16.3567L7.12771 14.39C6.922 13.7876 6.58099 13.2403 6.13087 12.7902C5.68074 12.3401 5.13347 11.999 4.53104 11.7933L2.56437 11.1217C1.81187 10.865 1.81187 9.80167 2.56437 9.545L4.53104 8.87333C5.13347 8.66767 5.68074 8.32658 6.13087 7.8765C6.58099 7.42637 6.922 6.87909 7.12771 6.27667L7.79937 4.30917ZM15.2544 2L15.6794 3.24167L16.921 3.66667L15.6794 4.09167L15.2544 5.33333L14.8294 4.09167L13.5877 3.66667L14.8294 3.24167L15.2544 2Z"/></svg>'
+    +   '<span style="font-size:12px;font-weight:700;color:var(--text-default);">Ask Guardian</span>'
+    +   '<span style="font-size:12px;color:var(--text-muted);margin-left:auto;">Advisory — it answers, it does not act</span>'
+    + '</div>';
+  var foot = '</div>';
+
+  // Estate first: when a question really is about this installation, a row-backed answer
+  // beats a prose one, because the rows are the evidence rather than a claim about it.
+  var est = _askIsEstate(q) ? _askMatch(ASK_ESTATE, q) : null;
+  if (est) {
+    var rows = _askEstateRows();
+    var hits = rows.filter(function (r) { return nodeMatchesState(r, est.state); });
+    var withData = rows.filter(function (r) { return r.dataset.scan !== 'never'; });
+    var body = hits.length
+      ? '<div class="ai-block-body">' + est.title + ': <strong>' + hits.length + '</strong> of '
+        + rows.length + ' monitored nodes.</div>'
+        + hits.map(function (r) {
+            return '<div class="search-nav-item" onclick="showView(\'all-devices\');closeSearch()">'
+              + '<div style="font-size:12px;font-weight:600;color:var(--text-default);">' + _askRowName(r) + '</div>'
+              + '<div style="font-size:12px;color:var(--p-neutral-400);margin-top:1px;">Last scan · ' + _askRowScan(r) + '</div>'
+              + '</div>';
+          }).join('')
+      : '<div class="ai-block-body">' + est.none + '</div>';
+    return head
+      + '<div style="margin-bottom:8px;"><span class="bdg bdg--gray">Deterministic</span>'
+      +   '<span style="font-size:12px;color:var(--text-muted);margin-left:8px;">a query over your own rows</span></div>'
+      + body
+      + _askQuiet('Based on ' + withData.length + ' of ' + rows.length
+          + ' monitored nodes with scan data · ' + est.trace)
+      + foot;
+  }
+
+  var doc = _askMatch(ASK_DOCS, q);
+  if (doc) {
+    return head
+      + '<div style="margin-bottom:8px;"><span class="bdg bdg--purple">AI-derived</span>'
+      +   '<span style="font-size:12px;color:var(--text-muted);margin-left:8px;">answered from product documentation</span></div>'
+      + '<div class="ai-block-body">' + doc.answer + '</div>'
+      + _askQuiet('Guardian documentation · ' + doc.section)
+      + foot;
+  }
+
+  // No guess. Hand back what the documentation does cover and let the person pick.
+  return head
+    + '<div class="ai-block-body">I can\u2019t answer that from the documentation I have, and I won\u2019t guess. '
+    +   'These are the sections I can answer from:</div>'
+    + '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">'
+    +   ASK_DOCS.map(function (d) {
+          return '<span class="bdg bdg--gray">' + d.section.split(' \u00a7')[0] + '</span>';
+        }).join('')
+    + '</div>'
+    + _askQuiet('For a question about your own nodes, ask about offline or never-scanned nodes.')
+    + foot;
 }
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
