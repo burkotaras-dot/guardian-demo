@@ -16986,6 +16986,10 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         });
         var wlAi = document.getElementById('wl-ai-body');
         if (wlAi) wlAi.querySelectorAll('.action-cta').forEach(function(b) { b.disabled = !watchAllowed; });
+        // «Watch all items» у deactivated-банері робить те саме, що всі рядки разом, тому мусить
+        // підкорятись тому самому дозволу — інакше заборона на рядок обходиться одним кліком.
+        var wlDeact = document.getElementById('wl-deactivated-banner');
+        if (wlDeact) wlDeact.querySelectorAll('button').forEach(function(b) { b.disabled = !watchAllowed; });
       }
 
       // Policy Detail — read-only для Viewer: банер + edit/assign дізейблені разом, як один стан сторінки.
