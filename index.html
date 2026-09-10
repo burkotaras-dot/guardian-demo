@@ -1740,6 +1740,11 @@ body.dark .btn-third { color:#FFFFFF; }
 .intg-status.bdg--quiet,
 .drift-type, .rc-chg { padding:0; background:none; border-color:transparent; }
 
+/* Пігулка, яка водночас є перемикачем (Active/Paused у розкладах). Коли роль не має права її
+   змінити, вона лишається СТАТУСОМ рядка — тож колір зберігає, зникає лише афорданс кліку. */
+button.bdg { cursor:pointer; }
+button.bdg:disabled { cursor:default; }
+
 /* ═══════════════════════════════════════════════════════════════════
    CODE TAG — друга (і остання) родина чипів. Це НЕ бадж.
    .bdg      = статус / класифікація → 9px UPPERCASE, пігулка
@@ -2852,7 +2857,12 @@ body.dark .policy-card[data-pol-type="archived"]:hover { background:var(--bg-sur
    The button never repeats the surface under it: on the white card the fill drops to the canvas
    grey, on the page canvas it stays white (the base rule). Dark needs no pair — the base
    rgba(255,255,255,.05) is already lighter than the card. */
-.policy-card .btn-icon { background:#F8FAFC; }
+/* DS §6.5 Only icon — на БІЛІЙ поверхні (картка, рядок таблиці) заливка кнопки сіра: інакше
+   вона зливається з карткою і від кнопки лишається сама рамка. На сірій сторінці
+   (--bg-canvas) база навпаки біла, тож тут перелічені саме білі контейнери. */
+.policy-card .btn-icon,
+.pe-check-card .btn-icon,
+.role-user-row .btn-icon { background:var(--bg-canvas); }
 /* Nodes table (All Nodes) row action buttons — DS §6.5 "Secondary" (s=32) */
 .action-row-l { display:flex; align-items:center; gap:13px; min-width:0; }
 .action-ico { width:34px; height:34px; padding:8px; box-sizing:border-box; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--bg-surface); border:1px solid var(--border); }
@@ -16781,23 +16791,50 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       roleApply();
     }
 
+    // Хто реально має full-доступ до області — читається з ROLES, тож пояснення не може назвати
+    // роль, з якою матриця не згодна.
+    function rolesWithFull(key) {
+      var names = ROLES.filter(function(r) { return r.perms[key] === 'full'; }).map(function(r) { return r.name; });
+      return names.length > 1 ? names.slice(0, -1).join(', ') + ' or ' + names[names.length - 1] : names[0];
+    }
+
     function roleApply() {
+      // Стани нижче читають ROLES[].perms — ту саму таблицю, яку показує матриця на вкладці Roles.
+      // Раніше кожен був окремим `_currentRole === 'viewer'`, тож симулятор і матриця могли
+      // розійтись від однієї правки даних.
+      var perms = roleMeta(_currentRole).perms;
+      var roleName = roleMeta(_currentRole).name;
+
       // Node Detail — AI Insight block: hidden, не сіре.
       var ndAi = document.getElementById('nd-ai-block');
-      if (ndAi) ndAi.style.display = (_currentRole === 'viewer') ? 'none' : '';
+      if (ndAi) ndAi.style.display = (perms.nodes !== 'full') ? 'none' : '';
 
       // Detected Drift — Approve/Flag/Skip: disabled + explanation, лишається видимим.
       var exec = document.getElementById('cd-exec-row');
       if (exec) {
-        var execAllowed = _currentRole !== 'viewer';
+        var execAllowed = perms.drift === 'full';
         exec.querySelectorAll('button').forEach(function(b) { b.disabled = !execAllowed; });
         exec.classList.toggle('tip-wrap', !execAllowed);
-        if (!execAllowed) exec.setAttribute('data-tip', 'Your role (Viewer) can review this drift but not act on it — ask an Admin or Analyst to reconcile it.');
+        if (!execAllowed) exec.setAttribute('data-tip', 'Your role (' + roleName + ') can review this drift but not act on it — ask ' + rolesWithFull('drift') + ' to reconcile it.');
         else exec.removeAttribute('data-tip');
       }
 
+      // Scan Schedules — пʼята область, яку називає матриця. Усе, що нижче за full, не може
+      // змінити каденцію, тож контроли рядка (Set/Edit і пігулка Active/Paused) переходять
+      // у той самий disabled+explanation, що й Detected Drift.
+      var schedBody = document.getElementById('schedule-tbody');
+      if (schedBody) {
+        var schedAllowed = perms.schedules === 'full';
+        schedBody.querySelectorAll('.schedule-table-row').forEach(function(row) {
+          row.querySelectorAll('button').forEach(function(b) { b.disabled = !schedAllowed; });
+          row.classList.toggle('tip-wrap', !schedAllowed);
+          if (!schedAllowed) row.setAttribute('data-tip', 'Your role (' + roleName + ') can review scan schedules but not change them — ask ' + rolesWithFull('schedules') + ' to adjust the cadence.');
+          else row.removeAttribute('data-tip');
+        });
+      }
+
       // Policy Detail — read-only для Viewer: банер + edit/assign дізейблені разом, як один стан сторінки.
-      var pdReadonly = _currentRole === 'viewer';
+      var pdReadonly = perms.policies !== 'full';
       var pdBanner = document.getElementById('pd-readonly-banner');
       var pdEdit = document.getElementById('pd-edit-btn');
       var pdAssign = document.getElementById('pd-assign-btn');
@@ -16809,20 +16846,20 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       // від plain disabled) і тултипом-поясненням; клік відкриває Block 4 (Request access).
       var credNew = document.getElementById('cred-new-btn');
       var credTip = document.getElementById('cred-new-tipwrap');
-      var credRestricted = _currentRole !== 'admin';
+      var credRestricted = perms.credentials !== 'full';
       if (credNew) {
         credNew.innerHTML = credRestricted
           ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-1px;"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>New credential'
           : '+ New credential';
       }
       if (credTip) {
-        if (credRestricted) credTip.setAttribute('data-tip', 'Permission required — creating credentials needs Admin access.');
+        if (credRestricted) credTip.setAttribute('data-tip', 'Permission required — creating credentials needs ' + rolesWithFull('credentials') + ' access.');
         else credTip.removeAttribute('data-tip');
       }
     }
 
     function credNewClick() {
-      if (_currentRole !== 'admin') { openRestrictedFlow('Create credentials', 'Creating and storing scan credentials needs the Admin role, so every new secret can be traced to who approved it.'); return; }
+      if (roleMeta(_currentRole).perms.credentials !== 'full') { openRestrictedFlow('Create credentials', 'Creating and storing scan credentials needs the ' + rolesWithFull('credentials') + ' role, so every new secret can be traced to who approved it.'); return; }
       credOpenEditor(null);
     }
 
@@ -29296,8 +29333,8 @@ function renderSchedules() {
         + '</div>';
     }
     const pill = s.enabled
-      ? '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--green" style="cursor:pointer;font-family:inherit;">Active</button>'
-      : '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--gray" style="cursor:pointer;font-family:inherit;">Paused</button>';
+      ? '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--green" style="font-family:inherit;">Active</button>'
+      : '<button onclick="toggleSchedule(\'' + g + '\')" class="bdg bdg--dot bdg--gray" style="font-family:inherit;">Paused</button>';
     return '<div class="schedule-table-row" style="' + grid + '">' + nameCell
       + '<div>' + pill + '</div>'
       + '<div style="font-size:12px;color:var(--text-default);">' + s.freq + '</div>'
@@ -29307,6 +29344,9 @@ function renderSchedules() {
       + '<div><button class="btn-secondary schedule-action-cta" onclick="openScheduleModal(\'' + g + '\')">Edit ' + actionArrow + '</button></div>'
       + '</div>';
   }).join('');
+  // Рядки щойно перестворені — застосувати стан поточної ролі, інакше сортування чи зміна
+  // scope-вкладки повертали б Viewer'у активні кнопки.
+  roleApply();
 }
 // Bertha domain (general AI assistance) — Scan Schedules coverage-gap + cadence rollup. Always-on block, no
 // trigger, no loading state: renders directly off schedSet() + SCHED_DRIFT_ACTIVITY for
