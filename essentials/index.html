@@ -1127,7 +1127,42 @@ body.dark .rep-skel { background:linear-gradient(90deg, rgba(255,255,255,0.04) 2
   background:var(--btn-grad);
   display:flex; align-items:center; justify-content:center;
   font-size:12px; font-weight:700; color:var(--white);
+  flex-shrink:0;
 }
+
+/* ── Account menu ──
+   Тригер лишається чіпом, а не кнопкою типу з DS §6.5: він не виконує дії, а лише відкриває
+   меню, і мусить читатись як ідентичність акаунта. Форму йому дає тільки hover/open. */
+.acct-trigger {
+  display:flex; align-items:center; gap:8px;
+  padding:3px 8px 3px 3px; border:1px solid transparent; border-radius:999px;
+  background:transparent; font-family:inherit; font-size:12px; color:var(--text-default);
+  cursor:pointer; transition:background .12s, border-color .12s;
+}
+.acct-trigger:hover { background:var(--bg-subtle); border-color:var(--border); }
+.acct-trigger-mail { white-space:nowrap; }
+.acct-chev { color:var(--text-muted); flex-shrink:0; transition:transform .15s; }
+.acct-menu:has(.acct-pop.open) .acct-chev { transform:rotate(180deg); }
+.acct-menu .acct-pop { top:38px; min-width:236px; }
+.acct-pop-head {
+  display:flex; align-items:center; gap:9px;
+  padding:8px 10px 10px; margin-bottom:4px; border-bottom:1px solid var(--border);
+}
+.acct-pop-mail { display:block; font-size:12px; font-weight:600; color:var(--text-default); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.acct-pop-role { display:block; font-size:11px; color:var(--text-muted); margin-top:2px; }
+.acct-sep { height:1px; background:var(--border); margin:4px 6px; }
+body.dark .acct-trigger:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
+
+/* ── Profile page ── */
+.prof-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:0 1px 2px rgba(15,23,42,0.04); }
+.prof-id { display:flex; align-items:center; gap:16px; padding:20px 22px; flex-wrap:wrap; }
+.prof-avatar { width:52px; height:52px; border-radius:50%; background:var(--btn-grad); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:var(--white); flex-shrink:0; }
+.prof-sec-head { padding:13px 22px; border-bottom:1px solid var(--border); font-size:13px; font-weight:700; color:var(--text-default); }
+/* Три рівні колонки. Фіксовані 150px на стані змушували першу колонку розтягуватись на всю
+   вільну ширину, і стан зі своїм поясненням злипались у праву третину. */
+.prof-row { display:grid; grid-template-columns:repeat(3,1fr); column-gap:24px; align-items:center; padding:12px 22px; border-top:1px solid var(--border); font-size:12px; }
+.prof-row:first-child { border-top:none; }
+.prof-field { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:13px 22px; border-top:1px solid var(--border); font-size:12px; flex-wrap:wrap; }
 
 /* ── APP SHELL ── */
 .app-shell { display:flex; flex:1; overflow:hidden; }
@@ -3149,6 +3184,11 @@ body.dark .seg-btn.is-active, body.dark .toggle-btn.active { background:rgba(0,1
 /* Form variant — fills the form-group width, segments share it equally. */
 .toggle-group { display:flex; }
 .toggle-btn { flex:1; display:flex; align-items:center; justify-content:center; text-align:center; outline:none; }
+/* Форм-варіант завжди стоїть НА картці, а картка в темній темі — той самий `--bg-surface`,
+   що й фон самого треку. Тож `--border` (#04363A) лишав контрол невидимим: збігався і фон,
+   і майже збігалась рамка. Беремо наявний `--border-strong` — нового кольору не вигадуємо.
+   `.seg` не чіпаємо: він живе в топ-барі на іншій поверхні й читається. */
+body.dark .toggle-group { border-color:var(--border-strong); }
 /* Detected-tab row + bulk-bar actions — two CTAs must fit a 260px column, so they shrink to
    their label instead of the 124px default. Colours come from the base .action-cta rule. */
 .detected-row-cta.action-cta, .detected-bulk-cta.action-cta { min-width:0; }
@@ -7061,8 +7101,29 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       <span class="nav-search-label" style="flex:1;text-align:left;">Search or ask about Guardian…</span>
       <kbd style="font-size:8px;padding:1px 4px;flex-shrink:0;">⌘K</kbd>
     </button>
-    <div class="nav-avatar">T</div>
-    <span>bambuk@cloudhouse.io</span>
+    <!-- Меню акаунта. Переюзує канонічний дропдаун `.id-cap-menu` (index.html:759) разом із його
+         `idCapMenu()` — та сама функція вже закриває попап по кліку поза ним, тож нової логіки
+         відкриття тут немає. Змінюється лише тригер: замість квадратної kebab-кнопки — сам чіп. -->
+    <div class="id-cap-menu acct-menu">
+      <button type="button" class="acct-trigger" onclick="idCapMenu(this,event)" aria-haspopup="true" aria-label="Account menu">
+        <span class="nav-avatar">T</span>
+        <span class="acct-trigger-mail">bambuk@cloudhouse.io</span>
+        <svg class="acct-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="id-cap-menu-pop acct-pop">
+        <div class="acct-pop-head">
+          <span class="nav-avatar">T</span>
+          <span style="min-width:0;">
+            <span class="acct-pop-mail">bambuk@cloudhouse.io</span>
+            <span class="acct-pop-role" id="acct-pop-role"></span>
+          </span>
+        </div>
+        <button class="id-cap-menu-item" onclick="showView('profile')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Profile</button>
+        <button class="id-cap-menu-item" onclick="showView('roles')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"></path></svg>Roles &amp; permissions</button>
+        <div class="acct-sep"></div>
+        <button class="id-cap-menu-item danger" onclick="acctSignOut()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>Sign out</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -16688,6 +16749,78 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
     var ACCESS_REQUESTS = [];
     var _accessReqSeq = 0;
 
+    // ── Profile ────────────────────────────────────────────────────────
+    // Читає ті самі `_currentRole` / `_currentTier` / `ROLES` / `PERM_PAGES`, що й решта
+    // застосунку, тож сторінка профілю не може назвати доступ, з яким матриця на Roles &
+    // Permissions не згодна. Кличеться з showView('profile'), setPreviewRole і setPreviewTier —
+    // симулятори в топ-барі міняють саме те, що ця сторінка описує.
+    function renderProfile() {
+      var permsWrap = document.getElementById('prof-perms');
+      if (!permsWrap) return;
+      var role = roleMeta(_currentRole);
+      var tierLabel = _currentTier === 'enterprise' ? 'Enterprise' : 'Professional';
+
+      // Шапка дропдауна показує ту саму роль — інакше меню і сторінка розійшлися б після
+      // перемикання симулятора в топ-барі.
+      var popRole = document.getElementById('acct-pop-role');
+      if (popRole) popRole.textContent = role.name + ' · ' + tierLabel;
+
+      var sub = document.getElementById('prof-id-sub');
+      if (sub) {
+        sub.innerHTML = '<span class="bdg bdg--' + ROLE_COLOR[role.id] + '">' + role.name + '</span>'
+          + '<span class="bdg bdg--gray">' + tierLabel + '</span>'
+          + '<span style="color:var(--text-sec);">' + role.desc + '</span>';
+      }
+
+      permsWrap.innerHTML = PERM_PAGES.map(function(p) {
+        var st = STATE_META[role.perms[p.key]];
+        // Нейтральна поверхня + кольорова крапка — те саме правило стану, що й у матриці.
+        return '<div class="prof-row">'
+          + permAreaCell(p)
+          + '<div style="display:flex;align-items:center;gap:7px;color:var(--text-default);font-weight:600;">'
+          +   '<span style="width:5px;height:5px;border-radius:50%;background:' + st.dot + ';flex-shrink:0;"></span>' + st.label
+          + '</div>'
+          + '<div style="color:var(--text-sec);line-height:1.6;">' + _profPermNote(p, role) + '</div>'
+          + '</div>';
+      }).join('');
+
+      var note = document.getElementById('prof-perms-note');
+      if (note) {
+        note.innerHTML = role.id === 'admin'
+          ? 'Your role is assigned by an admin. You are one, so you can change it — and everyone else\u2019s — on Roles &amp; Permissions.'
+          : 'Your role is assigned by an admin; you cannot raise it here. Request access from the page you are blocked on, and an admin approves it on Roles &amp; Permissions.';
+      }
+
+      var dark = document.body.classList.contains('dark');
+      var lb = document.getElementById('prof-theme-light');
+      var db = document.getElementById('prof-theme-dark');
+      if (lb) lb.classList.toggle('active', !dark);
+      if (db) db.classList.toggle('active', dark);
+    }
+
+    // Пояснення мусить називати наслідок, а не переказувати слово «Read-only» іншими словами,
+    // тож воно будується з того, хто реально має full на цю область.
+    function _profPermNote(p, role) {
+      var v = role.perms[p.key];
+      if (v === 'full') return 'You can change ' + p.label.toLowerCase() + '.';
+      var who = rolesWithFull(p.key);
+      if (v === 'readonly') return 'You can open and review, but not change. ' + who + ' can.';
+      return 'Hidden until an admin grants it. ' + who + ' has it today.';
+    }
+
+    // Перемикач теми на сторінці — той самий стан, що й кнопка в топ-барі, тому він кличе
+    // toggleTheme(), а не пише в localStorage повз неї. Клік у вже активну половину нічого не
+    // робить: це вибір стану, а не тумблер.
+    function profSetTheme(dark) {
+      if (document.body.classList.contains('dark') === dark) return;
+      toggleTheme();
+    }
+
+    function acctSignOut() {
+      document.querySelectorAll('.id-cap-menu-pop.open').forEach(function(p){ p.classList.remove('open'); });
+      showAuth('auth-login');
+    }
+
     function renderAccessRequests() {
       var wrap = document.getElementById('roles-requests');
       if (!wrap) return;
@@ -16923,6 +17056,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         b.setAttribute('aria-pressed', r === role ? 'true' : 'false');
       });
       roleApply();
+      renderProfile();
     }
 
     // Хто реально має full-доступ до області — читається з ROLES, тож пояснення не може назвати
@@ -17086,6 +17220,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
         b.setAttribute('aria-pressed', t === tier ? 'true' : 'false');
       });
       tierApply();
+      renderProfile();
     }
 
     function aiTierLocked() { return _currentTier === 'professional'; }
@@ -21220,6 +21355,9 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       var isDark = document.body.classList.toggle('dark');
       localStorage.setItem('guardian-theme', isDark ? 'dark' : 'light');
       _syncInlineTheme(isDark);
+      // Сегменти Appearance на Profile показують той самий стан, тож перемикач у топ-барі
+      // мусить їх оновити — інакше дві поверхні розійшлись би про одне значення.
+      renderProfile();
     }
 
     // Manual show/hide of the floating sidebar — reuses the same .visible class and
@@ -24982,6 +25120,66 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       </div>
     </div>
 
+    <!-- ── PROFILE ──
+         Досягається з топ-бару, а не зі списку, тому кнопки Back немає — як і в будь-якої
+         сторінки рівня сайдбара. Сторінка нічого не вигадує про акаунт: роль і тир беруться з
+         тих самих `_currentRole` / `_currentTier`, що керують усім застосунком, а перелік
+         областей — із `PERM_PAGES` + `roleMeta().perms`, тобто з джерела матриці на Roles &
+         Permissions. Це не друга матриця, а одна її колонка — «що можу саме я». -->
+    <div class="view" id="v-profile" style="display: none;">
+      <div class="dash-main" style="max-width:100%;">
+
+        <div style="margin-bottom:16px;">
+          <div style="font-size:18px;font-weight:700;color:var(--text-default);letter-spacing:-0.4px;">Profile</div>
+          <div style="font-size:12px;color:var(--text-sec);margin-top:3px;">Your account, what it can reach, and how Guardian looks for you.</div>
+        </div>
+
+        <div class="prof-card" style="margin-bottom:16px;">
+          <div class="prof-id">
+            <div class="prof-avatar">T</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:15px;font-weight:700;color:var(--text-default);overflow:hidden;text-overflow:ellipsis;">bambuk@cloudhouse.io</div>
+              <div id="prof-id-sub" style="font-size:12px;color:var(--text-sec);margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prof-card" style="margin-bottom:16px;">
+          <div class="prof-sec-head">What this account can reach</div>
+          <div id="prof-perms"></div>
+          <div class="prof-field" style="background:var(--bg-subtle);">
+            <span style="color:var(--text-sec);flex:1;min-width:220px;line-height:1.6;" id="prof-perms-note"></span>
+            <span class="link-cta" style="font-size:12px;flex-shrink:0;" onclick="showView('roles')"><span class="lc-txt">See all roles</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></span>
+          </div>
+        </div>
+
+        <div class="prof-card" style="margin-bottom:16px;">
+          <div class="prof-sec-head">Preferences</div>
+          <div class="prof-field">
+            <span style="min-width:200px;">
+              <span style="display:block;font-weight:600;color:var(--text-default);">Appearance</span>
+              <span style="display:block;color:var(--text-sec);margin-top:2px;">Kept on this browser only.</span>
+            </span>
+            <div class="toggle-group" role="group" aria-label="Appearance" style="width:172px;flex-shrink:0;">
+              <button class="toggle-btn" id="prof-theme-light" onclick="profSetTheme(false)">Light</button>
+              <button class="toggle-btn" id="prof-theme-dark" onclick="profSetTheme(true)">Dark</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prof-card">
+          <div class="prof-field">
+            <span style="min-width:200px;">
+              <span style="display:block;font-weight:600;color:var(--text-default);">Sign out</span>
+              <span style="display:block;color:var(--text-sec);margin-top:2px;line-height:1.6;">Scans and watchers keep running on the server — signing out only ends this browser session.</span>
+            </span>
+            <button type="button" class="action-cta" onclick="acctSignOut()">Sign out</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- Edit-schedule modal -->
     <!-- schedule-modal migrated to unified openModal shell (see openScheduleModal) -->
 
@@ -26570,7 +26768,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
 <!-- incident-modal migrated to unified openModal shell (see openIncidentModal) -->
 
 <script>
-const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','report-changed','report-baseline','report-investigation','reports','cm-list','cm-detail','credentials','roles','watchers','watch-list'];
+const ALL = ['s01','s02','s05','s07','s-scan-complete','s-method','s-agentless','s-connect-test','s-node-added','s-cm-setup','results','remediation','dashboard','changes','change-detail','cr-audit','changes-done','all-devices','compare-nodes','compare-scans','node-detail','policies','policy-create','policy-detail','policy-edit','policy-assign','add-check','edit-check','scan-schedule','settings-integrations','integration-detail','integration-connect','secret-server-config','j3-connect','j3-connecting','j3-connected','j3-syncing','j3-inventory','j3-cmdb','j3-matched','j3-scan-config','j3-scanning','j3-scan-complete','j3-results','j3-connect-failed','j3-no-resources','j3-manual-match','j3-scan-failed','j4-connect','j4-connecting','j4-connected','j4-syncing','j4-match','j4-active','j4-summary','j4-connect-failed','j4-no-crs','j4-partial-match','cmdb-connect','cmdb-connecting','cmdb-connect-failed','cmdb-browse','cmdb-credentials','cmdb-importing','cmdb-complete','csv-import','csv-preview','csv-importing','csv-complete','scan-failed','reports-list','report-changed','report-baseline','report-investigation','reports','cm-list','cm-detail','credentials','roles','watchers','watch-list','profile'];
 const LABELS = {
   s01:'s01 · Landing', s02:'s02 · Add Node',
   s05:'s05 · Install Agent',
@@ -26603,7 +26801,7 @@ const LABELS = {
 ,'j4-connect':'J4 · Configure ServiceNow','j4-connecting':'J4 · Connecting','j4-connected':'J4 · Connected','j4-syncing':'J4 · Syncing Nodes','j4-match':'J4 · Match Nodes','j4-active':'J4 · Recon Active','j4-summary':'J4 · Summary','j4-connect-failed':'J4 · Connection Failed','j4-no-crs':'J4 · No CRs Found','j4-partial-match':'J4 · Partial Match'
 ,'cmdb-connect':'CMDB · Connect','cmdb-connecting':'CMDB · Connecting','cmdb-connect-failed':'CMDB · Connection Failed','cmdb-browse':'CMDB · Select Nodes','cmdb-credentials':'CMDB · Credentials','cmdb-importing':'CMDB · Importing','cmdb-complete':'CMDB · Complete'
 ,'csv-import':'CSV · Upload','csv-preview':'CSV · Review','csv-importing':'CSV · Importing','csv-complete':'CSV · Complete'
-,'roles':'Roles & Permissions','watchers':'Watchers','watch-list':'Watchers · Node watch list'};
+,'roles':'Roles & Permissions','watchers':'Watchers','watch-list':'Watchers · Node watch list','profile':'Profile'};
 const STEPS = {
   s02:{done:[],active:[0]}, s05:{done:[0],active:[1]},
   s07:{done:[0,1],active:[2]}, 's-scan-complete':{done:[0,1,2],active:[3]},
@@ -27892,6 +28090,7 @@ function showView(name) {
   if (name === 'credentials') renderCredentials();
   if (name === 'roles') renderRolesView();
   if (name === 'watchers') renderWatchers();
+  if (name === 'profile') renderProfile();
   if (name === 'reports') renderReport();
   if (name === 'report-changed' || name === 'report-baseline' || name === 'report-investigation') repPreviewLoad(name);
   if (sb) sb.classList.add('active');
@@ -35354,6 +35553,10 @@ function moveDonutTip(e) {
     tip.style.top  = (e.clientY - 32) + 'px';
   }
 }
+
+// Профіль і шапка меню акаунта показують роль та тему. Обидва стани існують ще до першого
+// відкриття сторінки, тож заповнюємо їх один раз тут — це останній скрипт, уся розмітка вже є.
+renderProfile();
 </script>
 
 </body></html>
