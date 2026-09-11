@@ -1163,6 +1163,21 @@ body.dark .acct-trigger:hover { background:rgba(255,255,255,0.06); border-color:
 .prof-row { display:grid; grid-template-columns:repeat(3,1fr); column-gap:24px; align-items:center; padding:12px 22px; border-top:1px solid var(--border); font-size:12px; }
 .prof-row:first-child { border-top:none; }
 .prof-field { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:13px 22px; border-top:1px solid var(--border); font-size:12px; flex-wrap:wrap; }
+/* Рядок активності повторює геометрію Change Feed (index.html:30265): моно-час фіксованої
+   ширини, дія, ціль, і один статус праворуч. Два журнали в продукті мусять читатись однаково. */
+.prof-act { padding:12px 22px; border-top:1px solid var(--border); }
+.prof-act:first-child { border-top:none; }
+.prof-act-go { cursor:pointer; transition:background .1s; }
+.prof-act-go:hover { background:#F8FAFC; }
+body.dark .prof-act-go:hover { background:rgba(255,255,255,0.05); }
+.prof-act-head { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.prof-act-time { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-muted); flex-shrink:0; min-width:104px; }
+.prof-act-kind { font-size:12px; font-weight:600; color:var(--text-default); flex-shrink:0; }
+.prof-act-target { flex:1; min-width:0; font-size:12px; color:var(--text-sec); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* Моно лише для літерального значення (шлях, імʼя креденшла) — DS §13.1. Назва політики чи
+   людини лишається звичайним текстом. */
+.prof-act-target--mono { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-default); }
+.prof-act-detail { font-size:12px; color:var(--text-sec); line-height:1.6; margin-top:4px; padding-left:116px; }
 
 /* ── APP SHELL ── */
 .app-shell { display:flex; flex:1; overflow:hidden; }
@@ -16791,11 +16806,79 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           : 'Your role is assigned by an admin; you cannot raise it here. Request access from the page you are blocked on, and an admin approves it on Roles &amp; Permissions.';
       }
 
+      _profRenderActivity(role);
+
       var dark = document.body.classList.contains('dark');
       var lb = document.getElementById('prof-theme-light');
       var db = document.getElementById('prof-theme-dark');
       if (lb) lb.classList.toggle('active', !dark);
       if (db) db.classList.toggle('active', dark);
+    }
+
+    // ── Recent activity ──────────────────────────────────────────────
+    // Кожен запис указує на обʼєкт, який у застосунку вже існує саме в такому стані, тож журнал
+    // не може розповісти історію, якої решта продукту не підтверджує:
+    //   · legacy-win2012 має status 'cannot-connect' і 'failed 1 hour ago' (index.html:16054);
+    //   · hosts на MACBOOK-TARAS стоїть watch:true, і саме цей вотчер дав подію 09:12 у Change Feed;
+    //   · SARAH-LAPTOP-01 завжди валить скан (nodeScanFails), тож запис чесно кінчається Failed;
+    //   · Elena Petrova у USERS справді Viewer.
+    // `area` — ключ із PERM_PAGES: дії, якої роль не може виконати, цей акаунт і не міг залишити
+    // в журналі, тому список фільтрується тим самим `perms`, що й таблиця доступу вище.
+    var ACCT_ACTIVITY = [
+      { time:'Today 13:05', area:'credentials', kind:'Tested', target:'legacy-win2012', mono:true,
+        detail:'Connection refused on WinRM. The credential is still failing.',
+        badge:'<span class="bdg bdg--dot bdg--red">Failed</span>', go:'credentials' },
+      { time:'Today 11:42', area:null, kind:'Signed in', target:'Chrome on macOS',
+        detail:'91.234.18.7 · Kyiv, UA. This is the session you are in now.',
+        badge:'<span class="bdg bdg--dot bdg--green">Current session</span>' },
+      { time:'Today 09:20', area:'drift', kind:'Assigned', target:'Windows Defender — Real-time protection disabled',
+        detail:'MACBOOK-TARAS · assigned to Marcus Webb.',
+        badge:'<span class="bdg bdg--dot bdg--red">Critical</span>', go:'changes' },
+      { time:'Yesterday 16:30', area:'schedules', kind:'Started watching', target:'C:\\Windows\\System32\\drivers\\etc\\hosts', mono:true,
+        detail:'MACBOOK-TARAS · this watcher is what reported the hosts change at 09:12 today.',
+        badge:'<span class="bdg bdg--dot bdg--green">Watching</span>', go:'watchers' },
+      { time:'Yesterday 14:05', area:'policies', kind:'Edited', target:'CIS Windows 11',
+        detail:'Raised one check\u2019s severity. The policy is assigned to Windows Laptops.',
+        badge:'<span class="bdg bdg--dot bdg--blue">1 check</span>', go:'policies' },
+      { time:'Yesterday 09:10', area:'nodes', kind:'Ran a scan', target:'SARAH-LAPTOP-01',
+        detail:'The node was unreachable, so nothing was collected.',
+        badge:'<span class="bdg bdg--dot bdg--red">Scan failed</span>', go:'all-devices' },
+      { time:'Mon 10:02', area:'admin', kind:'Changed a role', target:'Elena Petrova',
+        detail:'Set to Viewer — she can review findings but change nothing.',
+        badge:'<span class="bdg bdg--dot bdg--gray">Viewer</span>', go:'roles' }
+    ];
+
+    function _profRenderActivity(role) {
+      var wrap = document.getElementById('prof-activity');
+      if (!wrap) return;
+      var visible = ACCT_ACTIVITY.filter(function(a) {
+        if (!a.area) return true;                        // вхід у систему є в кожної ролі
+        if (a.area === 'admin') return role.id === 'admin';
+        return role.perms[a.area] === 'full';
+      });
+      wrap.innerHTML = visible.map(function(a) {
+        // Рядок веде туди, де цей обʼєкт живе; форму дає лише hover, тож пігулка в рядку
+        // лишається одна — статус наслідку.
+        var open = a.go ? ' prof-act-go" onclick="showView(\'' + a.go + '\')"' : '"';
+        return '<div class="prof-act' + open + '>'
+          + '<div class="prof-act-head">'
+          +   '<span class="prof-act-time">' + a.time + '</span>'
+          +   '<span class="prof-act-kind">' + a.kind + '</span>'
+          +   '<span class="prof-act-target' + (a.mono ? ' prof-act-target--mono' : '') + '">' + a.target + '</span>'
+          +   a.badge
+          + '</div>'
+          + '<div class="prof-act-detail">' + a.detail + '</div>'
+          + '</div>';
+      }).join('');
+
+      var note = document.getElementById('prof-activity-note');
+      if (note) {
+        var hidden = ACCT_ACTIVITY.length - visible.length;
+        note.textContent = hidden
+          ? hidden + (hidden === 1 ? ' entry is' : ' entries are') + ' not shown: ' + role.name
+            + ' cannot perform those actions, so this account could not have left them.'
+          : 'Guardian keeps 90 days of account activity. The same actions also appear in the history of the node, policy or change they touched.';
+      }
     }
 
     // Пояснення мусить називати наслідок, а не переказувати слово «Read-only» іншими словами,
@@ -25150,6 +25233,14 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div class="prof-field" style="background:var(--bg-subtle);">
             <span style="color:var(--text-sec);flex:1;min-width:220px;line-height:1.6;" id="prof-perms-note"></span>
             <span class="link-cta" style="font-size:12px;flex-shrink:0;" onclick="showView('roles')"><span class="lc-txt">See all roles</span> <span class="arr"><svg width="12" height="12" viewBox="0 0 8 8" fill="none" style="display:block"><path d="M1 4H7M4.2 7L7 4L4.2 1" stroke="currentColor" stroke-linecap="round"/></svg></span></span>
+          </div>
+        </div>
+
+        <div class="prof-card" style="margin-bottom:16px;">
+          <div class="prof-sec-head">Recent activity</div>
+          <div id="prof-activity"></div>
+          <div class="prof-field" style="background:var(--bg-subtle);">
+            <span style="color:var(--text-sec);flex:1;min-width:220px;line-height:1.6;" id="prof-activity-note"></span>
           </div>
         </div>
 
