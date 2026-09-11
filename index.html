@@ -1178,6 +1178,17 @@ body.dark .prof-act-go:hover { background:rgba(255,255,255,0.05); }
    людини лишається звичайним текстом. */
 .prof-act-target--mono { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-default); }
 .prof-act-detail { font-size:12px; color:var(--text-sec); line-height:1.6; margin-top:4px; padding-left:116px; }
+/* Нотифікації: подія ліворуч, два канали праворуч. Чекбокси стилізовані глобально
+   (index.html:5840 / :4145), тож тут їм нічого не задаємо — інакше світле правило протекло б
+   у темну тему. */
+.prof-ntf, .prof-ntf-head { display:grid; grid-template-columns:1fr 88px 88px; column-gap:16px; align-items:center; padding:12px 22px; }
+.prof-ntf-head { padding:10px 22px; border-bottom:1px solid var(--border); font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); }
+.prof-ntf-head > div + div, .prof-ntf > label { justify-self:center; }
+.prof-ntf { border-top:1px solid var(--border); font-size:12px; }
+.prof-ntf:first-child { border-top:none; }
+.prof-ntf > label { display:flex; cursor:pointer; }
+.prof-ntf-name { font-weight:600; color:var(--text-default); }
+.prof-ntf-why { color:var(--text-sec); line-height:1.6; margin-top:3px; }
 
 /* ── APP SHELL ── */
 .app-shell { display:flex; flex:1; overflow:hidden; }
@@ -16807,6 +16818,7 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
       }
 
       _profRenderActivity(role);
+      _profRenderNotifs(role);
 
       var dark = document.body.classList.contains('dark');
       var lb = document.getElementById('prof-theme-light');
@@ -16880,6 +16892,64 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           : 'Guardian keeps 90 days of account activity. The same actions also appear in the history of the node, policy or change they touched.';
       }
     }
+
+    // ── Notifications ────────────────────────────────────────────────
+    // Рядок не обіцяє абстрактну подію, а рахує, скільки таких подій у застосунку є просто зараз
+    // (`why` читає CHANGE_DATA / WATCH_FEED / CREDENTIALS / ACCESS_REQUESTS), тож користувач
+    // бачить обсяг, на який підписується, а не саму назву події.
+    // Видимість — м'якша за журнал активності: щоб отримувати сповіщення, досить МАТИ ДОСТУП
+    // до області, а не право її змінювати, тому ховаємо лише 'restricted'. Про що людина не
+    // може навіть прочитати, про те Guardian і не має чого їй сказати.
+    var ACCT_NOTIFS = [
+      { area:'drift', label:'A critical drift is detected', app:true, mail:true,
+        why:function(){ var n = CHANGE_DATA.filter(function(c){ return c.severity === 'critical'; }).length;
+          // «in Detected Drift», а не «open»: CHANGE_DATA не має поля статусу, і один із двох
+          // критичних записів — вже зведений (reconciled), тож «open» було б неправдою.
+          return n + ' in Detected Drift right now, including the Defender change on MACBOOK-TARAS.'; } },
+      { area:'nodes', label:'A scan fails', app:true, mail:true,
+        why:function(){ var n = WATCH_FEED.filter(function(e){ return e.outcome === 'failed'; }).length;
+          return n + ' in the feed today — SARAH-LAPTOP-01 is unreachable, so nothing is being collected there.'; } },
+      { area:'schedules', label:'A watcher reports a change', app:true, mail:false,
+        why:function(){ var n = WATCH_FEED.filter(function(e){ return e.outcome === 'diff'; }).length;
+          return n + ' produced a diff in the last two days. In-app only by default: watchers fire in seconds and email would bury the rest.'; } },
+      { area:'credentials', label:'A credential stops working', app:true, mail:true,
+        why:function(){ var n = CREDENTIALS.filter(function(c){ return c.status !== 'valid' && c.status !== 'not-tested'; }).length;
+          return n + ' are failing today. Every scan that uses one of them fails with it.'; } },
+      { area:'schedules', label:'A scheduled scan finishes', app:false, mail:false,
+        why:function(){ return 'Off by default — a scan that finishes cleanly is not news. Failures are covered above.'; } },
+      { area:'admin', label:'Someone asks for access', app:true, mail:true,
+        why:function(){ var n = ACCESS_REQUESTS.length;
+          return n ? n + ' waiting for you on Roles & Permissions.' : 'Nothing waiting. Requests arrive from the page a person was blocked on.'; } }
+    ];
+
+    function _profRenderNotifs(role) {
+      var wrap = document.getElementById('prof-notif');
+      if (!wrap) return;
+      var visible = ACCT_NOTIFS.filter(function(n) {
+        if (n.area === 'admin') return role.id === 'admin';
+        return role.perms[n.area] !== 'restricted';
+      });
+      wrap.innerHTML = visible.map(function(n) {
+        var i = ACCT_NOTIFS.indexOf(n);
+        return '<div class="prof-ntf">'
+          + '<div><div class="prof-ntf-name">' + n.label + '</div><div class="prof-ntf-why">' + n.why() + '</div></div>'
+          + '<label><input type="checkbox" ' + (n.app ? 'checked ' : '') + 'onchange="profNotifSet(' + i + ',\'app\',this.checked)" aria-label="In-app: ' + n.label + '"></label>'
+          + '<label><input type="checkbox" ' + (n.mail ? 'checked ' : '') + 'onchange="profNotifSet(' + i + ',\'mail\',this.checked)" aria-label="Email: ' + n.label + '"></label>'
+          + '</div>';
+      }).join('');
+
+      var note = document.getElementById('prof-notif-note');
+      if (note) {
+        var hidden = ACCT_NOTIFS.length - visible.length;
+        note.textContent = !hidden
+          ? 'Email goes to bambuk@cloudhouse.io. These settings are yours alone — everyone else keeps their own.'
+          : hidden === 1
+            ? '1 event is not listed: it points at an area ' + role.name + ' cannot open.'
+            : hidden + ' events are not listed: they point at areas ' + role.name + ' cannot open.';
+      }
+    }
+
+    function profNotifSet(i, channel, on) { ACCT_NOTIFS[i][channel === 'app' ? 'app' : 'mail'] = on; }
 
     // Пояснення мусить називати наслідок, а не переказувати слово «Read-only» іншими словами,
     // тож воно будується з того, хто реально має full на цю область.
@@ -25241,6 +25311,15 @@ body.dark table tbody tr:not(.data-table-footer):hover > td {
           <div id="prof-activity"></div>
           <div class="prof-field" style="background:var(--bg-subtle);">
             <span style="color:var(--text-sec);flex:1;min-width:220px;line-height:1.6;" id="prof-activity-note"></span>
+          </div>
+        </div>
+
+        <div class="prof-card" style="margin-bottom:16px;">
+          <div class="prof-sec-head">Notifications</div>
+          <div class="prof-ntf-head"><div>Tell me when</div><div>In-app</div><div>Email</div></div>
+          <div id="prof-notif"></div>
+          <div class="prof-field" style="background:var(--bg-subtle);">
+            <span style="color:var(--text-sec);flex:1;min-width:220px;line-height:1.6;" id="prof-notif-note"></span>
           </div>
         </div>
 
